@@ -64,14 +64,14 @@ class User extends Authenticatable
     {
         return $this->belongsTo(Oficina::class, 'OFICINA_ID', 'OFICINA_ID');
     }
-    public function departamento()
-    {
-        return $this->belongsTo(Departamento::class, 'DEPARTAMENTO_ID', 'DEPARTAMENTO_ID');
-    }
-    public function ubicacion()
-    {
-        return $this->belongsTo(Ubicacion::class, 'UBICACION_ID', 'UBICACION_ID');
-    }
+    // public function departamento()
+    // {
+    //     return $this->belongsTo(Departamento::class, 'DEPARTAMENTO_ID', 'DEPARTAMENTO_ID');
+    // }
+    // public function ubicacion()
+    // {
+    //     return $this->belongsTo(Ubicacion::class, 'UBICACION_ID', 'UBICACION_ID');
+    // }
     public function grupo()
     {
         return $this->belongsTo(Grupo::class, 'GRUPO_ID', 'GRUPO_ID');
