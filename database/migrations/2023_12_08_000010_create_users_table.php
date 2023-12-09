@@ -20,7 +20,7 @@ return new class extends Migration
             $table->unsignedBigInteger('OFICINA_ID'); //!! EQUIVALENTE A DIRECCIÓN_REGIONAL.
             $table->unsignedBigInteger('DEPARTAMENTO_ID')->nullable();
             $table->unsignedBigInteger('UBICACION_ID')->nullable();
-            $table->unsignedBigInteger('GRUPO_ID');
+            $table->unsignedBigInteger('GRUPO_ID')->nullable();
             $table->unsignedBigInteger('ESCALAFON_ID');
             $table->unsignedBigInteger('GRADO_ID');
             $table->unsignedBigInteger('CARGO_ID');

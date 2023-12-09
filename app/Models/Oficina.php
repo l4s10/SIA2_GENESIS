@@ -58,4 +58,9 @@ class Oficina extends Model
     {
         return $this->hasMany(Cargo::class, 'OFICINA_ID', 'OFICINA_ID');
     }
+    //*Relacion de uno a muchos con user */
+    public function users()
+    {
+        return $this->hasMany(User::class, 'OFICINA_ID', 'OFICINA_ID');
+    }
 }
