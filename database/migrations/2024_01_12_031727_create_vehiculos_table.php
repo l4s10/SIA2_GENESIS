@@ -15,7 +15,8 @@ return new class extends Migration
             //Atributos
             $table->id('VEHICULO_ID');
             $table->unsignedBigInteger('TIPO_VEHICULO_ID');
-            $table->unsignedBigInteger('OFICINA_ID');
+            $table->unsignedBigInteger('UBICACION_ID')->nullable();
+            $table->unsignedBigInteger('DEPARTAMENTO_ID')->nullable();
             $table->string('VEHICULO_PATENTE', 7)->unique();
             $table->string('VEHICULO_MARCA', 128);
             $table->string('VEHICULO_MODELO', 191);
@@ -25,7 +26,8 @@ return new class extends Migration
             $table->string('VEHICULO_NIVEL_ESTANQUE', 128);
             //Relaciones
             $table->foreign('TIPO_VEHICULO_ID')->references('TIPO_VEHICULO_ID')->on('tipos_vehiculos');
-            $table->foreign('OFICINA_ID')->references('OFICINA_ID')->on('oficinas');
+            $table->foreign('DEPARTAMENTO_ID')->references('DEPARTAMENTO_ID')->on('departamentos');
+            $table->foreign('UBICACION_ID')->references('UBICACION_ID')->on('ubicaciones');
             //Timestamps
             $table->timestamps();
         });
