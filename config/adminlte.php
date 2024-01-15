@@ -129,7 +129,7 @@ return [
     |
     */
 
-    'usermenu_enabled' => true,
+    'usermenu_enabled' => false,
     'usermenu_header' => false,
     'usermenu_header_class' => 'bg-primary',
     'usermenu_image' => false,
@@ -150,7 +150,7 @@ return [
 
     'layout_topnav' => null,
     'layout_boxed' => null,
-    'layout_fixed_sidebar' => null,
+    'layout_fixed_sidebar' => true,
     'layout_fixed_navbar' => null,
     'layout_fixed_footer' => null,
     'layout_dark_mode' => null,
@@ -311,9 +311,20 @@ return [
             'url'  => 'admin/blog',
             'can'  => 'manage-blog',
         ],
+        ['header' => 'MENÚ PRINCIPAL'],
+        [
+            'text'        => 'Inicio',
+            'route'         => 'home',
+            'icon'        => 'far fa-fw fa-solid fa-home',
+        ],
+        [
+            'text'        => 'Calendario de Actividades',
+            'url'         => '#',
+            'icon'        => 'far fa-fw fa-solid fa-calendar-alt',
+        ],
         ['header' => 'MODULOS DE SOLICITUDES'],
         [
-            'text'        => 'Vehiculos',
+            'text'        => 'Vehículos',
             'url'         => 'admin/pages',
             'icon'        => 'far fa-fw fa-solid fa-car-side',
             'submenu' => [
@@ -413,7 +424,7 @@ return [
             'icon' => 'fas fa-fw fa-solid fa-chart-pie',
         ],
         [
-            'text' => 'Auditorias',
+            'text' => 'Auditorías',
             'url'  => '#',
             'icon' => 'fas fa-fw fa-solid fa-tablet',
         ],
