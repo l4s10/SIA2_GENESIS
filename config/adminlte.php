@@ -304,13 +304,14 @@ return [
         // Sidebar items:
         [
             'type' => 'sidebar-menu-search',
-            'text' => 'search',
+            'text' => 'Buscar...',
         ],
-        [
-            'text' => 'blog',
-            'url'  => 'admin/blog',
-            'can'  => 'manage-blog',
-        ],
+        /*ELEMENTO CON LARAVEL PERMISSIONS (PROGRAMAR PERMISOS)*/
+        // [
+        //     'text' => 'blog',
+        //     'url'  => 'admin/blog',
+        //     'can'  => 'manage-blog',
+        // ],
         ['header' => 'MENÚ PRINCIPAL'],
         [
             'text'        => 'Inicio',
@@ -318,7 +319,7 @@ return [
             'icon'        => 'far fa-fw fa-solid fa-home',
         ],
         [
-            'text'        => 'Calendario de Actividades',
+            'text'        => 'Calendario de actividades',
             'url'         => '#',
             'icon'        => 'far fa-fw fa-solid fa-calendar-alt',
         ],
@@ -333,7 +334,7 @@ return [
                     'url'  => '#',
                 ],
                 [
-                    'text' => 'Mis Solicitudes',
+                    'text' => 'Mis solicitudes',
                     'url'  => '#',
                 ],
             ],
@@ -347,7 +348,7 @@ return [
                     'url'  => '#',
                 ],
                 [
-                    'text' => 'Mis Solicitudes',
+                    'text' => 'Mis solicitudes',
                     'url'  => '#',
                 ],
             ],
@@ -362,7 +363,7 @@ return [
                     'url'  => '#',
                 ],
                 [
-                    'text' => 'Mis Solicitudes',
+                    'text' => 'Mis solicitudes',
                     'url'  => '#',
                 ],
             ],
@@ -377,14 +378,14 @@ return [
                     'url'  => '#',
                 ],
                 [
-                    'text' => 'Mis Solicitudes',
+                    'text' => 'Mis solicitudes',
                     'url'  => '#',
                 ],
             ],
         ],
         [
             'text'        => 'Salas y Bodegas',
-            'url'         => 'admin/pages',
+            'url'         => '#',
             'icon'        => 'far fa-fw fa-solid fa-building',
             'submenu' => [
                 [
@@ -392,14 +393,14 @@ return [
                     'url'  => '#',
                 ],
                 [
-                    'text' => 'Mis Solicitudes',
+                    'text' => 'Mis solicitudes',
                     'url'  => '#',
                 ],
             ],
         ],
         [
-            'text'        => 'Reparaciones y Mantenciones',
-            'url'         => 'admin/pages',
+            'text'        => 'Reparaciones y mantenciones',
+            'url'         => '#',
             'icon'        => 'far fa-fw fa-solid fa-hammer',
             'submenu' => [
                 [
@@ -407,8 +408,53 @@ return [
                     'url'  => '#',
                 ],
                 [
-                    'text' => 'Mis Solicitudes',
+                    'text' => 'Mis solicitudes',
                     'url'  => '#',
+                ],
+            ],
+        ],
+        ['header' => 'MÓDULOS DIRECTIVOS'],
+        [
+            'text' => 'Buscar resoluciones',
+            'url'  => '#',
+            'icon' => 'fas fa-fw fa-solid fa-search',
+            'submenu' => [
+                [
+                    'text' => 'Búsqueda avanzada',
+                    'url'  => '#',
+                    'icon' => 'fas fa-fw fa-solid fa-search-plus',
+                ],
+                [
+                    'text' => 'Búsqueda básica',
+                    'url'  => '#',
+                    'icon' => 'fas fa-fw fa-solid fa-search-minus',
+                ],
+            ],
+        ],
+        [
+            'text' => 'Repositorio',
+            'url'  => '#',
+            'icon' => 'fas fa-fw fa-solid fa-archive',
+            'submenu' => [
+                [
+                    'text' => 'Resoluciones',
+                    'url'  => '#',
+                    'icon' => 'fas fa-fw fa-solid fa-file-alt',
+                ],
+                [
+                    'text' => 'Pólizas',
+                    'url'  => '#',
+                    'icon' => 'fas fa-fw fa-solid fa-file-contract',
+                ],
+                [
+                    'text' => 'Facultades',
+                    'url'  => '#',
+                    'icon' => 'fas fa-fw fa-solid fa-file-signature',
+                ],
+                [
+                    'text' => 'Cargos',
+                    'url'  => '#',
+                    'icon' => 'fas fa-fw fa-solid fa-file-invoice',
                 ],
             ],
         ],
@@ -427,6 +473,33 @@ return [
             'text' => 'Auditorías',
             'url'  => '#',
             'icon' => 'fas fa-fw fa-solid fa-tablet',
+        ],
+
+        ['header' => 'AJUSTES DEL SISTEMA SIAV2.5'],
+        [
+            'text' => 'Administrar usuarios',
+            'url'  => '#',
+            'icon' => 'fas fa-fw fa-solid fa-users-cog',
+        ],
+        [
+            'text' => 'Administrar regiones',
+            'url'  => '#',
+            'icon' => 'fas fa-fw fa-solid fa-globe-americas',
+        ],
+        [
+            'text' => 'Administrar comunas',
+            'url'  => '#',
+            'icon' => 'fas fa-fw fa-solid fa-map-marked-alt',
+        ],
+        [
+            'text' => 'Administrar direcciones regionales',
+            'url'  => '#',
+            'icon' => 'fas fa-fw fa-solid fa-building',
+        ],
+        [
+            'text' => 'Administrar unidades y departamentos',
+            'url'  => '#',
+            'icon' => 'fas fa-fw fa-solid fa-building-un',
         ],
         ['header' => 'account_settings'],
         // [
