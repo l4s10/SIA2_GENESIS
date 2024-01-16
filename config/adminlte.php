@@ -404,7 +404,7 @@ return [
         ['header' => 'GESTIONAR ACTIVOS'],
         [
             'text' => 'Inventario',
-            'url'  => '#',
+            'url'  => 'inventarios',
             'icon' => 'fas fa-fw fa-solid fa-paste',
         ],
         [

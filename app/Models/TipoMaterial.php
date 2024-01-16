@@ -24,7 +24,7 @@ class TipoMaterial extends Model
         return $this->hasMany(Material::class, 'TIPO_MATERIAL_ID');
     }
     // Relación uno a uno con oficina
-    public function oficina()
+    public function oficinas()
     {
         return $this->belongsTo(Oficina::class, 'OFICINA_ID');
     }
