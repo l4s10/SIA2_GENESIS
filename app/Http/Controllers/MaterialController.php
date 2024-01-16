@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\Rule;
+use Illuminate\Support\Facades\Log; //Libreria faltante para los logs
+use Illuminate\Database\Eloquent\ModelNotFoundException; //Libreria faltante para las excepciones
 
 use App\Models\Material;
 use App\Models\TipoMaterial;
@@ -38,7 +40,7 @@ class MaterialController extends Controller
     }
 
     public function store(Request $request)
-    {   
+    {
         try {
             // Transformar caracteres a caracteres mayúsculas
             $request->merge([
@@ -67,11 +69,11 @@ class MaterialController extends Controller
                 Movimiento::create([
                     'USUARIO_id' => Auth::user()->id,
                     'MATERIAL_ID' => $material->MATERIAL_ID,
-                    'MOVIMIENTO_TITULAR' => Auth::user()->USUARIO_NOMBRES, 
+                    'MOVIMIENTO_TITULAR' => Auth::user()->USUARIO_NOMBRES,
                     'MOVIMIENTO_OBJETO' => 'MAT: '.$material->MATERIAL_NOMBRE,
-                    'MOVIMIENTO_TIPO_OBJETO' => $material->tipoMaterial->TIPO_MATERIAL_NOMBRE, 
+                    'MOVIMIENTO_TIPO_OBJETO' => $material->tipoMaterial->TIPO_MATERIAL_NOMBRE,
                     'MOVIMIENTO_TIPO' => 'INGRESO',
-                    'MOVIMIENTO_STOCK_PREVIO' => 0, 
+                    'MOVIMIENTO_STOCK_PREVIO' => 0,
                     'MOVIMIENTO_CANTIDAD_A_MODIFICAR' => $material->MATERIAL_STOCK,
                     'MOVIMIENTO_STOCK_RESULTANTE' => $material->MATERIAL_STOCK,
                     'MOVIMIENTO_DETALLE' => $request->DETALLE_MOVIMIENTO,
@@ -142,7 +144,7 @@ class MaterialController extends Controller
                 ],
             ]);
 
-            
+
             // Calcular el stock resultante según el tipo de movimiento
             if ($request->TIPO_MOVIMIENTO == 'INGRESO') {
                 $stockResultante = $request->MATERIAL_STOCK + $request->STOCK_NUEVO;
@@ -179,7 +181,7 @@ class MaterialController extends Controller
         }
     }
 
-    
+
     public function destroy(string $id)
     {
         // Encuentra el material por su ID y elimínalo

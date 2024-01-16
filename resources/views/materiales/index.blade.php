@@ -12,7 +12,7 @@
     <div class="container">
         {{-- Lógica para mostrar mensajes de éxito o error --}}
         {{-- ... --}}
-        
+
         {{-- Enlace para exportar PDF --}}
         {{--<a href="{{ route('materiales.exportar-pdf') }}" class="btn btn-primary" target="_blank">
             <i class="fa-solid fa-file-pdf"></i> Exportar PDF
@@ -21,6 +21,7 @@
         {{-- Tabla de Materiales --}}
         <div class="table-responsive">
             <a class="btn btn-primary" href="{{ route('materiales.create') }}"><i class="fa-solid fa-plus"></i> Agregar Material</a>
+            <a class="btn btn-secondary" href="{{route('tiposmateriales.index')}}"><i class="fa-solid fa-eye"></i> Ver tipos de materiales</a>
 
             <table id="materiales" class="table table-bordered mt-4">
                 <thead class="bg-primary text-white">
@@ -40,7 +41,7 @@
                             <td style="text-align: center; vertical-align: middle;">
                                 <a href="{{ route('materiales.edit', $material->MATERIAL_ID) }}" class="btn btn-info">
                                     <i class="fa-solid fa-pen-to-square"></i> Editar
-                                </a>                                
+                                </a>
                                 <form action="{{ route('materiales.destroy', $material->MATERIAL_ID) }}" method="POST">
                                     @csrf
                                     @method('DELETE')

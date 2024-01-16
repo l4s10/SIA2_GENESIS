@@ -13,6 +13,7 @@
         {{-- Lógica para mostrar mensajes de éxito o error --}}
         {{-- ... --}}
         <a class="btn btn-primary" href="{{ route('tiposmateriales.create') }}"><i class="fa-solid fa-plus"></i> Agregar Tipo de Material</a>
+        <a class="btn btn-secondary" href="{{ route('materiales.index')}}"><i class="fa-solid fa-eye"></i> Administrar Materiales</a>
 
         <div class="table-responsive">
             <table id="tiposMateriales" class="table table-bordered mt-4">
