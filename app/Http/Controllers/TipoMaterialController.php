@@ -18,7 +18,7 @@ class TipoMaterialController extends Controller
 {
     public function index()
     {
-        // Obtiene la OFICINA_ID del usuario actual
+        // Obtener la OFICINA_ID del usuario actual
         $oficinaIdUsuario = Auth::user()->OFICINA_ID;
 
         // Función que lista tipos de materiales basados en la OFICINA_ID del usuario
@@ -30,7 +30,7 @@ class TipoMaterialController extends Controller
     public function create()
     {
         try {
-            // Obtiene la OFICINA_ID del usuario actual
+            // Obtener la OFICINA_ID del usuario actual
             $oficinaIdUsuario = Auth::user()->OFICINA_ID;
     
             // Función que hace match entre las oficinas y la oficina del usuario
