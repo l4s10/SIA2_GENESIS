@@ -20,7 +20,7 @@
 
             <div class="mb-3">
                 <label for="OFICINA_ID" class="form-label"><i class="fa-solid fa-person-chalkboard"></i> Oficina:</label>
-                <select id="OFICINA_ID" name="OFICINA_ID" class="form-control" disabled>
+                <select id="OFICINA_ID" name="OFICINA_ID" class="form-control" required disabled>
                     <option value="{{ $oficina->OFICINA_ID }}" selected>{{ $oficina->OFICINA_NOMBRE }}</option>
                 </select>
                 <input type="hidden" name="OFICINA_ID" value="{{ $oficina->OFICINA_ID }}">
