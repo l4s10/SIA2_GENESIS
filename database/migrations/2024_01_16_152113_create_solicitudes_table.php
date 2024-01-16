@@ -12,8 +12,20 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('solicitudes', function (Blueprint $table) {
-            $table->id();
+            //*Atributos de solicitudes */
+            $table->id('SOLICITUD_ID');
+            $table->unsignedBigInteger('USUARIO_id');
+            $table->string('SOLICITUD_MOTIVO', 255);
+            $table->string('SOLICITUD_ESTADO', 255);
+            $table->dateTime('SOLICITUD_FECHA_HORA_INICIO_SOLICITADA');
+            $table->dateTime('SOLICITUD_FECHA_HORA_TERMINO_SOLICITADA');
+            $table->dateTime('SOLICITUD_FECHA_HORA_INICIO_ASIGNADA')->nullable();
+            $table->dateTime('SOLICITUD_FECHA_HORA_TERMINO_ASIGNADA')->nullable();
+            //*Llaves foráneas*/
+            $table->foreign('USUARIO_ID')->references('id')->on('users');
+            //Timestamps (Fecha de creacion y de modificacion del registro)
             $table->timestamps();
+
         });
     }
 
