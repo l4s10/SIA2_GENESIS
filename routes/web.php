@@ -2,6 +2,8 @@
 
 use Illuminate\Support\Facades\Route;
 
+// require
+require __DIR__.'/Activos/EquiposRoutes.php';
 /*
 |--------------------------------------------------------------------------
 | Web Routes
