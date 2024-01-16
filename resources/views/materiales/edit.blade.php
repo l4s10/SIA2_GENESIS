@@ -67,7 +67,7 @@
                     </div>
                     <div class="col-md-6">
                         <label for="STOCK_NUEVO"><i class="fa-solid fa-list-ol"></i> Cantidad a modificar:</label>
-                        <input type="number" class="form-control{{ $errors->has('STOCK_NUEVO') ? ' is-invalid' : '' }}" id="STOCK_NUEVO" name="STOCK_NUEVO" value="{{ old('STOCK_NUEVO', $material->STOCK_NUEVO ?? 0) }}" min="0" placeholder="Indicar la cantidad" required>
+                        <input type="number" class="form-control{{ $errors->has('STOCK_NUEVO') ? ' is-invalid' : '' }}" id="STOCK_NUEVO" name="STOCK_NUEVO" value="{{ old('STOCK_NUEVO', $material->STOCK_NUEVO ?? 0) }}" min="0" max="1000" placeholder="Indicar la cantidad" required>
                         @error('STOCK_NUEVO')
                             <div class="text-danger">{{ $message }}</div>
                         @enderror
