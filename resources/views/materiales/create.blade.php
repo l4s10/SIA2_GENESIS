@@ -40,7 +40,7 @@
 
         <div class="mb-3">
             <label for="MATERIAL_STOCK" class="form-label"><i class="fa-solid fa-list-ol"></i> Stock:</label>
-            <input type="number" class="form-control{{ $errors->has('MATERIAL_STOCK') ? ' is-invalid' : '' }}" id="MATERIAL_STOCK" name="MATERIAL_STOCK" value="{{ old('MATERIAL_STOCK') }}" placeholder="Ingrese la cantidad disponible del material" min="0" required>
+            <input type="number" class="form-control{{ $errors->has('MATERIAL_STOCK') ? ' is-invalid' : '' }}" id="MATERIAL_STOCK" name="MATERIAL_STOCK" value="{{ old('MATERIAL_STOCK') }}" placeholder="Ingrese la cantidad disponible del material" min="0" max="1000" required>
             @if ($errors->has('MATERIAL_STOCK'))
                 <div class="invalid-feedback">
                     {{ $errors->first('MATERIAL_STOCK') }}
