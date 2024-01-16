@@ -18,7 +18,7 @@ class TipoMaterialController extends Controller
 {
     public function index()
     {
-        // Obtiene la OFICINA_ID del usuario actual
+        // Obtener la OFICINA_ID del usuario actual
         $oficinaIdUsuario = Auth::user()->OFICINA_ID;
 
         // Función que lista tipos de materiales basados en la OFICINA_ID del usuario
@@ -30,7 +30,7 @@ class TipoMaterialController extends Controller
     public function create()
     {
         try {
-            // Obtiene la OFICINA_ID del usuario actual
+            // Obtener la OFICINA_ID del usuario actual
             $oficinaIdUsuario = Auth::user()->OFICINA_ID;
     
             // Función que hace match entre las oficinas y la oficina del usuario
@@ -51,7 +51,10 @@ class TipoMaterialController extends Controller
         try {
             // Validación de datos
             $request->validate([
-                'TIPO_MATERIAL_NOMBRE' => 'required|string|max:128',
+                'TIPO_MATERIAL_NOMBRE' => ['required', 'string', 'max:128', 'regex:/^[a-zA-Z\s]+$/'],
+                'OFICINA_ID' => 'required'
+            ], [ // Mensajes de error 
+                'TIPO_MATERIAL_NOMBRE.regex' => 'El campo "Nombre Tipo" sólo debe contener letras y espacios.',
             ]);
 
             // Transformar a mayúsculas antes de crear el nuevo tipo de material
@@ -104,10 +107,11 @@ class TipoMaterialController extends Controller
     
             // Validación de datos
             $request->validate([
-                'TIPO_MATERIAL_NOMBRE' => 'required|string|max:128',
-                // Agrega otras reglas de validación según sea necesario
+                'TIPO_MATERIAL_NOMBRE' => ['required', 'string', 'max:128', 'regex:/^[a-zA-Z\s]+$/'],
+                'OFICINA_ID' => 'required'
+            ], [ // Mensajes de error 
+                'TIPO_MATERIAL_NOMBRE.regex' => 'El campo "Nombre Tipo" sólo debe contener letras y espacios.',
             ]);
-    
             // Transformar a mayúsculas antes de actualizar el tipo de material
             $tipoMaterialNombre = Str::upper($request->input('TIPO_MATERIAL_NOMBRE'));
 

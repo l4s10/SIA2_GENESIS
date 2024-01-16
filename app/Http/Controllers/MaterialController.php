@@ -85,7 +85,7 @@ class MaterialController extends Controller
             }
         } catch (\Exception $e) {
             // Loguea la excepción o maneja de otra manera
-            Log::error('Error al crear el material: ' . $e->getMessage());
+            //Log::error('Error al crear el material: ' . $e->getMessage());
             session()->flash('error', 'Error al crear el material: ' . $e->getMessage());
         }
 
@@ -96,9 +96,9 @@ class MaterialController extends Controller
     {
         // Obtener el material a editar
         $material = Material::findOrFail($id);
-        // Obtiene la OFICINA_ID del usuario actual
+        // Obtiener la OFICINA_ID del usuario actual
         $oficinaIdUsuario = Auth::user()->OFICINA_ID;
-        // Otros datos necesarios para la vista de edición
+        // Obtener tipos de materiales según oficina_id del usuario en sesión
         $tiposMateriales = TipoMaterial::where('OFICINA_ID', $oficinaIdUsuario)->get();
 
         // Retornar la vista con los datos
@@ -184,20 +184,17 @@ class MaterialController extends Controller
 
     public function destroy(string $id)
     {
-        // Encuentra el material por su ID y elimínalo
+        // Encontrar el material por su ID 
         $material = Material::find($id);
 
-        // Verifica si el material existe antes de intentar eliminarlo
+        // Verificar si el material existe antes de intentar eliminarlo
         if ($material) {
-            // Elimina el material
+            // Eliminar el material
             $material->delete();
-
-            // También puedes eliminar el movimiento asociado si lo deseas
-            // $material->movimiento->delete();
 
             return redirect()->route('materiales.index')->with('success', 'Material eliminado exitosamente.');
         } else {
-            // Si el material no existe, redirecciona con un mensaje de error
+            // Si el material no existe, redireccionar con un mensaje de error
             return redirect()->route('materiales.index')->with('error', 'No se encontró el material.');
         }
     }

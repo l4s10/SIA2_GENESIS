@@ -22,12 +22,15 @@ return new class extends Migration
             $table->unsignedInteger('MOVIMIENTO_CANTIDAD_A_MODIFICAR');
             $table->unsignedInteger('MOVIMIENTO_STOCK_RESULTANTE');
             $table->text('MOVIMIENTO_DETALLE');
-            $table->timestamps();
 
             // Relaciones
             $table->foreign('USUARIO_id')->references('id')->on('users')->onDelete('set null'); // Si se elimina el usuario, se establece a NULL
             $table->foreign('MATERIAL_ID')->references('MATERIAL_ID')->on('materiales')->onDelete('set null'); // Si se elimina el material, se establece a NULL
             $table->foreign('EQUIPO_ID')->references('EQUIPO_ID')->on('equipos')->onDelete('set null'); // Si se elimina el equipo, se establece a NULL
+
+            // Timestamps
+            $table->timestamps();
+
         });
     }
 
