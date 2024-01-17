@@ -42,8 +42,9 @@
                     </div>
 
                     <div class="col-md-6">
-                        <label for="TIPO_MOVIMIENTO" class="form-label"><i class="fa-solid fa-pen-to-square"></i> Tipo de movimiento: </label>
+                        <label for="TIPO_MOVIMIENTO" class="form-label"><i class="fa-solid fa-pen-to-square"></i> Tipo de movimiento:</label>
                         <select name="TIPO_MOVIMIENTO" id="TIPO_MOVIMIENTO" class="form-control @error('TIPO_MOVIMIENTO') is-invalid @enderror" required>
+                            <option value="" disabled selected>Seleccione un tipo de movimiento</option>
                             <option value="INGRESO" {{ old('TIPO_MOVIMIENTO', $material->TIPO_MOVIMIENTO) == 'INGRESO' ? 'selected' : '' }}>INGRESO</option>
                             <option value="TRASLADO" {{ old('TIPO_MOVIMIENTO', $material->TIPO_MOVIMIENTO) == 'TRASLADO' ? 'selected' : '' }}>TRASLADO</option>
                             <option value="MERMA" {{ old('TIPO_MOVIMIENTO', $material->TIPO_MOVIMIENTO) == 'MERMA' ? 'selected' : '' }}>MERMA</option>
@@ -53,6 +54,7 @@
                             <div class="invalid-feedback">{{ $message }}</div>
                         @enderror
                     </div>
+                    
                 </div>
             </div>
 
@@ -60,18 +62,19 @@
                 <div class="row">
                     <div class="col-md-6">
                         <label for="MATERIAL_STOCK"><i class="fa-solid fa-list-ol"></i> Stock actual:</label>
-                        <input type="number" class="form-control" id="MATERIAL_STOCK" name="MATERIAL_STOCK" value="{{ old('MATERIAL_STOCK', $material->MATERIAL_STOCK) }}" min="0" readonly>
+                        <input type="number" class="form-control" id="MATERIAL_STOCK" name="MATERIAL_STOCK" value="{{ old('MATERIAL_STOCK', $material->MATERIAL_STOCK) }}" min="0" max="1000" readonly>
                         @error('MATERIAL_STOCK')
                             <div class="text-danger">{{ $message }}</div>
                         @enderror
                     </div>
                     <div class="col-md-6">
                         <label for="STOCK_NUEVO"><i class="fa-solid fa-list-ol"></i> Cantidad a modificar:</label>
-                        <input type="number" class="form-control{{ $errors->has('STOCK_NUEVO') ? ' is-invalid' : '' }}" id="STOCK_NUEVO" name="STOCK_NUEVO" value="{{ old('STOCK_NUEVO', $material->STOCK_NUEVO ?? 0) }}" min="0" max="1000" placeholder="Indicar la cantidad" required>
-                        @error('STOCK_NUEVO')
-                            <div class="text-danger">{{ $message }}</div>
-                        @enderror
+                        <input type="number" class="form-control{{ $errors->has('STOCK_NUEVO') ? ' is-invalid' : '' }}" id="STOCK_NUEVO" name="STOCK_NUEVO" value="{{ old('STOCK_NUEVO', isset($material) ? $material->STOCK_NUEVO : null) }}" min="0" max="1000" placeholder="Indicar la cantidad" required>
+                        @if ($errors->has('STOCK_NUEVO'))
+                            <div class="text-danger">{{ $errors->first('STOCK_NUEVO') }}</div>
+                        @endif
                     </div>
+                                   
                     
                 </div>
             </div>
@@ -92,19 +95,13 @@
                     @enderror
                 </div>
             </div>
-
-            {{--<div class="mb-3">
-                <label for="ID_DIRECCION" class="form-label"><i class="fa-solid fa-person-chalkboard"></i> Dirección Regional:</label>
-                <select id="ID_DIRECCION" name="ID_DIRECCION" class="form-control" disabled>
-                    <option value="{{ $material->ID_DIRECCION }}" selected>{{ $material->direccionRegional->DIRECCION }}</option>
-                </select>
-            </div>--}}
-
             <a href="{{ route('materiales.index') }}" class="btn btn-secondary" tabindex="5"><i class="fa-solid fa-hand-point-left"></i> Cancelar</a>
             <button type="submit" class="btn btn-primary" tabindex="4"><i class="fa-solid fa-floppy-disk"></i> Guardar cambios</button>
         </form>
     </div>
 @stop
+
+
 
 @section('css')
     <link rel="stylesheet" href="/css/admin_custom.css">

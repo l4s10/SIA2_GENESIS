@@ -29,4 +29,7 @@ Route::get('/inventarios', function(){
 Route::resource('materiales','App\Http\Controllers\MaterialController');
 // Ruta tipos de material
 Route::resource('tiposmateriales','App\Http\Controllers\TipoMaterialController');
+// Ruta salas o bodegas
+Route::resource('salasobodegas','App\Http\Controllers\SalaOBodegaController');
+
 

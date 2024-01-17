@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Validation\Rule;
+use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Log; //Libreria faltante para los logs
 use Illuminate\Database\Eloquent\ModelNotFoundException; //Libreria faltante para las excepciones
 
@@ -119,36 +119,43 @@ class MaterialController extends Controller
             ]);
 
             // Validación de datos
-            $request->validate([
+            $validator = Validator::make($request->all(), [
                 'TIPO_MATERIAL_ID' => 'required|exists:tipos_materiales,TIPO_MATERIAL_ID',
                 'MATERIAL_NOMBRE' => 'required|string|max:128',
-                'MATERIAL_STOCK' => 'required|integer|between:0,1000',
-                'DETALLE_MOVIMIENTO' => 'required|string|max:255',
-                'TIPO_MOVIMIENTO' => [
+                'MATERIAL_STOCK' => 'required|integer',
+                'STOCK_NUEVO' => [
                     'required',
-                    'string',
-                    'max:10',
-                    Rule::in(['INGRESO', 'TRASLADO', 'MERMA', 'OTRO']),
+                    'integer',
+                    'between:0,1100',
+                    // Validación dinámica para "STOCK_NUEVO" en función de la selección del input "TIPO_MOVMIENTO"
                     function ($attribute, $value, $fail) use ($request) {
                         $stockNuevo = $request->input('STOCK_NUEVO');
                         $materialStock = $request->input('MATERIAL_STOCK');
+                        $tipoMovimiento = $request->input('TIPO_MOVIMIENTO');
 
-                        if ($value === 'INGRESO' && ($stockNuevo <= 0 || $stockNuevo > 1000)) {
-                            $fail('El STOCK_NUEVO debe ser mayor que 0 y menor o igual a 1000 para el tipo de movimiento INGRESO.');
-                        } elseif (($value === 'TRASLADO' || $value === 'MERMA') && ($stockNuevo < 0 || $stockNuevo > $materialStock)) {
-                            $fail('El STOCK_NUEVO debe ser mayor o igual a 0 y menor o igual al Stock actual del material para los tipos de movimiento TRASLADO y MERMA.');
-                        } elseif ($value === 'OTRO' && $stockNuevo !== 0) {
-                            $fail('Para el tipo de movimiento OTRO, el STOCK_NUEVO debe ser 0.');
+                        if ($tipoMovimiento === 'INGRESO' && ($stockNuevo <= 0 || $stockNuevo > 1000)) {
+                            $fail('Para "Tipo de movimiento" INGRESO, la "Cantidad a modificar" debe estar entre 1 y 1000');
+                        } elseif (($tipoMovimiento === 'TRASLADO' || $tipoMovimiento === 'MERMA') && ($stockNuevo <= 0 || $stockNuevo > $materialStock)) {
+                            $fail('Para "Tipo de movimiento" TRASLADO o MERMA, la "Cantidad a modificar" debe estar entre 1 y '.$materialStock);
+                        } elseif ($tipoMovimiento === 'OTRO' && ($stockNuevo > 0 || $stockNuevo < 0)) {
+                            $fail('Para "Tipo de movimiento" OTRO, la "Cantidad a modificar" debe ser 0');
                         }
                     },
                 ],
+                'DETALLE_MOVIMIENTO' => 'required|string|max:255',
+                'TIPO_MOVIMIENTO' => 'required|string|max:10',
             ]);
 
 
+            if ($validator->fails()) {
+                // Si la validación falla, devuélvete a la vista de edición con los errores
+                return redirect()->route('materiales.edit', $material->MATERIAL_ID)->withErrors($validator)->withInput();
+            }
+
             // Calcular el stock resultante según el tipo de movimiento
-            if ($request->TIPO_MOVIMIENTO == 'INGRESO') {
+            if (($request->TIPO_MOVIMIENTO == 'INGRESO') || ($request->TIPO_MOVIMIENTO == 'OTRO')) {
                 $stockResultante = $request->MATERIAL_STOCK + $request->STOCK_NUEVO;
-            } elseif (($request->TIPO_MOVIMIENTO == 'TRASLADO') || ($request->TIPO_MOVIMIENTO == 'MERMA')) {
+            } else {
                 $stockResultante = $request->MATERIAL_STOCK - $request->STOCK_NUEVO;
             }
 
@@ -181,10 +188,9 @@ class MaterialController extends Controller
         }
     }
 
-
     public function destroy(string $id)
     {
-        // Encontrar el material por su ID 
+        // Encontrar el material por su ID
         $material = Material::find($id);
 
         // Verificar si el material existe antes de intentar eliminarlo
