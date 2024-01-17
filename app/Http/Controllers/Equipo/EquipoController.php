@@ -26,7 +26,7 @@ class EquipoController extends Controller
         // Funcion que lista los materiales en funcion de la oficina del usuario
         $equipos = Equipo::where('OFICINA_ID', $oficinaIdUsuario)->get();
 
-        return view('equipos.index', compact('equipos'));
+        return view('sia2.activos.modequipos.equipos.index', compact('equipos'));
     }
 
     /**
@@ -38,10 +38,10 @@ class EquipoController extends Controller
         $oficinaIdUsuario = Auth::user()->OFICINA_ID;
 
         // Obtener los tipos de equipos asociados a la oficina 'x' utilizando la relacion indirecta del equipo y la oficina para hacer match con la oficina del usuario
-        $tiposEquipo = TipoEquipo::where('OFICINA_ID', $oficinaIdUsuario)->get();
+        $tiposEquipos = TipoEquipo::where('OFICINA_ID', $oficinaIdUsuario)->get();
 
         // Retornar la vista con los tipos de equipos
-        return view('equipos.create', compact('tiposEquipo'));
+        return view('sia2.activos.modequipos.equipos.create', compact('tiposEquipos'));
     }
 
     /**
@@ -62,13 +62,12 @@ class EquipoController extends Controller
 
             //Validacion de datos
             $request->validate([
-                'OFICINA_ID' => 'required|exists:oficinas,OFICINA_ID',
                 'TIPO_EQUIPO_ID' => 'required|exists:tipos_equipos,TIPO_EQUIPO_ID',
                 'EQUIPO_STOCK' => 'required|integer|between:0,1000',
                 'EQUIPO_MARCA' => 'required|string|max:128',
                 'EQUIPO_MODELO' => 'required|string|max:128',
                 'EQUIPO_ESTADO' => 'required|string|max:128',
-                'DETALLE_MOVIMIENTO' => 'required|string|max:255'
+                'DETALLE_MOVIMIENTO' => 'required|string|max:1000'
             ]);
 
             //Crear un nuevo equipo e instanciar en $equipo para acceder a sus atributos al realizar el respectivo movimiento
@@ -88,7 +87,7 @@ class EquipoController extends Controller
                     'USUARIO_id' => Auth::user()->id,
                     'EQUIPO_ID' => $equipo->EQUIPO_ID,
                     'MOVIMIENTO_TITULAR' => Auth::user()->USUARIO_NOMBRES,
-                    'MOVIMIENTO_OBJETO' => 'EQU: '.$equipo->EQUIPO_NOMBRE,
+                    'MOVIMIENTO_OBJETO' => 'EQU: '.$equipo->EQUIPO_MODELO,
                     'MOVIMIENTO_TIPO_OBJETO' => $equipo->tipoEquipo->TIPO_EQUIPO_NOMBRE,
                     'MOVIMIENTO_TIPO' => 'INGRESO',
                     'MOVIMIENTO_STOCK_PREVIO' => 0,
@@ -125,7 +124,7 @@ class EquipoController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(string $id)
+    public function edit($id)
     {
         //Verificacion de datos
         try
@@ -138,7 +137,7 @@ class EquipoController extends Controller
             $tiposEquipos = TipoEquipo::where('OFICINA_ID', $oficinaIdUsuario)->get();
 
             //retornar la vista con los datos
-            return view('equipos.edit', compact('equipo', 'tiposEquipos'));
+            return view('sia2.activos.modequipos.equipos.edit', compact('equipo', 'tiposEquipos'));
         }
         catch(ModelNotFoundException $e)
         {
@@ -175,10 +174,10 @@ class EquipoController extends Controller
             $request->validate([
                 'TIPO_EQUIPO_ID' => 'required|exists:tipos_equipos,TIPO_EQUIPO_ID',
                 'EQUIPO_STOCK' => 'required|integer|between:0,1000',
+                'STOCK_NUEVO' => 'required|integer|between:0,1000',
                 'EQUIPO_MARCA' => 'required|string|max:128',
                 'EQUIPO_MODELO' => 'required|string|max:128',
                 'EQUIPO_ESTADO' => 'required|string|max:128',
-                'DETALLE_MOVIMIENTO' => 'required|string|max:255',
                 'DETALLE_MOVIMIENTO' => 'required|string|max:255',
                 'TIPO_MOVIMIENTO' => [
                     'required',
@@ -187,7 +186,7 @@ class EquipoController extends Controller
                     Rule::in(['INGRESO', 'TRASLADO', 'MERMA', 'OTRO']),
                     function ($attribute, $value, $fail) use ($request) {
                         $stockNuevo = $request->input('STOCK_NUEVO');
-                        $equipoStock = $request->input('MATERIAL_STOCK');
+                        $equipoStock = $request->input('EQUIPO_STOCK');
 
                         if ($value === 'INGRESO' && ($stockNuevo <= 0 || $stockNuevo > 1000)) {
                             $fail('El STOCK_NUEVO debe ser mayor que 0 y menor o igual a 1000 para el tipo de movimiento INGRESO.');
@@ -240,7 +239,7 @@ class EquipoController extends Controller
         catch(ModelNotFoundException $e)
         {
             // Manejo de excepciones cuando no encuentre el modelo
-            return redirect()->route('equipos.index')->with('error', 'No se encontró el equipo');
+            return redirect()->route('equipos.index')->with('error', 'No se encontró el equipo' . $e->getMessage());
         }
         catch(Exception $e)
         {
