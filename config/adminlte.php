@@ -65,10 +65,10 @@ return [
 
     'logo' => '<b>SIA2</b>WebApp',
     'logo_img' => 'vendor/adminlte/dist/img/logosii.png',
-    'logo_img_class' => 'brand-image img-circle elevation-3',
+    'logo_img_class' => 'brand-image',
     'logo_img_xl' => null,
     'logo_img_xl_class' => 'brand-image-xs',
-    'logo_img_alt' => 'Admin Logo',
+    'logo_img_alt' => 'SII Logo',
 
     /*
     |--------------------------------------------------------------------------
@@ -112,8 +112,8 @@ return [
             'path' => 'vendor/adminlte/dist/img/logosii.png',
             'alt' => 'SIA2 Preloader Image',
             'effect' => 'animation__shake',
-            'width' => 60,
-            'height' => 60,
+            'width' => 200,
+            'height' => 160,
         ],
     ],
 
@@ -150,7 +150,7 @@ return [
 
     'layout_topnav' => null,
     'layout_boxed' => null,
-    'layout_fixed_sidebar' => null,
+    'layout_fixed_sidebar' => true,
     'layout_fixed_navbar' => null,
     'layout_fixed_footer' => null,
     'layout_dark_mode' => null,
@@ -294,29 +294,212 @@ return [
         [
             'type'         => 'navbar-search',
             'text'         => 'search',
-            'topnav_right' => true,
+            'topnav_right' => false,
         ],
         [
             'type'         => 'fullscreen-widget',
-            'topnav_right' => true,
+            'topnav_right' => false,
         ],
 
         // Sidebar items:
         [
             'type' => 'sidebar-menu-search',
-            'text' => 'search',
+            'text' => 'Buscar...',
+        ],
+        /*ELEMENTO CON LARAVEL PERMISSIONS (PROGRAMAR PERMISOS)*/
+        // [
+        //     'text' => 'blog',
+        //     'url'  => 'admin/blog',
+        //     'can'  => 'manage-blog',
+        // ],
+        ['header' => 'MENÚ PRINCIPAL'],
+        [
+            'text'        => 'Inicio',
+            'route'         => 'home',
+            'icon'        => 'far fa-fw fa-solid fa-home',
         ],
         [
-            'text' => 'blog',
-            'url'  => 'admin/blog',
-            'can'  => 'manage-blog',
+            'text'        => 'Calendario de actividades',
+            'url'         => '#',
+            'icon'        => 'far fa-fw fa-solid fa-calendar-alt',
         ],
+        ['header' => 'MODULOS DE SOLICITUDES'],
         [
-            'text'        => 'pages',
+            'text'        => 'Vehículos',
             'url'         => 'admin/pages',
-            'icon'        => 'far fa-fw fa-file',
-            'label'       => 4,
-            'label_color' => 'success',
+            'icon'        => 'far fa-fw fa-solid fa-car-side',
+            'submenu' => [
+                [
+                    'text' => 'Solicitar',
+                    'url'  => '#',
+                ],
+                [
+                    'text' => 'Mis solicitudes',
+                    'url'  => '#',
+                ],
+            ],
+        ],[
+            'text'        => 'Materiales',
+            'url'         => 'admin/pages',
+            'icon'        => 'far fa-fw fa-solid fa-boxes',
+            'submenu' => [
+                [
+                    'text' => 'Solicitar',
+                    'url'  => '#',
+                ],
+                [
+                    'text' => 'Mis solicitudes',
+                    'url'  => '#',
+                ],
+            ],
+        ],
+        [
+            'text'        => 'Equipos',
+            'url'         => 'admin/pages',
+            'icon'        => 'far fa-fw fa-solid fa-desktop',
+            'submenu' => [
+                [
+                    'text' => 'Solicitar',
+                    'url'  => '#',
+                ],
+                [
+                    'text' => 'Mis solicitudes',
+                    'url'  => '#',
+                ],
+            ],
+        ],
+        [
+            'text'        => 'Formularios',
+            'url'         => 'admin/pages',
+            'icon'        => 'far fa-fw fa-solid fa-file',
+            'submenu' => [
+                [
+                    'text' => 'Solicitar',
+                    'url'  => '#',
+                ],
+                [
+                    'text' => 'Mis solicitudes',
+                    'url'  => '#',
+                ],
+            ],
+        ],
+        [
+            'text'        => 'Salas y Bodegas',
+            'url'         => '#',
+            'icon'        => 'far fa-fw fa-solid fa-building',
+            'submenu' => [
+                [
+                    'text' => 'Solicitar',
+                    'url'  => '#',
+                ],
+                [
+                    'text' => 'Mis solicitudes',
+                    'url'  => '#',
+                ],
+            ],
+        ],
+        [
+            'text'        => 'Reparaciones y mantenciones',
+            'url'         => '#',
+            'icon'        => 'far fa-fw fa-solid fa-hammer',
+            'submenu' => [
+                [
+                    'text' => 'Solicitar',
+                    'url'  => '#',
+                ],
+                [
+                    'text' => 'Mis solicitudes',
+                    'url'  => '#',
+                ],
+            ],
+        ],
+        ['header' => 'MÓDULOS DIRECTIVOS'],
+        [
+            'text' => 'Buscar resoluciones',
+            'url'  => '#',
+            'icon' => 'fas fa-fw fa-solid fa-search',
+            'submenu' => [
+                [
+                    'text' => 'Búsqueda avanzada',
+                    'url'  => '#',
+                    'icon' => 'fas fa-fw fa-solid fa-search-plus',
+                ],
+                [
+                    'text' => 'Búsqueda básica',
+                    'url'  => '#',
+                    'icon' => 'fas fa-fw fa-solid fa-search-minus',
+                ],
+            ],
+        ],
+        [
+            'text' => 'Repositorio',
+            'url'  => '#',
+            'icon' => 'fas fa-fw fa-solid fa-archive',
+            'submenu' => [
+                [
+                    'text' => 'Resoluciones',
+                    'url'  => '#',
+                    'icon' => 'fas fa-fw fa-solid fa-file-alt',
+                ],
+                [
+                    'text' => 'Pólizas',
+                    'url'  => '#',
+                    'icon' => 'fas fa-fw fa-solid fa-file-contract',
+                ],
+                [
+                    'text' => 'Facultades',
+                    'url'  => '#',
+                    'icon' => 'fas fa-fw fa-solid fa-file-signature',
+                ],
+                [
+                    'text' => 'Cargos',
+                    'url'  => '#',
+                    'icon' => 'fas fa-fw fa-solid fa-file-invoice',
+                ],
+            ],
+        ],
+        ['header' => 'GESTIONAR ACTIVOS'],
+        [
+            'text' => 'Inventario',
+            'url'  => 'inventarios',
+            'icon' => 'fas fa-fw fa-solid fa-paste',
+        ],
+        [
+            'text' => 'Reportes',
+            'url'  => '#',
+            'icon' => 'fas fa-fw fa-solid fa-chart-pie',
+        ],
+        [
+            'text' => 'Auditorías',
+            'url'  => '#',
+            'icon' => 'fas fa-fw fa-solid fa-tablet',
+        ],
+
+        ['header' => 'AJUSTES DEL SISTEMA SIAV2.5'],
+        [
+            'text' => 'Administrar usuarios',
+            'url'  => '#',
+            'icon' => 'fas fa-fw fa-solid fa-users-cog',
+        ],
+        [
+            'text' => 'Administrar regiones',
+            'url'  => '#',
+            'icon' => 'fas fa-fw fa-solid fa-globe-americas',
+        ],
+        [
+            'text' => 'Administrar comunas',
+            'url'  => '#',
+            'icon' => 'fas fa-fw fa-solid fa-map-marked-alt',
+        ],
+        [
+            'text' => 'Administrar direcciones regionales',
+            'url'  => '#',
+            'icon' => 'fas fa-fw fa-solid fa-building',
+        ],
+        [
+            'text' => 'Administrar unidades y departamentos',
+            'url'  => '#',
+            'icon' => 'fas fa-fw fa-solid fa-building-un',
         ],
         ['header' => 'account_settings'],
         // [

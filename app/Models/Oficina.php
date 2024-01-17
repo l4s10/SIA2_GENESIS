@@ -9,7 +9,7 @@ class Oficina extends Model
 {
     use HasFactory;
 
-    protected $table = 'oficina';
+    protected $table = 'oficinas';
 
     protected $primaryKey = 'OFICINA_ID';
 

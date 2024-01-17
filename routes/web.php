@@ -2,6 +2,8 @@
 
 use Illuminate\Support\Facades\Route;
 
+// require
+require __DIR__.'/Activos/EquiposRoutes.php';
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -17,4 +19,14 @@ Route::get('/', function () {
     return view('welcome');
 });
 
+
+// Ruta menú de inventarios
+Route::get('/inventarios', function(){
+    return view ('inventarios.index');
+})->name('inventarios.index')->middleware('auth');
+
+// Ruta materiales
+Route::resource('materiales','App\Http\Controllers\MaterialController');
+// Ruta tipos de material
+Route::resource('tiposmateriales','App\Http\Controllers\TipoMaterialController');
 
