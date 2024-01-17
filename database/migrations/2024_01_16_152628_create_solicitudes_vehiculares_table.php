@@ -15,8 +15,8 @@ return new class extends Migration
             //*Atributos de solicitudes */
             $table->id('SOLICITUD_VEHICULO_ID');
             $table->unsignedBigInteger('USUARIO_id');
-            $table->integer('VEHICULO_ID');
-            $table->integer('RENDICION_ID');
+            $table->unsignedBigInteger('VEHICULO_ID');
+            $table->unsignedBigInteger('RENDICION_ID');
             $table->string('SOLICITUD_VEHICULO_MOTIVO', 255);
             $table->string('SOLICITUD_VEHICULO_ESTADO', 128);
             $table->dateTime('SOLICITUD_VEHICULO_FECHA_HORA_INICIO_SOLICITADA');
@@ -26,7 +26,7 @@ return new class extends Migration
             //*Llaves foráneas*/
             $table->foreign('USUARIO_id')->references('id')->on('users');
             $table->foreign('VEHICULO_ID')->references('VEHICULO_ID')->on('vehiculos');
-            $table->foreign('RENDICION_ID')->references('RENDICION_ID')->on('rendiciones');
+            // $table->foreign('RENDICION_ID')->references('RENDICION_ID')->on('rendiciones');
         });
     }
 
@@ -35,6 +35,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('solicitudes_vehiculares');
+        Schema::dropIfExists('solicitudes_vehiculos');
     }
 };

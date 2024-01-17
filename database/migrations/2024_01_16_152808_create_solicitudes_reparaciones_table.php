@@ -15,11 +15,11 @@ return new class extends Migration
             //*Atributos de solicitudes */
             $table->id('SOLICITUD_REPARACION_ID');
             $table->unsignedBigInteger('USUARIO_id');
+            $table->unsignedBigInteger('CATEGORIA_REPARACION_ID');
+            $table->unsignedBigInteger('VEHICULO_ID')->nullable();
             $table->string('SOLICITUD_REPARACION_TIPO', 20);
-            $table->integer('CATEGORIA_REPARACION_ID');
             $table->string('SOLICITUD_REPARACION_MOTIVO', 255);
             $table->string('SOLICITUD_REPARACION_ESTADO', 128);
-            $table->integer('VEHICULO_ID')->nullable();
             $table->dateTime('SOLICITUD_REPARACION_FECHA_HORA_INICIO')->nullable();
             $table->dateTime('SOLICITUD_REPARACION_FECHA_HORA_TERMINO')->nullable();
             //*Llaves foráneas*/
