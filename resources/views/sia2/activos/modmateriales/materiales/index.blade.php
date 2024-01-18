@@ -58,7 +58,8 @@
                             <td>{{ $material->tipoMaterial->TIPO_MATERIAL_NOMBRE }}</td>
                             <td>{{ $material->MATERIAL_NOMBRE }}</td>
                             <td>{{ $material->MATERIAL_STOCK }}</td>
-                            <td style="text-align: center; vertical-align: middle;">
+                            <td>
+                            <div class="d-flex justify-content-center">
                                 <a href="{{ route('materiales.edit', $material->MATERIAL_ID) }}" class="btn botoneditar">
                                     <i class="fa-solid fa-pen-to-square"></i> Editar
                                 </a>

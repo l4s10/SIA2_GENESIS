@@ -83,7 +83,6 @@
 @stop
 
 @section('css')
-    <link rel="stylesheet" href="/css/admin_custom.css">
     <style>
         /* Estilos personalizados si es necesario */
     </style>
