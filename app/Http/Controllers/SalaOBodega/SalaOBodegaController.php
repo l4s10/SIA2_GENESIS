@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Validation\Rule;
+use Exception; // Manejo de excepciones (falto importar)
 
 use App\Models\Sala_O_Bodega;
 use App\Models\Oficina;
@@ -28,12 +29,12 @@ class SalaOBodegaController extends Controller
             // Función que lista salas y bodegas basadas en la OFICINA_ID del usuario
             $salasobodegas = Sala_O_Bodega::where('OFICINA_ID', $oficinaIdUsuario)->get();
         }
-        catch (\Exception $e)
+        catch (Exception $e)
         {
             // Retornar a la pagina previa con un session error
             return back()->with('error', 'Error cargando las salas y bodegas');
         }
-        return view('sia2.activos.modsalasobodegas.salasobodegas.index', compact('salasobodegas'));
+        return view('sia2.activos.modsalasbodegas.index', compact('salasobodegas'));
 
     }
 
@@ -45,10 +46,10 @@ class SalaOBodegaController extends Controller
         try {
             // Obtener la OFICINA_ID del usuario actual
             $oficinaIdUsuario = Auth::user()->OFICINA_ID;
-    
+
             // Función que hace match entre las oficinas y la oficina del usuario
             $oficina = Oficina::where('OFICINA_ID', $oficinaIdUsuario)->firstOrFail();
-            
+
         } catch (ModelNotFoundException $e) {
             // Manejar excepción de modelo no encontrado
             return redirect()->route('salasobodegas.index')->with('error', 'No se encontró la oficina del usuario.');
@@ -56,7 +57,7 @@ class SalaOBodegaController extends Controller
             // Manejar otras excepciones
             return redirect()->route('salasobodegas.index')->with('error', 'Ocurrió un error inesperado.');
         }
-        return view('sia2.activos.modsalasobodegas.salasobodegas.create', compact('oficina'));
+        return view('sia2.activos.modsalasbodegas.create', compact('oficina'));
     }
 
 
@@ -99,7 +100,7 @@ class SalaOBodegaController extends Controller
                 'OFICINA_ID' => Auth::user()->OFICINA_ID,
             ]);
 
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             return redirect()->back()->with('error', 'Error al crear la sala o bodega: ' . $e->getMessage());
         }
         return redirect()->route('salasobodegas.index')->with('success', 'Sala o bodega creada con éxito');
@@ -118,7 +119,7 @@ class SalaOBodegaController extends Controller
      * Show the form for editing the specified resource.
      */
     public function edit(string $id)
-    {   
+    {
         try {
             // Obtener la sala o bodega por ID
             $salaobodega = Sala_O_Bodega::find($id);
@@ -133,7 +134,7 @@ class SalaOBodegaController extends Controller
             // Manejar otras excepciones
             return redirect()->route('salasobodegas.index')->with('error', 'Ocurrió un error inesperado.');
         }
-        return view('sia2.activos.modsalasobodegas.salasobodegas.edit', compact('salaobodega','oficina'));
+        return view('sia2.activos.modsalasbodegas.edit', compact('salaobodega','oficina'));
     }
 
     /**
@@ -203,6 +204,6 @@ class SalaOBodegaController extends Controller
             return redirect()->route('tiposmateriales.index')->with('error', 'Ocurrió un error inesperado al eliminar la sala o bodega.');
         }
         return redirect()->route('salaobodegas.index')->with('success', 'Sala o bodega eliminada con éxito');
-   
+
     }
 }
