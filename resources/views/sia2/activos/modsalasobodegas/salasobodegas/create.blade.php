@@ -23,7 +23,8 @@
 
         <div class="mb-3">
             <label for="SALA_O_BODEGA_TIPO" class="form-label"><i class="fas fa-person-chalkboard"></i> Tipo:</label>
-            <select class="form-control{{ $errors->has('SALA_O_BODEGA_TIPO') ? ' is-invalid' : '' }}" aria-label="Seleccione el tipo de sala" id="SALA_O_BODEGA_TIPO" name="SALA_O_BODEGA_TIPO" required>
+            <select class="form-control{{ $errors->has('SALA_O_BODEGA_TIPO') ? ' is-invalid' : '' }}" aria-label="Seleccione el tipo del registro" id="SALA_O_BODEGA_TIPO" name="SALA_O_BODEGA_TIPO" required>
+                <option value="" selected>--Seleccione un tipo de registro--</option>
                 <option value="SALA" {{ old('SALA_O_BODEGA_TIPO') == 'SALA' ? 'selected' : '' }}>SALA</option>
                 <option value="BODEGA" {{ old('SALA_O_BODEGA_TIPO') == 'BODEGA' ? 'selected' : '' }}>BODEGA</option>
             </select>
@@ -46,7 +47,7 @@
 
         <div class="mb-3">
             <label for="SALA_O_BODEGA_ESTADO" class="form-label"><i class="fas fa-person-chalkboard"></i> Estado:</label>
-            <select class="form-control{{ $errors->has('SALA_O_BODEGA_ESTADO') ? ' is-invalid' : '' }}" aria-label="Seleccione el tipo de sala" id="SALA_O_BODEGA_ESTADO" name="SALA_O_BODEGA_ESTADO" required>
+            <select class="form-control{{ $errors->has('SALA_O_BODEGA_ESTADO') ? ' is-invalid' : '' }}" aria-label="Seleccione el estado" id="SALA_O_BODEGA_ESTADO" name="SALA_O_BODEGA_ESTADO" required>
                 <option value="" selected>--Seleccione un estado--</option>
                 <option value="DISPONIBLE">DISPONIBLE</option>
                 <option value="OCUPADO">OCUPADO</option>

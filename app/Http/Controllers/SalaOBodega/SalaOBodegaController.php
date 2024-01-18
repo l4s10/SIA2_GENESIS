@@ -202,7 +202,7 @@ class SalaOBodegaController extends Controller
             // Manejar otras excepciones
             return redirect()->route('tiposmateriales.index')->with('error', 'Ocurrió un error inesperado al eliminar la sala o bodega.');
         }
-        return redirect()->route('salaobodegas.index')->with('success', 'Sala o bodega eliminada con éxito');
+        return redirect()->route('salasobodegas.index')->with('success', 'Sala o bodega eliminada con éxito');
    
     }
 }

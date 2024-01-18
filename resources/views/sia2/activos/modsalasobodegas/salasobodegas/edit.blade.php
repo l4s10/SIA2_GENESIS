@@ -26,6 +26,7 @@
         <div class="mb-3">
             <label for="SALA_O_BODEGA_TIPO" class="form-label"><i class="fas fa-person-chalkboard"></i> Tipo:</label>
             <select class="form-control{{ $errors->has('SALA_O_BODEGA_TIPO') ? ' is-invalid' : '' }}" aria-label="Seleccione el tipo de sala" id="SALA_O_BODEGA_TIPO" name="SALA_O_BODEGA_TIPO" required>
+                <option value="" selected>--Seleccione un tipo de registro--</option>
                 <option value="SALA" {{ old('SALA_O_BODEGA_TIPO', $salaobodega->SALA_O_BODEGA_TIPO) == 'SALA' ? 'selected' : '' }}>SALA</option>
                 <option value="BODEGA" {{ old('SALA_O_BODEGA_TIPO', $salaobodega->SALA_O_BODEGA_TIPO) == 'BODEGA' ? 'selected' : '' }}>BODEGA</option>
             </select>
