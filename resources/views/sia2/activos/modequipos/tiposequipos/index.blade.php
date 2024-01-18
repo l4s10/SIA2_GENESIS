@@ -11,6 +11,12 @@
 @section('content')
     <div class="container">
         {{-- Lógica para mostrar mensajes de éxito o error --}}
+        @if(session('success'))
+            <div class="alert alert-success">
+                {{ session('success') }}
+            </div>
+        @endif
+
         {{-- ... --}}
         <a class="btn btn-primary" href="{{ route('tiposequipos.create') }}"><i class="fa-solid fa-plus"></i> Agregar Tipo de Equipo</a>
         <a class="btn btn-secondary" href="{{ route('equipos.index')}}"><i class="fa-solid fa-eye"></i>Administrar Equipos</a>
@@ -19,7 +25,7 @@
             <table id="tiposEquipos" class="table table-bordered mt-4">
                 <thead class="bg-primary text-white">
                     <tr>
-                        <th scope="col">Tipo de Material</th>
+                        <th scope="col">Tipo de Equipo</th>
                         <th scope="col">Acciones</th>
                     </tr>
                 </thead>

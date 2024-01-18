@@ -19,6 +19,12 @@
                 @enderror
             </div>
 
+            <div class="mb-3">
+                <label for="OFICINA_ID" class="form-label"><i class="fa-solid fa-person-chalkboard"></i> Dirección Regional Asociada:</label>
+                <input type="text" id="OFICINA_ID" name="OFICINA_ID" class="form-control" value="{{ $oficina->OFICINA_NOMBRE }}" readonly>
+                <input type="hidden" name="OFICINA_ID" value="{{ $oficina->OFICINA_ID }}">
+            </div>
+
             <a href="{{ route('tiposequipos.index') }}" class="btn btn-secondary" tabindex="5"><i class="fa-solid fa-hand-point-left"></i> Cancelar</a>
             <button type="submit" class="btn btn-primary" tabindex="4"><i class="fa-solid fa-floppy-disk"></i> Guardar tipo</button>
         </form>

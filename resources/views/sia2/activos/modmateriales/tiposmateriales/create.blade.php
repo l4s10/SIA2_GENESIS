@@ -19,10 +19,8 @@
             </div>
 
             <div class="mb-3">
-                <label for="OFICINA_ID" class="form-label"><i class="fa-solid fa-person-chalkboard"></i> Oficina:</label>
-                <select id="OFICINA_ID" name="OFICINA_ID" class="form-control" required disabled>
-                    <option value="{{ $oficina->OFICINA_ID }}" selected>{{ $oficina->OFICINA_NOMBRE }}</option>
-                </select>
+                <label for="OFICINA_ID" class="form-label"><i class="fa-solid fa-person-chalkboard"></i> Dirección Regional Asociada:</label>
+                <input type="text" id="OFICINA_ID" name="OFICINA_ID" class="form-control" value="{{ $oficina->OFICINA_NOMBRE }}" readonly>
                 <input type="hidden" name="OFICINA_ID" value="{{ $oficina->OFICINA_ID }}">
             </div>
 

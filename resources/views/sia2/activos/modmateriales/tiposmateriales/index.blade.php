@@ -11,6 +11,11 @@
 @section('content')
     <div class="container">
         {{-- Lógica para mostrar mensajes de éxito o error --}}
+        @if(session('success'))
+            <div class="alert alert-success">
+                {{ session('success') }}
+            </div>
+        @endif
         {{-- ... --}}
         <a class="btn btn-primary" href="{{ route('tiposmateriales.create') }}"><i class="fa-solid fa-plus"></i> Agregar Tipo de Material</a>
         <a class="btn btn-secondary" href="{{ route('materiales.index')}}"><i class="fa-solid fa-eye"></i> Administrar Materiales</a>
