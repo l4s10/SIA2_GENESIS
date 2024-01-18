@@ -9,6 +9,7 @@ use Exception;
 use Illuminate\Support\Facades\Validator;
 
 use App\Models\Formulario;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 
 class FormularioController extends Controller
 {
@@ -22,7 +23,7 @@ class FormularioController extends Controller
             // Obtenemos todos los formularios correspondientes a la oficina del usuario (Optimizacion de Query).
             $formularios = Formulario::where('OFICINA_ID', Auth::user()->OFICINA_ID)->get();
             // Retornamos la vista con los datos
-            return view('sia2.activos.formularios.index', compact('formularios'));
+            return view('sia2.activos.modformularios.index', compact('formularios'));
         } catch (Exception $ex) {
             // Retornamos la vista con el mensaje de error (concatenar mensaje con $ex para obtener detalles DEBUG)
             return redirect()->back()->with('error', 'Ha ocurrido un error al cargar los formularios');
@@ -87,27 +88,74 @@ class FormularioController extends Controller
     }
 
     /**
-     * Display the specified resource.
-     */
-    public function show(string $id)
-    {
-        //
-    }
-
-    /**
      * Show the form for editing the specified resource.
      */
-    public function edit(string $id)
+    public function edit($id)
     {
-        //
+        // Manejo de excepciones
+        try {
+            // Obtenemos el formulario
+            $formulario = Formulario::findOrFail($id);
+            // Retornamos la vista con los datos
+            return view('sia2.activos.modformularios.edit', compact('formulario'));
+        }
+        catch (Exception $ex)
+        {
+            // Retornamos la vista con el mensaje de error (concatenar mensaje con $ex para obtener detalles DEBUG)
+            return redirect()->back()->with('error', 'Ha ocurrido un error al cargar el formulario seleccionado');
+        }
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(Request $request, $id)
     {
-        //
+        // Manejo de excepciones
+        try
+        {
+            // Reglas de validación
+            $validator = Validator::make($request->all(), [
+                'FORMULARIO_NOMBRE' => 'required|string|max:128',
+                'FORMULARIO_TIPO' => 'required|string|max:128',
+            ],[
+                'required' => 'El campo :attribute es requerido',
+                'string' => 'El campo :attribute debe ser un texto',
+                'max' => 'El campo :attribute no debe exceder los :max caracteres',
+            ]);
+
+            // Validacion y redireccion con mensajes de error
+            if ($validator->fails())
+            {
+                return redirect()->back()->withErrors($validator)->withInput();
+            }
+            else
+            {
+                try
+                {
+                    // Obtenemos el formulario
+                    $formulario = Formulario::findOrFail($id);
+                    // Actualizamos el formulario
+                    $formulario->update([
+                        'FORMULARIO_NOMBRE' => $request->FORMULARIO_NOMBRE,
+                        'FORMULARIO_TIPO' => $request->FORMULARIO_TIPO,
+                        'OFICINA_ID' => Auth::user()->OFICINA_ID,
+                    ]);
+                    // Retornamos la vista con el mensaje de exito
+                    return redirect()->back()->with('success', 'Formulario actualizado exitosamente');
+                }
+                catch(ModelNotFoundException $ex)
+                {
+                    // Retornamos la vista con el mensaje de error (concatenar mensaje con $ex para obtener detalles DEBUG)
+                    return redirect()->back()->with('error', 'Ha ocurrido un error al actualizar el formulario');
+                }
+            }
+        }
+        catch (Exception $ex)
+        {
+            // Retornamos la vista con el mensaje de error (concatenar mensaje con $ex para obtener detalles DEBUG)
+            return redirect()->back()->with('error', 'Ha ocurrido un error al actualizar el formulario');
+        }
     }
 
     /**
@@ -115,6 +163,25 @@ class FormularioController extends Controller
      */
     public function destroy(string $id)
     {
-        //
+        // try catch para manejo de excepciones
+        try
+        {
+            // Obtenemos el formulario
+            $formulario = Formulario::findOrFail($id);
+            // Eliminamos el formulario
+            $formulario->delete();
+            // Retornamos la vista con el mensaje de exito
+            return redirect()->route('formularios.index')->with('success', 'Formulario eliminado exitosamente');
+        }
+        catch(ModelNotFoundException $ex)
+        {
+            // Retornamos la vista con el mensaje de error (concatenar mensaje con $ex para obtener detalles DEBUG)
+            return redirect()->back()->with('error', 'Ha ocurrido un error al eliminar el formulario');
+        }
+        catch(Exception $ex)
+        {
+            // Retornamos la vista con el mensaje de error (concatenar mensaje con $ex para obtener detalles DEBUG)
+            return redirect()->back()->with('error', 'Ha ocurrido un error al eliminar el formulario');
+        }
     }
 }
