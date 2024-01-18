@@ -77,13 +77,13 @@ class FormularioController extends Controller
                     'OFICINA_ID' => Auth::user()->OFICINA_ID,
                 ]);
                 // Retornamos la vista con el mensaje de exito
-                return redirect()->back()->with('success', 'Formulario creado exitosamente');
+                return redirect()->route('formularios.index')->with('success', 'Formulario creado exitosamente');
             }
         }
         catch(Exception $ex)
         {
             // Retornamos la vista con el mensaje de error (concatenar mensaje con $ex para obtener detalles DEBUG)
-            return redirect()->back()->with('error', 'Ha ocurrido un error al crear el formulario');
+            return redirect()->route('formularios.index')->with('error', 'Ha ocurrido un error al crear el formulario');
         }
     }
 
@@ -142,19 +142,19 @@ class FormularioController extends Controller
                         'OFICINA_ID' => Auth::user()->OFICINA_ID,
                     ]);
                     // Retornamos la vista con el mensaje de exito
-                    return redirect()->back()->with('success', 'Formulario actualizado exitosamente');
+                    return redirect()->route('formularios.index')->with('success', 'Formulario actualizado exitosamente');
                 }
                 catch(ModelNotFoundException $ex)
                 {
                     // Retornamos la vista con el mensaje de error (concatenar mensaje con $ex para obtener detalles DEBUG)
-                    return redirect()->back()->with('error', 'Ha ocurrido un error al actualizar el formulario');
+                    return redirect()->route('formularios.index')->with('error', 'Ha ocurrido un error al actualizar el formulario');
                 }
             }
         }
         catch (Exception $ex)
         {
             // Retornamos la vista con el mensaje de error (concatenar mensaje con $ex para obtener detalles DEBUG)
-            return redirect()->back()->with('error', 'Ha ocurrido un error al actualizar el formulario');
+            return redirect()->route('formularios.index')->with('error', 'Ha ocurrido un error al actualizar el formulario');
         }
     }
 
