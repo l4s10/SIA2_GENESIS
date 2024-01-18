@@ -24,11 +24,11 @@
 
         {{-- Tabla de Materiales --}}
         <div class="table-responsive">
-            <a class="btn btn-primary" href="{{ route('materiales.create') }}"><i class="fa-solid fa-plus"></i> Agregar Material</a>
+            <a class="btn agregar" href="{{ route('materiales.create') }}"><i class="fa-solid fa-plus"></i> Agregar Material</a>
             <a class="btn btn-secondary" href="{{route('tiposmateriales.index')}}"><i class="fa-solid fa-eye"></i> Ver tipos de materiales</a>
 
             <table id="materiales" class="table table-bordered mt-4">
-                <thead class="bg-primary text-white">
+                <thead class="tablacolor">
                     <tr>
                         <th scope="col">Tipo material</th>
                         <th scope="col">Nombre material</th>
@@ -43,7 +43,7 @@
                             <td>{{ $material->MATERIAL_NOMBRE }}</td>
                             <td>{{ $material->MATERIAL_STOCK }}</td>
                             <td style="text-align: center; vertical-align: middle;">
-                                <a href="{{ route('materiales.edit', $material->MATERIAL_ID) }}" class="btn btn-info">
+                                <a href="{{ route('materiales.edit', $material->MATERIAL_ID) }}" class="btn botoneditar">
                                     <i class="fa-solid fa-pen-to-square"></i> Editar
                                 </a>
                                 <form action="{{ route('materiales.destroy', $material->MATERIAL_ID) }}" method="POST">
@@ -64,8 +64,19 @@
 
 @section('css')
     <link rel="stylesheet" href="/css/admin_custom.css">
-    <style>
-        /* Estilos personalizados si es necesario */
+    <style>/* Estilos personalizados si es necesario */
+        .tablacolor {
+            background-color: #0064a0; /* Color de fondo personalizado */
+            color: #fff; /* Color de texto personalizado */
+        }
+        .agregar{
+            background-color: #e6500a;
+            color: #fff;
+        }
+        .botoneditar{
+            background-color: #1aa16b;
+            color: #fff;
+        }
     </style>
 @stop
 
