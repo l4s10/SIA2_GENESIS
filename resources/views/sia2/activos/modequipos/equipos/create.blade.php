@@ -71,13 +71,7 @@
                     {{ $errors->first('EQUIPO_STOCK') }}
                 </div>
             @endif
-            <small id="stockHelp" class="form-text text-muted">
-                El stock debe ser mayor o igual que 0.-
-            </small>
         </div>
-
-
-
 
         <div class="mb-3">
             <label for="DETALLE_MOVIMIENTO" class="form-label"><i class="fa-solid fa-person-chalkboard"></i> Detalle del Movimiento:</label>
@@ -87,6 +81,12 @@
                     {{ $errors->first('DETALLE_MOVIMIENTO') }}
                 </div>
             @endif
+        </div>
+
+        <div class="mb-3">
+            <label for="OFICINA_ID" class="form-label"><i class="fa-solid fa-person-chalkboard"></i> Dirección Regional Asociada:</label>
+            <input type="text" id="OFICINA_ID" name="OFICINA_ID" class="form-control" value="{{ $oficina->OFICINA_NOMBRE }}" readonly>
+            <input type="hidden" name="OFICINA_ID" value="{{ $oficina->OFICINA_ID }}">
         </div>
 
         <a href="{{route('equipos.index')}}" class="btn btn-secondary" tabindex="5"><i class="fa-solid fa-hand-point-left"></i> Cancelar</a>

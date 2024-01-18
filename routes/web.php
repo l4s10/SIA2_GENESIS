@@ -3,7 +3,15 @@
 use Illuminate\Support\Facades\Route;
 
 // require
+
+// rutas de gestión de activos:
+require __DIR__.'/Activos/InventariosRoutes.php';
+require __DIR__.'/Activos/MaterialesRoutes.php';
 require __DIR__.'/Activos/EquiposRoutes.php';
+require __DIR__.'/Activos/SalasOBodegasRoutes.php';
+require __DIR__.'/Activos/FormulariosRoutes.php';
+
+
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -20,7 +28,7 @@ Route::get('/', function () {
 });
 
 
-// Ruta menú de inventarios
+/*// Ruta menú de inventarios
 Route::get('/inventarios', function(){
     return view ('inventarios.index');
 })->name('inventarios.index')->middleware('auth');
@@ -30,6 +38,6 @@ Route::resource('materiales','App\Http\Controllers\MaterialController');
 // Ruta tipos de material
 Route::resource('tiposmateriales','App\Http\Controllers\TipoMaterialController');
 // Ruta salas o bodegas
-Route::resource('salasobodegas','App\Http\Controllers\SalaOBodegaController');
+Route::resource('salasobodegas','App\Http\Controllers\SalaOBodegaController');*/
 
 
