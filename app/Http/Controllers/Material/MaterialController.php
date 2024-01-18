@@ -7,7 +7,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
-
+use Exception; //Libreria faltante
 
 use App\Models\Material;
 use App\Models\TipoMaterial;
@@ -31,20 +31,20 @@ class MaterialController extends Controller
             $materiales = Material::where('OFICINA_ID', $oficinaIdUsuario)->get();
 
         }
-        catch (\Exception $e)
+        catch (Exception $e)
         {
             // Retornar a la pagina previa con un session error
             return back()->with('error', 'Error cargando los tipos de equipo');
         }
         return view('sia2.activos.modmateriales.materiales.index', compact('materiales'));;
     }
-    
+
     public function create()
     {
         try {
             // Obtiene la OFICINA_ID del usuario actual
             $oficinaIdUsuario = Auth::user()->OFICINA_ID;
-            // Obtiene los tipos de materiales asociados a la oficina del usuario 
+            // Obtiene los tipos de materiales asociados a la oficina del usuario
             $tiposMaterial = TipoMaterial::where('OFICINA_ID', $oficinaIdUsuario)->get();
             // Obtener el objeto oficina asociada al usuario actual
             $oficina = Oficina::where('OFICINA_ID', $oficinaIdUsuario)->firstOrFail();
@@ -103,9 +103,9 @@ class MaterialController extends Controller
                     'MATERIAL_ID' => $material->MATERIAL_ID,
                     'MOVIMIENTO_TITULAR' => (Auth::user()->USUARIO_NOMBRES.' '.Auth::user()->USUARIO_APELLIDOS),
                     'MOVIMIENTO_OBJETO' => 'MATERIAL: '.$material->MATERIAL_NOMBRE,
-                    'MOVIMIENTO_TIPO_OBJETO' => $material->tipoMaterial->TIPO_MATERIAL_NOMBRE, 
+                    'MOVIMIENTO_TIPO_OBJETO' => $material->tipoMaterial->TIPO_MATERIAL_NOMBRE,
                     'MOVIMIENTO_TIPO' => 'INGRESO',
-                    'MOVIMIENTO_STOCK_PREVIO' => 0, 
+                    'MOVIMIENTO_STOCK_PREVIO' => 0,
                     'MOVIMIENTO_CANTIDAD_A_MODIFICAR' => $material->MATERIAL_STOCK,
                     'MOVIMIENTO_STOCK_RESULTANTE' => $material->MATERIAL_STOCK,
                     'MOVIMIENTO_DETALLE' => strtoupper($request->input('DETALLE_MOVIMIENTO'))
@@ -115,7 +115,7 @@ class MaterialController extends Controller
             } else {
                 session()->flash('error', 'Error al crear el material');
             }
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             session()->flash('error', 'Error al crear el material.');
             return redirect()->route('materiales.index');
         }
@@ -205,7 +205,7 @@ class MaterialController extends Controller
                 $stockResultante = $request->MATERIAL_STOCK + $request->STOCK_NUEVO;
             } else {
                 $stockResultante = $request->MATERIAL_STOCK - $request->STOCK_NUEVO;
-            } 
+            }
 
             // Actualizar los atributos del material
             $material->update([
@@ -230,7 +230,7 @@ class MaterialController extends Controller
 
         } catch (ModelNotFoundException $e) {
             return redirect()->route('materiales.index')->with('error', 'No se encontró el material con el ID proporcionado.');
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             return redirect()->route('materiales.index')->with('error', 'Error al actualizar el material: ' . $e->getMessage());
         }
 
@@ -239,11 +239,11 @@ class MaterialController extends Controller
     }
 
 
-    
+
     public function destroy(string $id)
     {
         try{
-            // Encontrar el material por su ID 
+            // Encontrar el material por su ID
             $material = Material::find($id);
 
             // Verificar si el material existe antes de intentar eliminarlo
@@ -265,14 +265,14 @@ class MaterialController extends Controller
                 // Eliminar el material
                 $material->delete();
             }
-        
+
         } catch(ModelNotFoundException) {
             // Manejo de excepciones cuando no encuentre el material
             return redirect()->route('equipos.index')->with('error', 'Error al eliminar el material');
-        } catch(Exeption $e) {
+        } catch(Exception $e) {// "Exeption" estaba mal escrito
             return redirect()->route('materiales.index')->with('error', 'No se encontró el material.');
         }
-                
+
         return redirect()->route('materiales.index')->with('success', 'Material eliminado exitosamente.');
     }
 
