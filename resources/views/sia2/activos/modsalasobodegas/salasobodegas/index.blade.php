@@ -14,6 +14,8 @@
         {{-- ... --}}
 
         <div class="table-responsive">
+            <a class="btn btn-primary" href="{{ route('salasobodegas.create') }}"><i class="fa-solid fa-plus"></i> Agregar Sala o Bodega</a>
+
             <table id="salasobodegas" class="table table-bordered mt-4">
                 <thead class="bg-primary text-white">
                     <tr>

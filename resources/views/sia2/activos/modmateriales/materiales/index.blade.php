@@ -12,7 +12,11 @@
     <div class="container">
         {{-- Lógica para mostrar mensajes de éxito o error --}}
         {{-- ... --}}
-
+        @if(session('success'))
+            <div class="alert alert-success">
+                {{ session('success') }}
+            </div>
+        @endif
         {{-- Enlace para exportar PDF --}}
         {{--<a href="{{ route('materiales.exportar-pdf') }}" class="btn btn-primary" target="_blank">
             <i class="fa-solid fa-file-pdf"></i> Exportar PDF

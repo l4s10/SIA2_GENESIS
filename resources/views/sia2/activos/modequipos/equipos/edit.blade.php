@@ -3,7 +3,7 @@
 @section('title', 'Editar equipo')
 
 @section('content_header')
-    <h1>Editar Material</h1>
+    <h1>Editar Equipo</h1>
 @stop
 
 @section('content')
@@ -33,6 +33,21 @@
             </div>
 
             <div class="mb-3">
+                <label for="EQUIPO_ESTADO" class="form-label"><i class="fa-solid fa-notes-medical"></i> Estado del equipo:</label>
+                <select class="form-control{{ $errors->has('EQUIPO_ESTADO') ? ' is-invalid' : '' }}" aria-label="Seleccione un tipo de equipo" id="EQUIPO_ESTADO" name="EQUIPO_ESTADO" required>
+                    <option value="">--Seleccione un estado--</option>
+                    <option value="DISPONIBLE" {{ old('EQUIPO_ESTADO', $equipo->EQUIPO_ESTADO) == 'DISPONIBLE' ? 'selected' : '' }}>DISPONIBLE</option>
+                    <option value="PRESTADO" {{ old('EQUIPO_ESTADO', $equipo->EQUIPO_ESTADO) == 'PRESTADO' ? 'selected' : '' }}>PRESTADO</option>
+                    <option value="NO DISPONIBLE" {{ old('EQUIPO_ESTADO', $equipo->EQUIPO_ESTADO) == 'NO DISPONIBLE' ? 'selected' : '' }}>NO DISPONIBLE</option>
+                </select>
+                @if ($errors->has('EQUIPO_ESTADO'))
+                    <div class="invalid-feedback">
+                        {{ $errors->first('EQUIPO_ESTADO') }}
+                    </div>
+                @endif
+            </div>
+
+            <div class="mb-3">
                 <div class="row">
 
                     <div class="col-md-6">
@@ -52,8 +67,9 @@
                     </div>
 
                     <div class="col-md-6">
-                        <label for="TIPO_MOVIMIENTO" class="form-label"><i class="fa-solid fa-pen-to-square"></i> Tipo de movimiento: </label>
+                        <label for="TIPO_MOVIMIENTO" class="form-label"><i class="fa-solid fa-pen-to-square"></i> Tipo de movimiento:</label>
                         <select name="TIPO_MOVIMIENTO" id="TIPO_MOVIMIENTO" class="form-control @error('TIPO_MOVIMIENTO') is-invalid @enderror" required>
+                            <option value="" disabled selected>Seleccione un tipo de movimiento</option>
                             <option value="INGRESO" {{ old('TIPO_MOVIMIENTO', $equipo->TIPO_MOVIMIENTO) == 'INGRESO' ? 'selected' : '' }}>INGRESO</option>
                             <option value="TRASLADO" {{ old('TIPO_MOVIMIENTO', $equipo->TIPO_MOVIMIENTO) == 'TRASLADO' ? 'selected' : '' }}>TRASLADO</option>
                             <option value="MERMA" {{ old('TIPO_MOVIMIENTO', $equipo->TIPO_MOVIMIENTO) == 'MERMA' ? 'selected' : '' }}>MERMA</option>
@@ -77,10 +93,10 @@
                     </div>
                     <div class="col-md-6">
                         <label for="STOCK_NUEVO"><i class="fa-solid fa-list-ol"></i> Cantidad a modificar:</label>
-                        <input type="number" class="form-control{{ $errors->has('STOCK_NUEVO') ? ' is-invalid' : '' }}" id="STOCK_NUEVO" name="STOCK_NUEVO" value="{{ old('STOCK_NUEVO', $equipo->STOCK_NUEVO ?? 0) }}" min="0" max="1000" placeholder="Indicar la cantidad" required>
-                        @error('STOCK_NUEVO')
-                            <div class="text-danger">{{ $message }}</div>
-                        @enderror
+                        <input type="number" class="form-control{{ $errors->has('STOCK_NUEVO') ? ' is-invalid' : '' }}" id="STOCK_NUEVO" name="STOCK_NUEVO" value="{{ old('STOCK_NUEVO', isset($material) ? $material->STOCK_NUEVO : null) }}" min="0" max="1000" placeholder="Indicar la cantidad" required>
+                        @if ($errors->has('STOCK_NUEVO'))
+                            <div class="text-danger">{{ $errors->first('STOCK_NUEVO') }}</div>
+                        @endif
                     </div>
 
                 </div>
@@ -103,12 +119,11 @@
                 </div>
             </div>
 
-            {{--<div class="mb-3">
-                <label for="ID_DIRECCION" class="form-label"><i class="fa-solid fa-person-chalkboard"></i> Dirección Regional:</label>
-                <select id="ID_DIRECCION" name="ID_DIRECCION" class="form-control" disabled>
-                    <option value="{{ $material->ID_DIRECCION }}" selected>{{ $material->direccionRegional->DIRECCION }}</option>
-                </select>
-            </div>--}}
+            <div class="mb-3">
+                <label for="OFICINA_ID" class="form-label"><i class="fa-solid fa-person-chalkboard"></i> Dirección Regional Asociada:</label>
+                <input type="text" id="OFICINA_ID" name="OFICINA_ID" class="form-control" value="{{ $oficina->OFICINA_NOMBRE }}" readonly>
+                <input type="hidden" name="OFICINA_ID" value="{{ $oficina->OFICINA_ID }}">
+            </div>
 
             <a href="{{ route('materiales.index') }}" class="btn btn-secondary" tabindex="5"><i class="fa-solid fa-hand-point-left"></i> Cancelar</a>
             <button type="submit" class="btn btn-primary" tabindex="4"><i class="fa-solid fa-floppy-disk"></i> Guardar cambios</button>

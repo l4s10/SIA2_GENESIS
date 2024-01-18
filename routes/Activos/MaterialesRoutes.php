@@ -1,0 +1,12 @@
+<?php
+
+use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Material\TipoMaterialController;
+use App\Http\Controllers\Material\MaterialController;
+
+// Ruta materiales
+Route::resource('materiales', MaterialController::class);
+// Ruta tipos de material
+Route::resource('tiposmateriales', TipoMaterialController::class);
+
+
