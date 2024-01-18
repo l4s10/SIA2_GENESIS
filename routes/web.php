@@ -9,6 +9,7 @@ require __DIR__.'/Activos/InventariosRoutes.php';
 require __DIR__.'/Activos/MaterialesRoutes.php';
 require __DIR__.'/Activos/EquiposRoutes.php';
 require __DIR__.'/Activos/SalasOBodegasRoutes.php';
+require __DIR__.'/Activos/FormulariosRoutes.php';
 
 
 /*
