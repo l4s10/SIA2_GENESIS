@@ -35,12 +35,12 @@
         </script>
     @endif
     {{-- Boton para agregar --}}
-    <a class="btn btn-primary mb-3" href="{{ route('formularios.create') }}"> <i class="fa-solid fa-plus"></i> Agregar formulario</a>
+    <a class="btn agregar mb-3" href="{{ route('formularios.create') }}"> <i class="fa-solid fa-plus"></i> Agregar formulario</a>
 
     {{-- Tabla de Formularios --}}
     <div class="table-responsive">
         <table id="formularios" class="table table-bordered mt-4">
-            <thead class="bg-primary text-white">
+            <thead class="tablacolor">
                 <tr>
                     <th scope="col">Nombre formulario</th>
                     <th scope="col">Tipo de formulario</th>
@@ -54,7 +54,7 @@
                         <td>{{ $formulario->FORMULARIO_TIPO }}</td>
                         <td>
                             <div class="d-flex justify-content-center">
-                                <a href="{{ route('formularios.edit', $formulario->FORMULARIO_ID) }}" class="btn btn-info">
+                                <a href="{{ route('formularios.edit', $formulario->FORMULARIO_ID) }}" class="btn botoneditar">
                                     <i class="fa-solid fa-pen-to-square"></i> Editar
                                 </a>
                                 <form action="{{ route('formularios.destroy', $formulario->FORMULARIO_ID) }}" method="POST" class="ml-2">
@@ -73,6 +73,20 @@
 @stop
 {{-- Seccion para los estilos CSS --}}
 @section('css')
+<style>/* Estilos personalizados si es necesario */
+        .tablacolor {
+            background-color: #0064a0; /* Color de fondo personalizado */
+            color: #fff; /* Color de texto personalizado */
+        }
+        .agregar {
+            background-color: #e6500a;
+            color: #fff;
+        }
+        .botoneditar {
+            background-color: #1aa16b;
+            color: #fff;
+        }
+    </style>
 @stop
 {{-- Seccion para los Javascripts --}}
 @section('js')

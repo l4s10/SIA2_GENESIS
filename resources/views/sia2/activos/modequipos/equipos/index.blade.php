@@ -63,7 +63,7 @@
                         <td>{{ $equipo->EQUIPO_STOCK }}</td>
                         <td>
                             <div class="d-flex justify-content-center">
-                                <a href="{{ route('formularios.edit', $equipo->EQUIPO_ID) }}" class="btn botoneditar">
+                                <a href="{{ route('equipos.edit', $equipo->EQUIPO_ID) }}" class="btn botoneditar">
                                     <i class="fa-solid fa-pen-to-square"></i> Editar
                                 </a>
                                 <form action="{{ route('equipos.destroy', $equipo->EQUIPO_ID) }}" method="POST" class="ml-2">
