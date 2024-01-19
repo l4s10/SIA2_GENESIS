@@ -41,11 +41,11 @@
 
     {{-- Tabla de Equipos --}}
     <div class="table-responsive">
-        <a class="btn btn-primary mb-3" href="{{ route('equipos.create') }}"><i class="fa-solid fa-plus"></i> Agregar Equipo</a>
+        <a class="btn agregar mb-3" href="{{ route('equipos.create') }}"><i class="fa-solid fa-plus"></i> Agregar Equipo</a>
         <a class="btn btn-secondary mb-3" href="{{route('tiposequipos.index')}}"><i class="fa-solid fa-eye"></i> Ver tipos de Equipos</a>
 
         <table id="equipos" class="table table-bordered mt-4">
-            <thead class="bg-primary text-white">
+            <thead class="tablacolor">
                 <tr>
                     <th scope="col">Tipo equipo</th>
                     <th scope="col">Modelo equipo</th>
@@ -63,7 +63,7 @@
                         <td>{{ $equipo->EQUIPO_STOCK }}</td>
                         <td>
                             <div class="d-flex justify-content-center">
-                                <a href="{{ route('formularios.edit', $equipo->EQUIPO_ID) }}" class="btn btn-info">
+                                <a href="{{ route('formularios.edit', $equipo->EQUIPO_ID) }}" class="btn botoneditar">
                                     <i class="fa-solid fa-pen-to-square"></i> Editar
                                 </a>
                                 <form action="{{ route('equipos.destroy', $equipo->EQUIPO_ID) }}" method="POST" class="ml-2">
@@ -83,8 +83,19 @@
 @stop
 
 @section('css')
-    <style>
-        /* Estilos personalizados si es necesario */
+    <style>/* Estilos personalizados si es necesario */
+        .tablacolor {
+            background-color: #0064a0; /* Color de fondo personalizado */
+            color: #fff; /* Color de texto personalizado */
+        }
+        .agregar {
+            background-color: #e6500a;
+            color: #fff;
+        }
+        .botoneditar {
+            background-color: #1aa16b;
+            color: #fff;
+        }
     </style>
 @stop
 

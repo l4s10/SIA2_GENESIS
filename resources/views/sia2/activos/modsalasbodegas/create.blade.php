@@ -60,13 +60,19 @@
         </div>
 
         <a href="{{route('salasobodegas.index')}}" class="btn btn-secondary" tabindex="5"><i class="fas fa-hand-point-left"></i> Cancelar</a>
-        <button type="submit" class="btn btn-primary"><i class="fas fa-floppy-disk"></i> Guardar</button>
+        <button type="submit" class="btn guardar"><i class="fas fa-floppy-disk"></i> Guardar</button>
     </form>
 </div>
 @stop
 
 @section('css')
     <link rel="stylesheet" href="/css/admin_custom.css">
+    <style>/* Estilos personalizados si es necesario */
+        .guardar {
+            background-color: #e6500a;
+            color: #fff;
+        }
+    </style>
 @stop
 
 @section('js')

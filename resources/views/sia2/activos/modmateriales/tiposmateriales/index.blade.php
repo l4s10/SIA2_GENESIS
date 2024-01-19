@@ -34,12 +34,12 @@
         </script>
     @endif
     {{-- Botones de acceso rapido --}}
-    <a class="btn btn-primary mb-3" href="{{ route('tiposmateriales.create') }}"><i class="fa-solid fa-plus"></i> Agregar Tipo de Material</a>
+    <a class="btn agregar mb-3" href="{{ route('tiposmateriales.create') }}"><i class="fa-solid fa-plus"></i> Agregar Tipo de Material</a>
     <a class="btn btn-secondary mb-3" href="{{ route('materiales.index')}}"><i class="fa-solid fa-eye"></i> Administrar Materiales</a>
 
     <div class="table-responsive">
         <table id="tiposMateriales" class="table table-bordered mt-4">
-            <thead class="bg-primary text-white">
+            <thead class="tablacolor">
                 <tr>
                     <th scope="col">Tipo de Material</th>
                     <th scope="col">Acciones</th>
@@ -51,7 +51,7 @@
                         <td>{{ $tipo->TIPO_MATERIAL_NOMBRE }}</td>
                         <td>
                             <div class="d-flex justify-content-center">
-                                <a href="{{ route('tiposmateriales.edit', $tipo->TIPO_MATERIAL_ID) }}" class="btn btn-info">
+                                <a href="{{ route('tiposmateriales.edit', $tipo->TIPO_MATERIAL_ID) }}" class="btn botoneditar">
                                     <i class="fa-solid fa-pen-to-square"></i> Editar
                                 </a>
                                 <form action="{{ route('tiposmateriales.destroy', $tipo->TIPO_MATERIAL_ID) }}" method="POST" class="ml-2">
@@ -77,6 +77,18 @@
             opacity: 0.7; /* Ajusta la opacidad a tu gusto */
             background-color: #99CCFF;
             color: #000000;
+        }
+        .tablacolor {
+            background-color: #0064a0; /* Color de fondo personalizado */
+            color: #fff; /* Color de texto personalizado */
+        }
+        .agregar{
+            background-color: #e6500a;
+            color: #fff;
+        }
+        .botoneditar{
+            background-color: #1aa16b;
+            color: #fff;
         }
     </style>
 @stop

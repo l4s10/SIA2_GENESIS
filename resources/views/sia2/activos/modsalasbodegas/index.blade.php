@@ -34,11 +34,11 @@
         </script>
     @endif
     {{-- Botones de acceso rapido --}}
-    <a class="btn btn-primary mb-3" href="{{ route('salasobodegas.create') }}"><i class="fa-solid fa-plus"></i> Agregar Sala o Bodega</a>
+    <a class="btn agregar mb-3" href="{{ route('salasobodegas.create') }}"><i class="fa-solid fa-plus"></i> Agregar Sala o Bodega</a>
     {{-- Tabla de contenido --}}
     <div class="table-responsive">
         <table id="salasobodegas" class="table table-bordered mt-4">
-            <thead class="bg-primary text-white">
+            <thead class="tablacolor">
                 <tr>
                     <th scope="col">Nombre</th>
                     <th scope="col">Tipo</th>
@@ -56,7 +56,7 @@
                         <td>{{ $salaobodega->SALA_O_BODEGA_ESTADO }}</td>
                         <td>
                             <div class="d-flex justify-content-center">
-                                <a href="{{ route('salasobodegas.edit', $salaobodega->SALA_O_BODEGA_ID) }}" class="btn btn-info">
+                                <a href="{{ route('salasobodegas.edit', $salaobodega->SALA_O_BODEGA_ID) }}" class="btn botoneditar">
                                     <i class="fa-solid fa-pen-to-square"></i> Editar
                                 </a>
                                 <form action="{{ route('salasobodegas.destroy', $salaobodega->SALA_O_BODEGA_ID) }}" method="POST" class="ml-2">
@@ -76,6 +76,20 @@
 @stop
 
 @section('css')
+<style>/* Estilos personalizados si es necesario */
+        .tablacolor {
+            background-color: #0064a0; /* Color de fondo personalizado */
+            color: #fff; /* Color de texto personalizado */
+        }
+        .agregar{
+            background-color: #e6500a;
+            color: #fff;
+        }
+        .botoneditar{
+            background-color: #1aa16b;
+            color: #fff;
+        }
+    </style>
 @stop
 
 @section('js')
