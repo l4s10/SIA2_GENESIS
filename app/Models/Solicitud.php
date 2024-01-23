@@ -32,7 +32,7 @@ class Solicitud extends Model
             Relacion de uno a muchos / cero a muchos -> HasMany
         */
         //*Relación de uno a uno con User*/
-        public function solicitud()
+        public function solicitante()
         {
             return $this->belongsTo(User::class, 'USUARIO_id', 'id');
         }

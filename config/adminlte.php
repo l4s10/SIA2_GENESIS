@@ -326,7 +326,6 @@ return [
         ['header' => 'MODULOS DE SOLICITUDES'],
         [
             'text'        => 'Vehículos',
-            'url'         => 'admin/pages',
             'icon'        => 'far fa-fw fa-solid fa-car-side',
             'submenu' => [
                 [
@@ -340,16 +339,15 @@ return [
             ],
         ],[
             'text'        => 'Materiales',
-            'url'         => 'admin/pages',
             'icon'        => 'far fa-fw fa-solid fa-boxes',
             'submenu' => [
                 [
                     'text' => 'Solicitar',
-                    'url'  => '#',
+                    'url'  => 'solicitudesmateriales/create',
                 ],
                 [
                     'text' => 'Mis solicitudes',
-                    'url'  => '#',
+                    'url'  => 'solicitudesmateriales',
                 ],
             ],
         ],

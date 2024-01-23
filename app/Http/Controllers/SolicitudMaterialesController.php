@@ -16,7 +16,17 @@ class SolicitudMaterialesController extends Controller
      */
     public function index()
     {
-        //
+        try {
+            // Función que lista las solicitudes basadas en la OFICINA_ID del usuario logueado
+            // $solicitudes = Solicitud::where('USUARIO_id', Auth::user()->id)->get();
+            $solicitudes = Solicitud::with('materiales.tipoMaterial')->where('USUARIO_id', Auth::user()->id)->get();
+        } catch (Exception $e) {
+            // Manejar excepciones si es necesario
+            return redirect()->back()->with('error', 'Error al cargar las solicitudes.');
+        }
+
+        // Retornar la vista con las solicitudes
+        return view('sia2.solicitudes.materiales.index', compact('solicitudes'));
     }
 
     /**
@@ -75,7 +85,7 @@ class SolicitudMaterialesController extends Controller
         Cart::destroy();
 
         // Puedes agregar un mensaje de éxito si lo deseas
-        return redirect()->route('materiales.index')->with('success', 'Solicitud creada exitosamente');
+        return redirect()->route('solicitudesmateriales.index')->with('success', 'Solicitud creada exitosamente');
 
     }
 
@@ -109,8 +119,24 @@ class SolicitudMaterialesController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
+    public function destroy($id)
     {
-        //
+        //Try catch
+        try {
+            // Busca la solicitud
+            $solicitud = Solicitud::findOrFail($id);
+
+            //Eliminar registros asociados a esta solicitud en la tabla solicitud_material (para no tener problemas de parent row not found)
+            $solicitud->materiales()->detach();
+
+            // Elimina la solicitud
+            $solicitud->delete();
+
+            // Puedes agregar un mensaje de éxito si lo deseas
+            return redirect()->route('solicitudesmateriales.index')->with('success', 'Solicitud eliminada exitosamente');
+        } catch (Exception $e) {
+            // Manejar excepciones si es necesario
+            return redirect()->route('solicitudesmateriales.index')->with('error', 'Error al eliminar la solicitud.');
+        }
     }
 }
