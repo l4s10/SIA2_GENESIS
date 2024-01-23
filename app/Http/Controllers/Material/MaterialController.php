@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Exception; //Libreria faltante
+use Gloudemans\Shoppingcart\Facades\Cart;
 
 use App\Models\Material;
 use App\Models\TipoMaterial;
@@ -274,6 +275,20 @@ class MaterialController extends Controller
         }
 
         return redirect()->route('materiales.index')->with('success', 'Material eliminado exitosamente.');
+    }
+
+    public function addToCart(Material $material)
+    {
+        // Agregar el material al carrito con una cantidad predeterminada (puedes ajustarlo según tus necesidades)
+        Cart::add($material, 1);
+
+        return redirect()->back()->with('success', 'Material agregado al carrito exitosamente');
+    }
+
+    public function showCart()
+    {
+        $cartItems = Cart::content();
+        return view('sia2.activos.modmateriales.materiales.show_cart', compact('cartItems'));
     }
 
 }
