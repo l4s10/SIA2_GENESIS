@@ -10,6 +10,9 @@ use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Exception; //Libreria faltante
 use Gloudemans\Shoppingcart\Facades\Cart;
 
+use Maatwebsite\Excel\Facades\Excel;
+use App\Exports\MaterialesExport;
+
 use App\Models\Material;
 use App\Models\TipoMaterial;
 use App\Models\Movimiento;
@@ -291,4 +294,9 @@ class MaterialController extends Controller
         return view('sia2.activos.modmateriales.materiales.show_cart', compact('cartItems'));
     }
 
+    // Exportable para Excel
+    public function exportExcel()
+    {
+        return Excel::download(new MaterialesExport, 'Maestro_Materiales.xlsx');
+    }
 }
