@@ -24,7 +24,7 @@
 
             <div class="mb-3">
                 <div class="row">
-                  
+
                     <div class="col-md-6">
                         <label for="TIPO_MATERIAL_ID" class="form-label"><i class="fa-solid fa-pen-to-square"></i> Tipo de material</label>
                         <select id="TIPO_MATERIAL_ID" name="TIPO_MATERIAL_ID" class="form-control @error('TIPO_MATERIAL_ID') is-invalid @enderror">
@@ -54,7 +54,7 @@
                             <div class="invalid-feedback">{{ $message }}</div>
                         @enderror
                     </div>
-                    
+
                 </div>
             </div>
 
@@ -74,8 +74,8 @@
                             <div class="text-danger">{{ $errors->first('STOCK_NUEVO') }}</div>
                         @endif
                     </div>
-                                   
-                    
+
+
                 </div>
             </div>
 
@@ -102,7 +102,7 @@
                 <input type="hidden" name="OFICINA_ID" value="{{ $oficina->OFICINA_ID }}">
             </div>
             <a href="{{ route('materiales.index') }}" class="btn btn-secondary" tabindex="5"><i class="fa-solid fa-hand-point-left"></i> Cancelar</a>
-            <button type="submit" class="btn btn-primary" tabindex="4"><i class="fa-solid fa-floppy-disk"></i> Guardar cambios</button>
+            <button type="submit" class="btn guardar" tabindex="4"><i class="fa-solid fa-floppy-disk"></i> Guardar cambios</button>
         </form>
     </div>
 @stop
@@ -111,6 +111,12 @@
 
 @section('css')
     <link rel="stylesheet" href="/css/admin_custom.css">
+    <style>/* Estilos personalizados si es necesario */
+        .guardar {
+            background-color: #e6500a;
+            color: #fff;
+        }
+    </style>
 @stop
 
 @section('js')

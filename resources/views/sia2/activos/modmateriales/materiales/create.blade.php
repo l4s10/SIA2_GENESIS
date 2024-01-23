@@ -66,13 +66,19 @@
         </div>
 
         <a href="{{route('materiales.index')}}" class="btn btn-secondary" tabindex="5"><i class="fa-solid fa-hand-point-left"></i> Cancelar</a>
-        <button type="submit" class="btn btn-primary" tabindex="4"><i class="fa-solid fa-floppy-disk"></i> Guardar material</button>
+        <button type="submit" class="btn guardar" tabindex="4"><i class="fa-solid fa-floppy-disk"></i> Guardar material</button>
     </form>
 </div>
 @stop
 
 @section('css')
     <link rel="stylesheet" href="/css/admin_custom.css">
+    <style>/* Estilos personalizados si es necesario */
+        .guardar {
+            background-color: #e6500a;
+            color: #fff;
+        }
+    </style>
 @stop
 
 @section('js')

@@ -11,7 +11,6 @@
     <form action="{{ route('salasobodegas.update', $salaobodega->SALA_O_BODEGA_ID) }}" method="POST">
         @csrf
         @method('PUT')
-        
 
         <div class="mb-3">
             <label for="SALA_O_BODEGA_NOMBRE" class="form-label"><i class="fas fa-book-bookmark"></i> Nombre de la sala o bodega:</label>
@@ -62,20 +61,20 @@
             @endif
         </div>
 
-        <div class="mb-3">
-            <label for="OFICINA_ID" class="form-label"><i class="fa-solid fa-person-chalkboard"></i> Dirección Regional Asociada:</label>
-            <input type="text" id="OFICINA_ID" name="OFICINA_ID" class="form-control" value="{{ $oficina->OFICINA_NOMBRE }}" readonly>
-            <input type="hidden" name="OFICINA_ID" value="{{ $oficina->OFICINA_ID }}">
-        </div>
-
         <a href="{{ route('salasobodegas.index') }}" class="btn btn-secondary" tabindex="5"><i class="fas fa-hand-point-left"></i> Cancelar</a>
-        <button type="submit" class="btn btn-primary"><i class="fas fa-floppy-disk"></i> Guardar</button>
+        <button type="submit" class="btn guardar"><i class="fas fa-floppy-disk"></i> Guardar</button>
     </form>
 </div>
 @stop
 
 @section('css')
     <link rel="stylesheet" href="/css/admin_custom.css">
+    <style>/* Estilos personalizados si es necesario */
+        .guardar {
+            background-color: #e6500a;
+            color: #fff;
+        }
+    </style>
 @stop
 
 @section('js')

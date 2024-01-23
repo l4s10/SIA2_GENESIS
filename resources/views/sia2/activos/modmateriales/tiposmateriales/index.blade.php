@@ -9,42 +9,64 @@
 @stop
 
 @section('content')
-    <div class="container">
-        {{-- Lógica para mostrar mensajes de éxito o error --}}
-        @if(session('success'))
-            <div class="alert alert-success">
-                {{ session('success') }}
-            </div>
-        @endif
-        {{-- ... --}}
-        <a class="btn btn-primary" href="{{ route('tiposmateriales.create') }}"><i class="fa-solid fa-plus"></i> Agregar Tipo de Material</a>
-        <a class="btn btn-secondary" href="{{ route('materiales.index')}}"><i class="fa-solid fa-eye"></i> Administrar Materiales</a>
+    {{-- sweetalerts de session --}}
+    @if (session('success'))
+        <script>
+            document.addEventListener('DOMContentLoaded', () => {
+                Swal.fire({
+                    icon: 'success',
+                    title: '{{ session('success') }}',
+                    confirmButtonText: 'OK',
+                    confirmButtonColor: '#0064A0'
+                });
+            });
+        </script>
+    @elseif(session('error'))
+        <script>
+            document.addEventListener('DOMContentLoader', () => {
+                Swal.fire([
+                    icon: 'error',
+                    title: '{{ session('error') }}',
+                    confirmButtonText: 'OK',
+                    confirmButtonColor: '#0064A0'
+                ]);
+            });
+        </script>
+    @endif
+    {{-- Botones de acceso rapido --}}
+    <a class="btn agregar mb-3" href="{{ route('tiposmateriales.create') }}"><i class="fa-solid fa-plus"></i> Agregar Tipo de Material</a>
+    <a class="btn btn-secondary mb-3" href="{{ route('materiales.index')}}"><i class="fa-solid fa-eye"></i> Administrar Materiales</a>
 
-        <div class="table-responsive">
-            <table id="tiposMateriales" class="table table-bordered mt-4">
-                <thead class="bg-primary text-white">
+    <div class="table-responsive">
+        <table id="tiposMateriales" class="table table-bordered mt-4">
+            <thead class="tablacolor">
+                <tr>
+                    <th scope="col">Tipo de Material</th>
+                    <th scope="col">Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach($tiposMaterial as $tipo)
                     <tr>
-                        <th scope="col">Tipo de Material</th>
-                        <th scope="col">Acciones</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach($tiposMaterial as $tipo)
-                        <tr>
-                            <td>{{ $tipo->TIPO_MATERIAL_NOMBRE }}</td>
-                            <td style="text-align: center; vertical-align: middle;">
-                                <form action="{{ route('tiposmateriales.destroy', $tipo->TIPO_MATERIAL_ID) }}" method="POST">
+                        <td>{{ $tipo->TIPO_MATERIAL_NOMBRE }}</td>
+                        <td>
+                            <div class="d-flex justify-content-center">
+                                <a href="{{ route('tiposmateriales.edit', $tipo->TIPO_MATERIAL_ID) }}" class="btn botoneditar">
+                                    <i class="fa-solid fa-pen-to-square"></i> Editar
+                                </a>
+                                <form action="{{ route('tiposmateriales.destroy', $tipo->TIPO_MATERIAL_ID) }}" method="POST" class="ml-2">
                                     @csrf
                                     @method('DELETE')
-                                    <a href="{{ route('tiposmateriales.edit', $tipo->TIPO_MATERIAL_ID) }}" class="btn btn-info"><i class="fa-solid fa-pen-to-square"></i> Editar</a>
-                                    <button type="submit" class="btn btn-danger"><i class="fa-solid fa-trash"></i> Borrar</button>
+                                    <button type="submit" class="btn btn-danger">
+                                        <i class="fa-solid fa-trash"></i> Borrar
+                                    </button>
                                 </form>
-                            </td>
-                        </tr>
-                    @endforeach
-                </tbody>
-            </table>
-        </div>
+                            </div>
+                        </td>
+                    </tr>
+                @endforeach
+            </tbody>
+        </table>
     </div>
 @stop
 
@@ -56,6 +78,18 @@
             background-color: #99CCFF;
             color: #000000;
         }
+        .tablacolor {
+            background-color: #0064a0; /* Color de fondo personalizado */
+            color: #fff; /* Color de texto personalizado */
+        }
+        .agregar{
+            background-color: #e6500a;
+            color: #fff;
+        }
+        .botoneditar{
+            background-color: #1aa16b;
+            color: #fff;
+        }
     </style>
 @stop
 
@@ -65,6 +99,9 @@
         $(document).ready(function () {
             $('#tiposMateriales').DataTable({
                 "lengthMenu": [[5, 10, 50, -1], [5, 10, 50, "All"]],
+                "columnDefs": [
+                    { "orderable": false, "targets": 1 }
+                ],
                 "language": {
                     "url": "https://cdn.datatables.net/plug-ins/1.11.3/i18n/es_es.json"
                 },
