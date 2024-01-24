@@ -13,7 +13,7 @@
     {{-- Aquí se agrega la lógica para mostrar mensajes de éxito o error --}}
     {{-- ... --}}
     <div class="container-fluid d-flex justify-content-center align-items-center flex-column" >
-    <h4 class="card-subtitle mb-2 text-muted" style="text-align: justify;">Módulos Materiales</h4>
+    <h4 class="card-subtitle mb-4 text-muted" style="text-align: justify;">Módulos Materiales</h4>
         <div class="row">
         <div class="col-sm-6">
         {{-- Gestión de materiales --}}
@@ -43,7 +43,7 @@
                 </div>
             </div>
         </div>
-        <h4 class="card-subtitle mb-2 text-muted">Módulos Equipos</h4>
+        <h4 class="card-subtitle mb-4 text-muted">Módulos Equipos</h4>
         <div class="row">
             <div class="col-sm-6">
         {{-- Gestión de equipos --}}
@@ -73,7 +73,7 @@
                 </div>
             </div>
         </div>
-        <h4 class="card-subtitle mb-2 text-muted">Módulos de Salas y Bodegas / Formularios</h4>
+        <h4 class="card-subtitle mb-4 text-muted">Módulos de Salas y Bodegas / Formularios</h4>
         <div class="row">
             <div class="col-sm-6">
         {{-- Gestión de salas o bodegas --}}
