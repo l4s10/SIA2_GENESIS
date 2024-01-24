@@ -1,7 +1,7 @@
 
 @extends('adminlte::page')
 
-@section('title', 'Gestión de Solicitudes')
+@section('title', 'Solciitar materiales')
 
 @section('content_header')
     <h1>Crear Solicitud</h1>
@@ -40,7 +40,6 @@
                 <tr>
                     <th>Tipo material</th>
                     <th>Nombre material</th>
-                    {{-- <th>Stock</th> --}}
                     <th>Acciones</th>
                 </tr>
             </thead>
@@ -49,7 +48,6 @@
                     <tr>
                         <td>{{ $material->tipoMaterial->TIPO_MATERIAL_NOMBRE }}</td>
                         <td>{{ $material->MATERIAL_NOMBRE }}</td>
-                        {{-- <td>{{ $material->MATERIAL_STOCK }}</td> --}}
                         <td>
                             <form action="{{ route('materiales.addToCart', $material->MATERIAL_ID) }}" method="POST">
                                 @csrf
@@ -70,6 +68,7 @@
                 <tr>
                     <th>Material</th>
                     <th>Cantidad</th>
+                    <th>Acciones</th>
                 </tr>
             </thead>
             <tbody>
@@ -77,6 +76,15 @@
                     <tr>
                         <td>{{ $cartItem->name }}</td>
                         <td>{{ $cartItem->qty }}</td>
+                        <td>
+                            <form action="{{ route('materiales.removeItem', $cartItem->rowId) }}" method="POST">
+                                @csrf
+                                @method('DELETE')
+                                <button type="submit" class="btn btn-danger">
+                                    <i class="fa-solid fa-trash"></i> Eliminar
+                                </button>
+                            </form>
+                        </td>
                     </tr>
                 @endforeach
             </tbody>

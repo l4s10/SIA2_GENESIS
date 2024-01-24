@@ -43,4 +43,12 @@ class Solicitud extends Model
                 ->withPivot('CANTIDAD') // Si necesitas acceder a la cantidad desde la relación
                 ->withTimestamps(); // Si necesitas las marcas de tiempo
         }
+
+        // Relación de muchos a muchos con Formulario
+        public function formulario()
+        {
+            return $this->belongsToMany(Formulario::class, 'solicitud_formulario', 'SOLICITUD_ID', 'FORMULARIO_ID')
+                ->withPivot('CANTIDAD') // Si necesitas acceder a la cantidad desde la relación
+                ->withTimestamps(); // Si necesitas las marcas de tiempo
+        }
 }

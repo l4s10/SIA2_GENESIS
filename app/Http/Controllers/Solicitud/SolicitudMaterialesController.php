@@ -1,11 +1,16 @@
 <?php
 
-namespace App\Http\Controllers;
+// namespace: Define el espacio de nombres en el que se encuentra el controlador
+namespace App\Http\Controllers\Solicitud;
 
+// Importar FACADES y elementos necesarios
+use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Exception;
 use Illuminate\Support\Facades\Auth;
 use Gloudemans\Shoppingcart\Facades\Cart;
+
+// Importar modelos
 use App\Models\Solicitud;
 use App\Models\Material;
 
@@ -18,7 +23,7 @@ class SolicitudMaterialesController extends Controller
     {
         try {
             // Función que lista las solicitudes basadas en la OFICINA_ID del usuario logueado
-            // $solicitudes = Solicitud::where('USUARIO_id', Auth::user()->id)->get();
+            // $solicitudes = Solicitud::with('materiales.tipoMaterial')->where('USUARIO_id', Auth::user()->id)->get();
             $solicitudes = Solicitud::with('materiales.tipoMaterial')->where('USUARIO_id', Auth::user()->id)->get();
         } catch (Exception $e) {
             // Manejar excepciones si es necesario
@@ -39,7 +44,7 @@ class SolicitudMaterialesController extends Controller
             $materiales = Material::where('OFICINA_ID', Auth::user()->OFICINA_ID)->get();
 
             // Obtener los elementos del carrito
-            $cartItems = Cart::content();
+            $cartItems = Cart::instance('carrito_materiales')->content();
 
         } catch (Exception $e) {
             // Manejar excepciones si es necesario
@@ -73,16 +78,18 @@ class SolicitudMaterialesController extends Controller
             // Otros campos...
         ]);
 
-        // Adjunta los materiales a la solicitud desde el carrito
-        foreach (Cart::content() as $cartItem) {
+        // Adjunta los materiales a la solicitud desde el carrito de compras correspondiente
+        foreach (Cart::instance('carrito_materiales') as $cartItem) {
             $material = Material::find($cartItem->id);
 
             // Agrega el material a la solicitud con la cantidad del carrito
-            $solicitud->materiales()->attach($material, ['CANTIDAD' => $cartItem->qty]);
+            $solicitud->materiales()->attach($material, [
+                'CANTIDAD' => $cartItem->qty
+            ]);
         }
 
         // Limpia el carrito después de agregar los materiales a la solicitud
-        Cart::destroy();
+        Cart::instance('carrito_materiales')->destroy();
 
         // Puedes agregar un mensaje de éxito si lo deseas
         return redirect()->route('solicitudesmateriales.index')->with('success', 'Solicitud creada exitosamente');

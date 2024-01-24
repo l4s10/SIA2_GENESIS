@@ -282,16 +282,29 @@ class MaterialController extends Controller
 
     public function addToCart(Material $material)
     {
+        // Creamos la instancia del carrito de formularios
+        $carritoMateriales = Cart::instance('carrito_materiales');
         // Agregar el material al carrito con una cantidad predeterminada (puedes ajustarlo según tus necesidades)
-        Cart::add($material, 1);
+        $carritoMateriales->add($material, 1);
 
         return redirect()->back()->with('success', 'Material agregado al carrito exitosamente');
     }
 
+    // Si queremos mostrar el carrito en una vista apartada (Probablemente no se use pero se codifica por si acaso)
     public function showCart()
     {
         $cartItems = Cart::content();
         return view('sia2.activos.modmateriales.materiales.show_cart', compact('cartItems'));
+    }
+
+    // Funcion para eliminar un formulario del carrito
+    public function deleteFromCart($rowId){
+        // Cargamos la instancia del carrito de formularios
+        $carritoMateriales = Cart::instance('carrito_materiales');
+        // Eliminamos el formulario del carrito
+        $carritoMateriales->remove($rowId);
+        // Redireccionamos a la vista del carrito
+        return redirect()->back()->with('success', 'Material eliminado exitosamente');
     }
 
     // Exportable para Excel

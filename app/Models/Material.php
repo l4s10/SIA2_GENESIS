@@ -33,13 +33,13 @@ class Material extends Model implements Buyable
     {
         return $this->belongsTo(Oficina::class, 'OFICINA_ID');
     }
-    //cart relationships
 
+    //** cart relationships
     public function getBuyableIdentifier($options = null)
     {
         return $this->getKey();
     }
-    
+
     public function getBuyableDescription($options = null)
     {
         return $this->MATERIAL_NOMBRE;
