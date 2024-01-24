@@ -39,16 +39,16 @@ class Solicitud extends Model
         // Relación de muchos a muchos con Material
         public function materiales()
         {
-            return $this->belongsToMany(Material::class, 'solicitud_material', 'SOLICITUD_ID', 'MATERIAL_ID')
-                ->withPivot('CANTIDAD') // Si necesitas acceder a la cantidad desde la relación
-                ->withTimestamps(); // Si necesitas las marcas de tiempo
+            return $this->belongsToMany(Material::class, 'solicitudes_materiales', 'SOLICITUD_ID', 'MATERIAL_ID')
+                ->withPivot('SOLICITUD_MATERIAL_CANTIDAD')
+                ->withTimestamps();
         }
 
         // Relación de muchos a muchos con Formulario
         public function formulario()
         {
             return $this->belongsToMany(Formulario::class, 'solicitud_formulario', 'SOLICITUD_ID', 'FORMULARIO_ID')
-                ->withPivot('CANTIDAD') // Si necesitas acceder a la cantidad desde la relación
-                ->withTimestamps(); // Si necesitas las marcas de tiempo
+                ->withPivot('CANTIDAD')
+                ->withTimestamps();
         }
 }
