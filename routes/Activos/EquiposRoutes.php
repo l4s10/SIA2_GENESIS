@@ -1,8 +1,8 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\Equipo\TipoEquipoController;
-use App\Http\Controllers\Equipo\EquipoController;
+use App\Http\Controllers\Activos\Equipo\TipoEquipoController;
+use App\Http\Controllers\Activos\Equipo\EquipoController;
 
 // Ruta tipos de equipos
 Route::resource('tiposequipos', TipoEquipoController::class);

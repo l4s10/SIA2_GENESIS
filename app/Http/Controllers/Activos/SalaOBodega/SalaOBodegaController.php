@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\SalaOBodega;
+namespace App\Http\Controllers\Activos\SalaOBodega;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;

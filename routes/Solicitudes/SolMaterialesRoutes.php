@@ -2,7 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Solicitud\SolicitudMaterialesController;
-use App\Http\Controllers\Material\MaterialController;
+use App\Http\Controllers\Activos\Material\MaterialController;
 
 // Ruta solicitudes de materiales
 Route::resource('solicitudesmateriales', SolicitudMaterialesController::class);

@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Material;
+namespace App\Http\Controllers\Activos\Material;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;

@@ -1,12 +1,13 @@
 <?php
 
-namespace App\Http\Controllers\Equipo;
+namespace App\Http\Controllers\Activos\Equipo;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Exception; // Libreria faltante
 
 use App\Models\Equipo;
 use App\Models\TipoEquipo;
@@ -44,10 +45,10 @@ class EquipoController extends Controller
         try {
             // Obtener la OFICINA_ID del usuario actual
             $oficinaIdUsuario = Auth::user()->OFICINA_ID;
-    
+
             // Obtener los tipos de equipos asociados a la oficina del usuario
             $tiposEquipos = TipoEquipo::where('OFICINA_ID', $oficinaIdUsuario)->get();
-    
+
             // Obtener el objeto oficina asociada al usuario actual
             $oficina = Oficina::where('OFICINA_ID', $oficinaIdUsuario)->firstOrFail();
         } catch (ModelNotFoundException $e) {
@@ -57,11 +58,11 @@ class EquipoController extends Controller
             // Manejar otras excepciones
             return redirect()->route('equipos.index')->with('error', 'Ocurrió un error inesperado.');
         }
-    
+
         // Retornar la vista con los tipos de equipos y la oficina
         return view('sia2.activos.modequipos.equipos.create', compact('tiposEquipos', 'oficina'));
     }
-     
+
 
 
     /**
@@ -98,12 +99,12 @@ class EquipoController extends Controller
                  'DETALLE_MOVIMIENTO.string' => 'El campo Detalle de Movimiento debe ser una cadena de texto.',
                  'DETALLE_MOVIMIENTO.max' => 'El campo Detalle de Movimiento no debe exceder los :max caracteres.',
              ]);
-     
+
              // Validar y redirigir mensaje al blade si falla
              if ($validator->fails()) {
                  return redirect()->back()->withErrors($validator)->withInput();
              }
-     
+
              // Crear un nuevo equipo e instanciar en $equipo para acceder a sus atributos al realizar el respectivo movimiento
              $equipo = Equipo::create([
                  'OFICINA_ID' => Auth::user()->OFICINA_ID,
@@ -113,7 +114,7 @@ class EquipoController extends Controller
                  'EQUIPO_STOCK' => $request->EQUIPO_STOCK,
                  'EQUIPO_ESTADO' => strtoupper($request->input('EQUIPO_ESTADO'))
              ]);
-     
+
              if ($equipo) {
                  // Crear un nuevo movimiento asociado al equipo creado
                  Movimiento::create([
@@ -128,7 +129,7 @@ class EquipoController extends Controller
                      'MOVIMIENTO_STOCK_RESULTANTE' => $equipo->EQUIPO_STOCK,
                      'MOVIMIENTO_DETALLE' => strtoupper($request->input('DETALLE_MOVIMIENTO'))
                  ]);
-     
+
                  // Redireccionar a la vista index
                  return redirect()->route('equipos.index')->with('success', 'Equipo creado correctamente');
              } else {
@@ -239,14 +240,14 @@ class EquipoController extends Controller
             if ($validator->fails()) {
                 return redirect()->route('equipos.edit', $equipo->EQUIPO_ID)->withErrors($validator)->withInput();
             }
-            
+
             // Calcular el stock resultante según el tipo de movimiento
             if (($request->TIPO_MOVIMIENTO == 'INGRESO') || ($request->TIPO_MOVIMIENTO == 'OTRO')) {
                 $stockResultante = $request->EQUIPO_STOCK + $request->STOCK_NUEVO;
             } else {
                 $stockResultante = $request->EQUIPO_STOCK - $request->STOCK_NUEVO;
-            } 
-            
+            }
+
             // Actualizar los atributos del equipo
             $equipo->update([
                 'OFICINA_ID' => Auth::user()->OFICINA_ID,
@@ -256,7 +257,7 @@ class EquipoController extends Controller
                 'EQUIPO_ESTADO' => strtoupper($request->input('EQUIPO_ESTADO')),
                 'EQUIPO_STOCK' => $stockResultante
             ]);
-            
+
 
             // Crear un nuevo movimiento asociado al equipo modificado
             $movimiento = Movimiento::create([
