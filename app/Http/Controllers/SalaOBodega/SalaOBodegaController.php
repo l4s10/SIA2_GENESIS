@@ -198,10 +198,10 @@ class SalaOBodegaController extends Controller
             $salaobodega->delete();
         } catch (ModelNotFoundException $e) {
             // Manejar excepción de modelo no encontrado
-            return redirect()->route('tiposmateriales.index')->with('error', 'Ocurrió un error inesperado al eliminar la sala o bodega.');
+            return redirect()->route('salasobodegas.index')->with('error', 'Ocurrió un error inesperado al eliminar la sala o bodega.');
         } catch (Exception $e) {
             // Manejar otras excepciones
-            return redirect()->route('tiposmateriales.index')->with('error', 'Ocurrió un error inesperado al eliminar la sala o bodega.');
+            return redirect()->route('salasobodegas.index')->with('error', 'Ocurrió un error inesperado al eliminar la sala o bodega.');
         }
         return redirect()->route('salasobodegas.index')->with('success', 'Sala o bodega eliminada con éxito');
    

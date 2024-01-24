@@ -272,7 +272,7 @@ class MaterialController extends Controller
 
         } catch(ModelNotFoundException) {
             // Manejo de excepciones cuando no encuentre el material
-            return redirect()->route('equipos.index')->with('error', 'Error al eliminar el material');
+            return redirect()->route('materiales.index')->with('error', 'Error al eliminar el material');
         } catch(Exception $e) {// "Exeption" estaba mal escrito
             return redirect()->route('materiales.index')->with('error', 'No se encontró el material.');
         }

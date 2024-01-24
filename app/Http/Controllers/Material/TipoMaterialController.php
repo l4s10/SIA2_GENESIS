@@ -166,7 +166,7 @@ class TipoMaterialController extends Controller
         }
         catch(Exception $e)
         {
-            return redirect()->route('tiposequipos.index')->with('error', 'Error al cargar el tipo de equipo');
+            return redirect()->route('tiposmateriales.index')->with('error', 'Error al cargar el tipo de equipo');
         }
         return view('tiposmateriales.show', compact('tipoMaterial'));
         

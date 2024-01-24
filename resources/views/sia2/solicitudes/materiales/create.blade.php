@@ -1,4 +1,4 @@
-
+phpphp
 @extends('adminlte::page')
 
 @section('title', 'Gestión de Solicitudes')
