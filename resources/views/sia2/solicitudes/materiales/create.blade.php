@@ -1,7 +1,7 @@
 
 @extends('adminlte::page')
 
-@section('title', 'Solciitar materiales')
+@section('title', 'Solicitar materiales')
 
 @section('content_header')
     <h1>Crear Solicitud</h1>
@@ -140,6 +140,9 @@
             });
             $('#carrito').DataTable({
                 "lengthMenu": [[5, 10, 50, -1], [5, 10, 50, "All"]],
+                "columnDefs": [
+                    { "orderable": false, "targets": 2 }
+                ],
                 "language": {
                     "url": "https://cdn.datatables.net/plug-ins/1.11.3/i18n/es_es.json"
                 },
