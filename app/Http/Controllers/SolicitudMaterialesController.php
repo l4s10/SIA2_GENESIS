@@ -78,7 +78,7 @@ class SolicitudMaterialesController extends Controller
             $material = Material::find($cartItem->id);
 
             // Agrega el material a la solicitud con la cantidad del carrito
-            $solicitud->materiales()->attach($material, ['cantidad' => $cartItem->qty]);
+            $solicitud->materiales()->attach($material, ['CANTIDAD' => $cartItem->qty]);
         }
 
         // Limpia el carrito después de agregar los materiales a la solicitud

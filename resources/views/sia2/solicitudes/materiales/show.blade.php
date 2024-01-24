@@ -32,7 +32,7 @@
                             <tr>
                                 <td>{{ $material->tipoMaterial->TIPO_MATERIAL_NOMBRE }}</td>
                                 <td>{{ $material->MATERIAL_NOMBRE }}</td>
-                                <td>{{ $material->pivot->cantidad }}</td>
+                                <td>{{ $material->pivot->CANTIDAD }}</td>
                             </tr>
                         @endforeach
                     </tbody>

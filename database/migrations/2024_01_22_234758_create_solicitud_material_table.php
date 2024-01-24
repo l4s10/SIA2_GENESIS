@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->unsignedBigInteger('SOLICITUD_ID');
             $table->unsignedBigInteger('MATERIAL_ID');
-            $table->integer('cantidad'); // Agrega cualquier otro atributo que necesites
+            $table->integer('CANTIDAD'); // Agrega cualquier otro atributo que necesites
 
             $table->foreign('SOLICITUD_ID')->references('SOLICITUD_ID')->on('solicitudes');
             $table->foreign('MATERIAL_ID')->references('MATERIAL_ID')->on('materiales');

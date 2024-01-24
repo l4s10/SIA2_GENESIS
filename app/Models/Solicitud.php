@@ -40,7 +40,7 @@ class Solicitud extends Model
         public function materiales()
         {
             return $this->belongsToMany(Material::class, 'solicitud_material', 'SOLICITUD_ID', 'MATERIAL_ID')
-                ->withPivot('cantidad') // Si necesitas acceder a la cantidad desde la relación
+                ->withPivot('CANTIDAD') // Si necesitas acceder a la cantidad desde la relación
                 ->withTimestamps(); // Si necesitas las marcas de tiempo
         }
 }

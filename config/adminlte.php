@@ -343,11 +343,11 @@ return [
             'submenu' => [
                 [
                     'text' => 'Solicitar',
-                    'url'  => 'solicitudesmateriales/create',
+                    'route'  => 'solicitudesmateriales.create',
                 ],
                 [
                     'text' => 'Mis solicitudes',
-                    'url'  => 'solicitudesmateriales',
+                    'route'  => 'solicitudesmateriales.index',
                 ],
             ],
         ],
@@ -368,7 +368,6 @@ return [
         ],
         [
             'text'        => 'Formularios',
-            'url'         => 'admin/pages',
             'icon'        => 'far fa-fw fa-solid fa-file',
             'submenu' => [
                 [
@@ -383,7 +382,6 @@ return [
         ],
         [
             'text'        => 'Salas y Bodegas',
-            'url'         => '#',
             'icon'        => 'far fa-fw fa-solid fa-building',
             'submenu' => [
                 [
@@ -398,7 +396,6 @@ return [
         ],
         [
             'text'        => 'Reparaciones y mantenciones',
-            'url'         => '#',
             'icon'        => 'far fa-fw fa-solid fa-hammer',
             'submenu' => [
                 [
@@ -414,7 +411,6 @@ return [
         ['header' => 'MÓDULOS DIRECTIVOS'],
         [
             'text' => 'Buscar resoluciones',
-            'url'  => '#',
             'icon' => 'fas fa-fw fa-solid fa-search',
             'submenu' => [
                 [
@@ -431,7 +427,6 @@ return [
         ],
         [
             'text' => 'Repositorio',
-            'url'  => '#',
             'icon' => 'fas fa-fw fa-solid fa-archive',
             'submenu' => [
                 [
@@ -459,7 +454,7 @@ return [
         ['header' => 'GESTIONAR ACTIVOS'],
         [
             'text' => 'Inventario',
-            'url'  => 'inventarios',
+            'route'  => 'inventarios.index',
             'icon' => 'fas fa-fw fa-solid fa-paste',
         ],
         [
