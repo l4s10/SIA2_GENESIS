@@ -25,15 +25,30 @@ class Solicitud extends Model
             'SOLICITUD_FECHA_HORA_INICIO_ASIGNADA',
             'SOLICITUD_FECHA_HORA_TERMINO_ASIGNADA'
         ];
-    
+
         //**Relaciones */
         /*
             Relacion de uno a uno -> BelongsTo
             Relacion de uno a muchos / cero a muchos -> HasMany
         */
         //*Relación de uno a uno con User*/
-        public function solicitud()
+        public function solicitante()
         {
             return $this->belongsTo(User::class, 'USUARIO_id', 'id');
+        }
+        // Relación de muchos a muchos con Material
+        public function materiales()
+        {
+            return $this->belongsToMany(Material::class, 'solicitudes_materiales', 'SOLICITUD_ID', 'MATERIAL_ID')
+                ->withPivot('SOLICITUD_MATERIAL_CANTIDAD')
+                ->withTimestamps();
+        }
+
+        // Relación de muchos a muchos con Formulario
+        public function formulario()
+        {
+            return $this->belongsToMany(Formulario::class, 'solicitud_formulario', 'SOLICITUD_ID', 'FORMULARIO_ID')
+                ->withPivot('CANTIDAD')
+                ->withTimestamps();
         }
 }

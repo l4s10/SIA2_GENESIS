@@ -2,10 +2,11 @@
 
 namespace App\Models;
 
+use Gloudemans\Shoppingcart\Contracts\Buyable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Material extends Model
+class Material extends Model implements Buyable
 {
     use HasFactory;
 
@@ -31,5 +32,22 @@ class Material extends Model
     public function oficina()
     {
         return $this->belongsTo(Oficina::class, 'OFICINA_ID');
+    }
+
+    //** cart relationships
+    public function getBuyableIdentifier($options = null)
+    {
+        return $this->getKey();
+    }
+
+    public function getBuyableDescription($options = null)
+    {
+        return $this->MATERIAL_NOMBRE;
+    }
+
+    public function getBuyablePrice($options = null)
+    {
+        // Puedes ajustar esta lógica según tus necesidades
+        return $this->MATERIAL_STOCK;
     }
 }

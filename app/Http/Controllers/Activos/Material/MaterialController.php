@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Material;
+namespace App\Http\Controllers\Activos\Material;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
@@ -8,6 +8,10 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Exception; //Libreria faltante
+use Gloudemans\Shoppingcart\Facades\Cart;
+
+use Maatwebsite\Excel\Facades\Excel;
+use App\Exports\MaterialesExport;
 
 use App\Models\Material;
 use App\Models\TipoMaterial;
@@ -276,4 +280,36 @@ class MaterialController extends Controller
         return redirect()->route('materiales.index')->with('success', 'Material eliminado exitosamente.');
     }
 
+    public function addToCart(Material $material)
+    {
+        // Creamos la instancia del carrito de formularios
+        $carritoMateriales = Cart::instance('carrito_materiales');
+        // Agregar el material al carrito con una cantidad predeterminada (puedes ajustarlo según tus necesidades)
+        $carritoMateriales->add($material, 1);
+
+        return redirect()->back()->with('success', 'Material agregado al carrito exitosamente');
+    }
+
+    // Si queremos mostrar el carrito en una vista apartada (Probablemente no se use pero se codifica por si acaso)
+    public function showCart()
+    {
+        $cartItems = Cart::content();
+        return view('sia2.activos.modmateriales.materiales.show_cart', compact('cartItems'));
+    }
+
+    // Funcion para eliminar un formulario del carrito
+    public function deleteFromCart($rowId){
+        // Cargamos la instancia del carrito de formularios
+        $carritoMateriales = Cart::instance('carrito_materiales');
+        // Eliminamos el formulario del carrito
+        $carritoMateriales->remove($rowId);
+        // Redireccionamos a la vista del carrito
+        return redirect()->back()->with('success', 'Material eliminado exitosamente');
+    }
+
+    // Exportable para Excel
+    public function exportExcel()
+    {
+        return Excel::download(new MaterialesExport, 'Maestro_Materiales.xlsx');
+    }
 }
