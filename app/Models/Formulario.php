@@ -4,8 +4,9 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Gloudemans\Shoppingcart\Contracts\Buyable;
 
-class Formulario extends Model
+class Formulario extends Model implements Buyable
 {
     use HasFactory;
 
@@ -25,4 +26,25 @@ class Formulario extends Model
         return $this->belongsTo(Oficina::class, 'OFICINA_ID');
     }
     // Relacion de 0 a n con Solicitudes
+
+    public function solicitudes()
+    {
+        return $this->hasMany(Solicitud::class, 'FORMULARIO_ID');
+    }
+
+    //** Metodos para el carrito de compras */
+    public function getBuyableIdentifier($options = null)
+    {
+        return $this->getKey();
+    }
+
+    public function getBuyableDescription($options = null)
+    {
+        return $this->FORMULARIO_NOMBRE;
+    }
+
+    public function getBuyablePrice($options = null)
+    {
+        return 0;
+    }
 }

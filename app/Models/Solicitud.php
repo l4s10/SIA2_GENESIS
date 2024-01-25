@@ -32,15 +32,31 @@ class Solicitud extends Model
             Relacion de uno a muchos / cero a muchos -> HasMany
         */
         //*Relación de uno a uno con User*/
-        public function solicitud()
+        public function solicitante()
         {
             return $this->belongsTo(User::class, 'USUARIO_id', 'id');
         }
         // Relación de muchos a muchos con Material
         public function materiales()
         {
-            return $this->belongsToMany(Material::class, 'solicitud_material', 'SOLICITUD_ID', 'MATERIAL_ID')
-                ->withPivot('cantidad') // Si necesitas acceder a la cantidad desde la relación
-                ->withTimestamps(); // Si necesitas las marcas de tiempo
+            return $this->belongsToMany(Material::class, 'solicitudes_materiales', 'SOLICITUD_ID', 'MATERIAL_ID')
+                ->withPivot('SOLICITUD_MATERIAL_CANTIDAD')
+                ->withTimestamps();
+        }
+
+        // Relación de muchos a muchos con Formulario
+        public function formularios()
+        {
+            return $this->belongsToMany(Formulario::class, 'solicitudes_formularios', 'SOLICITUD_ID', 'FORMULARIO_ID')
+                ->withPivot('SOLICITUD_FORMULARIOS_CANTIDAD')
+                ->withTimestamps();
+        }
+
+        // Relación de muchos a muchos con Tipos de equipos
+        public function equipos()
+        {
+            return $this->belongsToMany(TipoEquipo::class, 'solicitudes_equipos', 'SOLICITUD_ID', 'TIPO_EQUIPO_ID')
+                ->withPivot('SOLICITUD_EQUIPOS_CANTIDAD', 'SOLICITUD_EQUIPOS_CANTIDAD_AUTORIZADA')
+                ->withTimestamps();
         }
 }

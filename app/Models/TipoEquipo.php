@@ -2,10 +2,11 @@
 
 namespace App\Models;
 
+use Gloudemans\Shoppingcart\Contracts\Buyable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class TipoEquipo extends Model
+class TipoEquipo extends Model implements Buyable
 {
     use HasFactory;
 
@@ -27,5 +28,22 @@ class TipoEquipo extends Model
     public function oficina()
     {
         return $this->belongsTo(Oficina::class, 'OFICINA_ID');
+    }
+
+    // Metodos para el carrito de compras
+    public function getBuyableIdentifier($options = null)
+    {
+        return $this->getKey();
+    }
+
+    public function getBuyableDescription($options = null)
+    {
+        return $this->TIPO_EQUIPO_NOMBRE;
+    }
+
+    public function getBuyablePrice($options = null)
+    {
+        // El tipo de equipo al no tener un stock como tal, se le asigna un precio de 0.
+        return 0;
     }
 }

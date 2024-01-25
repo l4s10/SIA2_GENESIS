@@ -1,7 +1,7 @@
 phpphp
 @extends('adminlte::page')
 
-@section('title', 'Gestión de Solicitudes')
+@section('title', 'Solicitar materiales')
 
 @section('content_header')
     <h1>Crear Solicitud</h1>
@@ -40,7 +40,6 @@ phpphp
                 <tr>
                     <th>Tipo material</th>
                     <th>Nombre material</th>
-                    {{-- <th>Stock</th> --}}
                     <th>Acciones</th>
                 </tr>
             </thead>
@@ -49,7 +48,6 @@ phpphp
                     <tr>
                         <td>{{ $material->tipoMaterial->TIPO_MATERIAL_NOMBRE }}</td>
                         <td>{{ $material->MATERIAL_NOMBRE }}</td>
-                        {{-- <td>{{ $material->MATERIAL_STOCK }}</td> --}}
                         <td>
                             <form action="{{ route('materiales.addToCart', $material->MATERIAL_ID) }}" method="POST">
                                 @csrf
@@ -70,6 +68,7 @@ phpphp
                 <tr>
                     <th>Material</th>
                     <th>Cantidad</th>
+                    <th>Acciones</th>
                 </tr>
             </thead>
             <tbody>
@@ -77,6 +76,15 @@ phpphp
                     <tr>
                         <td>{{ $cartItem->name }}</td>
                         <td>{{ $cartItem->qty }}</td>
+                        <td>
+                            <form action="{{ route('materiales.removeItem', $cartItem->rowId) }}" method="POST">
+                                @csrf
+                                @method('DELETE')
+                                <button type="submit" class="btn btn-danger">
+                                    <i class="fa-solid fa-trash"></i> Eliminar
+                                </button>
+                            </form>
+                        </td>
                     </tr>
                 @endforeach
             </tbody>
@@ -117,9 +125,6 @@ phpphp
 
 @section('js')
     <script>
-        // Aquí puedes agregar cualquier script JS que necesites
-    </script>
-    <script>
         $(document).ready(function () {
             $('#materiales').DataTable({
                 "lengthMenu": [[5, 10, 50, -1], [5, 10, 50, "All"]],
@@ -132,6 +137,9 @@ phpphp
             });
             $('#carrito').DataTable({
                 "lengthMenu": [[5, 10, 50, -1], [5, 10, 50, "All"]],
+                "columnDefs": [
+                    { "orderable": false, "targets": 2 }
+                ],
                 "language": {
                     "url": "https://cdn.datatables.net/plug-ins/1.11.3/i18n/es_es.json"
                 },

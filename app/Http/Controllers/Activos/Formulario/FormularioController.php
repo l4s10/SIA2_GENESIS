@@ -7,9 +7,10 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Exception;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Gloudemans\Shoppingcart\Facades\Cart;
 
 use App\Models\Formulario;
-use Illuminate\Database\Eloquent\ModelNotFoundException;
 
 class FormularioController extends Controller
 {
@@ -87,6 +88,20 @@ class FormularioController extends Controller
         }
     }
 
+    // show method
+    public function show(string $id)
+    {
+        // Manejo de excepciones
+        try {
+            // Obtenemos el formulario
+            $formulario = Formulario::findOrFail($id);
+            // Retornamos la vista con los datos
+            return view('sia2.activos.modformularios.show', compact('formulario'));
+        } catch (Exception $ex) {
+            // Retornamos la vista con el mensaje de error (concatenar mensaje con $ex para obtener detalles DEBUG)
+            return redirect()->back()->with('error', 'Ha ocurrido un error al cargar el formulario seleccionado');
+        }
+    }
     /**
      * Show the form for editing the specified resource.
      */
@@ -183,5 +198,40 @@ class FormularioController extends Controller
             // Retornamos la vista con el mensaje de error (concatenar mensaje con $ex para obtener detalles DEBUG)
             return redirect()->back()->with('error', 'Ha ocurrido un error al eliminar el formulario');
         }
+    }
+
+    // Funcion para agregar un formulario al carrito
+    public function addToCart(Formulario $formulario){
+
+        // Creamos la instancia del carrito de formularios
+        $carritoFormularios = Cart::instance('carrito_formularios');
+
+        // Agregamos el formulario al carrito
+        $carritoFormularios->add($formulario, 1);
+
+        // Redireccionamos a la vista que mostrará el carrito
+        return redirect()->back()->with('success', 'Formulario agregado exitosamente');
+    }
+
+
+
+    // Función para mostrar el contenido del carrito en la vista createSolicitud
+    public function showCart()
+    {
+        // Obtén el contenido del carrito de formularios
+        $cartItems = Cart::instance('carrito_formularios')->content();
+
+        // Retornamos la vista de createSolicitud con el contenido del carrito
+        return route('formularios.create', compact('cartItems'));
+    }
+
+    // Funcion para eliminar un formulario del carrito
+    public function deleteFromCart($rowId){
+        // Cargamos la instancia del carrito de formularios
+        $carritoFormularios = Cart::instance('carrito_formularios');
+        // Eliminamos el formulario del carrito
+        $carritoFormularios->remove($rowId);
+        // Redireccionamos a la vista del carrito
+        return redirect()->back()->with('success', 'Formulario eliminado exitosamente');
     }
 }

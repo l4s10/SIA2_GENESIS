@@ -11,7 +11,14 @@ require __DIR__.'/Activos/EquiposRoutes.php';
 require __DIR__.'/Activos/SalasOBodegasRoutes.php';
 require __DIR__.'/Activos/FormulariosRoutes.php';
 require __DIR__.'/Activos/VehiculosRoutes.php';
+
+// rutas para solicitudes
 require __DIR__.'/Solicitudes/SolMaterialesRoutes.php';
+require __DIR__.'/Solicitudes/SolFormulariosRoutes.php';
+require __DIR__.'/Solicitudes/SolEquiposRoutes.php';
+
+// rutas para carrito
+require __DIR__.'/CarritoRoutes/CarritoRoutes.php';
 
 /*
 |--------------------------------------------------------------------------

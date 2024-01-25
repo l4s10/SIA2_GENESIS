@@ -1,8 +1,8 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\Material\TipoMaterialController;
-use App\Http\Controllers\Material\MaterialController;
+use App\Http\Controllers\Activos\Material\TipoMaterialController;
+use App\Http\Controllers\Activos\Material\MaterialController;
 
 // Ruta materiales
 Route::resource('materiales', MaterialController::class);

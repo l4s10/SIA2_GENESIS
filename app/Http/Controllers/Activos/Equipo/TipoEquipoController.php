@@ -1,13 +1,13 @@
 <?php
 
-namespace App\Http\Controllers\Equipo;
+namespace App\Http\Controllers\Activos\Equipo;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
-use Illuminate\Validation\Rule;
+use Gloudemans\Shoppingcart\Facades\Cart;
 
 use Exception;
 
@@ -37,7 +37,7 @@ class TipoEquipoController extends Controller
             // Retornar a la pagina previa con un session error
             return back()->with('error', 'Error cargando los tipos de equipo');
         }
-        
+
         // Retornar la vista con los datos
         return view('sia2.activos.modequipos.tiposequipos.index', compact('tiposEquipo'));
     }
@@ -53,7 +53,7 @@ class TipoEquipoController extends Controller
             $oficinaIdUsuario = Auth::user()->OFICINA_ID;
             // Obtener el objeto oficina asociada al usuario actual
             $oficina = Oficina::where('OFICINA_ID', $oficinaIdUsuario)->firstOrFail();
-            
+
         } catch (ModelNotFoundException $e) {
             // Manejar excepción de modelo no encontrado
             return redirect()->route('tiposequipos.index')->with('error', 'No se encontró la oficina del usuario.');
@@ -63,7 +63,7 @@ class TipoEquipoController extends Controller
         }
         return view('sia2.activos.modequipos.tiposequipos.create', compact('oficina'));
     }
-        
+
     /**
      * Store a newly created resource in storage.
      */
@@ -71,7 +71,7 @@ class TipoEquipoController extends Controller
     {
         try
         {
-            
+
             // Validación de los datos
             $validator = Validator::make($request->all(), [
                 'TIPO_EQUIPO_NOMBRE' => ['required','string','max:128'],
@@ -80,7 +80,7 @@ class TipoEquipoController extends Controller
                 'TIPO_EQUIPO_NOMBRE.string' => 'El campo "Nombre Tipo" debe ser una cadena de texto.',
                 'TIPO_EQUIPO_NOMBRE.max' => 'El campo "Nombre Tipo" no debe exceder los :max caracteres.'
             ]);
-            
+
             // Validar y redirigir si falla
             if ($validator->fails()) {
                 return redirect()->back()->withErrors($validator)->withInput();
@@ -145,7 +145,7 @@ class TipoEquipoController extends Controller
             // Manejar otras excepciones
             return redirect()->route('tiposequipos.index')->with('error', 'Ocurrió un error inesperado.');
         }
-        
+
         // Retornamos la vista con los datos
         return view('sia2.activos.modequipos.tiposequipos.edit', compact('tipoEquipo', 'oficina'));
     }
@@ -167,7 +167,7 @@ class TipoEquipoController extends Controller
                 // Mensajes de error
                 'TIPO_EQUIPO_NOMBRE.required' => 'El campo "Nombre Tipo" es obligatorio.',
                 'TIPO_EQUIPO_NOMBRE.string' => 'El campo "Nombre Tipo" debe ser una cadena de texto.',
-                'TIPO_EQUIPO_NOMBRE.max' => 'El campo "Nombre Tipo" no debe exceder los :max caracteres.'            
+                'TIPO_EQUIPO_NOMBRE.max' => 'El campo "Nombre Tipo" no debe exceder los :max caracteres.'
             ]);
 
             // Validar y redirigir si falla
@@ -193,7 +193,7 @@ class TipoEquipoController extends Controller
         return redirect()->route('tiposequipos.index')->with('success', 'Tipo de equipo actualizado exitosamente');
     }
 
-    
+
 
     /**
      * Remove the specified resource from storage.
@@ -215,5 +215,31 @@ class TipoEquipoController extends Controller
         }
         //Retornar a la vista con un mensaje de éxito
         return redirect()->route('tiposequipos.index')->with('success', 'Tipo de equipo eliminado exitosamente');
+    }
+
+    // Funciones para agregar y tipos de equipo al carrito
+    public function addToCart(TipoEquipo $tipoequipo)
+    {
+        // Llamamos a la instancia del carrito de compras para los equipos
+        $carritoEquipos = Cart::instance('carrito_equipos');
+
+        // Agregamos el tipo de equipo al carrito
+        $carritoEquipos->add($tipoequipo, 1);
+
+        // Retornar a la vista con un mensaje de éxito
+        return redirect()->back()->with('success', 'Tipo de equipo agregado exitosamente')->withInput();
+    }
+
+    // Función para eliminar un tipo de equipo del carrito
+    public function removeFromCart($rowId)
+    {
+        // Llamamos a la instancia del carrito de compras para los equipos
+        $carritoEquipos = Cart::instance('carrito_equipos');
+
+        // Eliminamos el tipo de equipo del carrito
+        $carritoEquipos->remove($rowId);
+
+        // Retornar a la vista con un mensaje de éxito
+        return redirect()->back()->with('success', 'Tipo de equipo eliminado exitosamente')->withInput();
     }
 }

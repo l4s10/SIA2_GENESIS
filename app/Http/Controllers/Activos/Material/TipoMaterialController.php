@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Material;
+namespace App\Http\Controllers\Activos\Material;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
@@ -46,7 +46,7 @@ class TipoMaterialController extends Controller
             $oficinaIdUsuario = Auth::user()->OFICINA_ID;
             // Obtener el objeto oficina asociada al usuario actual
             $oficina = Oficina::where('OFICINA_ID', $oficinaIdUsuario)->firstOrFail();
-            
+
         } catch (ModelNotFoundException $e) {
             // Manejar excepción de modelo no encontrado
             return redirect()->route('tiposmateriales.index')->with('error', 'No se encontró la oficina del usuario.');
@@ -61,7 +61,7 @@ class TipoMaterialController extends Controller
     {
         dd($request);
         try {
-            
+
             // Validación de datos
             $validator = Validator::make($request->all(), [
                 'TIPO_MATERIAL_NOMBRE' => ['required', 'string', 'max:128', 'regex:/^[a-zA-Z\s]+$/'],
@@ -96,7 +96,7 @@ class TipoMaterialController extends Controller
     public function edit(string $id)
     {
         try {
-            // Obtener el tipo de material por ID 
+            // Obtener el tipo de material por ID
             $tipoMaterial = TipoMaterial::findOrFail($id);
             // Obtener la OFICINA_ID del usuario actual
             $oficinaIdUsuario = Auth::user()->OFICINA_ID;
@@ -119,9 +119,9 @@ class TipoMaterialController extends Controller
         try {
             // Obtener el tipo de material por ID
             $tipoMaterial = TipoMaterial::findOrFail($id);
-            
 
-    
+
+
             // Construir el validador
             $validator = Validator::make($request->all(), [
                 'TIPO_MATERIAL_NOMBRE' => ['required', 'string', 'max:128', 'regex:/^[a-zA-Z\s]+$/'],
@@ -132,7 +132,7 @@ class TipoMaterialController extends Controller
                 'TIPO_MATERIAL_NOMBRE.max' => 'El campo "Nombre Tipo" no debe exceder los :max caracteres.',
                 'TIPO_MATERIAL_NOMBRE.regex' => 'El campo "Nombre Tipo" sólo debe contener letras y espacios.',
             ]);
-            
+
             // Validar y redirigir si falla
             if ($validator->fails()) {
                 return redirect()->back()->withErrors($validator)->withInput();
@@ -143,7 +143,7 @@ class TipoMaterialController extends Controller
                 'TIPO_MATERIAL_NOMBRE' => strtoupper($request->input('TIPO_MATERIAL_NOMBRE')),
                 'OFICINA_ID' => Auth::user()->OFICINA_ID
             ]);
-    
+
         } catch (ModelNotFoundException $e) {
             // Manejar excepción de modelo no encontrado
             return redirect()->route('tiposmateriales.index')->with('error', 'Ocurrió un error inesperado.');
@@ -169,7 +169,7 @@ class TipoMaterialController extends Controller
             return redirect()->route('tiposmateriales.index')->with('error', 'Error al cargar el tipo de equipo');
         }
         return view('tiposmateriales.show', compact('tipoMaterial'));
-        
+
     }
 
     public function destroy($id)
