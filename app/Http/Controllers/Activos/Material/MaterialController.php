@@ -293,7 +293,7 @@ class MaterialController extends Controller
     // Si queremos mostrar el carrito en una vista apartada (Probablemente no se use pero se codifica por si acaso)
     public function showCart()
     {
-        $cartItems = Cart::content();
+        $cartItems = Cart::instance('carrito_materiales')->content();
         return view('sia2.activos.modmateriales.materiales.show_cart', compact('cartItems'));
     }
 

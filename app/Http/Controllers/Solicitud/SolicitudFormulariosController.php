@@ -21,8 +21,8 @@ class SolicitudFormulariosController extends Controller
     {
         try
         {
-            // Función que lista las solicitudes basadas en la OFICINA_ID del usuario logueado
-            $solicitudes = Solicitud::with('formulario')->where('USUARIO_id', Auth::user()->id)->get();
+            // Query que a través de la relación has() filtra las solicitudes que SOLO tengan formularios asociados
+            $solicitudes = Solicitud::has('formularios')->get();
         }
         catch(Exception $e)
         {
@@ -83,8 +83,8 @@ class SolicitudFormulariosController extends Controller
             $formulario = Formulario::find($item->id);
 
             // Agrega el formulario a la solicitud
-            $solicitud->formulario()->attach($formulario, [
-                'CANTIDAD' => $item->qty,
+            $solicitud->formularios()->attach($formulario, [
+                'SOLICITUD_FORMULARIOS_CANTIDAD' => $item->qty,
             ]);
         }
 
@@ -101,7 +101,7 @@ class SolicitudFormulariosController extends Controller
     public function show(string $id)
     {
         // Recuperar la solicitud
-        $solicitud = Solicitud::with('formulario')->findOrFail($id);
+        $solicitud = Solicitud::has('formularios')->findOrFail($id);
 
         return view('sia2.solicitudes.formularios.show', compact('solicitud'));
     }
@@ -133,7 +133,7 @@ class SolicitudFormulariosController extends Controller
             $solicitud = Solicitud::findOrFail($id);
 
             // Eliminar los formularios asociados a la solicitud
-            $solicitud->formulario()->detach();
+            $solicitud->formularios()->detach();
 
             // Eliminar la solicitud
             $solicitud->delete();
