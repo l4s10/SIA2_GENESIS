@@ -84,7 +84,7 @@ class SolicitudFormulariosController extends Controller
 
             // Agrega el formulario a la solicitud
             $solicitud->formulario()->attach($formulario, [
-                'CANTIDAD' => $item->qty,
+                'SOLICITUD_FORMULARIOS_CANTIDAD' => $item->qty,
             ]);
         }
 

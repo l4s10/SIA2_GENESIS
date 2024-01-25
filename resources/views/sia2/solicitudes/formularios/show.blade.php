@@ -32,7 +32,7 @@
                             <tr>
                                 <td>{{ $formulario->FORMULARIO_TIPO }}</td>
                                 <td>{{ $formulario->FORMULARIO_NOMBRE }}</td>
-                                <td>{{ $formulario->pivot->CANTIDAD }}</td>
+                                <td>{{ $formulario->pivot->SOLICITUD_FORMULARIOS_CANTIDAD }}</td>
                             </tr>
                         @endforeach
                     </tbody>
