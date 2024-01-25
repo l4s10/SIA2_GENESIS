@@ -11,13 +11,15 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('solicitudes_formularios', function (Blueprint $table) {
+        Schema::create('solicitudes_equipos', function (Blueprint $table) {
             $table->unsignedBigInteger('SOLICITUD_ID');
-            $table->unsignedBigInteger('FORMULARIO_ID');
-            $table->integer('SOLICITUD_FORMULARIOS_CANTIDAD');
+            $table->unsignedBigInteger('TIPO_EQUIPO_ID');
+            $table->integer('SOLICITUD_EQUIPOS_CANTIDAD');
+            $table->integer('SOLICITUD_EQUIPOS_CANTIDAD_AUTORIZADA')->nullable();
 
+            //Foraneas
             $table->foreign('SOLICITUD_ID')->references('SOLICITUD_ID')->on('solicitudes');
-            $table->foreign('FORMULARIO_ID')->references('FORMULARIO_ID')->on('formularios');
+            $table->foreign('TIPO_EQUIPO_ID')->references('TIPO_EQUIPO_ID')->on('tipos_equipos');
             $table->timestamps();
         });
     }
@@ -27,6 +29,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('solicitudes_formularios');
+        Schema::dropIfExists('solicitudes_equipos');
     }
 };

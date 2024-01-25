@@ -34,7 +34,7 @@ class Material extends Model implements Buyable
         return $this->belongsTo(Oficina::class, 'OFICINA_ID');
     }
 
-    //** cart relationships
+    //** Metodos para el carrito de compras */
     public function getBuyableIdentifier($options = null)
     {
         return $this->getKey();
@@ -47,7 +47,7 @@ class Material extends Model implements Buyable
 
     public function getBuyablePrice($options = null)
     {
-        // Puedes ajustar esta lógica según tus necesidades
-        return $this->MATERIAL_STOCK;
+        // El material no tiene un precio como tal, se le asigna un precio de 0.
+        return 0;
     }
 }

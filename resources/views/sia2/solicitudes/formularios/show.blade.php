@@ -28,7 +28,7 @@
                         </tr>
                     </thead>
                     <tbody>
-                        @foreach($solicitud->formulario as $formulario)
+                        @foreach($solicitud->formularios as $formulario)
                             <tr>
                                 <td>{{ $formulario->FORMULARIO_TIPO }}</td>
                                 <td>{{ $formulario->FORMULARIO_NOMBRE }}</td>

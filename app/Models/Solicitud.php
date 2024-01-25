@@ -45,10 +45,18 @@ class Solicitud extends Model
         }
 
         // Relación de muchos a muchos con Formulario
-        public function formulario()
+        public function formularios()
         {
             return $this->belongsToMany(Formulario::class, 'solicitudes_formularios', 'SOLICITUD_ID', 'FORMULARIO_ID')
                 ->withPivot('SOLICITUD_FORMULARIOS_CANTIDAD')
+                ->withTimestamps();
+        }
+
+        // Relación de muchos a muchos con Tipos de equipos
+        public function equipos()
+        {
+            return $this->belongsToMany(TipoEquipo::class, 'solicitudes_equipos', 'SOLICITUD_ID', 'TIPO_EQUIPO_ID')
+                ->withPivot('SOLICITUD_EQUIPOS_CANTIDAD', 'SOLICITUD_EQUIPOS_CANTIDAD_AUTORIZADA')
                 ->withTimestamps();
         }
 }

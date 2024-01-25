@@ -125,9 +125,6 @@
 
 @section('js')
     <script>
-        // Aquí puedes agregar cualquier script JS que necesites
-    </script>
-    <script>
         $(document).ready(function () {
             $('#materiales').DataTable({
                 "lengthMenu": [[5, 10, 50, -1], [5, 10, 50, "All"]],

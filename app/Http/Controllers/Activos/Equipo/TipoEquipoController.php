@@ -7,7 +7,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
-use Illuminate\Validation\Rule;
+use Gloudemans\Shoppingcart\Facades\Cart;
 
 use Exception;
 
@@ -215,5 +215,31 @@ class TipoEquipoController extends Controller
         }
         //Retornar a la vista con un mensaje de éxito
         return redirect()->route('tiposequipos.index')->with('success', 'Tipo de equipo eliminado exitosamente');
+    }
+
+    // Funciones para agregar y tipos de equipo al carrito
+    public function addToCart(TipoEquipo $tipoequipo)
+    {
+        // Llamamos a la instancia del carrito de compras para los equipos
+        $carritoEquipos = Cart::instance('carrito_equipos');
+
+        // Agregamos el tipo de equipo al carrito
+        $carritoEquipos->add($tipoequipo, 1);
+
+        // Retornar a la vista con un mensaje de éxito
+        return redirect()->back()->with('success', 'Tipo de equipo agregado exitosamente')->withInput();
+    }
+
+    // Función para eliminar un tipo de equipo del carrito
+    public function removeFromCart($rowId)
+    {
+        // Llamamos a la instancia del carrito de compras para los equipos
+        $carritoEquipos = Cart::instance('carrito_equipos');
+
+        // Eliminamos el tipo de equipo del carrito
+        $carritoEquipos->remove($rowId);
+
+        // Retornar a la vista con un mensaje de éxito
+        return redirect()->back()->with('success', 'Tipo de equipo eliminado exitosamente')->withInput();
     }
 }

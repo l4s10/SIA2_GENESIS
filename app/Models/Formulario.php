@@ -32,7 +32,7 @@ class Formulario extends Model implements Buyable
         return $this->hasMany(Solicitud::class, 'FORMULARIO_ID');
     }
 
-    //** cart relationships
+    //** Metodos para el carrito de compras */
     public function getBuyableIdentifier($options = null)
     {
         return $this->getKey();
