@@ -38,7 +38,7 @@ class MaterialController extends Controller
         catch (Exception $e)
         {
             // Retornar a la pagina previa con un session error
-            return back()->with('error', 'Error cargando los tipos de equipo');
+            return back()->with('error', 'Error cargando los materiales');
         }
         return view('sia2.activos.modmateriales.materiales.index', compact('materiales'));;
     }
@@ -235,7 +235,7 @@ class MaterialController extends Controller
         } catch (ModelNotFoundException $e) {
             return redirect()->route('materiales.index')->with('error', 'No se encontró el material con el ID proporcionado.');
         } catch (Exception $e) {
-            return redirect()->route('materiales.index')->with('error', 'Error al actualizar el material: ' . $e->getMessage());
+            return redirect()->route('materiales.index')->with('error', 'Error al actualizar el material: ');
         }
 
         return redirect()->route('materiales.index')->with('success', 'Material actualizado exitosamente.');
