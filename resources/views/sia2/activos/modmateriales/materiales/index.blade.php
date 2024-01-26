@@ -33,8 +33,8 @@
             });
         </script>
     @endif
-    {{-- Enlace para exportar PDF --}}
-    {{--<a href="{{ route('materiales.exportar-pdf') }}" class="btn btn-primary" target="_blank">
+        {{-- Enlace para exportar PDF --}}
+        {{--<a href="{{ route('materiales.exportar-pdf') }}" class="btn btn-primary" target="_blank">
             <i class="fa-solid fa-file-pdf"></i> Exportar PDF
         </a>--}}
 
@@ -42,6 +42,10 @@
         <div class="table-responsive">
             <a class="btn agregar" href="{{ route('materiales.create') }}"><i class="fa-solid fa-plus"></i> Agregar Material</a>
             <a class="btn btn-secondary" href="{{route('tiposmateriales.index')}}"><i class="fa-solid fa-eye"></i> Ver tipos de materiales</a>
+            {{-- Boton para exportar a EXCEL --}}
+            <a href="{{ route('exportar-materiales') }}" class="btn btn-success">
+                <i class="fa-solid fa-file-excel"></i> Exportar Excel
+            </a>
 
             <table id="materiales" class="table table-bordered mt-4">
                 <thead class="tablacolor">
