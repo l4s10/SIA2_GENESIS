@@ -13,8 +13,7 @@ return new class extends Migration
     {
         Schema::create('categorias_reparaciones', function (Blueprint $table) {
             $table->id('CATEGORIA_REPARACION_ID');
-            $table->string('CATEGORIA_REPARACION_NOMBRE',60);
-            $table->timestamps();
+            $table->string('CATEGORIA_REPARACION_NOMBRE',60)->unique();
         });
     }
 
