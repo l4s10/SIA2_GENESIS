@@ -13,7 +13,7 @@
 
         <div class="mb-3">
             <label for="MATERIAL_NOMBRE" class="form-label"><i class="fa-solid fa-pen-to-square"></i> Nombre del material:</label>
-            <input type="text" class="form-control{{ $errors->has('MATERIAL_NOMBRE') ? ' is-invalid' : '' }}" id="MATERIAL_NOMBRE" name="MATERIAL_NOMBRE" value="{{ old('MATERIAL_NOMBRE') }}" placeholder="Ej: LÁPIZ N°2" required>
+            <input type="text" class="form-control{{ $errors->has('MATERIAL_NOMBRE') ? ' is-invalid' : '' }}" id="MATERIAL_NOMBRE" name="MATERIAL_NOMBRE" value="{{ old('MATERIAL_NOMBRE') }}" placeholder="Ej: LÁPIZ N°2" maxlength="40" required>
             @if ($errors->has('MATERIAL_NOMBRE'))
                 <div class="invalid-feedback">
                     {{ $errors->first('MATERIAL_NOMBRE') }}
@@ -51,7 +51,7 @@
 
         <div class="mb-3">
             <label for="DETALLE_MOVIMIENTO" class="form-label"><i class="fa-solid fa-person-chalkboard"></i> Detalle del Movimiento:</label>
-            <textarea required class="form-control{{ $errors->has('DETALLE_MOVIMIENTO') ? ' is-invalid' : '' }}" name="DETALLE_MOVIMIENTO" id="DETALLE_MOVIMIENTO" cols="30" rows="5" placeholder="Especifique: N° factura, Código libro adquisiciones, Nombre y rut proveedor, N° res. exenta de compra y de orden de compra. (MAX 1000 CARACTERES)">{{ old('DETALLE_MOVIMIENTO') }}</textarea>
+            <textarea required class="form-control{{ $errors->has('DETALLE_MOVIMIENTO') ? ' is-invalid' : '' }}" name="DETALLE_MOVIMIENTO" id="DETALLE_MOVIMIENTO" cols="30" rows="5" maxlength="1000" placeholder="Especifique: N° factura, Código libro adquisiciones, Nombre y rut proveedor, N° res. exenta de compra y de orden de compra. (MAX 1000 CARACTERES)">{{ old('DETALLE_MOVIMIENTO') }}</textarea>
             @if ($errors->has('DETALLE_MOVIMIENTO'))
                 <div class="invalid-feedback">
                     {{ $errors->first('DETALLE_MOVIMIENTO') }}

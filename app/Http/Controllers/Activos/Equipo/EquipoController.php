@@ -28,12 +28,13 @@ class EquipoController extends Controller
             $oficinaIdUsuario = Auth::user()->OFICINA_ID;
             // Función que lista equipos basados en la OFICINA_ID del usuario
             $equipos = Equipo::where('OFICINA_ID', $oficinaIdUsuario)->get();
+
+            // Retorna la vista con los equipos
+            return view('sia2.activos.modequipos.equipos.index', compact('equipos'));
         } catch (\Exception $e) {
             // Maneja la excepción y muestra un mensaje de error
             return back()->with('error', 'Error cargando los equipos: ' . $e->getMessage());
         }
-        // Retorna la vista con los equipos
-        return view('sia2.activos.modequipos.equipos.index', compact('equipos'));
     }
 
     /**
@@ -51,6 +52,9 @@ class EquipoController extends Controller
 
             // Obtener el objeto oficina asociada al usuario actual
             $oficina = Oficina::where('OFICINA_ID', $oficinaIdUsuario)->firstOrFail();
+
+            // Retornar la vista con los tipos de equipos y la oficina
+            return view('sia2.activos.modequipos.equipos.create', compact('tiposEquipos', 'oficina'));
         } catch (ModelNotFoundException $e) {
             // Manejar excepción de modelo no encontrado
             return redirect()->route('equipos.index')->with('error', 'Ocurrió un error inesperado.');
@@ -58,9 +62,6 @@ class EquipoController extends Controller
             // Manejar otras excepciones
             return redirect()->route('equipos.index')->with('error', 'Ocurrió un error inesperado.');
         }
-
-        // Retornar la vista con los tipos de equipos y la oficina
-        return view('sia2.activos.modequipos.equipos.create', compact('tiposEquipos', 'oficina'));
     }
 
 
@@ -69,80 +70,78 @@ class EquipoController extends Controller
      * Store a newly created resource in storage.
      */
 
-     public function store(Request $request)
-     {
-         try {
-             // Reglas de validación y mensajes respectivos
-             $validator = Validator::make($request->all(), [
-                 'TIPO_EQUIPO_ID' => 'required|exists:tipos_equipos,TIPO_EQUIPO_ID',
-                 'EQUIPO_STOCK' => 'required|integer|between:0,1000',
-                 'EQUIPO_MARCA' => 'required|string|max:128',
-                 'EQUIPO_MODELO' => 'required|string|max:128',
-                 'EQUIPO_ESTADO' => 'required|string|max:40',
-                 'DETALLE_MOVIMIENTO' => 'required|string|max:1000',
-             ], [
-                 'TIPO_EQUIPO_ID.required' => 'El campo Tipo de Equipo es obligatorio.',
-                 'TIPO_EQUIPO_ID.exists' => 'El Tipo de Equipo seleccionado no es válido.',
-                 'EQUIPO_STOCK.required' => 'El campo Stock es obligatorio.',
-                 'EQUIPO_STOCK.integer' => 'El campo Stock debe ser un número entero.',
-                 'EQUIPO_STOCK.between' => 'El campo Stock debe estar entre :min y :max.',
-                 'EQUIPO_MARCA.required' => 'El campo Marca es obligatorio.',
-                 'EQUIPO_MARCA.string' => 'El campo Marca debe ser una cadena de texto.',
-                 'EQUIPO_MARCA.max' => 'El campo Marca no debe exceder los :max caracteres.',
-                 'EQUIPO_MODELO.required' => 'El campo Modelo es obligatorio.',
-                 'EQUIPO_MODELO.string' => 'El campo Modelo debe ser una cadena de texto.',
-                 'EQUIPO_MODELO.max' => 'El campo Modelo no debe exceder los :max caracteres.',
-                 'EQUIPO_ESTADO.required' => 'El campo Estado es obligatorio.',
-                 'EQUIPO_ESTADO.string' => 'El campo Estado debe ser una cadena de texto.',
-                 'EQUIPO_ESTADO.max' => 'El campo Estado no debe exceder los :max caracteres.',
-                 'DETALLE_MOVIMIENTO.required' => 'El campo Detalle de Movimiento es obligatorio.',
-                 'DETALLE_MOVIMIENTO.string' => 'El campo Detalle de Movimiento debe ser una cadena de texto.',
-                 'DETALLE_MOVIMIENTO.max' => 'El campo Detalle de Movimiento no debe exceder los :max caracteres.',
-             ]);
+    public function store(Request $request)
+    {
+        try {
+            // Reglas de validación y mensajes respectivos
+            $validator = Validator::make($request->all(), [
+                'TIPO_EQUIPO_ID' => 'required|exists:tipos_equipos,TIPO_EQUIPO_ID',
+                'EQUIPO_STOCK' => 'required|integer|between:0,1000',
+                'EQUIPO_MARCA' => 'required|string|max:128',
+                'EQUIPO_MODELO' => 'required|string|max:128',
+                'EQUIPO_ESTADO' => 'required|string|max:40',
+                'DETALLE_MOVIMIENTO' => 'required|string|max:1000',
+            ], [
+                'TIPO_EQUIPO_ID.required' => 'El campo Tipo de Equipo es obligatorio.',
+                'TIPO_EQUIPO_ID.exists' => 'El Tipo de Equipo seleccionado no es válido.',
+                'EQUIPO_STOCK.required' => 'El campo Stock es obligatorio.',
+                'EQUIPO_STOCK.integer' => 'El campo Stock debe ser un número entero.',
+                'EQUIPO_STOCK.between' => 'El campo Stock debe estar entre :min y :max.',
+                'EQUIPO_MARCA.required' => 'El campo Marca es obligatorio.',
+                'EQUIPO_MARCA.string' => 'El campo Marca debe ser una cadena de texto.',
+                'EQUIPO_MARCA.max' => 'El campo Marca no debe exceder los :max caracteres.',
+                'EQUIPO_MODELO.required' => 'El campo Modelo es obligatorio.',
+                'EQUIPO_MODELO.string' => 'El campo Modelo debe ser una cadena de texto.',
+                'EQUIPO_MODELO.max' => 'El campo Modelo no debe exceder los :max caracteres.',
+                'EQUIPO_ESTADO.required' => 'El campo Estado es obligatorio.',
+                'EQUIPO_ESTADO.string' => 'El campo Estado debe ser una cadena de texto.',
+                'EQUIPO_ESTADO.max' => 'El campo Estado no debe exceder los :max caracteres.',
+                'DETALLE_MOVIMIENTO.required' => 'El campo Detalle de Movimiento es obligatorio.',
+                'DETALLE_MOVIMIENTO.string' => 'El campo Detalle de Movimiento debe ser una cadena de texto.',
+                'DETALLE_MOVIMIENTO.max' => 'El campo Detalle de Movimiento no debe exceder los :max caracteres.',
+            ]);
 
-             // Validar y redirigir mensaje al blade si falla
-             if ($validator->fails()) {
-                 return redirect()->back()->withErrors($validator)->withInput();
-             }
+            // Validar y redirigir mensaje al blade si falla
+            if ($validator->fails()) {
+                return redirect()->back()->withErrors($validator)->withInput();
+            }
 
-             // Crear un nuevo equipo e instanciar en $equipo para acceder a sus atributos al realizar el respectivo movimiento
-             $equipo = Equipo::create([
-                 'OFICINA_ID' => Auth::user()->OFICINA_ID,
-                 'TIPO_EQUIPO_ID' => $request->TIPO_EQUIPO_ID,
-                 'EQUIPO_MARCA' => strtoupper($request->input('EQUIPO_MARCA')),
-                 'EQUIPO_MODELO' => strtoupper($request->input('EQUIPO_MODELO')),
-                 'EQUIPO_STOCK' => $request->EQUIPO_STOCK,
-                 'EQUIPO_ESTADO' => strtoupper($request->input('EQUIPO_ESTADO'))
-             ]);
+            // Crear un nuevo equipo e instanciar en $equipo para acceder a sus atributos al realizar el respectivo movimiento
+            $equipo = Equipo::create([
+                'OFICINA_ID' => Auth::user()->OFICINA_ID,
+                'TIPO_EQUIPO_ID' => $request->TIPO_EQUIPO_ID,
+                'EQUIPO_MARCA' => strtoupper($request->input('EQUIPO_MARCA')),
+                'EQUIPO_MODELO' => strtoupper($request->input('EQUIPO_MODELO')),
+                'EQUIPO_STOCK' => $request->EQUIPO_STOCK,
+                'EQUIPO_ESTADO' => strtoupper($request->input('EQUIPO_ESTADO'))
+            ]);
 
-             if ($equipo) {
-                 // Crear un nuevo movimiento asociado al equipo creado
-                 Movimiento::create([
-                     'USUARIO_id' => Auth::user()->id,
-                     'EQUIPO_ID' => $equipo->EQUIPO_ID,
-                     'MOVIMIENTO_TITULAR' => Auth::user()->USUARIO_NOMBRES,
-                     'MOVIMIENTO_OBJETO' => 'EQUIPO: ' . $equipo->EQUIPO_MODELO,
-                     'MOVIMIENTO_TIPO_OBJETO' => $equipo->tipoEquipo->TIPO_EQUIPO_NOMBRE,
-                     'MOVIMIENTO_TIPO' => 'INGRESO',
-                     'MOVIMIENTO_STOCK_PREVIO' => 0,
-                     'MOVIMIENTO_CANTIDAD_A_MODIFICAR' => $equipo->EQUIPO_STOCK,
-                     'MOVIMIENTO_STOCK_RESULTANTE' => $equipo->EQUIPO_STOCK,
-                     'MOVIMIENTO_DETALLE' => strtoupper($request->input('DETALLE_MOVIMIENTO'))
-                 ]);
+            if ($equipo) {
+                // Crear un nuevo movimiento asociado al equipo creado
+                Movimiento::create([
+                    'USUARIO_id' => Auth::user()->id,
+                    'EQUIPO_ID' => $equipo->EQUIPO_ID,
+                    'MOVIMIENTO_TITULAR' => Auth::user()->USUARIO_NOMBRES,
+                    'MOVIMIENTO_OBJETO' => 'EQUIPO: ' . $equipo->EQUIPO_MODELO,
+                    'MOVIMIENTO_TIPO_OBJETO' => $equipo->tipoEquipo->TIPO_EQUIPO_NOMBRE,
+                    'MOVIMIENTO_TIPO' => 'INGRESO',
+                    'MOVIMIENTO_STOCK_PREVIO' => 0,
+                    'MOVIMIENTO_CANTIDAD_A_MODIFICAR' => $equipo->EQUIPO_STOCK,
+                    'MOVIMIENTO_STOCK_RESULTANTE' => $equipo->EQUIPO_STOCK,
+                    'MOVIMIENTO_DETALLE' => strtoupper($request->input('DETALLE_MOVIMIENTO'))
+                ]);
 
-                 // Redireccionar a la vista index
-                 return redirect()->route('equipos.index')->with('success', 'Equipo creado correctamente');
-             } else {
-                 // Redireccionar a la vista index
-                 return redirect()->route('equipos.index')->with('error', 'Error al crear el equipo');
-             }
-         } catch (Exception $e) {
-             // Log::error('Error al crear el equipo: ' . $e->getMessage());
-             return redirect()->route('equipos.index')->with('error', 'Error al crear el equipo: ' . $e->getMessage());
-         }
-         // Redireccionar a la vista index
-         return redirect()->route('equipos.index')->with('success', 'Equipo creado exitosamente.');
-     }
+                // Redireccionar a la vista index
+                return redirect()->route('equipos.index')->with('success', 'Equipo creado exitosamente.');
+            } else {
+                // Redireccionar a la vista index
+                return redirect()->route('equipos.index')->with('error', 'Error al crear el equipo');
+            }
+        } catch (Exception $e) {
+            // Log::error('Error al crear el equipo: ' . $e->getMessage());
+            return redirect()->route('equipos.index')->with('error', 'Error al crear el equipo');
+        }
+    }
 
 
     /**
@@ -167,15 +166,16 @@ class EquipoController extends Controller
             $tiposEquipos = TipoEquipo::where('OFICINA_ID', $oficinaIdUsuario)->get();
             // Obtener la información de la oficina del usuario
             $oficina = Oficina::where('OFICINA_ID', $oficinaIdUsuario)->firstOrFail();
+
+            // Retornar la vista con los datos
+            return view('sia2.activos.modequipos.equipos.edit', compact('equipo', 'tiposEquipos', 'oficina'));
         } catch (ModelNotFoundException $e) {
             // Manejo de excepciones cuando no encuentra el modelo
             return redirect()->route('equipos.index')->with('error', 'No se encontró el equipo');
         } catch (Exception $e) {
             // Manejo para cualquier otra excepción
-            return redirect()->route('equipos.index')->with('error', 'Error al editar el equipo: ' . $e->getMessage());
+            return redirect()->route('equipos.index')->with('error', 'Error al editar el equipo');
         }
-        // Retornar la vista con los datos
-        return view('sia2.activos.modequipos.equipos.edit', compact('equipo', 'tiposEquipos', 'oficina'));
     }
 
     /**
@@ -272,6 +272,9 @@ class EquipoController extends Controller
                 'MOVIMIENTO_STOCK_RESULTANTE' => $stockResultante,
                 'MOVIMIENTO_DETALLE' => strtoupper($request->input('DETALLE_MOVIMIENTO'))
             ]);
+            
+            //retornar a la vista index
+            return redirect()->route('equipos.index')->with('success', 'Equipo actualizado correctamente');
         } catch (ModelNotFoundException $e) {
             // Manejo de excepciones cuando no encuentre el modelo
             return redirect()->route('equipos.index')->with('error', 'No se encontró el equipo ');
@@ -279,9 +282,6 @@ class EquipoController extends Controller
             // Manejo para cualquier otra excepción
             return redirect()->route('equipos.index')->with('error', 'Error al actualizar el equipo: ');
         }
-                //retornar a la vista index
-
-        return redirect()->route('equipos.index')->with('success', 'Equipo actualizado correctamente');
     }
 
     /**
@@ -313,6 +313,8 @@ class EquipoController extends Controller
                 $equipo->delete();
             }
 
+            //retornar a la vista index
+            return redirect()->route('equipos.index')->with('success', 'Equipo eliminado correctamente');
         } catch(ModelNotFoundException $e) {
             // Manejo de excepciones cuando no encuentre el modelo
             return redirect()->route('equipos.index')->with('error', 'Error al eliminar el equipo');
@@ -320,9 +322,5 @@ class EquipoController extends Controller
             //Manejo para cualquier otra excepcion
             return redirect()->route('equipos.index')->with('error', 'Error al eliminar el equipo');
         }
-
-        //retornar a la vista index
-        return redirect()->route('equipos.index')->with('success', 'Equipo eliminado correctamente');
-
     }
 }

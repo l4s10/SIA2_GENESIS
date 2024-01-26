@@ -1,4 +1,3 @@
-
 @extends('adminlte::page')
 
 @section('title', 'Solicitar materiales')

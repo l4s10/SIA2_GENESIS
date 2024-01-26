@@ -30,13 +30,13 @@ class TipoMaterialController extends Controller
 
             // Función que lista tipos de materiales basados en la OFICINA_ID del usuario
             $tiposMaterial = TipoMaterial::where('OFICINA_ID', $oficinaIdUsuario)->get();
+            return view('sia2.activos.modmateriales.tiposmateriales.index', compact('tiposMaterial'));
         }
         catch (\Exception $e)
         {
             // Retornar a la pagina previa con un session error
             return back()->with('error', 'Error cargando los tipos de equipo');
         }
-        return view('sia2.activos.modmateriales.tiposmateriales.index', compact('tiposMaterial'));
     }
 
     public function create()
@@ -47,6 +47,7 @@ class TipoMaterialController extends Controller
             // Obtener el objeto oficina asociada al usuario actual
             $oficina = Oficina::where('OFICINA_ID', $oficinaIdUsuario)->firstOrFail();
 
+            return view('sia2.activos.modmateriales.tiposmateriales.create', compact('oficina'));
         } catch (ModelNotFoundException $e) {
             // Manejar excepción de modelo no encontrado
             return redirect()->route('tiposmateriales.index')->with('error', 'No se encontró la oficina del usuario.');
@@ -54,12 +55,10 @@ class TipoMaterialController extends Controller
             // Manejar otras excepciones
             return redirect()->route('tiposmateriales.index')->with('error', 'Ocurrió un error inesperado.');
         }
-        return view('sia2.activos.modmateriales.tiposmateriales.create', compact('oficina'));
     }
 
     public function store(Request $request)
     {
-        dd($request);
         try {
 
             // Validación de datos
@@ -72,7 +71,6 @@ class TipoMaterialController extends Controller
                 'TIPO_MATERIAL_NOMBRE.regex' => 'El campo "Nombre Tipo" sólo debe contener letras y espacios.',
             ]);
 
-            dd($request);
             // Validar y redirigir si falla
             if ($validator->fails()) {
                 return redirect()->back()->withErrors($validator)->withInput();
@@ -84,12 +82,11 @@ class TipoMaterialController extends Controller
                 'OFICINA_ID' => $request->input('OFICINA_ID'),
             ]);
 
+            return redirect()->route('tiposmateriales.index')->with('success', 'Tipo de material creado exitosamente.');
         } catch (Exception $e) {
             // Manejar otras excepciones
             return redirect()->route('tiposmateriales.index')->with('error', 'Ocurrió un error inesperado.');
         }
-
-        return redirect()->route('tiposmateriales.index')->with('success', 'Tipo de material creado exitosamente.');
     }
 
 
@@ -102,6 +99,8 @@ class TipoMaterialController extends Controller
             $oficinaIdUsuario = Auth::user()->OFICINA_ID;
             // Obtener la información de la oficina del usuario
             $oficina = Oficina::where('OFICINA_ID', $oficinaIdUsuario)->firstOrFail();
+
+            return view('sia2.activos.modmateriales.tiposmateriales.edit', compact('tipoMaterial', 'oficina'));
         } catch (ModelNotFoundException $e) {
             // Manejar excepción de modelo no encontrado
             return redirect()->route('tiposmateriales.index')->with('error', 'Ocurrió un error inesperado.');
@@ -109,8 +108,6 @@ class TipoMaterialController extends Controller
             // Manejar otras excepciones
             return redirect()->route('tiposmateriales.index')->with('error', 'Ocurrió un error inesperado.');
         }
-
-        return view('sia2.activos.modmateriales.tiposmateriales.edit', compact('tipoMaterial', 'oficina'));
     }
 
 
@@ -119,8 +116,6 @@ class TipoMaterialController extends Controller
         try {
             // Obtener el tipo de material por ID
             $tipoMaterial = TipoMaterial::findOrFail($id);
-
-
 
             // Construir el validador
             $validator = Validator::make($request->all(), [
@@ -144,6 +139,7 @@ class TipoMaterialController extends Controller
                 'OFICINA_ID' => Auth::user()->OFICINA_ID
             ]);
 
+            return redirect()->route('tiposmateriales.index')->with('success', 'Tipo de material actualizado exitosamente.');
         } catch (ModelNotFoundException $e) {
             // Manejar excepción de modelo no encontrado
             return redirect()->route('tiposmateriales.index')->with('error', 'Ocurrió un error inesperado.');
@@ -151,9 +147,6 @@ class TipoMaterialController extends Controller
             // Manejar otras excepciones
             return redirect()->route('tiposmateriales.index')->with('error', 'Ocurrió un error inesperado.');
         }
-
-        return redirect()->route('tiposmateriales.index')->with('success', 'Tipo de material actualizado exitosamente.');
-
     }
 
 
@@ -163,13 +156,13 @@ class TipoMaterialController extends Controller
         {
             // Obtener el tipo de material por ID
             $tipoMaterial = TipoMaterial::findOrFail($id);
+
+            return view('tiposmateriales.show', compact('tipoMaterial'));
         }
         catch(Exception $e)
         {
-            return redirect()->route('tiposequipos.index')->with('error', 'Error al cargar el tipo de equipo');
+            return redirect()->route('tiposmateriales.index')->with('error', 'Error al cargar el tipo de equipo');
         }
-        return view('tiposmateriales.show', compact('tipoMaterial'));
-
     }
 
     public function destroy($id)
@@ -178,6 +171,7 @@ class TipoMaterialController extends Controller
             // Obtener el tipo de material por ID y eliminarlo
             $tipoMaterial = TipoMaterial::findOrFail($id);
             $tipoMaterial->delete();
+            return redirect()->route('tiposmateriales.index')->with('success', 'Tipo de material eliminado exitosamente.');
         } catch (ModelNotFoundException $e) {
             // Manejar excepción de modelo no encontrado
             return redirect()->route('tiposmateriales.index')->with('error', 'El tipo de material no se encontró.');
@@ -185,7 +179,5 @@ class TipoMaterialController extends Controller
             // Manejar otras excepciones
             return redirect()->route('tiposmateriales.index')->with('error', 'Ocurrió un error inesperado al eliminar el tipo de material.');
         }
-        return redirect()->route('tiposmateriales.index')->with('success', 'Tipo de material eliminado exitosamente.');
-
     }
 }

@@ -31,15 +31,15 @@ class TipoEquipoController extends Controller
 
             // Función que lista tipos de materiales basados en la OFICINA_ID del usuario
             $tiposEquipo = TipoEquipo::where('OFICINA_ID', $oficinaIdUsuario)->get();
+            
+            // Retornar la vista con los datos
+            return view('sia2.activos.modequipos.tiposequipos.index', compact('tiposEquipo'));
         }
         catch (\Exception $e)
         {
             // Retornar a la pagina previa con un session error
             return back()->with('error', 'Error cargando los tipos de equipo');
         }
-
-        // Retornar la vista con los datos
-        return view('sia2.activos.modequipos.tiposequipos.index', compact('tiposEquipo'));
     }
 
     /**
@@ -53,7 +53,8 @@ class TipoEquipoController extends Controller
             $oficinaIdUsuario = Auth::user()->OFICINA_ID;
             // Obtener el objeto oficina asociada al usuario actual
             $oficina = Oficina::where('OFICINA_ID', $oficinaIdUsuario)->firstOrFail();
-
+            
+            return view('sia2.activos.modequipos.tiposequipos.create', compact('oficina'));
         } catch (ModelNotFoundException $e) {
             // Manejar excepción de modelo no encontrado
             return redirect()->route('tiposequipos.index')->with('error', 'No se encontró la oficina del usuario.');
@@ -61,7 +62,6 @@ class TipoEquipoController extends Controller
             // Manejar otras excepciones
             return redirect()->route('tiposequipos.index')->with('error', 'Ocurrió un error inesperado.');
         }
-        return view('sia2.activos.modequipos.tiposequipos.create', compact('oficina'));
     }
 
     /**
@@ -71,7 +71,6 @@ class TipoEquipoController extends Controller
     {
         try
         {
-
             // Validación de los datos
             $validator = Validator::make($request->all(), [
                 'TIPO_EQUIPO_NOMBRE' => ['required','string','max:128'],
@@ -91,14 +90,15 @@ class TipoEquipoController extends Controller
                 'TIPO_EQUIPO_NOMBRE' => strtoupper($request->input('TIPO_EQUIPO_NOMBRE')),
                 'OFICINA_ID' => Auth::user()->OFICINA_ID,
             ]);
+
+            // Retornar a la vista con un mensaje de éxito
+            return redirect()->route('tiposequipos.index')->with('success', 'Tipo de equipo creado exitosamente');
         }
         catch(\Exception $e)
         {
             // Retornar a la vista con un mensaje de error
             return redirect()->route('tiposequipos.index')->with('error', 'Error al crear el tipo de equipo');
         }
-        // Retornar a la vista con un mensaje de éxito
-        return redirect()->route('tiposequipos.index')->with('success', 'Tipo de equipo creado exitosamente');
     }
 
     /**
@@ -134,6 +134,9 @@ class TipoEquipoController extends Controller
 
             // Obtenemos la informacion de la oficina
             $oficina = Oficina::where('OFICINA_ID', $oficinaIdUsuario)->firstOrFail();
+            
+            // Retornar a la vista con los datos compactados
+            return view('sia2.activos.modequipos.tiposequipos.edit', compact('tipoEquipo', 'oficina'));
         }
         catch( ModelNotFoundException $e)
         {
@@ -145,9 +148,6 @@ class TipoEquipoController extends Controller
             // Manejar otras excepciones
             return redirect()->route('tiposequipos.index')->with('error', 'Ocurrió un error inesperado.');
         }
-
-        // Retornamos la vista con los datos
-        return view('sia2.activos.modequipos.tiposequipos.edit', compact('tipoEquipo', 'oficina'));
     }
 
     /**
@@ -181,6 +181,8 @@ class TipoEquipoController extends Controller
                 'OFICINA_ID' => Auth::user()->OFICINA_ID,
             ]);
 
+            // Retornar a la vista con un mensaje de éxito
+            return redirect()->route('tiposequipos.index')->with('success', 'Tipo de equipo actualizado exitosamente');
         } catch (ModelNotFoundException $e) {
             // Manejar la excepción de modelo no encontrado
             return redirect()->route('tiposequipos.index')->with('error', 'Error al actualizar el tipo de equipo');
@@ -188,9 +190,6 @@ class TipoEquipoController extends Controller
             // Manejar otras excepciones
             return redirect()->route('tiposequipos.index')->with('error', 'Error al actualizar el tipo de equipo');
         }
-
-        // Retornar a la vista con un mensaje de éxito
-        return redirect()->route('tiposequipos.index')->with('success', 'Tipo de equipo actualizado exitosamente');
     }
 
 
@@ -206,6 +205,9 @@ class TipoEquipoController extends Controller
             //Obtener el tipo de equipo por ID
             $tipoEquipo = TipoEquipo::findOrFail($id);
             $tipoEquipo->delete();
+
+            //Retornar a la vista con un mensaje de éxito
+            return redirect()->route('tiposequipos.index')->with('success', 'Tipo de equipo eliminado exitosamente');
         } catch(ModelNotFoundException $e) {
             //Manejar la excepcion de modelo no encontrado
             return redirect()->route('tiposequipos.index')->with('error', 'El tipo de equipo no se encontró');
@@ -213,8 +215,6 @@ class TipoEquipoController extends Controller
             //Manejar otras excepciones
             return redirect()->route('tiposequipos.index')->with('error', 'Error al eliminar el tipo de equipo');
         }
-        //Retornar a la vista con un mensaje de éxito
-        return redirect()->route('tiposequipos.index')->with('success', 'Tipo de equipo eliminado exitosamente');
     }
 
     // Funciones para agregar y tipos de equipo al carrito

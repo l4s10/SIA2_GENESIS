@@ -14,7 +14,7 @@
 
         <div class="mb-3">
             <label for="SALA_O_BODEGA_NOMBRE" class="form-label"><i class="fas fa-book-bookmark"></i> Nombre de la sala o bodega:</label>
-            <input type="text" class="form-control{{ $errors->has('SALA_O_BODEGA_NOMBRE') ? ' is-invalid' : '' }}" id="SALA_O_BODEGA_NOMBRE" name="SALA_O_BODEGA_NOMBRE" value="{{ old('SALA_O_BODEGA_NOMBRE', $salaobodega->SALA_O_BODEGA_NOMBRE) }}" required>
+            <input type="text" class="form-control{{ $errors->has('SALA_O_BODEGA_NOMBRE') ? ' is-invalid' : '' }}" id="SALA_O_BODEGA_NOMBRE" name="SALA_O_BODEGA_NOMBRE" value="{{ old('SALA_O_BODEGA_NOMBRE', $salaobodega->SALA_O_BODEGA_NOMBRE) }}" maxlength="40" required>
             @if ($errors->has('SALA_O_BODEGA_NOMBRE'))
                 <div class="invalid-feedback">
                     {{ $errors->first('SALA_O_BODEGA_NOMBRE') }}
@@ -23,8 +23,9 @@
         </div>
 
         <div class="mb-3">
-            <label for="SALA_O_BODEGA_TIPO" class="form-label"><i class="fas fa-person-chalkboard"></i> Tipo:</label>
+            <label for="SALA_O_BODEGA_TIPO" class="form-label"><i class="fas fa-person-chalkboard"></i> Categoría:</label>
             <select class="form-control{{ $errors->has('SALA_O_BODEGA_TIPO') ? ' is-invalid' : '' }}" aria-label="Seleccione el tipo de sala" id="SALA_O_BODEGA_TIPO" name="SALA_O_BODEGA_TIPO" required>
+                <option disabled value="" selected>-- Seleccione una categoría --</option>
                 <option value="SALA" {{ old('SALA_O_BODEGA_TIPO', $salaobodega->SALA_O_BODEGA_TIPO) == 'SALA' ? 'selected' : '' }}>SALA</option>
                 <option value="BODEGA" {{ old('SALA_O_BODEGA_TIPO', $salaobodega->SALA_O_BODEGA_TIPO) == 'BODEGA' ? 'selected' : '' }}>BODEGA</option>
             </select>
@@ -48,7 +49,7 @@
         <div class="mb-3">
             <label for="SALA_O_BODEGA_ESTADO" class="form-label"><i class="fas fa-person-chalkboard"></i> Estado:</label>
             <select class="form-control{{ $errors->has('SALA_O_BODEGA_ESTADO') ? ' is-invalid' : '' }}" aria-label="Seleccione el tipo de sala" id="SALA_O_BODEGA_ESTADO" name="SALA_O_BODEGA_ESTADO" required>
-                <option value="" selected>--Seleccione un estado--</option>
+                <option disabled value="" selected>-- Seleccione un estado --</option>
                 <option value="DISPONIBLE" {{ old('SALA_O_BODEGA_ESTADO', $salaobodega->SALA_O_BODEGA_ESTADO) == 'DISPONIBLE' ? 'selected' : '' }}>DISPONIBLE</option>
                 <option value="OCUPADO" {{ old('SALA_O_BODEGA_ESTADO', $salaobodega->SALA_O_BODEGA_ESTADO) == 'OCUPADO' ? 'selected' : '' }}>OCUPADO</option>
                 <option value="DESABILITADO" {{ old('SALA_O_BODEGA_ESTADO', $salaobodega->SALA_O_BODEGA_ESTADO) == 'DESABILITADO' ? 'selected' : '' }}>DESABILITADO</option>
@@ -80,3 +81,4 @@
     <!-- CONEXION FONT-AWESOME CON TOOLKIT -->
     <script src="https://kit.fontawesome.com/742a59c628.js" crossorigin="anonymous"></script>
 @stop
+
