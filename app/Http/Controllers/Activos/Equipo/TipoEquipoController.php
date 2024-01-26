@@ -231,7 +231,7 @@ class TipoEquipoController extends Controller
     }
 
     // Función para eliminar un tipo de equipo del carrito
-    public function removeFromCart($rowId)
+    public function deleteFromCart($rowId)
     {
         // Llamamos a la instancia del carrito de compras para los equipos
         $carritoEquipos = Cart::instance('carrito_equipos');

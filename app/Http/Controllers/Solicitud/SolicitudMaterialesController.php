@@ -26,13 +26,13 @@ class SolicitudMaterialesController extends Controller
         try {
             // Query que a través de la relación has() filtra las solicitudes que SOLO tengan materiales asociados
             $solicitudes = Solicitud::has('materiales')->get();
+
+            // Retornar la vista con las solicitudes
+            return view('sia2.solicitudes.materiales.index', compact('solicitudes'));
         } catch (Exception $e) {
             // Manejar excepciones si es necesario
             return redirect()->back()->with('error', 'Error al cargar las solicitudes.');
         }
-
-        // Retornar la vista con las solicitudes
-        return view('sia2.solicitudes.materiales.index', compact('solicitudes'));
     }
 
     /**
@@ -48,13 +48,12 @@ class SolicitudMaterialesController extends Controller
             // Obtener los elementos del carrito
             $cartItems = Cart::instance('carrito_materiales')->content();
 
+            // Retornar la vista del formulario con los materiales y el carrito
+            return view('sia2.solicitudes.materiales.create', compact('materiales', 'cartItems'));
         } catch (Exception $e) {
             // Manejar excepciones si es necesario
             return redirect()->route('solicitudes.index')->with('error', 'Error al cargar los materiales.');
         }
-
-        // Retornar la vista del formulario con los materiales y el carrito
-        return view('sia2.solicitudes.materiales.create', compact('materiales', 'cartItems'));
     }
 
     /**
@@ -68,7 +67,6 @@ class SolicitudMaterialesController extends Controller
                 'SOLICITUD_MOTIVO' => 'required|string|max:255',
                 'SOLICITUD_FECHA_HORA_INICIO_SOLICITADA' => 'required|date',
                 'SOLICITUD_FECHA_HORA_TERMINO_SOLICITADA' => 'required|date|after:SOLICITUD_FECHA_HORA_INICIO_SOLICITADA',
-                // Agrega otras validaciones según tus campos
             ], [
                 //Mensajes de error
                 'required' => 'El campo :attribute es requerido.',
@@ -105,12 +103,12 @@ class SolicitudMaterialesController extends Controller
                 // Limpia el carrito después de agregar los materiales a la solicitud
                 Cart::instance('carrito_materiales')->destroy();
             }
+            // Redireccion a la vista index de solicitud de materiales, con el mensaje de exito.
+            return redirect()->route('solicitudesmateriales.index')->with('success', 'Solicitud creada exitosamente');
         }catch(Exception $e){
             // Manejo de excepciones
             return redirect()->route('solicitudesmateriales.index')->with('error', 'Error al crear la solicitud.');
         }
-        // Redireccion a la vista index de solicitud de materiales, con el mensaje de exito.
-        return redirect()->route('solicitudesmateriales.index')->with('success', 'Solicitud creada exitosamente');
     }
 
     /**
@@ -120,7 +118,7 @@ class SolicitudMaterialesController extends Controller
     {
         try {
             // Recuperar la solicitud con sus materiales asociados
-            $solicitudes = Solicitud::has('materiales')->findOrFail($id);
+            $solicitud = Solicitud::has('materiales')->findOrFail($id);
             // Retornar la vista con la solicitud
             return view('sia2.solicitudes.materiales.show', compact('solicitud'));
         } catch (Exception $e) {
