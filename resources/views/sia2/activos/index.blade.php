@@ -24,8 +24,8 @@
             </div>
             <div class="card-footer ">
                 {{-- Ajusta las rutas según tu estructura --}}
-                <a class="btn btn-primary" href="{{ route('materiales.index') }}"><i class="fa-solid fa-box"></i> Ver Materiales</a>
-                <a class="btn guardar" href="{{ route('materiales.create') }}"><i class="fa-solid fa-plus"></i> Agregar Material</a>
+                <a class="btn btn-primary" href="{{ route('materiales.index') }}"><i class="fa-solid fa-eye"></i> Ver</a>
+                <a class="btn guardar" href="{{ route('materiales.create') }}"><i class="fa-solid fa-plus"></i> Agregar</a>
             </div>
         </div>
         </div>
@@ -38,8 +38,8 @@
                 </div>
                 <div class="card-footer">
                     {{-- Ajusta las rutas según tu estructura --}}
-                    <a class="btn btn-primary" href="{{ route('tiposmateriales.index') }}"><i class="fa-solid fa-tag"></i> Ver Tipos de Materiales</a>
-                    <a class="btn guardar" href="{{ route('tiposmateriales.create') }}"><i class="fa-solid fa-plus"></i> Agregar Tipo de Material</a>
+                    <a class="btn btn-primary" href="{{ route('tiposmateriales.index') }}"><i class="fa-solid fa-eye"></i> Ver</a>
+                    <a class="btn guardar" href="{{ route('tiposmateriales.create') }}"><i class="fa-solid fa-plus"></i> Agregar</a>
                 </div>
             </div>
         </div>
@@ -54,8 +54,8 @@
             </div>
             <div class="card-footer">
                 {{-- Ajusta las rutas según tu estructura --}}
-                <a class="btn btn-primary" href="{{ route('equipos.index') }}"><i class="fa-solid fa-box"></i> Ver Equipos</a>
-                <a class="btn guardar" href="{{ route('equipos.create') }}"><i class="fa-solid fa-plus"></i> Agregar Equipo</a>
+                <a class="btn btn-primary" href="{{ route('equipos.index') }}"><i class="fa-solid fa-eye"></i> Ver</a>
+                <a class="btn guardar" href="{{ route('equipos.create') }}"><i class="fa-solid fa-plus"></i> Agregar</a>
             </div>
             </div>
         </div>
@@ -68,8 +68,8 @@
             </div>
                 <div class="card-footer">
                     {{-- Ajusta las rutas según tu estructura --}}
-                    <a class="btn btn-primary" href="{{ route('tiposequipos.index') }}"><i class="fa-solid fa-tag"></i> Ver Tipos de Equipos</a>
-                    <a class="btn guardar" href="{{ route('tiposequipos.create') }}"><i class="fa-solid fa-plus"></i> Agregar Tipo de Equipos</a>
+                    <a class="btn btn-primary" href="{{ route('tiposequipos.index') }}"><i class="fa-solid fa-eye"></i> Ver</a>
+                    <a class="btn guardar" href="{{ route('tiposequipos.create') }}"><i class="fa-solid fa-plus"></i> Agregar</a>
                 </div>
             </div>
         </div>
@@ -84,8 +84,8 @@
             </div>
             <div class="card-footer">
                 {{-- Ajusta las rutas según tu estructura --}}
-                <a class="btn btn-primary" href="{{ route('salasobodegas.index') }}"><i class="fa-solid fa-box"></i> Ver Salas y Bodegas</a>
-                <a class="btn guardar" href="{{ route('salasobodegas.create') }}"><i class="fa-solid fa-plus"></i> Agregar Sala o Bodega</a>
+                <a class="btn btn-primary" href="{{ route('salasobodegas.index') }}"><i class="fa-solid fa-eye"></i> Ver</a>
+                <a class="btn guardar" href="{{ route('salasobodegas.create') }}"><i class="fa-solid fa-plus"></i> Agregar</a>
             </div>
             </div>
         </div>
@@ -97,8 +97,8 @@
                 </div>
                 <div class="card-footer">
                     {{-- Ajusta las rutas según tu estructura --}}
-                    <a class="btn btn-primary" href="{{ route('formularios.index') }}"><i class="fa-solid fa-box"></i> Ver Formularios</a>
-                    <a class="btn guardar" href="{{ route('formularios.create') }}"><i class="fa-solid fa-plus"></i> Agregar Formularios</a>
+                    <a class="btn btn-primary" href="{{ route('formularios.index') }}"><i class="fa-solid fa-eye"></i> Ver</a>
+                    <a class="btn guardar" href="{{ route('formularios.create') }}"><i class="fa-solid fa-plus"></i> Agregar</a>
                 </div>
             </div>
         </div>
