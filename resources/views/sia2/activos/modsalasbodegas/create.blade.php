@@ -13,7 +13,7 @@
 
         <div class="mb-3">
             <label for="SALA_O_BODEGA_NOMBRE" class="form-label"><i class="fas fa-book-bookmark"></i> Nombre de la sala o bodega:</label>
-            <input type="text" class="form-control{{ $errors->has('SALA_O_BODEGA_NOMBRE') ? ' is-invalid' : '' }}" id="SALA_O_BODEGA_NOMBRE" name="SALA_O_BODEGA_NOMBRE" value="{{ old('SALA_O_BODEGA_NOMBRE') }}" placeholder="SALA N°4" required>
+            <input type="text" class="form-control{{ $errors->has('SALA_O_BODEGA_NOMBRE') ? ' is-invalid' : '' }}" id="SALA_O_BODEGA_NOMBRE" name="SALA_O_BODEGA_NOMBRE" value="{{ old('SALA_O_BODEGA_NOMBRE') }}" placeholder="SALA N°4" maxlength="40" required>
             @if ($errors->has('SALA_O_BODEGA_NOMBRE'))
                 <div class="invalid-feedback">
                     {{ $errors->first('SALA_O_BODEGA_NOMBRE') }}
@@ -24,7 +24,7 @@
         <div class="mb-3">
             <label for="SALA_O_BODEGA_TIPO" class="form-label"><i class="fas fa-person-chalkboard"></i> Tipo:</label>
             <select class="form-control{{ $errors->has('SALA_O_BODEGA_TIPO') ? ' is-invalid' : '' }}" aria-label="Seleccione el tipo del registro" id="SALA_O_BODEGA_TIPO" name="SALA_O_BODEGA_TIPO" required>
-                <option value="" selected>--Seleccione un tipo de registro--</option>
+                <option value="" selected>-- Seleccione un tipo de registro --</option>
                 <option value="SALA" {{ old('SALA_O_BODEGA_TIPO') == 'SALA' ? 'selected' : '' }}>SALA</option>
                 <option value="BODEGA" {{ old('SALA_O_BODEGA_TIPO') == 'BODEGA' ? 'selected' : '' }}>BODEGA</option>
             </select>
@@ -48,7 +48,7 @@
         <div class="mb-3">
             <label for="SALA_O_BODEGA_ESTADO" class="form-label"><i class="fas fa-person-chalkboard"></i> Estado:</label>
             <select class="form-control{{ $errors->has('SALA_O_BODEGA_ESTADO') ? ' is-invalid' : '' }}" aria-label="Seleccione el estado" id="SALA_O_BODEGA_ESTADO" name="SALA_O_BODEGA_ESTADO" required>
-                <option value="" selected>--Seleccione un estado--</option>
+                <option value="" selected>-- Seleccione un estado --</option>
                 <option value="DISPONIBLE">DISPONIBLE</option>
                 <option value="OCUPADO">OCUPADO</option>
                 <option value="DESABILITADO">DESABILITADO</option>

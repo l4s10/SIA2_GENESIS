@@ -52,13 +52,15 @@ class VehiculoController extends Controller
             // Obtiene la OFICINA_ID del usuario actual
             $oficinaIdUsuario = Auth::user()->OFICINA_ID;
             // Obtener la entidad oficina asociada al usuario
-            $oficinaAsociada = Oficina::find($oficinaIdUsuario);
+            $oficinaAsociada = Oficina::findOrFail($oficinaIdUsuario);
             // Obtener ubicaciones locales
             $ubicacionesLocales = Ubicacion::where('OFICINA_ID', $oficinaIdUsuario)->get();
             // Obtener departamentos locales
             $departamentosLocales = Departamento::where('OFICINA_ID', $oficinaIdUsuario)->get();
             // Obtener tipos de vehiculos
             $tiposVehiculos = TipoVehiculo::all();
+
+            return view('sia2.activos.modvehiculos.create', compact('ubicacionesLocales','departamentosLocales','tiposVehiculos','oficinaAsociada'));
         } catch (ModelNotFoundException $e) {
             // Manejar excepción de modelo no encontrado
             return redirect()->route('vehiculos.index')->with('error', 'Ocurrió un error inesperado.');
@@ -66,8 +68,6 @@ class VehiculoController extends Controller
             // Manejar otras excepciones
             return redirect()->route('vehiculos.index')->with('error', 'Ocurrió un error inesperado.');
         }
-
-        return view('sia2.activos.modvehiculos.create', compact('ubicacionesLocales','departamentosLocales','tiposVehiculos','oficinaAsociada'));
     }
 
     public function store(Request $request)
@@ -149,7 +149,7 @@ class VehiculoController extends Controller
 
 
             if ($vehiculo) {
-                session()->flash('success', 'El vehículo fue creado exitosamente');
+                return redirect()->route('vehiculos.index')->with('success', 'Vehículo creado exitosamente.');                
             } else {
                 session()->flash('error', 'Error al crear el vehículo');
             }
@@ -157,8 +157,6 @@ class VehiculoController extends Controller
             session()->flash('error', 'Error al crear el vehículo.');
             return redirect()->route('vehiculos.index');
         }
-
-        return redirect()->route('vehiculos.index')->with('success', 'Vehículo creado exitosamente.');
     }
 
     
@@ -179,6 +177,7 @@ class VehiculoController extends Controller
             // Obtener departamentos locales
             $departamentosLocales = Departamento::where('OFICINA_ID', $oficinaIdUsuario)->get();
 
+            return view('sia2.activos.modvehiculos.edit', compact('vehiculo', 'tiposVehiculos', 'oficinaAsociada', 'ubicacionesLocales', 'departamentosLocales'));
         } catch (ModelNotFoundException $e) {
             // Manejar excepción de modelo no encontrado
             return redirect()->route('vehiculos.index')->with('error', 'Ocurrió un error inesperado.');
@@ -186,7 +185,6 @@ class VehiculoController extends Controller
             // Manejar otras excepciones
             return redirect()->route('vehiculos.index')->with('error', 'Ocurrió un error inesperado.');
         }
-        return view('sia2.activos.modvehiculos.edit', compact('vehiculo', 'tiposVehiculos', 'oficinaAsociada', 'ubicacionesLocales', 'departamentosLocales'));
     }
 
 
@@ -266,13 +264,11 @@ class VehiculoController extends Controller
                 'VEHICULO_NIVEL_ESTANQUE' => strtoupper($request->input('VEHICULO_NIVEL_ESTANQUE')),
             ]);
 
-            session()->flash('success', 'El vehículo fue actualizado exitosamente');
+            return view('sia2.activos.modvehiculos.edit', compact('vehiculo', 'tiposVehiculos', 'oficinaAsociada', 'ubicacionesLocales', 'departamentosLocales'))->with('success', 'El vehículo se ha modificado correctamente.');
         } catch (Exception $e) {
             session()->flash('error', 'Error al actualizar el vehículo.');
             return redirect()->route('vehiculos.index');
         }
-
-        return redirect()->route('vehiculos.index')->with('success', 'Vehículo actualizado exitosamente.');
     }
 
 
@@ -286,14 +282,13 @@ class VehiculoController extends Controller
             // Eliminar el vehiculo
             $vehiculo->delete();
 
+            return redirect()->route('vehiculos.index')->with('success', 'Vehículo eliminado exitosamente.');
         } catch(ModelNotFoundException) {
             // Manejo de excepciones cuando no encuentre el material
             return redirect()->route('vehiculos.index')->with('error', 'Error al eliminar el vehículo');
         } catch(Exception $e) {// "Exeption" estaba mal escrito
             return redirect()->route('vehiculos.index')->with('error', 'No se encontró el vehículo.');
         }
-
-        return redirect()->route('vehiculos.index')->with('success', 'Vehículo eliminado exitosamente.');
     }
 
 }

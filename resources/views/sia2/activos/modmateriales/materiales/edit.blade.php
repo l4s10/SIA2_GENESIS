@@ -14,7 +14,7 @@
 
             <div class="mb-3">
                 <label for="MATERIAL_NOMBRE" class="form-label"><i class="fa-solid fa-book-bookmark"></i> Nombre Material</label>
-                <input id="MATERIAL_NOMBRE" name="MATERIAL_NOMBRE" type="text" class="form-control{{ $errors->has('MATERIAL_NOMBRE') ? ' is-invalid' : '' }}" value="{{ old('MATERIAL_NOMBRE', $material->MATERIAL_NOMBRE) }}">
+                <input id="MATERIAL_NOMBRE" name="MATERIAL_NOMBRE" type="text" class="form-control{{ $errors->has('MATERIAL_NOMBRE') ? ' is-invalid' : '' }}" value="{{ old('MATERIAL_NOMBRE', $material->MATERIAL_NOMBRE) }}" maxlength="40">
                 @if($errors->has('MATERIAL_NOMBRE'))
                     <div class="invalid-feedback">
                         {{ $errors->first('MATERIAL_NOMBRE') }}
@@ -27,7 +27,8 @@
 
                     <div class="col-md-6">
                         <label for="TIPO_MATERIAL_ID" class="form-label"><i class="fa-solid fa-pen-to-square"></i> Tipo de material</label>
-                        <select id="TIPO_MATERIAL_ID" name="TIPO_MATERIAL_ID" class="form-control @error('TIPO_MATERIAL_ID') is-invalid @enderror">
+                        <select id="TIPO_MATERIAL_ID" name="TIPO_MATERIAL_ID" class="form-control @error('TIPO_MATERIAL_ID') is-invalid @enderror" required>
+                            <option disabled value="">--Seleccione un tipo de material--</option>
                             @foreach($tiposMateriales as $tipoMaterial)
                                 @if($material->TIPO_MATERIAL_ID == $tipoMaterial->TIPO_MATERIAL_ID)
                                     <option value="{{$tipoMaterial->TIPO_MATERIAL_ID}}" selected>{{$tipoMaterial->TIPO_MATERIAL_NOMBRE}}</option>
@@ -44,7 +45,7 @@
                     <div class="col-md-6">
                         <label for="TIPO_MOVIMIENTO" class="form-label"><i class="fa-solid fa-pen-to-square"></i> Tipo de movimiento:</label>
                         <select name="TIPO_MOVIMIENTO" id="TIPO_MOVIMIENTO" class="form-control @error('TIPO_MOVIMIENTO') is-invalid @enderror" required>
-                            <option value="" disabled selected>Seleccione un tipo de movimiento</option>
+                            <option value="" disabled selected>-- Seleccione un tipo de movimiento --</option>
                             <option value="INGRESO" {{ old('TIPO_MOVIMIENTO', $material->TIPO_MOVIMIENTO) == 'INGRESO' ? 'selected' : '' }}>INGRESO</option>
                             <option value="TRASLADO" {{ old('TIPO_MOVIMIENTO', $material->TIPO_MOVIMIENTO) == 'TRASLADO' ? 'selected' : '' }}>TRASLADO</option>
                             <option value="MERMA" {{ old('TIPO_MOVIMIENTO', $material->TIPO_MOVIMIENTO) == 'MERMA' ? 'selected' : '' }}>MERMA</option>
@@ -123,5 +124,3 @@
     <!-- CONEXION FONT-AWESOME CON TOOLKIT -->
     <script src="https://kit.fontawesome.com/742a59c628.js" crossorigin="anonymous"></script>
 @stop
-
-

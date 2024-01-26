@@ -7,7 +7,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
-use Exception; //Libreria faltante
+use Exception; 
 use Gloudemans\Shoppingcart\Facades\Cart;
 
 use Maatwebsite\Excel\Facades\Excel;
@@ -34,13 +34,13 @@ class MaterialController extends Controller
             // Función que lista materiales basados en la OFICINA_ID del usuario
             $materiales = Material::where('OFICINA_ID', $oficinaIdUsuario)->get();
 
+            return view('sia2.activos.modmateriales.materiales.index', compact('materiales'));;
         }
         catch (Exception $e)
         {
             // Retornar a la pagina previa con un session error
             return back()->with('error', 'Error cargando los materiales');
         }
-        return view('sia2.activos.modmateriales.materiales.index', compact('materiales'));;
     }
 
     public function create()
@@ -53,6 +53,7 @@ class MaterialController extends Controller
             // Obtener el objeto oficina asociada al usuario actual
             $oficina = Oficina::where('OFICINA_ID', $oficinaIdUsuario)->firstOrFail();
 
+            return view('sia2.activos.modmateriales.materiales.create', compact('tiposMaterial','oficina'));
         } catch (ModelNotFoundException $e) {
             // Manejar excepción de modelo no encontrado
             return redirect()->route('materiales.index')->with('error', 'Ocurrió un error inesperado.');
@@ -60,8 +61,6 @@ class MaterialController extends Controller
             // Manejar otras excepciones
             return redirect()->route('materiales.index')->with('error', 'Ocurrió un error inesperado.');
         }
-
-        return view('sia2.activos.modmateriales.materiales.create', compact('tiposMaterial','oficina'));
     }
 
     public function store(Request $request)
@@ -70,7 +69,7 @@ class MaterialController extends Controller
             // Reglas de validación y mensajes respectivos
             $validator = Validator::make($request->all(), [
                 'TIPO_MATERIAL_ID' => 'required|exists:tipos_materiales,TIPO_MATERIAL_ID',
-                'MATERIAL_NOMBRE' => 'required|string|max:128',
+                'MATERIAL_NOMBRE' => 'required|string|max:40',
                 'MATERIAL_STOCK' => 'required|integer|between:0,1000',
                 'DETALLE_MOVIMIENTO' => 'required|string|max:1000'
             ],[
@@ -115,16 +114,13 @@ class MaterialController extends Controller
                     'MOVIMIENTO_DETALLE' => strtoupper($request->input('DETALLE_MOVIMIENTO'))
                 ]);
 
-                session()->flash('success', 'El material fue creado exitosamente');
+                return redirect()->route('materiales.index')->with('success', 'Material creado exitosamente.');
             } else {
                 session()->flash('error', 'Error al crear el material');
             }
         } catch (Exception $e) {
-            session()->flash('error', 'Error al crear el material.');
-            return redirect()->route('materiales.index');
+            return redirect()->route('materiales.index')->with('error', 'Ocurrió un error inesperado.');
         }
-
-        return redirect()->route('materiales.index')->with('success', 'Material creado exitosamente.');
     }
 
 
@@ -139,6 +135,8 @@ class MaterialController extends Controller
             $tiposMateriales = TipoMaterial::where('OFICINA_ID', $oficinaIdUsuario)->get();
             // Obtener la información de la oficina del usuario
             $oficina = Oficina::where('OFICINA_ID', $oficinaIdUsuario)->firstOrFail();
+
+            return view('sia2.activos.modmateriales.materiales.edit', compact('material', 'tiposMateriales', 'oficina'));
         } catch (ModelNotFoundException $e) {
             // Manejar excepción de modelo no encontrado
             return redirect()->route('materiales.index')->with('error', 'Ocurrió un error inesperado.');
@@ -146,7 +144,6 @@ class MaterialController extends Controller
             // Manejar otras excepciones
             return redirect()->route('materiales.index')->with('error', 'Ocurrió un error inesperado.');
         }
-        return view('sia2.activos.modmateriales.materiales.edit', compact('material', 'tiposMateriales', 'oficina'));
     }
 
 
@@ -156,11 +153,10 @@ class MaterialController extends Controller
             // Obtener el material a actualizar
             $material = Material::findOrFail($id);
 
-            dd($material);
             // Reglas de validación y mensajes respectivos
             $validator = Validator::make($request->all(), [
                 'TIPO_MATERIAL_ID' => 'required|exists:tipos_materiales,TIPO_MATERIAL_ID',
-                'MATERIAL_NOMBRE' => 'required|string|max:128',
+                'MATERIAL_NOMBRE' => 'required|string|max:40',
                 'MATERIAL_STOCK' => 'required|integer',
                 'STOCK_NUEVO' =>    ['required','integer','between:0,1000',
                                     // Validación dinámica para "STOCK_NUEVO" en función de la selección del input "TIPO_MOVMIENTO"
@@ -232,14 +228,12 @@ class MaterialController extends Controller
                 'MOVIMIENTO_DETALLE' => strtoupper($request->input('DETALLE_MOVIMIENTO'))
             ]);
 
+            return redirect()->route('materiales.index')->with('success', 'Material actualizado exitosamente.');
         } catch (ModelNotFoundException $e) {
             return redirect()->route('materiales.index')->with('error', 'No se encontró el material con el ID proporcionado.');
         } catch (Exception $e) {
             return redirect()->route('materiales.index')->with('error', 'Error al actualizar el material: ');
         }
-
-        return redirect()->route('materiales.index')->with('success', 'Material actualizado exitosamente.');
-
     }
 
 
@@ -270,14 +264,13 @@ class MaterialController extends Controller
                 $material->delete();
             }
 
+            return redirect()->route('materiales.index')->with('success', 'Material eliminado exitosamente.');
         } catch(ModelNotFoundException) {
             // Manejo de excepciones cuando no encuentre el material
             return redirect()->route('materiales.index')->with('error', 'Error al eliminar el material');
         } catch(Exception $e) {// "Exeption" estaba mal escrito
             return redirect()->route('materiales.index')->with('error', 'No se encontró el material.');
         }
-
-        return redirect()->route('materiales.index')->with('success', 'Material eliminado exitosamente.');
     }
 
     public function addToCart(Material $material)
