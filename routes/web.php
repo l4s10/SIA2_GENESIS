@@ -8,10 +8,8 @@ use Illuminate\Support\Facades\Route;
 require __DIR__.'/Activos/InventariosRoutes.php';
 require __DIR__.'/Activos/MaterialesRoutes.php';
 require __DIR__.'/Activos/EquiposRoutes.php';
-//require __DIR__.'/Activos/SalasOBodegasRoutes.php';
 require __DIR__.'/Activos/SalasRoutes.php';
 require __DIR__.'/Activos/BodegasRoutes.php';
-
 require __DIR__.'/Activos/FormulariosRoutes.php';
 require __DIR__.'/Activos/VehiculosRoutes.php';
 
