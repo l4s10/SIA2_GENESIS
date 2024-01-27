@@ -3,7 +3,7 @@
 @section('title', 'Solicitudes de materiales')
 
 @section('content_header')
-    <h1>Listado de solicitudes</h1>
+    <h1>Listado de solicitudes de materiales</h1>
     {{-- Logica de roles --}}
 @stop
 
