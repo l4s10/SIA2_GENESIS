@@ -330,11 +330,11 @@ return [
             'submenu' => [
                 [
                     'text' => 'Solicitar',
-                    'url'  => '#',
+                    'route'  => 'solicitudesvehiculos.create',
                 ],
                 [
                     'text' => 'Mis solicitudes',
-                    'url'  => '#',
+                    'route'  => 'solicitudesvehiculos.index',
                 ],
             ],
         ],[

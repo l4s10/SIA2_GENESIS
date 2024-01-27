@@ -1,11 +1,10 @@
 @extends('adminlte::page')
 
-@section('title', 'Salas y Bodegas')
+@section('title', 'Bodegas')
 
 @section('content_header')
-    <h1>Listado de Salas y Bodegas</h1>
-    {{-- Lógica para roles - Puedes comentar esta sección si no es necesaria --}}
-    {{-- ... --}}
+    <h1>Listado de Bodegas</h1>
+    {{-- roles --}}
 @stop
 
 @section('content')
@@ -34,32 +33,28 @@
         </script>
     @endif
     {{-- Botones de acceso rapido --}}
-    <a class="btn agregar mb-3" href="{{ route('salasobodegas.create') }}"><i class="fa-solid fa-plus"></i> Agregar Sala o Bodega</a>
+    <a class="btn agregar mb-3" href="{{ route('bodegas.create') }}"><i class="fa-solid fa-plus"></i> Agregar Bodega</a>
     {{-- Tabla de contenido --}}
     <div class="table-responsive">
-        <table id="salasobodegas" class="table table-bordered mt-4">
+        <table id="bodegas" class="table table-bordered mt-4">
             <thead class="tablacolor">
                 <tr>
                     <th scope="col">Nombre</th>
-                    <th scope="col">Tipo</th>
-                    <th scope="col">Capacidad</th>
                     <th scope="col">Estado</th>
                     <th scope="col">Acciones</th>
                 </tr>
             </thead>
             <tbody>
-                @foreach($salasobodegas as $salaobodega)
+                @foreach($bodegas as $bodega)
                     <tr>
-                        <td>{{ $salaobodega->SALA_O_BODEGA_NOMBRE }}</td>
-                        <td>{{ $salaobodega->SALA_O_BODEGA_TIPO }}</td>
-                        <td>{{ $salaobodega->SALA_O_BODEGA_CAPACIDAD }}</td>
-                        <td>{{ $salaobodega->SALA_O_BODEGA_ESTADO }}</td>
+                        <td>{{ $bodega->BODEGA_NOMBRE }}</td>
+                        <td>{{ $bodega->BODEGA_ESTADO }}</td>
                         <td>
                             <div class="d-flex justify-content-center">
-                                <a href="{{ route('salasobodegas.edit', $salaobodega->SALA_O_BODEGA_ID) }}" class="btn botoneditar">
+                                <a href="{{ route('bodegas.edit', $bodega->BODEGA_ID) }}" class="btn botoneditar">
                                     <i class="fa-solid fa-pen-to-square"></i> Editar
                                 </a>
-                                <form action="{{ route('salasobodegas.destroy', $salaobodega->SALA_O_BODEGA_ID) }}" method="POST" class="ml-2">
+                                <form action="{{ route('bodegas.destroy', $bodega->BODEGA_ID) }}" method="POST" class="ml-2">
                                     @csrf
                                     @method('DELETE')
                                     <button type="submit" class="btn btn-danger">
@@ -95,10 +90,10 @@
 @section('js')
     <script>
         $(document).ready(function () {
-            $('#salasobodegas').DataTable({
+            $('#bodegas').DataTable({
                 "lengthMenu": [[5,10, 50, -1], [5, 10, 50, "All"]],
                 "columnDefs": [
-                    { "orderable": false, "targets": 4 } // La segunda columna no es ordenable
+                    { "orderable": false, "targets": 2 } // La segunda columna no es ordenable
                 ],
                 "language": {
                     "url": "https://cdn.datatables.net/plug-ins/1.11.3/i18n/es_es.json"

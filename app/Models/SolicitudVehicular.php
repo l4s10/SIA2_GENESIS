@@ -28,9 +28,9 @@ class SolicitudVehicular extends Model
     ];
 
     public function user()
-        {
-            return $this->belongsTo(User::class, 'USUARIO_id', 'id');
-        }
+    {
+        return $this->belongsTo(User::class, 'USUARIO_id', 'id');
+    }
 
         //!!Esto sera para vehiculos una vez listo
         /*public function categoria()

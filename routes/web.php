@@ -8,7 +8,8 @@ use Illuminate\Support\Facades\Route;
 require __DIR__.'/Activos/InventariosRoutes.php';
 require __DIR__.'/Activos/MaterialesRoutes.php';
 require __DIR__.'/Activos/EquiposRoutes.php';
-require __DIR__.'/Activos/SalasOBodegasRoutes.php';
+require __DIR__.'/Activos/SalasRoutes.php';
+require __DIR__.'/Activos/BodegasRoutes.php';
 require __DIR__.'/Activos/FormulariosRoutes.php';
 require __DIR__.'/Activos/VehiculosRoutes.php';
 
@@ -16,6 +17,7 @@ require __DIR__.'/Activos/VehiculosRoutes.php';
 require __DIR__.'/Solicitudes/SolMaterialesRoutes.php';
 require __DIR__.'/Solicitudes/SolFormulariosRoutes.php';
 require __DIR__.'/Solicitudes/SolEquiposRoutes.php';
+require __DIR__.'/Solicitudes/SolVehiculosRoutes.php';
 
 // rutas para carrito
 require __DIR__.'/CarritoRoutes/CarritoRoutes.php';
