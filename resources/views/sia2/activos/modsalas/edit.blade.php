@@ -11,7 +11,6 @@
     <form action="{{ route('salas.update', $sala->SALA_ID) }}" method="POST">
         @csrf
         @method('PUT')
-
         <div class="col-md-6">
             <div class="mb-3">
                 <label for="OFICINA" class="form-label"><i class="fa-solid fa-map-location-dot"></i> Dirección Regional </label>

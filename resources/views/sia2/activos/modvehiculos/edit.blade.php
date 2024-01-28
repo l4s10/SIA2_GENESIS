@@ -24,7 +24,7 @@
                 </div>
                 <div class="col-md-6">
                     <div class="mb-3">
-                        <label for="TIPO_VEHICULO_ID" class="form-label"><i class="fa-solid fa-circle-info"></i> Tipo</label>
+                        <label for="TIPO_VEHICULO_ID" class="form-label"><i class="fa-solid fa-car-side"></i> Tipo</label>
                         <select name="TIPO_VEHICULO_ID" id="TIPO_VEHICULO_ID" class="form-control" tabindex="2" required>
                             <option disabled value="">-- Seleccione un tipo de vehiculo --</option>
                             @foreach ($tiposVehiculos as $tipoVehiculo)
@@ -40,7 +40,7 @@
             <div class="row">
                 <div class="col-md-6">
                     <div class="mb-3">
-                        <label for="VEHICULO_MARCA" class="form-label"><i class="fa-solid fa-circle-info"></i> Marca</label>
+                        <label for="VEHICULO_MARCA" class="form-label"><i class="fa-solid fa-car-rear"></i> Marca</label>
                         <input id="VEHICULO_MARCA" name="VEHICULO_MARCA" type="text" class="form-control" tabindex="3" placeholder="Toyota" value="{{ $vehiculo->VEHICULO_MARCA }}" required>
                         @error('VEHICULO_MARCA')
                             <div class="alert alert-danger mt-2">{{ $message }}</div>
@@ -49,7 +49,7 @@
                 </div>
                 <div class="col-md-6">
                     <div class="mb-3">
-                        <label for="VEHICULO_MODELO" class="form-label"><i class="fa-solid fa-circle-info"></i> Modelo</label>
+                        <label for="VEHICULO_MODELO" class="form-label"><i class="fa-solid fa-car-on"></i> Modelo</label>
                         <input id="VEHICULO_MODELO" name="VEHICULO_MODELO" type="text" class="form-control" tabindex="4" placeholder="Corolla" value="{{ $vehiculo->VEHICULO_MODELO }}" required>
                         @error('VEHICULO_MODELO')
                             <div class="alert alert-danger mt-2">{{ $message }}</div>
@@ -58,7 +58,7 @@
                 </div>
             </div>
             <div class="row">
-                <div class="col-md-4">
+                <div class="col-md-4 mx-auto">
                     <div class="mb-3">
                         <label for="VEHICULO_ANO" class="form-label"><i class="fa-regular fa-calendar-days"></i> Año</label>
                         <input type="number" min="2000" step="1" id="VEHICULO_ANO" name="VEHICULO_ANO" placeholder="(2000 - 2099)" value="{{ $vehiculo->VEHICULO_ANO }}" tabindex="5" required class="form-control"/>
@@ -115,7 +115,7 @@
             <div class="row">
                 <div class="col-md-6">
                     <div class="mb-3">
-                        <label for="VEHICULO_KILOMETRAJE" class="form-label"><i class="fa-regular fa-road"></i> Kilometraje</label>
+                        <label for="VEHICULO_KILOMETRAJE" class="form-label"><i class="fa-solid fa-gauge-high"></i> Kilometraje</label>
                         <input id="VEHICULO_KILOMETRAJE" name="VEHICULO_KILOMETRAJE" type="number" class="form-control" tabindex="8" placeholder="Ingrese el kilometraje" value="{{ $vehiculo->VEHICULO_KILOMETRAJE }}" min="0" max="400000" required>
                         @error('VEHICULO_KILOMETRAJE')
                             <div class="alert alert-danger mt-2">{{ $message }}</div>
@@ -158,7 +158,7 @@
             <div class="row">
                 <div class="col-md-12">
                     <a href="{{ route('vehiculos.index') }}" class="btn btn-secondary" tabindex="11"><i class="fa-solid fa-hand-point-left"></i> Cancelar</a>
-                    <button type="submit" class="btn btn-primary" tabindex="12"><i class="fa-solid fa-floppy-disk"></i> Guardar Cambios</button>
+                    <button type="submit" class="btn guardar" tabindex="12"><i class="fa-solid fa-floppy-disk"></i> Guardar </button>
                 </div>
             </div>
         </form>
@@ -167,6 +167,12 @@
 
 @section('css')
     <link rel="stylesheet" href="/css/admin_custom.css">
+    <style>/* Estilos personalizados si es necesario */
+        .guardar {
+            background-color: #e6500a;
+            color: #fff;
+        }
+    </style>
 @stop
 
 @section('js')

@@ -43,7 +43,7 @@
                 </div>
             </div>
         </div>
-        <h4 class="card-subtitle mb-4 text-muted">Módulos Equipos</h4>
+        <h4 class="card-subtitle mb-4 text-muted" style="text-align: justify;">Módulos Equipos</h4>
         <div class="row">
             <div class="col-sm-6">
                 {{-- Gestión de equipos --}}
@@ -54,8 +54,8 @@
                     </div>
                     <div class="card-footer">
                         {{-- Ajusta las rutas según tu estructura --}}
-                        <a class="btn btn-primary" href="{{ route('equipos.index') }}"><i class="fa-solid fa-box"></i> Ver Equipos</a>
-                        <a class="btn guardar" href="{{ route('equipos.create') }}"><i class="fa-solid fa-plus"></i> Agregar Equipo</a>
+                        <a class="btn btn-primary" href="{{ route('equipos.index') }}"><i class="fa-solid fa-eye"></i> Ver</a>
+                        <a class="btn guardar" href="{{ route('equipos.create') }}"><i class="fa-solid fa-plus"></i> Agregar</a>
                     </div>
                     </div>
                 </div>
@@ -68,13 +68,13 @@
                     </div>
                         <div class="card-footer">
                             {{-- Ajusta las rutas según tu estructura --}}
-                            <a class="btn btn-primary" href="{{ route('tiposequipos.index') }}"><i class="fa-solid fa-tag"></i> Ver Tipos de Equipos</a>
-                            <a class="btn guardar" href="{{ route('tiposequipos.create') }}"><i class="fa-solid fa-plus"></i> Agregar Tipo de Equipos</a>
+                            <a class="btn btn-primary" href="{{ route('tiposequipos.index') }}"><i class="fa-solid fa-eye"></i> Ver</a>
+                            <a class="btn guardar" href="{{ route('tiposequipos.create') }}"><i class="fa-solid fa-plus"></i> Agregar</a>
                         </div>
                     </div>
                 </div>
 
-        <h4 class="card-subtitle mb-2 text-muted">Módulos de Salas </h4>
+        <h4 class="card-subtitle mb-4 text-muted" style="text-align: justify;">Módulos Salas y Bodegas </h4>
         <div class="row">
             <div class="col-sm-6">
                 {{-- Gestión de salas --}}
@@ -85,8 +85,8 @@
                     </div>
                     <div class="card-footer">
                         {{-- Ajusta las rutas según tu estructura --}}
-                        <a class="btn btn-primary" href="{{ route('salas.index') }}"><i class="fa-solid fa-box"></i> Ver Salas </a>
-                        <a class="btn guardar" href="{{ route('salas.create') }}"><i class="fa-solid fa-plus"></i> Agregar Sala </a>
+                        <a class="btn btn-primary" href="{{ route('salas.index') }}"><i class="fa-solid fa-eye"></i> Ver</a>
+                        <a class="btn guardar" href="{{ route('salas.create') }}"><i class="fa-solid fa-plus"></i> Agregar</a>
                     </div>
                     </div>
                 </div>
@@ -99,15 +99,13 @@
                     </div>
                     <div class="card-footer">
                         {{-- Ajusta las rutas según tu estructura --}}
-                        <a class="btn btn-primary" href="{{ route('bodegas.index') }}"><i class="fa-solid fa-box"></i> Ver Bodegas </a>
-                        <a class="btn guardar" href="{{ route('bodegas.create') }}"><i class="fa-solid fa-plus"></i> Agregar Bodega </a>
-                    </div>
+                        <a class="btn btn-primary" href="{{ route('bodegas.index') }}"><i class="fa-solid fa-eye"></i> Ver</a>
+                        <a class="btn guardar" href="{{ route('bodegas.create') }}"><i class="fa-solid fa-plus"></i> Agregar</a>
                     </div>
                 </div>
+            </div>
 
-        </div>
-
-        <h4 class="card-subtitle mb-2 text-muted">Módulos de Vehículos / Formularios</h4>
+        <h4 class="card-subtitle mb-4 text-muted" style="text-align: justify;">Módulos de Vehículos / Formularios</h4>
         <div class=row>
             <div class="col-sm-6">
             {{-- Gestión de vehículos --}}
@@ -118,8 +116,8 @@
                 </div>
                 <div class="card-footer ">
                     {{-- Ajusta las rutas según tu estructura --}}
-                        <a class="btn btn-primary" href="{{ route('vehiculos.index') }}"><i class="fa-solid fa-box"></i> Ver Vehículos</a>
-                        <a class="btn guardar" href="{{ route('vehiculos.create') }}"><i class="fa-solid fa-plus"></i> Agregar Vehículo</a>
+                        <a class="btn btn-primary" href="{{ route('vehiculos.index') }}"><i class="fa-solid fa-eye"></i> Ver</a>
+                        <a class="btn guardar" href="{{ route('vehiculos.create') }}"><i class="fa-solid fa-plus"></i> Agregar</a>
                 </div>
             </div>
         </div>
@@ -132,11 +130,10 @@
             </div>
             <div class="card-footer">
                 {{-- Ajusta las rutas según tu estructura --}}
-                <a class="btn btn-primary" href="{{ route('formularios.index') }}"><i class="fa-solid fa-box"></i> Ver Formularios</a>
-                <a class="btn guardar" href="{{ route('formularios.create') }}"><i class="fa-solid fa-plus"></i> Agregar Formularios</a>
+                <a class="btn btn-primary" href="{{ route('formularios.index') }}"><i class="fa-solid fa-eye"></i> Ver</a>
+                <a class="btn guardar" href="{{ route('formularios.create') }}"><i class="fa-solid fa-plus"></i> Agregar</a>
             </div>
         </div>
-
     </div>
 </div>
 @stop
