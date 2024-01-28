@@ -3,7 +3,7 @@
 @section('title', 'Solicitudes de formularios')
 
 @section('content_header')
-    <h1>Listado de solicitudes</h1>
+    <h1>Listado de solicitudes de formularios</h1>
     {{-- Logica de roles --}}
 @stop
 
@@ -40,7 +40,7 @@
     {{-- Tabla de solicitudes --}}
     <div class="table-responsive">
         <table id="solicitudes" class="table table-bordered mt-4">
-            <thead>
+            <thead class="tablacolor">
                 <tr>
                     <th scope="col">Solicitante</th>
                     <th scope="col">Estado</th>
@@ -73,7 +73,20 @@
 @stop
 
 @section('css')
-
+    <style>/* Estilos personalizados si es necesario */
+        .tablacolor {
+            background-color: #0064a0; /* Color de fondo personalizado */
+            color: #fff; /* Color de texto personalizado */
+        }
+        .agregar{
+            background-color: #e6500a;
+            color: #fff;
+        }
+        .botoneditar{
+            background-color: #1aa16b;
+            color: #fff;
+        }
+    </style>
 @stop
 
 @section('js')
