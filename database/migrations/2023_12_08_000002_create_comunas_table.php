@@ -15,7 +15,7 @@ return new class extends Migration
             //*Atributos tabla comunas */
             $table->id('COMUNA_ID');
             $table->unsignedBigInteger('REGION_ID');
-            $table->string('COMUNA_NOMBRE', 128)->unique();
+            $table->string('COMUNA_NOMBRE', 40)->unique();
             $table->timestamps();
             //*LLaves foráneas */
             $table->foreign('REGION_ID')->references('REGION_ID')->on('regiones');

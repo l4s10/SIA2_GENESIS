@@ -28,10 +28,10 @@ class MaterialController extends Controller
         // Código para el manejo de errores y retorno de vistas
         try
         {
-           // Obtiene la OFICINA_ID del usuario actual
+           // Obtener OFICINA_ID del usuario actual
             $oficinaIdUsuario = Auth::user()->OFICINA_ID;
 
-            // Función que lista materiales basados en la OFICINA_ID del usuario
+            // Obtener materiales basados en la OFICINA_ID del usuario
             $materiales = Material::where('OFICINA_ID', $oficinaIdUsuario)->get();
 
             return view('sia2.activos.modmateriales.materiales.index', compact('materiales'));;
