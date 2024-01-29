@@ -59,4 +59,19 @@ class Solicitud extends Model
                 ->withPivot('SOLICITUD_EQUIPOS_CANTIDAD', 'SOLICITUD_EQUIPOS_CANTIDAD_AUTORIZADA')
                 ->withTimestamps();
         }
+
+        // !! Preguntar cardinalidad @Rick1701
+        // Relación de muchos a muchos con Salas
+        public function salas()
+        {
+            return $this->belongsToMany(Sala::class, 'solicitudes_salas', 'SOLICITUD_ID', 'SALA_ID')
+                ->withTimestamps();
+        }
+
+        // Relación de muchos a muchos con Bodegas
+        public function bodegas()
+        {
+            return $this->belongsToMany(Bodega::class, 'solicitudes_bodegas', 'SOLICITUD_ID', 'BODEGA_ID')
+                ->withTimestamps();
+        }
 }
