@@ -40,7 +40,7 @@
             <div class="row">
                 <div class="col-md-4">
                     <div class="mb-3">
-                        <label for="VEHICULO_MARCA" class="form-label"><i class="fa-solid fa-circle-info"></i> Marca</label>
+                        <label for="VEHICULO_MARCA" class="form-label"><i class="fa-solid fa-car-rear"></i> Marca</label>
                         <input id="VEHICULO_MARCA" name="VEHICULO_MARCA" type="text" class="form-control" tabindex="3" placeholder="Toyota" maxlength="20" required>
                         @error('VEHICULO_MARCA')
                             <div class="alert alert-danger mt-2">{{ $message }}</div>
@@ -49,7 +49,7 @@
                 </div>
                 <div class="col-md-4">
                     <div class="mb-3">
-                        <label for="VEHICULO_MODELO" class="form-label"><i class="fa-solid fa-circle-info"></i> Modelo</label>
+                        <label for="VEHICULO_MODELO" class="form-label"><i class="fa-solid fa-car-on"></i> Modelo</label>
                         <input id="VEHICULO_MODELO" name="VEHICULO_MODELO" type="text" class="form-control" tabindex="4" placeholder="Corolla" maxlength="20" required>
                         @error('VEHICULO_MODELO')
                             <div class="alert alert-danger mt-2">{{ $message }}</div>
@@ -84,7 +84,7 @@
                         <label for="DEPENDENCIA_ID" class="form-label"><i class="fa-solid fa-street-view"></i> Ubicación/Departamento </label>
                         <select id="DEPENDENCIA_ID" class="form-control" name="DEPENDENCIA_ID" tabindex="7" required>
                             <option value="" disabled selected>-- Seleccione una ubicación o departamento --</option>
-                            
+
                             <optgroup label="Ubicaciones">
                                 @foreach ($ubicacionesLocales as $ubicacion)
                                     <option value="{{ $ubicacion->UBICACION_ID }}">
@@ -92,7 +92,7 @@
                                     </option>
                                 @endforeach
                             </optgroup>
-                    
+
                             <optgroup label="Departamentos">
                                 @foreach ($departamentosLocales as $departamento)
                                     <option value="{{ $departamento->DEPARTAMENTO_ID }}">
@@ -111,7 +111,7 @@
             <div class="row">
                 <div class="col-md-6">
                     <div class="mb-3">
-                        <label for="VEHICULO_KILOMETRAJE" class="form-label"><i class="fa-regular fa-road"></i> Kilometraje</label>
+                        <label for="VEHICULO_KILOMETRAJE" class="form-label"><i class="fa-solid fa-gauge-high"></i> Kilometraje</label>
                         <input id="VEHICULO_KILOMETRAJE" name="VEHICULO_KILOMETRAJE" type="number" class="form-control" tabindex="8" placeholder="Ingrese el kilometraje" min="0" max="400000"required>
                         @error('VEHICULO_KILOMETRAJE')
                             <div class="alert alert-danger mt-2">{{ $message }}</div>

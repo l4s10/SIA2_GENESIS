@@ -37,8 +37,9 @@
                     </div>
                 </div>
             </div>
+            <br>
             <div class="row">
-                <div class="col-md-6">
+                <div class="col-md-4">
                     <div class="mb-3">
                         <label for="VEHICULO_MARCA" class="form-label"><i class="fa-solid fa-car-rear"></i> Marca</label>
                         <input id="VEHICULO_MARCA" name="VEHICULO_MARCA" type="text" class="form-control" tabindex="3" placeholder="Toyota" value="{{ $vehiculo->VEHICULO_MARCA }}" required>
@@ -47,7 +48,7 @@
                         @enderror
                     </div>
                 </div>
-                <div class="col-md-6">
+                <div class="col-md-4">
                     <div class="mb-3">
                         <label for="VEHICULO_MODELO" class="form-label"><i class="fa-solid fa-car-on"></i> Modelo</label>
                         <input id="VEHICULO_MODELO" name="VEHICULO_MODELO" type="text" class="form-control" tabindex="4" placeholder="Corolla" value="{{ $vehiculo->VEHICULO_MODELO }}" required>
@@ -56,9 +57,7 @@
                         @enderror
                     </div>
                 </div>
-            </div>
-            <div class="row">
-                <div class="col-md-4 mx-auto">
+                <div class="col-md-4">
                     <div class="mb-3">
                         <label for="VEHICULO_ANO" class="form-label"><i class="fa-regular fa-calendar-days"></i> Año</label>
                         <input type="number" min="2000" step="1" id="VEHICULO_ANO" name="VEHICULO_ANO" placeholder="(2000 - 2099)" value="{{ $vehiculo->VEHICULO_ANO }}" tabindex="5" required class="form-control"/>
@@ -68,7 +67,7 @@
                     </div>
                 </div>
             </div>
-
+            <br>
             <div class="row">
                 <div class="col-md-6">
                     <div class="mb-3">
@@ -112,6 +111,7 @@
 
 
             </div>
+            <br>
             <div class="row">
                 <div class="col-md-6">
                     <div class="mb-3">
@@ -139,6 +139,7 @@
                     </div>
                 </div>
             </div>
+            <br>
             <div class="row">
                 <div class="col-md-3">
                     <div class="mb-3">
