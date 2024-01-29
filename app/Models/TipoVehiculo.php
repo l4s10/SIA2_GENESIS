@@ -15,8 +15,9 @@ class TipoVehiculo extends Model
     protected $primaryKey = 'TIPO_VEHICULO_ID';
     // Declaramos el fillable para poder usar el método create() de Eloquent
     protected $fillable = [
+        'OFICINA_ID',
         'TIPO_VEHICULO_NOMBRE',
-        'OFICINA_ID'
+        'TIPO_VEHICULO_CAPACIDAD'
     ];
     // Relación uno a muchos con vehiculos
     public function vehiculos()

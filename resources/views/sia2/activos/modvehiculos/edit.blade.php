@@ -24,7 +24,7 @@
                 </div>
                 <div class="col-md-6">
                     <div class="mb-3">
-                        <label for="TIPO_VEHICULO_ID" class="form-label"><i class="fa-solid fa-circle-info"></i> Tipo</label>
+                        <label for="TIPO_VEHICULO_ID" class="form-label"><i class="fa-solid fa-car-side"></i> Tipo de Vehículo</label>
                         <select name="TIPO_VEHICULO_ID" id="TIPO_VEHICULO_ID" class="form-control" tabindex="2" required>
                             <option disabled value="">-- Seleccione un tipo de vehiculo --</option>
                             @foreach ($tiposVehiculos as $tipoVehiculo)

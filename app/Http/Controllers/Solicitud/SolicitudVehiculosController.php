@@ -11,6 +11,15 @@ use Illuminate\Support\Facades\Auth;
 
 // Importar modelos
 use App\Models\SolicitudVehicular;
+use App\Models\Oficina;
+use App\Models\Ubicacion;
+use App\Models\Departamento;
+use App\Models\User;
+
+
+use App\Models\TipoVehiculo;
+
+
 
 class SolicitudVehiculosController extends Controller
 {
@@ -21,7 +30,6 @@ class SolicitudVehiculosController extends Controller
     {
         // Try-catch para el manejo de excepciones
         try {
-
             // Obtener la oficina del usuario actual
             $oficinaIdUsuario = Auth::user()->OFICINA_ID;
 
@@ -45,18 +53,18 @@ class SolicitudVehiculosController extends Controller
     /**
      * Show the form for creating a new resource.
      */
-    /*    public function create()
+    public function create()
     {
         // Try-catch para el manejo de excepciones
         try {
-            // Función que lista materiales basados en la OFICINA_ID del usuario logueado
-            $materiales = Material::where('OFICINA_ID', Auth::user()->OFICINA_ID)->get();
+            $oficinas = Oficina::all();
+            $ubicaciones = Ubicacion::all();
+            $departamentos = Departamento::all();
+            $users = User::all();
+            // Obtener tipos de vehículos basados en la OFICINA_ID del usuario
+            $tiposVehiculos = TipoVehiculo::where('OFICINA_ID', Auth::user()->OFICINA_ID)->get();
 
-            // Obtener los elementos del carrito
-            $cartItems = Cart::instance('carrito_materiales')->content();
-
-            // Retornar la vista del formulario con los materiales y el carrito
-            return view('sia2.solicitudes.materiales.create', compact('materiales', 'cartItems'));
+            return view('sia2.solicitudes.vehiculos.create', compact('tiposVehiculos','oficinas','ubicaciones','departamentos','users'));
         } catch (Exception $e) {
             // Manejar excepciones si es necesario
             return redirect()->route('solicitudes.index')->with('error', 'Error al cargar los materiales.');
@@ -139,7 +147,30 @@ class SolicitudVehiculosController extends Controller
      */
  /*   public function edit(string $id)
     {
-        //
+        // Try-catch para el manejo de excepciones
+        try {
+            // Obtener la oficina del usuario actual
+            $oficinaIdUsuario = Auth::user()->OFICINA_ID;
+
+            // Consulta SQL para obtener vehículos asociados a la oficina del usuario
+            $vehiculos = Vehiculo::select('VEHICULOS.*')
+                ->leftJoin('UBICACIONES', 'VEHICULOS.UBICACION_ID', '=', 'UBICACIONES.UBICACION_ID')
+                ->leftJoin('DEPARTAMENTOS', 'VEHICULOS.DEPARTAMENTO_ID', '=', 'DEPARTAMENTOS.DEPARTAMENTO_ID')
+                ->where(function($query) use ($oficinaIdUsuario) {
+                    $query->where('UBICACIONES.OFICINA_ID', $oficinaIdUsuario)
+                        ->whereNull('VEHICULOS.DEPARTAMENTO_ID');
+                })
+                ->orWhere(function($query) use ($oficinaIdUsuario) {
+                    $query->where('DEPARTAMENTOS.OFICINA_ID', $oficinaIdUsuario)
+                        ->whereNull('VEHICULOS.UBICACION_ID');
+                })
+                ->get();
+            // Retornar la vista del formulario con los materiales y el carrito
+            return view('sia2.solicitudes.vehiculos.edit', compact('vehiculos'));
+        } catch (Exception $e) {
+            // Manejar excepciones si es necesario
+            return redirect()->route('solicitudes.index')->with('error', 'Error al cargar los materiales.');
+        }
     }
 
     /**
