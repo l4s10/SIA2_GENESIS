@@ -14,10 +14,8 @@
         <div class="col-md-6">
             <div class="mb-3">
                 <label for="OFICINA" class="form-label"><i class="fa-solid fa-map-location-dot"></i> Dirección Regional </label>
-                <select id="OFICINA" class="form-control" name="OFICINA" required disabled>
-                    <option value="{{ $oficinaAsociada->OFICINA_ID }}">{{ $oficinaAsociada->OFICINA_NOMBRE }}</option>
-                </select>
-                @error('OFICINA')
+                <input type="text" id="OFICINA" class="form-control" name="OFICINA" value="{{ $oficinaAsociada->OFICINA_NOMBRE }}" required readonly>
+                @error('ID_REGION')
                     <div class="alert alert-danger mt-2">{{ $message }}</div>
                 @enderror
             </div>

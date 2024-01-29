@@ -14,10 +14,15 @@ return new class extends Migration
         Schema::create('tipos_vehiculos', function (Blueprint $table) {
             //Atributos
             $table->id('TIPO_VEHICULO_ID');
-            $table->string('TIPO_VEHICULO_NOMBRE', 128);
+            $table->unsignedBigInteger('OFICINA_ID');
+            $table->string('TIPO_VEHICULO_NOMBRE', 40);
             $table->integer('TIPO_VEHICULO_CAPACIDAD');
-            //Timestamps (Fecha de creacion y de modificacion del registro)
-            $table->timestamps();
+           
+            //Relaciones
+            $table->foreign('OFICINA_ID')->references('OFICINA_ID')->on('oficinas');
+
+             //Timestamps (Fecha de creacion y de modificacion del registro)
+             $table->timestamps();
         });
     }
 

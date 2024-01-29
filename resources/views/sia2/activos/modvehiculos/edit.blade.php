@@ -24,7 +24,7 @@
                 </div>
                 <div class="col-md-6">
                     <div class="mb-3">
-                        <label for="TIPO_VEHICULO_ID" class="form-label"><i class="fa-solid fa-car-side"></i> Tipo</label>
+                        <label for="TIPO_VEHICULO_ID" class="form-label"><i class="fa-solid fa-car-side"></i> Tipo de Vehículo</label>
                         <select name="TIPO_VEHICULO_ID" id="TIPO_VEHICULO_ID" class="form-control" tabindex="2" required>
                             <option disabled value="">-- Seleccione un tipo de vehiculo --</option>
                             @foreach ($tiposVehiculos as $tipoVehiculo)
@@ -87,7 +87,7 @@
                         <label for="DEPENDENCIA_ID" class="form-label"><i class="fa-solid fa-street-view"></i> Ubicación/Departamento </label>
                         <select id="DEPENDENCIA_ID" class="form-control" name="DEPENDENCIA_ID" tabindex="7" required>
                             <option disabled value="">-- Seleccione una ubicación o departamento --</option>
-                            
+
                             <optgroup label="Ubicaciones">
                                 @foreach ($ubicacionesLocales as $ubicacion)
                                     <option value="{{ $ubicacion->UBICACION_ID }}" {{ $vehiculo->UBICACION_ID == $ubicacion->UBICACION_ID ? 'selected' : '' }}>
@@ -95,7 +95,7 @@
                                     </option>
                                 @endforeach
                             </optgroup>
-                            
+
                             <optgroup label="Departamentos">
                                 @foreach ($departamentosLocales as $departamento)
                                     <option value="{{ $departamento->DEPARTAMENTO_ID }}" {{ $vehiculo->DEPARTAMENTO_ID == $departamento->DEPARTAMENTO_ID ? 'selected' : '' }}>
@@ -110,7 +110,7 @@
                     </div>
                 </div>
 
-                
+
             </div>
             <div class="row">
                 <div class="col-md-6">

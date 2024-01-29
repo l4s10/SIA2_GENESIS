@@ -57,8 +57,8 @@ class VehiculoController extends Controller
             $ubicacionesLocales = Ubicacion::where('OFICINA_ID', $oficinaIdUsuario)->get();
             // Obtener departamentos locales
             $departamentosLocales = Departamento::where('OFICINA_ID', $oficinaIdUsuario)->get();
-            // Obtener tipos de vehiculos
-            $tiposVehiculos = TipoVehiculo::all();
+            // Obtener tipos de vehículos locales
+            $tiposVehiculos = TipoVehiculo::where('OFICINA_ID', $oficinaIdUsuario)->get();
 
             return view('sia2.activos.modvehiculos.create', compact('ubicacionesLocales','departamentosLocales','tiposVehiculos','oficinaAsociada'));
         } catch (ModelNotFoundException $e) {
@@ -165,9 +165,6 @@ class VehiculoController extends Controller
         try {
             // Obtener el vehiculo a editar
             $vehiculo = Vehiculo::findOrFail($id);
-            // Obtener tipos de vehiculos
-            $tiposVehiculos = TipoVehiculo::all();
-
             // Obtiener la OFICINA_ID del usuario actual
             $oficinaIdUsuario = Auth::user()->OFICINA_ID;
             // Obtener la entidad oficina asociada al usuario
@@ -176,6 +173,8 @@ class VehiculoController extends Controller
             $ubicacionesLocales = Ubicacion::where('OFICINA_ID', $oficinaIdUsuario)->get();
             // Obtener departamentos locales
             $departamentosLocales = Departamento::where('OFICINA_ID', $oficinaIdUsuario)->get();
+            // Obtener tipos de vehículos locales
+            $tiposVehiculos = TipoVehiculo::where('OFICINA_ID', $oficinaIdUsuario)->get();
 
             return view('sia2.activos.modvehiculos.edit', compact('vehiculo', 'tiposVehiculos', 'oficinaAsociada', 'ubicacionesLocales', 'departamentosLocales'));
         } catch (ModelNotFoundException $e) {
