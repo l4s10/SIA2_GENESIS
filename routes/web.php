@@ -2,26 +2,28 @@
 
 use Illuminate\Support\Facades\Route;
 
-// require
+//Proteccion de rutas de aplicacion (Se requiere autentificacion)
+Route::group(['middleware' => 'auth'], function (){
+    // rutas de gestión de activos:
+    require __DIR__.'/Activos/InventariosRoutes.php';
+    require __DIR__.'/Activos/MaterialesRoutes.php';
+    require __DIR__.'/Activos/EquiposRoutes.php';
+    require __DIR__.'/Activos/SalasRoutes.php';
+    require __DIR__.'/Activos/BodegasRoutes.php';
+    require __DIR__.'/Activos/FormulariosRoutes.php';
+    require __DIR__.'/Activos/VehiculosRoutes.php';
 
-// rutas de gestión de activos:
-require __DIR__.'/Activos/InventariosRoutes.php';
-require __DIR__.'/Activos/MaterialesRoutes.php';
-require __DIR__.'/Activos/EquiposRoutes.php';
-require __DIR__.'/Activos/SalasRoutes.php';
-require __DIR__.'/Activos/BodegasRoutes.php';
-require __DIR__.'/Activos/FormulariosRoutes.php';
-require __DIR__.'/Activos/VehiculosRoutes.php';
+    // rutas para solicitudes
+    require __DIR__.'/Solicitudes/SolMaterialesRoutes.php';
+    require __DIR__.'/Solicitudes/SolFormulariosRoutes.php';
+    require __DIR__.'/Solicitudes/SolEquiposRoutes.php';
+    require __DIR__.'/Solicitudes/SolVehiculosRoutes.php';
+    require __DIR__.'/Solicitudes/SolSalasRoutes.php';
+    require __DIR__.'/Solicitudes/SolBodegasRoutes.php';
 
-// rutas para solicitudes
-require __DIR__.'/Solicitudes/SolMaterialesRoutes.php';
-require __DIR__.'/Solicitudes/SolFormulariosRoutes.php';
-require __DIR__.'/Solicitudes/SolEquiposRoutes.php';
-require __DIR__.'/Solicitudes/SolVehiculosRoutes.php';
-
-// rutas para carrito
-require __DIR__.'/CarritoRoutes/CarritoRoutes.php';
-
+    // rutas para carrito
+    require __DIR__.'/CarritoRoutes/CarritoRoutes.php';
+});
 /*
 |--------------------------------------------------------------------------
 | Web Routes
