@@ -32,7 +32,7 @@ class SolicitudReparacion extends Model
         Relacion de uno a uno -> BelongsTo
         Relacion de uno a muchos / cero a muchos -> HasMany
     */
-    public function user()
+    public function solicitante()
     {
         return $this->belongsTo(User::class, 'USUARIO_id', 'id');
     }

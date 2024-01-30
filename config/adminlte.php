@@ -414,11 +414,11 @@ return [
             'submenu' => [
                 [
                     'text' => 'Solicitar',
-                    'url'  => '#',
+                    'route'  => 'solicitudes.reparaciones.create',
                 ],
                 [
                     'text' => 'Mis solicitudes',
-                    'url'  => '#',
+                    'route'  => 'solicitudes.reparaciones.index',
                 ],
             ],
         ],
