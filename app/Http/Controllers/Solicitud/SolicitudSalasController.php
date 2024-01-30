@@ -13,7 +13,7 @@ use Gloudemans\Shoppingcart\Facades\Cart;
 // Importar modelos
 use App\Models\Solicitud;
 use App\Models\Sala;
-use App\Models\Equipo;
+use App\Models\TipoEquipo;
 
 class SolicitudSalasController extends Controller
 {
@@ -45,15 +45,15 @@ class SolicitudSalasController extends Controller
             $salas = Sala::where('OFICINA_ID', Auth::user()->OFICINA_ID)->get();
 
             // En caso de que el funcionario solicite un equipo, se debe listar los equipos disponibles.
-            $equipos = Equipo::where('OFICINA_ID', Auth::user()->OFICINA_ID)->get();
+            $tiposEquipos = TipoEquipo::where('OFICINA_ID', Auth::user()->OFICINA_ID)->get();
 
             // Llamamos a la instancia de carrito pero solo para equipos.
             $cartItems = Cart::instance('carrito_equipos')->content();
 
             // Retornar la vista del formulario con las salas, los equipos y el carrito
-            return view('sia2.solicitudes.salas.create', compact('salas', 'equipos', 'cartItems'));
+            return view('sia2.solicitudes.salas.create', compact('salas', 'tiposEquipos', 'cartItems'));
         }catch(Exception $e){
-            return redirect()->back()->with('error', 'Error al cargar la pagina, vuelva a intentarlo mas tarde.');
+            return redirect()->route('solicitudes.salas.index')->with('error', 'Error al cargar la pagina, vuelva a intentarlo mas tarde.'. $e->getMessage());
         }
     }
 
