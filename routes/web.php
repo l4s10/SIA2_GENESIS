@@ -20,6 +20,7 @@ Route::group(['middleware' => 'auth'], function (){
     require __DIR__.'/Solicitudes/SolVehiculosRoutes.php';
     require __DIR__.'/Solicitudes/SolSalasRoutes.php';
     require __DIR__.'/Solicitudes/SolBodegasRoutes.php';
+    require __DIR__.'/Solicitudes/SolReparacionesRoutes.php';
 
     // rutas para carrito
     require __DIR__.'/CarritoRoutes/CarritoRoutes.php';
