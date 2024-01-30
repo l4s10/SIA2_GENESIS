@@ -163,6 +163,7 @@
                 let tipoVehiculoIdSeleccionado = $(this).val();
                 contadorFilas = 1;
                 capacidadMaxima = 0;
+                $('#agregarPasajeroBtn').html('<i class="fas fa-plus"></i> Agregar Conductor');
                 $('#eliminarPasajeroBtn').html('<i class="fas fa-minus"></i> Eliminar Conductor');
 
                 // Restablecer el conjunto de pasajeros seleccionados al cambiar TIPO_VEHICULO_ID
@@ -171,7 +172,7 @@
     
                 // Verificar si se ha seleccionado la opción por defecto
                 if (tipoVehiculoIdSeleccionado === '') {
-                    let confirmacion = confirm('Está a punto eliminar el tipo de vehículo seleccionado y el registro de pasajeros asociados. ¿Desea continuar?');
+                    let confirmacion = confirm('¿Está seguro de eliminar el tipo de vehículo solicitado y el registro de pasajeros asociados?');
                     if (!confirmacion) {
                         // Si el usuario presiona "Cancelar", se cancela el cambio y se restaura el valor anterior
                         $(this).val(prevTipoVehiculoId);
@@ -185,7 +186,7 @@
                     return; // Salir de la función si se selecciona la opción por defecto
                 } else if   (tipoVehiculoIdSeleccionado !== '' && prevTipoVehiculoId !== '') {
                     // Mostrar advertencia al usuario
-                    let confirmacion = confirm('Está a punto de cambiar el tipo de vehículo solicitado y en consecuencia, eliminar el registro de pasajeros asociados. ¿Desea continuar?');
+                    let confirmacion = confirm('¿Está seguro de cambiar el tipo de vehículo solicitado?, se eliminará el registro de pasajeros asociados.');
                     if (!confirmacion) {
                         // Si el usuario presiona "Cancelar", se cancela el cambio y se restaura el valor anterior
                         $(this).val(prevTipoVehiculoId);
@@ -237,16 +238,16 @@
                         todosSelectoresConValor = false;
                         if (i === 1) {
                             alert('Antes de agregar un pasajero, por favor complete los datos para el Conductor.');
-                            document.querySelector('.alert').style.fontSize = '100px'; // Cambia el tamaño de fuente a 18px
                         } else {
-                            alert('Antes de agregar otro pasajero, por favor revise los datos ingresados para el Pasajero  "'+i+'".');
+                            alert('Antes de agregar otro pasajero, por favor complete los datos requeridos para el "Pasajero  N°'+(i-1)+'".');
                         }
                         break;
                     }
                 }
                 
-                // Cambiar texto del botón de eliminar pasajero (para caso conductor ingresado)
+                // Cambiar texto de botones para eliminar y agregar pasajero, después de  igresar conductor
                 if ( contadorFilas === 1 && todosSelectoresConValor)  {
+                    $('#agregarPasajeroBtn').html('<i class="fas fa-plus"></i> Agregar Pasajero');
                     $('#eliminarPasajeroBtn').html('<i class="fas fa-minus"></i> Eliminar Pasajero');
                 }
 
@@ -275,14 +276,15 @@
                     eliminarPasajero();
 
                 } else {
-                    let confirmacion = confirm('Estás a punto de eliminar el conductor del registro. ¿Deseas continuar?');
+                    let confirmacion = confirm('¿Está seguro de eliminar la información registrada para el conductor?');
                     if (confirmacion) {
                         eliminarConductor();
                     }
                 } 
 
-                // Cambiar texto del botón de eliminar pasajero (para caso conductoringresado) apenas estemos en la fila 1 
+                // Cambiar texto de botones para eliminar y agregar conductor apenas estemos en la fila 1 (durante la navegación intermedia)
                 if (contadorFilas === 1) {
+                    $('#agregarPasajeroBtn').html('<i class="fas fa-plus"></i> Agregar Conductor');
                     $('#eliminarPasajeroBtn').html('<i class="fas fa-minus"></i> Eliminar Conductor');
                 }
             });
@@ -290,11 +292,11 @@
 
             function eliminarConductor() {
                 // Restablecer los selectores a sus opciones predeterminadas o defaults luego de hacer clic
-                $('#eliminarPasajeroBtn').html('<i class="fas fa-minus"></i> Eliminar Conductor');
+   //             $('#eliminarPasajeroBtn').html('<i class="fas fa-minus"></i> Eliminar Conductor');
                 $('#oficina_1').val('');
                 $('#dependencia_1').val('').prop('disabled', true);
                 $('#pasajero1').val('').prop('disabled', true);
-                // Reiniciar el "caché" de usuarios seleccionados
+                // Reiniciar el buffer de usuarios seleccionados
                 reiniciarPasajerosSeleccionados();
 
             }
@@ -312,7 +314,7 @@
                 let pasajeros = $('#pasajeros');
                 pasajeros.append(`
                     <div class="pasajero-row border p-3 mb-3" id="fila_${numeroFila}">
-                        <h5>${numeroFila === 1 ? 'Conductor' : 'Pasajero ' + (numeroFila - 1)}</h5>
+                        <h5>${numeroFila === 1 ? 'Conductor' : 'Pasajero N°' + (numeroFila - 1)}</h5>
                         <div class="form-row">
                             <div class="form-group col-md-4">
                                 <label for="oficina_${numeroFila}">Oficina</label>
@@ -338,7 +340,7 @@
                             <div class="form-group col-md-4">
                                 <label for="pasajero${numeroFila}">Funcionario</label>
                                 <select id="pasajero${numeroFila}" class="form-control pasajero" name="PASAJERO_${numeroFila}" data-row="${numeroFila}" disabled required>
-                                    <option value="">${numeroFila === 1 ? '-- Seleccione al conductor --' : '-- Seleccione al pasajero ' + (numeroFila - 1) + ' --'}</option>
+                                    <option value="">${numeroFila === 1 ? '-- Seleccione al conductor --' : '-- Seleccione al pasajero N°' + (numeroFila - 1) + ' --'}</option>
                                     @foreach($users as $user)
                                     <option value="{{ $user->id }}" data-ubicacion-id="{{ $user->UBICACION_ID }}" data-departamento-id="{{ $user->DEPARTAMENTO_ID }}">{{ $user->USUARIO_NOMBRES }} {{ $user->USUARIO_APELLIDOS }}</option>
                                     @endforeach
@@ -428,7 +430,7 @@
     
                     // Verificar si el pasajero ya ha sido seleccionado
                     if (pasajerosSeleccionados.has(selectedPasajeroId)) {
-                        alert('Esta persona ya ha sido seleccionada como pasajero. Por favor, elige a otra persona.');
+                        alert('Esta persona ya ha sido seleccionada como pasajero. Por favor, elija otra persona.');
                         $(this).val('');
                         return;
                     }
