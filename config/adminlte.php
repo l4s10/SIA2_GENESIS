@@ -381,16 +381,30 @@ return [
             ],
         ],
         [
-            'text'        => 'Salas y Bodegas',
+            'text'        => 'Salas',
             'icon'        => 'far fa-fw fa-solid fa-building',
             'submenu' => [
                 [
                     'text' => 'Solicitar',
-                    'url'  => '#',
+                    'route'  => 'solicitudes.salas.create',
                 ],
                 [
                     'text' => 'Mis solicitudes',
-                    'url'  => '#',
+                    'route'  => 'solicitudes.salas.index',
+                ],
+            ],
+        ],
+        [
+            'text'        => 'Bodegas',
+            'icon'        => 'far fa-fw fa-solid fa-building',
+            'submenu' => [
+                [
+                    'text' => 'Solicitar',
+                    'route'  => 'solicitudes.bodegas.create',
+                ],
+                [
+                    'text' => 'Mis solicitudes',
+                    'route'  => 'solicitudes.bodegas.index',
                 ],
             ],
         ],
