@@ -18,7 +18,7 @@
                 <p class="card-text">Fecha y Hora de Inicio Solicitada: {{ $solicitud->SOLICITUD_FECHA_HORA_INICIO_SOLICITADA }}</p>
                 <p class="card-text">Fecha y Hora de Término Solicitada: {{ $solicitud->SOLICITUD_FECHA_HORA_TERMINO_SOLICITADA }}</p>
 
-                <h5 class="mt-4">Materiales Solicitados</h5>
+                <h5 class="mt-4">Formularios Solicitados</h5>
                 <table class="table table-bordered">
                     <thead>
                         <tr>
