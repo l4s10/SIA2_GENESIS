@@ -263,7 +263,7 @@ class VehiculoController extends Controller
                 'VEHICULO_NIVEL_ESTANQUE' => strtoupper($request->input('VEHICULO_NIVEL_ESTANQUE')),
             ]);
 
-            return view('sia2.activos.modvehiculos.edit', compact('vehiculo', 'tiposVehiculos', 'oficinaAsociada', 'ubicacionesLocales', 'departamentosLocales'))->with('success', 'El vehículo se ha modificado correctamente.');
+            return redirect()->route('vehiculos.index')->with('success', 'Vehículo actualizado exitosamente.');
         } catch (Exception $e) {
             session()->flash('error', 'Error al actualizar el vehículo.');
             return redirect()->route('vehiculos.index');
