@@ -52,13 +52,13 @@
                 @foreach ($solicitudes as $solicitud)
                     <tr>
                         <td>{{ $solicitud->solicitante->USUARIO_NOMBRES }} {{$solicitud->solicitante->USUARIO_APELLIDOS}}</td>
-                        <td>{{ $solicitud->SOLICITUD_ESTADO }}</td>
+                        <td>{{ $solicitud->SOLICITUD_REPARACION_ESTADO }}</td>
                         <td>{{ $solicitud->created_at }}</td>
                         <td>
                             <div class="d-flex justify-content-center">
-                                <a href="{{ route('solicitudes.reparaciones.show', $solicitud->SOLICITUD_ID) }}" class="btn btn-primary"><i class="fa-solid fa-eye"></i></a>
-                                <a href="{{ route('solicitudes.reparaciones.edit', $solicitud->SOLICITUD_ID) }}" class="btn btn-secondary ml-2"><i class="fa-solid fa-pencil"></i></a>
-                                <form action="{{ route('solicitudes.reparaciones.destroy', $solicitud->SOLICITUD_ID) }}" method="POST">
+                                <a href="{{ route('solicitudes.reparaciones.show', $solicitud->SOLICITUD_REPARACION_ID) }}" class="btn btn-primary"><i class="fa-solid fa-eye"></i></a>
+                                <a href="{{ route('solicitudes.reparaciones.edit', $solicitud->SOLICITUD_REPARACION_ID) }}" class="btn btn-secondary ml-2"><i class="fa-solid fa-pencil"></i></a>
+                                <form action="{{ route('solicitudes.reparaciones.destroy', $solicitud->SOLICITUD_REPARACION_ID) }}" method="POST">
                                     @csrf
                                     @method('DELETE')
                                     <button type="submit" class="btn btn-danger ml-2"><i class="fa-solid fa-trash"></i></button>
