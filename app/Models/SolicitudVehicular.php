@@ -17,8 +17,10 @@ class SolicitudVehicular extends Model
     //!! Recomendación, todos los atributos (MENOS EL ID) deben ir aquí.
     protected $fillable = [
         'USUARIO_id',
-        'TIPO_VEHICULO_ID',
-        'RENDICION_ID',
+        'VEHICULO_ID',
+        //'RENDICION_ID',
+        'SOLICITUD_VEHICULO_COMUNA_ORIGEN',
+        'SOLICITUD_VEHICULO_COMUNA_DESTINO',
         'SOLICITUD_VEHICULO_MOTIVO',
         'SOLICITUD_VEHICULO_ESTADO',
         'SOLICITUD_VEHICULO_FECHA_HORA_INICIO_SOLICITADA',
@@ -32,9 +34,19 @@ class SolicitudVehicular extends Model
         return $this->belongsTo(User::class, 'USUARIO_id', 'id');
     }
 
-    public function tipoVehiculo()
+    public function vehiculo()
     {
-        return $this->hasOne(TipoVehiculo::class, 'TIPO_VEHICULO_ID', 'TIPO_VEHICULO_ID');
+        return $this->hasOne(Vehiculo::class, 'VEHICULO_ID', 'VEHICULO_ID');
+    }
+
+    public function comunaOrigen()
+    {
+        return $this->belongsTo(Comuna::class, 'SOLICITUD_VEHICULO_COMUNA_ORIGEN', 'COMUNA_ID');
+    }
+
+    public function comunaDestino()
+    {
+        return $this->belongsTo(Comuna::class, 'SOLICITUD_VEHICULO_COMUNA_DESTINO', 'COMUNA_ID');
     }
         //!!Esto sera para vehiculos una vez listo
         /*public function categoria()

@@ -51,9 +51,9 @@
                         <td>{{ $solicitud->created_at }}</td>
                         <td>
                             <div class="d-flex justify-content-center">
-                                <a href="{{ route('solicitud_vehiculos.show', $solicitud->SOLICITUD_VEHICULO_ID) }}" class="btn btn-primary"><i class="fa-solid fa-eye"></i></a>
+                                {{--<a href="{{ route('solicitud_vehiculos.show', $solicitud->SOLICITUD_VEHICULO_ID) }}" class="btn btn-primary"><i class="fa-solid fa-eye"></i></a>
                                 <a href="{{ route('solicitud_vehiculos.edit', $solicitud->SOLICITUD_VEHICULO_ID) }}" class="btn btn-secondary ml-2"><i class="fa-solid fa-pencil"></i></a>
-                                <form action="{{ route('solicitud_vehiculos.destroy', $solicitud->SOLICITUD_VEHICULO_ID) }}" method="POST">
+                                <form action="{{ route('solicitud_vehiculos.destroy', $solicitud->SOLICITUD_VEHICULO_ID) }}" method="POST">--}}
                                     @csrf
                                     @method('DELETE')
                                     <button type="submit" class="btn btn-danger ml-2"><i class="fa-solid fa-trash"></i></button>
