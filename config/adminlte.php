@@ -480,6 +480,18 @@ return [
             'text' => 'Auditorías',
             'url'  => '#',
             'icon' => 'fas fa-fw fa-solid fa-tablet',
+            'submenu' => [
+                [
+                    'text' => 'Materiales',
+                    'icon' => 'fas fa-fw fa-solid fa-boxes',
+                    'route'  => 'movimientos.materiales',
+                ],
+                [
+                    'text' => 'Equipos',
+                    'icon' => 'fas fa-fw fa-solid fa-desktop',
+                    'route'  => 'movimientos.equipos',
+                ],
+            ],
         ],
 
         ['header' => 'AJUSTES DEL SISTEMA SIAV2.5'],

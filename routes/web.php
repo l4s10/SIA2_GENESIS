@@ -22,6 +22,9 @@ Route::group(['middleware' => 'auth'], function (){
     require __DIR__.'/Solicitudes/SolBodegasRoutes.php';
     require __DIR__.'/Solicitudes/SolReparacionesRoutes.php';
 
+    // rutas para movimientos
+    require __DIR__.'/Movimientos/MovimientosRoutes.php';
+
     // rutas para carrito
     require __DIR__.'/CarritoRoutes/CarritoRoutes.php';
 });
