@@ -459,7 +459,7 @@ return [
         ],
         [
             'text' => 'Reportes',
-            'url'  => '#',
+            'route'  => 'reportes.home.index',
             'icon' => 'fas fa-fw fa-solid fa-chart-pie',
         ],
         [

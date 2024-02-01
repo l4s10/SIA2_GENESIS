@@ -23,6 +23,9 @@ Route::group(['middleware' => 'auth'], function (){
 
     // rutas para carrito
     require __DIR__.'/CarritoRoutes/CarritoRoutes.php';
+
+    // rutas para reportes
+    require __DIR__.'/Reportes/ReportesRoutes.php';
 });
 /*
 |--------------------------------------------------------------------------
