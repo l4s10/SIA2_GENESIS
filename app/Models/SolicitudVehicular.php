@@ -8,15 +8,12 @@ use Illuminate\Database\Eloquent\Model;
 class SolicitudVehicular extends Model
 {
     use HasFactory;
-    //*Nombre de la tabla que "evalúa el modelo" */
     protected $table = 'solicitudes_vehiculos';
-    //*Definimos la llave primaria */
-    //? Debe corresponder con la definida en la migración
     protected $primaryKey = 'SOLICITUD_VEHICULO_ID';
-    //*Definimos los campos que podrán ser modificados */
-    //!! Recomendación, todos los atributos (MENOS EL ID) deben ir aquí.
+
     protected $fillable = [
         'USUARIO_id',
+        'TIPO_VEHICULO_ID',
         'VEHICULO_ID',
         //'RENDICION_ID',
         'SOLICITUD_VEHICULO_COMUNA_ORIGEN',
@@ -29,6 +26,11 @@ class SolicitudVehicular extends Model
         'SOLICITUD_VEHICULO_FECHA_HORA_TERMINO_ASIGNADA'
     ];
 
+    public function viajan()
+    {
+        return $this->belongsToMany(User::class, 'viajan', 'SOLICITUD_VEHICULO_ID', 'USUARIO_id');
+    }
+
     public function user()
     {
         return $this->belongsTo(User::class, 'USUARIO_id', 'id');
@@ -37,6 +39,11 @@ class SolicitudVehicular extends Model
     public function vehiculo()
     {
         return $this->hasOne(Vehiculo::class, 'VEHICULO_ID', 'VEHICULO_ID');
+    }
+
+    public function tipoVehiculo()
+    {
+        return $this->belongsTo(TipoVehiculo::class, 'TIPO_VEHICULO_ID', 'TIPO_VEHICULO_ID');
     }
 
     public function comunaOrigen()
@@ -48,15 +55,4 @@ class SolicitudVehicular extends Model
     {
         return $this->belongsTo(Comuna::class, 'SOLICITUD_VEHICULO_COMUNA_DESTINO', 'COMUNA_ID');
     }
-        //!!Esto sera para vehiculos una vez listo
-        /*public function categoria()
-        {
-            return $this->belongsTo(CategoriaReparacion::class, 'CATEGORIA_REPARACION_ID', 'CATEGORIA_REPARACION_ID');
-        }*/
-
-        //!!Esto sera para rendicion una vez listo
-        /*public function categoria()
-        {
-            return $this->belongsTo(CategoriaReparacion::class, 'CATEGORIA_REPARACION_ID', 'CATEGORIA_REPARACION_ID');
-        }*/
 }

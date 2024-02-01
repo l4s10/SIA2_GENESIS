@@ -3,7 +3,7 @@
 @section('title', 'Crear Solicitud Vehicular')
 
 @section('content_header')
-    <h1>Solicitar Vehículo</h1>
+    <h1>Solicitud Vehicular</h1>
     <br>
     <br>
 
@@ -15,13 +15,15 @@
     <div class="container">
         <form action="{{ route('solicitudesvehiculos.store') }}" method="POST">
             @csrf
-
+            <br>
+            <br>
+            <h3>Titular</h3>
             {{-- *CAMPOS FUNCIONARIO* --}}
             <div class="row">
                 <div class="col-md-6">
                     <input type="text" name="SOLICITANTE_ID" value="{{ auth()->user()->id }}" hidden>
                     <div class="mb-3">
-                        <label for="USUARIO_NOMBRES" class="form-label"><i class="fa-solid fa-user"></i> Nombre del solicitante:</label>
+                        <label for="USUARIO_NOMBRES" class="form-label"><i class="fa-solid fa-user"></i> Nombres:</label>
                         <input type="text" id="USUARIO_NOMBRES" name="USUARIO_NOMBRES" class="form-control{{ $errors->has('USUARIO_NOMBRES') ? ' is-invalid' : '' }}" value="{{ auth()->user()->USUARIO_NOMBRES }} {{ auth()->user()->USUARIO_APELLIDOS }}" readonly required>
                         @if ($errors->has('USUARIO_NOMBRES'))
                         <div class="invalid-feedback">
@@ -75,21 +77,19 @@
                 </div>
 
                 <div class="col-md-6">
-                    <!-- Aquí está tu primer div -->
                     <div class="mb-3">
                         <label for="SOLICITUD_ESTADO">Estado de la Solicitud</label>
                         <input type="text" class="form-control" id="SOLICITUD_ESTADO" name="SOLICITUD_ESTADO" value="POR INGRESAR" readonly style="color: green;">
                     </div>
+                    <!-- Aquí se añade la leyenda -->
+                    <div class="mb-3">
+                        <small>La solicitud todavía <strong>no</strong> ha sido ingresada</small>
+                    </div>
                 </div>
-        
+    
             </div>
 
-            
-            <div class="form-group">
-                <label for="SOLICITUD_VEHICULO_MOTIVO"><i class="fa-solid fa-file-pen"></i> Labor a realizar:</label>
-                <textarea id="SOLICITUD_VEHICULO_MOTIVO" name="SOLICITUD_VEHICULO_MOTIVO" rows="5" class="form-control" placeholder="Indique la labor a realizar (MÁX 500 CARACTERES)" maxlength="500" required></textarea>
-            </div>
-
+            <h3>Vehículo</h3>
             <div class="form-group">
                 <label for="TIPO_VEHICULO_ID" class="form-label"><i class="fa-solid fa-car-side"></i> Tipo de Vehículo</label>
                 <select name="TIPO_VEHICULO_ID" id="TIPO_VEHICULO_ID" class="form-control" required>
@@ -102,25 +102,29 @@
                     <div class="alert alert-danger mt-2">{{ $message }}</div>
                 @enderror
             </div>
-            
-            <br>
-            <!-- Título del registro de pasajeros -->
-            <h3 id="tituloPasajeros" style="display: none;">Conductor y Pasajeros</h3>
+            <div class="form-group" id=SOLICITUD_VEHICULO_MOTIVO style="display: none;>
+                <label for="SOLICITUD_VEHICULO_MOTIVO"><i class="fa-solid fa-file-pen"></i> Labor a realizar:</label>
+                <textarea id="SOLICITUD_VEHICULO_MOTIVO" name="SOLICITUD_VEHICULO_MOTIVO" rows="5" class="form-control" placeholder="Indique la labor a realizar (MÁX 255 CARACTERES)"  maxlength="255" required></textarea>
+            </div>
+             
+        
 
             <!-- Div del registro de pasajeros -->
             <div id="pasajeros" style="display: none;">
                 <!-- Aquí va el contenido del registro de pasajeros -->
             </div>
+            <div class="col">
+                <div class="row">
+                    <button id="agregarPasajeroBtn" class="btn" style="background-color: #1aa16b; color: #fff;">
+                        <i class="fas fa-plus"></i> Agregar Pasajero
+                    </button>
+                            
+                    <button id="eliminarPasajeroBtn" class="btn" style="background-color: #dc3545; color: #fff;">
+                        <i class="fas fa-minus"></i> Eliminar Pasajero
+                    </button>
+                </div>
+            </div>
 
-            
-            <button id="agregarPasajeroBtn" class="btn" style="background-color: #1aa16b; color: #fff;">
-                <i class="fas fa-plus"></i> Agregar Pasajero
-            </button>
-            
-            <button id="eliminarPasajeroBtn" class="btn" style="background-color: #dc3545; color: #fff;">
-                <i class="fas fa-minus"></i> Eliminar Pasajero
-            </button>
-            
             <br>
             <br>
             <h3>Datos Temporales</h3>
@@ -139,7 +143,6 @@
                 </div>
             </div>
             
-            <br>
             <br>
             <h3>Datos Geográficos</h3>
             <div class="row">
@@ -205,47 +208,51 @@
 @section('js')
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script>
+
+        // Obtener valores de inputs para llamar a la función que carga comunas filtradas por región
+        document.addEventListener('DOMContentLoaded', function() {
+            let selectRegionOrigen = document.getElementById('SOLICITUD_VEHICULO_REGION_ORIGEN');
+            let selectComunaOrigen = document.getElementById('SOLICITUD_VEHICULO_COMUNA_ORIGEN');
+            let selectRegionDestino = document.getElementById('SOLICITUD_VEHICULO_REGION_DESTINO');
+            let selectComunaDestino = document.getElementById('SOLICITUD_VEHICULO_COMUNA_DESTINO');
+            let comunasPorRegion = <?php echo json_encode($comunas); ?>; // Comunas desde el backend
+
+            cargarComunas(selectRegionOrigen, selectComunaOrigen, comunasPorRegion);
+            cargarComunas(selectRegionDestino, selectComunaDestino, comunasPorRegion);
+        });
+
         // Función para cargar dinámicamente las comunas según la región seleccionada
         function cargarComunas(selectRegion, selectComuna, comunasPorRegion) {
             selectRegion.addEventListener('change', function() {
-                var regionId = selectRegion.value;
+                let regionId = selectRegion.value;
                 selectComuna.innerHTML = ''; // Limpiar las opciones del select de comunas
-    
+
+                // Crear opción por defecto
+                let defaultOption = document.createElement('option');
+                defaultOption.value = '';
+                defaultOption.textContent = '-- Seleccione la comuna --';
+                selectComuna.appendChild(defaultOption);
+
+                // Filtrar las comunas por la región seleccionada
                 if (regionId) {
-                    // Filtrar las comunas por la región seleccionada
-                    var comunasFiltradas = comunasPorRegion.filter(function(comuna) {
+                    let comunasFiltradas = comunasPorRegion.filter(function(comuna) {
                         return comuna.REGION_ID == regionId;
                     });
-    
+
                     // Crear opciones para las comunas filtradas
                     comunasFiltradas.forEach(function(comuna) {
-                        var option = document.createElement('option');
+                        let option = document.createElement('option');
                         option.value = comuna.COMUNA_ID;
                         option.textContent = comuna.COMUNA_NOMBRE;
                         selectComuna.appendChild(option);
                     });
-                } else {
-                    // Mostrar opción por defecto si no se ha seleccionado ninguna región
-                    var defaultOption = document.createElement('option');
-                    defaultOption.value = '';
-                    defaultOption.textContent = '-- Seleccione la comuna --';
-                    selectComuna.appendChild(defaultOption);
                 }
             });
         }
-    
-        // Ejemplo de cómo llamar a la función cargarComunas
-        document.addEventListener('DOMContentLoaded', function() {
-            var selectRegionOrigen = document.getElementById('SOLICITUD_VEHICULO_REGION_ORIGEN');
-            var selectComunaOrigen = document.getElementById('SOLICITUD_VEHICULO_COMUNA_ORIGEN');
-            var selectRegionDestino = document.getElementById('SOLICITUD_VEHICULO_REGION_DESTINO');
-            var selectComunaDestino = document.getElementById('SOLICITUD_VEHICULO_COMUNA_DESTINO');
-            var comunasPorRegion = <?php echo json_encode($comunas); ?>; // Debes pasar las comunas desde el backend
-    
-            cargarComunas(selectRegionOrigen, selectComunaOrigen, comunasPorRegion);
-            cargarComunas(selectRegionDestino, selectComunaDestino, comunasPorRegion);
-        });
+
+
     </script>
+
     
     
     
@@ -307,405 +314,279 @@
 
     </script>
     <script>
-        $(document).ready(function() {
-            let prevTipoVehiculoId = ''; // Variable para almacenar el valor previo del TIPO_VEHICULO_ID
-            let contadorFilas = 1;
-            let capacidadMaxima = 0;
-            let pasajerosSeleccionados = new Set(); // Conjunto para almacenar los IDs de pasajeros seleccionados y evitar duplicados
+        document.addEventListener('DOMContentLoaded', function() {
+            // Variables de control
+            let prevTipoVehiculoId = ''; // Almacena el ID del tipo de vehículo previamente seleccionado
+            let contadorFilas = 1; // Contador de filas de pasajeros
+            let capacidadMaxima = 0; // Capacidad máxima de pasajeros para el vehículo seleccionado
+            let pasajerosSeleccionados = new Set(); // Conjunto que almacena los IDs de pasajeros seleccionados
 
-
-            // Funcion para reiniciar el conjunto de IDs de pasajeros seleccionados
+            // Función para reiniciar el conjunto de pasajeros seleccionados
             function reiniciarPasajerosSeleccionados() {
                 pasajerosSeleccionados = new Set();
             }
 
-            
-            // Cambiar texto del botón de eliminar pasajero (caso default (eliminar conductor) para fila 1)
+            // Ocultar botones y registro de pasajeros al inicio
+            document.getElementById('agregarPasajeroBtn').style.display = 'none';
+            document.getElementById('eliminarPasajeroBtn').style.display = 'none';
 
-    
-            $('#agregarPasajeroBtn').hide();
-            $('#eliminarPasajeroBtn').hide();
-    
-            $('#TIPO_VEHICULO_ID').change(function() {
-                let tipoVehiculoIdSeleccionado = $(this).val();
-                controlarVisibilidadRegistroPasajeros(tipoVehiculoIdSeleccionado);
+            // Evento de cambio en el tipo de vehículo
+            document.getElementById('TIPO_VEHICULO_ID').addEventListener('change', function() {
+                let tipoVehiculoIdSeleccionado = this.value;
+                document.getElementById('SOLICITUD_VEHICULO_MOTIVO').style.display = 'block';
+                //controlarVisibilidadRegistroPasajeros(tipoVehiculoIdSeleccionado);
                 contadorFilas = 1;
                 capacidadMaxima = 0;
-                $('#agregarPasajeroBtn').html('<i class="fas fa-plus"></i> Agregar Conductor');
-                $('#eliminarPasajeroBtn').html('<i class="fas fa-minus"></i> Eliminar Conductor');
-
-                // Restablecer el conjunto de pasajeros seleccionados al cambiar TIPO_VEHICULO_ID
+                document.getElementById('agregarPasajeroBtn').innerHTML = '<i class="fas fa-plus"></i> Agregar Conductor';
+                document.getElementById('eliminarPasajeroBtn').innerHTML = '<i class="fas fa-minus"></i> Eliminar Conductor';
                 reiniciarPasajerosSeleccionados();
 
-    
-                // Verificar si se ha seleccionado la opción por defecto
                 if (tipoVehiculoIdSeleccionado === '') {
+                    // Confirmar eliminación si se deselecciona el tipo de vehículo
                     let confirmacion = confirm('¿Está seguro de eliminar el tipo de vehículo solicitado y el registro de pasajeros asociados?');
                     if (!confirmacion) {
-                        // Si el usuario presiona "Cancelar", se cancela el cambio y se restaura el valor anterior
-                        $(this).val(prevTipoVehiculoId);
+                        this.value = prevTipoVehiculoId;
                         return;
                     } else {
+                        document.getElementById('SOLICITUD_VEHICULO_MOTIVO').style.display = 'none';
+                        document.getElementById('agregarPasajeroBtn').style.display = 'none';
+                        document.getElementById('eliminarPasajeroBtn').style.display = 'none';
+                        document.getElementById('pasajeros').style.display = 'none';
                         prevTipoVehiculoId = '';
-                    }
-                    $('#agregarPasajeroBtn').hide();
-                    $('#eliminarPasajeroBtn').hide();
-                    $('#pasajeros').hide();
-                    return; // Salir de la función si se selecciona la opción por defecto
-                } else if   (tipoVehiculoIdSeleccionado !== '' && prevTipoVehiculoId !== '') {
-                    // Mostrar advertencia al usuario
-                    let confirmacion = confirm('¿Está seguro de cambiar el tipo de vehículo solicitado?, se eliminará el registro de pasajeros asociados.');
-                    if (!confirmacion) {
-                        // Si el usuario presiona "Cancelar", se cancela el cambio y se restaura el valor anterior
-                        $(this).val(prevTipoVehiculoId);
                         return;
                     }
+                } else if (tipoVehiculoIdSeleccionado !== '' && prevTipoVehiculoId !== '') {
+                    // Confirmar cambio si se selecciona un nuevo tipo de vehículo
+                    let confirmacion = confirm('¿Está seguro de cambiar el tipo de vehículo solicitado?, se eliminará el registro de pasajeros asociados.');
+                    if (!confirmacion) {
+                        this.value = prevTipoVehiculoId;
+                        return;
+                    } else {
+                        document.getElementById('SOLICITUD_VEHICULO_MOTIVO').style.display = 'block';
+                    }
                 }
-    
-                
-                let tiposVehiculosJSON = @json($tiposVehiculos);
+
+                // Obtener información del tipo de vehículo seleccionado
+                let tiposVehiculosJSON = JSON.parse('@json($tiposVehiculos)');
                 let tipoVehiculoSeleccionado = tiposVehiculosJSON.find(function(tipoVehiculo) {
                     return tipoVehiculo.TIPO_VEHICULO_ID == tipoVehiculoIdSeleccionado;
                 });
-    
-                let pasajeros = $('#pasajeros');
-                pasajeros.empty();
-    
+
+                let pasajeros = document.getElementById('pasajeros');
+                pasajeros.innerHTML = '';
+
+                // Configurar el registro de pasajeros según la capacidad del vehículo
                 if (tipoVehiculoSeleccionado.TIPO_VEHICULO_CAPACIDAD > 0) {
-                    console.log('Tipo de vehículo seleccionado:', tipoVehiculoSeleccionado);
                     capacidadMaxima = tipoVehiculoSeleccionado.TIPO_VEHICULO_CAPACIDAD;
-    
-                    // Agregar la primera fila de selectores para el conductor
                     agregarFila(contadorFilas);
-    
-                    $('#agregarPasajeroBtn').show();
-                    $('#eliminarPasajeroBtn').show();
-    
-                    // Mostrar los selectores
-                    pasajeros.show();
+                    document.getElementById('agregarPasajeroBtn').style.display = 'block';
+                    document.getElementById('eliminarPasajeroBtn').style.display = 'block';
+                    pasajeros.style.display = 'block';
                 } else {
-                    $('#agregarPasajeroBtn').hide();
-                    $('#eliminarPasajeroBtn').hide();
-                    pasajeros.hide();
+                    document.getElementById('agregarPasajeroBtn').style.display = 'none';
+                    document.getElementById('eliminarPasajeroBtn').style.display = 'none';
+                    pasajeros.style.display = 'none';
                 }
-    
+
                 prevTipoVehiculoId = tipoVehiculoIdSeleccionado;
             });
 
-            // Validaciones de fecha y hora de inicio y término solicitadas
-            $('#SOLICITUD_FECHA_HORA_INICIO_SOLICITADA').change(function() {
-                validarFechaHoraInicio();
-            });
-
-            $('#SOLICITUD_FECHA_HORA_TERMINO_SOLICITADA').change(function() {
-                validarFechaHoraTermino();
-            });
-    
-            $('#agregarPasajeroBtn').click(function() {
-                // Verificar si todos los selectores de la última fila tienen un valor seleccionado
+            // Evento de clic en el botón para agregar pasajero
+            document.getElementById('agregarPasajeroBtn').addEventListener('click', function() {
                 let todosSelectoresConValor = true;
-                // Iterar sobre la última fila de selectores
-                for (let i = 1; i <= contadorFilas ; i++) {
-                    let oficinaValue = $('#oficina_' + i).val();
-                    let dependenciaValue = $('#dependencia_' + i).val();
-                    let pasajeroValue = $('#pasajero' + i).val();
+                for (let i = 1; i <= contadorFilas; i++) {
+                    let oficinaValue = document.getElementById('oficina_' + i).value;
+                    let dependenciaValue = document.getElementById('dependencia_' + i).value;
+                    let pasajeroValue = document.getElementById('pasajero' + i).value;
 
-                    // Verificar si algún selector de la fila no tiene un valor seleccionado
                     if (oficinaValue === '' || dependenciaValue === '' || pasajeroValue === '') {
                         todosSelectoresConValor = false;
                         if (i === 1) {
                             alert('Antes de agregar un pasajero, por favor complete los datos para el Conductor.');
                         } else {
-                            alert('Antes de agregar otro pasajero, por favor complete los datos requeridos para el "Pasajero  N°'+(i-1)+'".');
+                            alert('Antes de agregar otro pasajero, por favor complete los datos requeridos para el "Pasajero  N°' + (i - 1) + '".');
                         }
                         break;
                     }
                 }
-                
-                // Cambiar texto de botones para eliminar y agregar pasajero, después de  igresar conductor
-                if ( contadorFilas === 1 && todosSelectoresConValor)  {
-                    $('#agregarPasajeroBtn').html('<i class="fas fa-plus"></i> Agregar Pasajero');
-                    $('#eliminarPasajeroBtn').html('<i class="fas fa-minus"></i> Eliminar Pasajero');
+
+                if (contadorFilas === 1 && todosSelectoresConValor) {
+                    document.getElementById('agregarPasajeroBtn').innerHTML = '<i class="fas fa-plus"></i> Agregar Pasajero';
+                    document.getElementById('eliminarPasajeroBtn').innerHTML = '<i class="fas fa-minus"></i> Eliminar Pasajero';
                 }
 
-                // Si todos los selectores de la última fila tienen un valor seleccionado y aún no se ha alcanzado la capacidad máxima, agregar una nueva fila
                 if (todosSelectoresConValor && contadorFilas < capacidadMaxima) {
                     contadorFilas++;
                     agregarFila(contadorFilas);
-
-                    // Obtener el elemento de la fila recién agregada
                     let nuevaFila = document.getElementById('fila_' + contadorFilas);
-
-                    // Desplazar la vista hasta el centro de la fila recién agregada
                     nuevaFila.scrollIntoView({ behavior: 'smooth', block: 'center' });
                 } else {
-                    if (contadorFilas === capacidadMaxima && todosSelectoresConValor ) {
-                        // Mostrar un mensaje de error si todos los selectores de la última fila tienen un valor seleccionado pero se ha alcanzado la capacidad máxima
+                    if (contadorFilas === capacidadMaxima && todosSelectoresConValor) {
                         alert('Se ha alcanzado la capacidad máxima de pasajeros para este vehículo.');
                     }
                 }
             });
 
-    
-            // Escuchador de eventos para el botón "Eliminar pasajero"
-            $('#eliminarPasajeroBtn').click(function() {
+            // Evento de clic en el botón para eliminar pasajero
+            document.getElementById('eliminarPasajeroBtn').addEventListener('click', function() {
                 if (contadorFilas > 1) {
                     eliminarPasajero();
-
                 } else {
                     let confirmacion = confirm('¿Está seguro de eliminar la información registrada para el conductor?');
                     if (confirmacion) {
                         eliminarConductor();
                     }
-                } 
+                }
 
-                // Cambiar texto de botones para eliminar y agregar conductor apenas estemos en la fila 1 (durante la navegación intermedia)
                 if (contadorFilas === 1) {
-                    $('#agregarPasajeroBtn').html('<i class="fas fa-plus"></i> Agregar Conductor');
-                    $('#eliminarPasajeroBtn').html('<i class="fas fa-minus"></i> Eliminar Conductor');
+                    document.getElementById('agregarPasajeroBtn').innerHTML = '<i class="fas fa-plus"></i> Agregar Conductor';
+                    document.getElementById('eliminarPasajeroBtn').innerHTML = '<i class="fas fa-minus"></i> Eliminar Conductor';
                 }
             });
-                  
-            function validarFechaHoraInicio() {
-                let fechaHoraInicio = new Date($('#SOLICITUD_FECHA_HORA_INICIO_SOLICITADA').val());
-                let fechaHoraActual = new Date();
-                let horaInicio = fechaHoraInicio.getHours();
 
-                // Validación de la hora de inicio
-                if (horaInicio < 7 || horaInicio >= 19) {
-                    alert('La hora de inicio debe estar entre las 07:00 AM y las 19:00 PM.');
-                    $('#SOLICITUD_FECHA_HORA_INICIO_SOLICITADA').val('');
-                    return;
-                }
-
-
-                // Validación de la fecha de inicio según el día actual
-                if (fechaHoraInicio < fechaHoraActual) {
-                    alert('La fecha inicio debe ser a partir del día actual.');
-                    $('#SOLICITUD_FECHA_HORA_INICIO_SOLICITADA').val('');
-                    return;
-                }
-
-                // Validación de la fecha de inicio según el mes
-                let mesInicio = fechaHoraInicio.getMonth();
-                let ultimoDiaFebreroSiguienteAnio = new Date(fechaHoraInicio.getFullYear() + 1, 1, 0);
-
-                if (mesInicio === 11) { // Si estamos en diciembre
-                    if (fechaHoraInicio > ultimoDiaFebreroSiguienteAnio) {
-                        alert('En diciembre, solo se pueden solicitar vehículos hasta febrero del año siguiente.');
-                        $('#SOLICITUD_FECHA_HORA_INICIO_SOLICITADA').val('');
-                        return;
-                    }
-                }
-            }
-
-            function validarFechaHoraTermino() {
-                let fechaHoraInicio = new Date($('#SOLICITUD_FECHA_HORA_INICIO_SOLICITADA').val());
-                let fechaHoraTermino = new Date($('#SOLICITUD_FECHA_HORA_TERMINO_SOLICITADA').val());
-
-                // Validación de la fecha de término posterior a la fecha de inicio
-                if (fechaHoraTermino <= fechaHoraInicio) {
-                    alert('La fecha y hora de término debe ser posterior a la fecha y hora de inicio.');
-                    $('#SOLICITUD_FECHA_HORA_TERMINO_SOLICITADA').val('');
-                    return;
-                }
-
-                // Validación de la hora de término
-                let horaTermino = fechaHoraTermino.getHours();
-                if (horaTermino < 7 || horaTermino >= 19) {
-                    alert('La hora de término debe estar entre las 07:00 AM y las 19:00 PM.');
-                    $('#SOLICITUD_FECHA_HORA_TERMINO_SOLICITADA').val('');
-                    return;
-                }
-
-                // Validación de la fecha de término según el mes
-                let mesTermino = fechaHoraTermino.getMonth();
-                let ultimoDiaFebreroSiguienteAnio = new Date(fechaHoraInicio.getFullYear() + 1, 1, 0);
-
-                if (mesTermino === 11) { // Si estamos en diciembre
-                    if (fechaHoraTermino > ultimoDiaFebreroSiguienteAnio) {
-                        alert('En diciembre, solo se pueden solicitar términos de uso de vehículos hasta febrero del año siguiente.');
-                        $('#SOLICITUD_FECHA_HORA_TERMINO_SOLICITADA').val('');
-                        return;
-                    }
-                }
-            }
-
-            
-            function controlarVisibilidadRegistroPasajeros(tipoVehiculoIdSeleccionado) {
-                if (tipoVehiculoIdSeleccionado !== '') {
-                    $('#tituloPasajeros').show();
-                } else {
-                    $('#tituloPasajeros').hide();
-                }
-            }
-
+            // Función para eliminar la información del conductor
             function eliminarConductor() {
-                // Restablecer los selectores a sus opciones predeterminadas o defaults luego de hacer clic
-                //             $('#eliminarPasajeroBtn').html('<i class="fas fa-minus"></i> Eliminar Conductor');
-                $('#oficina_1').val('');
-                $('#dependencia_1').val('').prop('disabled', true);
-                $('#pasajero1').val('').prop('disabled', true);
-                // Reiniciar el buffer de usuarios seleccionados
+                document.getElementById('oficina_1').value = '';
+                document.getElementById('dependencia_1').value = '';
+                document.getElementById('dependencia_1').disabled = true;
+                document.getElementById('pasajero1').value = '';
+                document.getElementById('pasajero1').disabled = true;
                 reiniciarPasajerosSeleccionados();
-
             }
 
+            // Función para eliminar un pasajero
             function eliminarPasajero() {
-                $('#fila_' + contadorFilas).remove();
+                document.getElementById('fila_' + contadorFilas).remove();
                 contadorFilas--;
 
-                // Mostrar el botón de agregar pasajero si no se ha alcanzado la capacidad máxima
                 if (contadorFilas < capacidadMaxima) {
-                    $('#agregarPasajeroBtn').show();
+                    document.getElementById('agregarPasajeroBtn').style.display = 'block';
                 }
             }
-    
+
+            // Función para agregar una fila de pasajero al registro
             function agregarFila(numeroFila) {
-                let pasajeros = $('#pasajeros');
-                pasajeros.append(`
-                    <div class="pasajero-row border p-3 mb-3" id="fila_${numeroFila}">
-                        <h5>${numeroFila === 1 ? 'Conductor' : 'Pasajero N°' + (numeroFila - 1)}</h5>
-                        <div class="form-row">
-                            <div class="form-group col-md-4">
-                                <label for="oficina_${numeroFila}">Oficina</label>
-                                <select id="oficina_${numeroFila}" class="form-control oficina" data-row="${numeroFila}" required>
-                                    <option value="">-- Seleccione una opción --</option>
-                                    <optgroup label="Direcciones Regionales">
-                                        @foreach($oficinas as $oficina)
-                                            <option value="{{ $oficina->OFICINA_ID }}">{{ $oficina->OFICINA_NOMBRE }}</option>
-                                        @endforeach
-                                    </optgroup>
-                                </select>
-                            </div>
-                            <div class="form-group col-md-4">
-                                <label for="dependencia_${numeroFila}">Ubicación o Departamento</label>
-                                <select id="dependencia_${numeroFila}" class="form-control dependencia" data-row="${numeroFila}" disabled required>
-                                    <option value="">-- Seleccione una opción --</option>
-                                    <optgroup label="Ubicaciones">
-                                        @foreach($ubicaciones as $ubicacion)
-                                            <option value="{{ $ubicacion->UBICACION_ID }}" data-office-id="{{ $ubicacion->OFICINA_ID }}">{{ $ubicacion->UBICACION_NOMBRE }}</option>
-                                        @endforeach
-                                    </optgroup>
-                                    <optgroup label="Departamentos">
-                                        @foreach($departamentos as $departamento)
-                                            <option value="{{ $departamento->DEPARTAMENTO_ID }}" data-office-id="{{ $departamento->OFICINA_ID }}">{{ $departamento->DEPARTAMENTO_NOMBRE }}</option>
-                                        @endforeach
-                                    </optgroup>
-                                </select>
-                            </div>
-                            <div class="form-group col-md-4">
-                                <label for="pasajero${numeroFila}">Funcionario</label>
-                                <select id="pasajero${numeroFila}" class="form-control pasajero" name="PASAJERO_${numeroFila}" data-row="${numeroFila}" disabled required>
-                                    <option value="">${numeroFila === 1 ? '-- Seleccione al conductor --' : '-- Seleccione al pasajero N°' + (numeroFila - 1) + ' --'}</option>
-                                    <optgroup label="Funcionarios Asociados">
-                                        @foreach($users as $user)
-                                            <option value="{{ $user->id }}" data-ubicacion-id="{{ $user->UBICACION_ID }}" data-departamento-id="{{ $user->DEPARTAMENTO_ID }}">{{ $user->USUARIO_NOMBRES }} {{ $user->USUARIO_APELLIDOS }}</option>
-                                        @endforeach
-                                    </optgroup>
-                                </select>
-                            </div>
+                let pasajeros = document.getElementById('pasajeros');
+                let nuevaFila = document.createElement('div');
+                nuevaFila.classList.add('pasajero-row', 'border', 'p-3', 'mb-3');
+                nuevaFila.id = 'fila_' + numeroFila;
+                nuevaFila.innerHTML = `
+                    <h5>${numeroFila === 1 ? 'Conductor' : 'Pasajero N°' + (numeroFila - 1)}</h5>
+                    <div class="form-row">
+                        <div class="form-group col-md-4">
+                            <label for="oficina_${numeroFila}">Oficina</label>
+                            <select id="oficina_${numeroFila}" class="form-control oficina" data-row="${numeroFila}" required>
+                                <option value="">-- Seleccione una opción --</option>
+                                    @foreach($oficinas as $oficina)
+                                        <option value="{{ $oficina->OFICINA_ID }}">{{ $oficina->OFICINA_NOMBRE }}</option>
+                                    @endforeach
+                                </optgroup>
+                            </select>
+                        </div>
+                        <div class="form-group col-md-4">
+                            <label for="dependencia_${numeroFila}">Ubicación o Departamento</label>
+                            <select id="dependencia_${numeroFila}" class="form-control dependencia" data-row="${numeroFila}" disabled required>
+                                <option value="">-- Seleccione una opción --</option>
+                                <optgroup label="Ubicaciones">
+                                    @foreach($ubicaciones as $ubicacion)
+                                        <option value="{{ $ubicacion->UBICACION_ID }}" data-office-id="{{ $ubicacion->OFICINA_ID }}">{{ $ubicacion->UBICACION_NOMBRE }}</option>
+                                    @endforeach
+                                </optgroup>
+                                <optgroup label="Departamentos">
+                                    @foreach($departamentos as $departamento)
+                                        <option value="{{ $departamento->DEPARTAMENTO_ID }}" data-office-id="{{ $departamento->OFICINA_ID }}">{{ $departamento->DEPARTAMENTO_NOMBRE }}</option>
+                                    @endforeach
+                                </optgroup>
+                            </select>
+                        </div>
+                        <div class="form-group col-md-4">
+                            <label for="pasajero${numeroFila}">Funcionario</label>
+                            <select id="pasajero${numeroFila}" class="form-control pasajero" name="PASAJERO_${numeroFila}" data-row="${numeroFila}" disabled required>
+                                <option value="">${numeroFila === 1 ? '-- Seleccione al conductor --' : '-- Seleccione al pasajero N°' + (numeroFila - 1) + ' --'}</option>
+                                <optgroup label="Funcionarios Asociados">
+                                    @foreach($users as $user)
+                                        <option value="{{ $user->id }}" data-ubicacion-id="{{ $user->UBICACION_ID }}" data-departamento-id="{{ $user->DEPARTAMENTO_ID }}">{{ $user->USUARIO_NOMBRES }} {{ $user->USUARIO_APELLIDOS }}</option>
+                                    @endforeach
+                                </optgroup>
+                            </select>
                         </div>
                     </div>
-                `);
+                `;
+                pasajeros.appendChild(nuevaFila);
 
-
-
-                // Controlar desaparición del botón 'agregar pasajero' en la última fila de pasajeros
                 if (contadorFilas < capacidadMaxima) {
-                    $('#agregarPasajeroBtn').show();
+                    document.getElementById('agregarPasajeroBtn').style.display = 'block';
                 } else {
-                    $('#agregarPasajeroBtn').hide();
-
+                    document.getElementById('agregarPasajeroBtn').style.display = 'none';
                 }
-    
-                // Evento change para el selector de oficinas
-                $('#oficina_' + numeroFila).change(function() {
-                    let selectedOfficeId = $(this).val();
-                    let $dependenciaSelect = $('#dependencia_' + numeroFila);
-                    let $pasajeroSelect = $('#pasajero' + numeroFila);
-                    $dependenciaSelect.val('');
-                    $pasajeroSelect.val('').prop('disabled', true);
-    
-                    // Mostrar todas las opciones del selector de ubicación/departamento
-                    $dependenciaSelect.find('option').show();
-    
-                    // Mostrar las opciones que pertenecen a la oficina seleccionada y ocultar las que no.
-                    $dependenciaSelect.find('option').each(function() {
-                        let optionOfficeId = $(this).data('office-id');
+
+                document.getElementById('oficina_' + numeroFila).addEventListener('change', function() {
+                    let selectedOfficeId = this.value;
+                    let $dependenciaSelect = document.getElementById('dependencia_' + numeroFila);
+                    let $pasajeroSelect = document.getElementById('pasajero' + numeroFila);
+                    $dependenciaSelect.value = '';
+                    $pasajeroSelect.value = '';
+                    $dependenciaSelect.disabled = true;
+                    $pasajeroSelect.disabled = true;
+
+                    $dependenciaSelect.querySelectorAll('option').forEach(function(option) {
+                        let optionOfficeId = option.getAttribute('data-office-id');
                         if (optionOfficeId == selectedOfficeId && optionOfficeId !== "") {
-                            $(this).show();
+                            option.style.display = 'block';
                         } else {
-                            $(this).hide();
+                            option.style.display = 'none';
                         }
                     });
-    
-                    // Restablecer el selector de ubicación/departamento seleccionado
-                    $dependenciaSelect.val('');
-    
-                    // Si se selecciona la opción vacía en el selector de oficinas, deshabilita el selector de dependencias y de pasajeros
+
                     if (selectedOfficeId === '') {
-                        $dependenciaSelect.val('').prop('disabled', true);
-                        $pasajeroSelect.val('').prop('disabled', true);
+                        $dependenciaSelect.value = '';
                     } else {
-                        // Si se selecciona una oficina, habilita el selector de dependencias
-                        $dependenciaSelect.prop('disabled', false);
+                        $dependenciaSelect.disabled = false;
                     }
                 });
-    
-                // Evento change para el selector de dependencias
-                $('#dependencia_' + numeroFila).change(function() {
-                    let selectedDependenciaId = $(this).val();
-                    let $pasajeroSelect = $('#pasajero' + numeroFila);
-    
-                    // Mostrar todas las opciones del selector de pasajeros
-                    $pasajeroSelect.find('option').show();
-    
-                    // Mostrar los pasajeros que pertenecen a la dependencia_ seleccionada y ocultar las que no.
-                    $pasajeroSelect.find('option').each(function() {
-                        let optionUbicacionId = $(this).data('ubicacion-id');
-                        let optionDepartamentoId = $(this).data('departamento-id');
+
+                document.getElementById('dependencia_' + numeroFila).addEventListener('change', function() {
+                    let selectedDependenciaId = this.value;
+                    let $pasajeroSelect = document.getElementById('pasajero' + numeroFila);
+
+                    $pasajeroSelect.querySelectorAll('option').forEach(function(option) {
+                        let optionUbicacionId = option.getAttribute('data-ubicacion-id');
+                        let optionDepartamentoId = option.getAttribute('data-departamento-id');
                         if ((optionUbicacionId == selectedDependenciaId || optionDepartamentoId == selectedDependenciaId) && selectedDependenciaId !== "") {
-                            $(this).show();
+                            option.style.display = 'block';
                         } else {
-                            $(this).hide();
+                            option.style.display = 'none';
                         }
                     });
-    
-                    // Restablecer el selector de pasajeros seleccionado
-                    $pasajeroSelect.val('');
-    
-                    // Si se selecciona la opción vacía en el selector de dependencias, deshabilita el selector de pasajeros
+
+                    $pasajeroSelect.value = '';
+
                     if (selectedDependenciaId === '') {
-                        $pasajeroSelect.val('').prop('disabled', true);
+                        $pasajeroSelect.disabled = true;
                     } else {
-                        // Si se selecciona una dependencia, habilita el selector de pasajeros
-                        $pasajeroSelect.prop('disabled', false);
+                        $pasajeroSelect.disabled = false;
                     }
                 });
-    
-                // Evento change para el selector de pasajeros
-                $('#pasajero' + numeroFila).change(function() {
-                    let selectedPasajeroId = $(this).val();
-    
-                    // Verificar si el pasajero ya ha sido seleccionado
+
+                document.getElementById('pasajero' + numeroFila).addEventListener('change', function() {
+                    let selectedPasajeroId = this.value;
+
                     if (pasajerosSeleccionados.has(selectedPasajeroId)) {
                         alert('Esta persona ya ha sido seleccionada como pasajero. Por favor, elija otra persona.');
-                        $(this).val('');
+                        this.value = '';
                         return;
                     }
-    
-                    // Si el pasajero es nuevo, agregarlo al conjunto de pasajeros seleccionados
+
                     pasajerosSeleccionados.add(selectedPasajeroId);
-    
-                    // Iterar sobre todos los selectores de pasajeros excepto el actual
-                    $('.pasajero').not(this).each(function() {
-                        // Deshabilitar la opción seleccionada en otros selectores
-                        $(this).find('option[value="' + selectedPasajeroId + '"]').prop('disabled', true);
+
+                    document.querySelectorAll('.pasajero').forEach(function(select) {
+                        if (select.id !== 'pasajero' + numeroFila) {
+                            select.querySelector('option[value="' + selectedPasajeroId + '"]').disabled = true;
+                        }
                     });
                 });
             }
-
         });
+
     </script>
 @stop

@@ -18,10 +18,9 @@ use App\Models\Ubicacion;
 use App\Models\Departamento;
 use App\Models\User;
 
-
 use App\Models\TipoVehiculo;
-
-
+use App\Models\Vehiculo;
+use App\Models\Viaja;
 
 class SolicitudVehiculosController extends Controller
 {
@@ -101,13 +100,14 @@ class SolicitudVehiculosController extends Controller
 
             // Manejar errores de validación
                 if ($validator->fails()) {
-                    dd($request);
+                    dd($validator);
                     return redirect()->back()->withErrors($validator)->withInput();
                 }
 
             // Crear una nueva instancia de SolicitudVehicular y asignar los valores
             $solicitud = new SolicitudVehicular();
             $solicitud->USUARIO_id = auth()->user()->id;
+            $solicitud->TIPO_VEHICULO_ID = $request->input('TIPO_VEHICULO_ID');
             $solicitud->SOLICITUD_VEHICULO_COMUNA_ORIGEN = $request->input('SOLICITUD_VEHICULO_COMUNA_ORIGEN');
             $solicitud->SOLICITUD_VEHICULO_COMUNA_DESTINO = $request->input('SOLICITUD_VEHICULO_COMUNA_DESTINO');
             $solicitud->SOLICITUD_VEHICULO_MOTIVO = $request->input('SOLICITUD_VEHICULO_MOTIVO');
@@ -115,8 +115,22 @@ class SolicitudVehiculosController extends Controller
             $solicitud->SOLICITUD_VEHICULO_FECHA_HORA_INICIO_SOLICITADA = $request->input('SOLICITUD_VEHICULO_FECHA_HORA_INICIO_SOLICITADA');
             $solicitud->SOLICITUD_VEHICULO_FECHA_HORA_TERMINO_SOLICITADA = $request->input('SOLICITUD_VEHICULO_FECHA_HORA_TERMINO_SOLICITADA');
             //dd($solicitud);
-
             $solicitud->save();
+            //    dd($solicitud->SOLICITUD_VEHICULO_ID);
+            // Obtener los pasajeros seleccionados y asociarlos con la solicitud vehicular
+            $pasajeros = [];
+            foreach ($request->all() as $key => $value) {
+                if (strpos($key, 'PASAJERO_') === 0) {
+                    $pasajeros[] = $value;
+                }
+            }
+
+            foreach ($pasajeros as $pasajeroId) {
+                $viaja = new Viaja();
+                $viaja->USUARIO_id = $pasajeroId;
+                $viaja->SOLICITUD_VEHICULO_ID = $solicitud->SOLICITUD_VEHICULO_ID;
+                $viaja->save();
+            }
             return redirect()->route('solicitudesvehiculos.index')->with('success', 'Solicitud creada exitosamente.');
         } catch (Exception $e) {
             dd($e);
@@ -143,31 +157,44 @@ class SolicitudVehiculosController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
- /*   public function edit(string $id)
+    public function edit($id)
     {
-        // Try-catch para el manejo de excepciones
         try {
-            // Obtener la oficina del usuario actual
-            $oficinaIdUsuario = Auth::user()->OFICINA_ID;
+            // Encontrar la solicitud por su ID
+            $solicitud = SolicitudVehicular::findOrFail($id);
+ 
+            // Obtener conductor y pasajeros que viajan en esta solicitud
+            $pasajeros = $solicitud->viajan()->get();
 
-            // Consulta SQL para obtener vehículos asociados a la oficina del usuario
-            $vehiculos = Vehiculo::select('VEHICULOS.*')
-                ->leftJoin('UBICACIONES', 'VEHICULOS.UBICACION_ID', '=', 'UBICACIONES.UBICACION_ID')
-                ->leftJoin('DEPARTAMENTOS', 'VEHICULOS.DEPARTAMENTO_ID', '=', 'DEPARTAMENTOS.DEPARTAMENTO_ID')
-                ->where(function($query) use ($oficinaIdUsuario) {
-                    $query->where('UBICACIONES.OFICINA_ID', $oficinaIdUsuario)
-                        ->whereNull('VEHICULOS.DEPARTAMENTO_ID');
-                })
-                ->orWhere(function($query) use ($oficinaIdUsuario) {
-                    $query->where('DEPARTAMENTOS.OFICINA_ID', $oficinaIdUsuario)
-                        ->whereNull('VEHICULOS.UBICACION_ID');
-                })
-                ->get();
-            // Retornar la vista del formulario con los materiales y el carrito
-            return view('sia2.solicitudes.vehiculos.edit', compact('vehiculos'));
+
+            // Obtener los vehículos filtrados por el tipo de vehículo solicitado, en la oficina del solicitante y oficina del usuario en sesion
+            $vehiculos = Vehiculo::where('TIPO_VEHICULO_ID', $solicitud->tipoVehiculo->TIPO_VEHICULO_ID)
+            ->where(function ($query) use ($solicitud) {
+                $query->whereHas('ubicacion', function ($subquery) use ($solicitud) {
+                    $subquery->where('OFICINA_ID', $solicitud->user->OFICINA_ID); // comparación con oficina de solicitante para vehículos asociados con ubicaciones
+                })->whereHas('departamento', function ($subquery) use ($solicitud) {
+                    $subquery->where('OFICINA_ID', $solicitud->user->OFICINA_ID);  // comparación con oficina de solicitante para vehículos asociados con departamentos
+                });
+            })
+            // Comparación entre la ubicación asociada al vehículo y la oficina del usuario en sesión activa
+            ->whereHas('ubicacion', function ($subquery) {
+                $subquery->where('OFICINA_ID', auth()->user()->OFICINA_ID);
+            })
+            // Comparación entre el departamento asociado al vehículo y la oficina del usuario en sesión activa
+            ->orWhereHas('departamento', function ($subquery) {
+                $subquery->where('OFICINA_ID', auth()->user()->OFICINA_ID);
+            })
+            ->get();
+
+       
+            // Retornar la vista de edición con los datos de la solicitud y los usuarios que viajan
+            return view('sia2.solicitudes.vehiculos.edit', compact('solicitud', 'pasajeros','vehiculos'));
+        } catch (ModelNotFoundException $e) {
+            // Manejar excepción de modelo no encontrado
+            return redirect()->route('solicitudesvehiculos.index')->with('error', 'Ocurrió un error inesperado.');
         } catch (Exception $e) {
             // Manejar excepciones si es necesario
-            return redirect()->route('solicitudes.index')->with('error', 'Error al cargar los materiales.');
+            return redirect()->route('solicitudesvehiculos.index')->with('error', 'Error al cargar la solicitud de vehículo para editar.');
         }
     }
 
