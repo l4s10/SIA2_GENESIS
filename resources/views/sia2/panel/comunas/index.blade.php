@@ -9,8 +9,7 @@
 @stop
 
 @section('content')
-    <div class="container">
-        @if (session('success'))
+    @if (session('success'))
         <script>
             document.addEventListener('DOMContentLoaded', () => {
                 Swal.fire({
@@ -34,35 +33,35 @@
         </script>
     @endif
 
-    <a class="btn agregar"><i class="fa-solid fa-plus"></i> Ingresar nueva comuna</a>
-    <br><br>
-        <div class="table-responsive">
-            <table id="comuna" class="table text-justify table-bordered mt-4 mx-auto" style="white-space:nowrap;">
-                <thead class="tablacolor">
-                    <tr>
-                        <th scope="col">Comuna</th>
-                        <th scope="col">Region</th>
-                        <th scope="col">Administrar</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach($comunas as $comuna)
-                    <tr>
-                        <td>{{$comuna->COMUNA_NOMBRE}}</td>
-                        <td>{{$comuna->region->REGION_NOMBRE}}</td>
-                        <td>
+    <a class="btn agregar mb-4"><i class="fa-solid fa-plus"></i> Ingresar nueva comuna</a>
+
+    <div class="table-responsive">
+        <table id="comuna" class="table table-bordered mt-4">
+            <thead class="tablacolor">
+                <tr>
+                    <th scope="col">Comuna</th>
+                    <th scope="col">Region</th>
+                    <th scope="col">Administrar</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach($comunas as $comuna)
+                <tr>
+                    <td>{{$comuna->COMUNA_NOMBRE}}</td>
+                    <td>{{$comuna->region->REGION_NOMBRE}}</td>
+                    <td>
+                        <div class="d-flex justify-content-center">
                             <a class="btn botoneditar"><i class="fa-solid fa-gear"></i></a>
-                        </td>
-                    </tr>
-                @endforeach
-                </tbody>
-            </table>
-        </div>
+                        </div>
+                    </td>
+                </tr>
+            @endforeach
+            </tbody>
+        </table>
     </div>
 @endsection
 
 @section('css')
-    <link rel="stylesheet" href="/css/admin_custom.css">
     <style>
         .alert {
         opacity: 0.7; /* Ajusta la opacidad a tu gusto */
@@ -99,7 +98,6 @@
         $(document).ready(function () {
             $('#comuna').DataTable({
                 "lengthMenu": [[5 ,10, 50, -1], [5, 10, 50, "All"]],
-                "responsive": true,
                 "columnDefs": [
                     { "orderable": false, "targets": 2 } // La séptima columna no es ordenable
                 ],

@@ -10,15 +10,14 @@
 
 @section('content')
     {{-- sweetalerts de session --}}
-<div class="container">
     @if (session('success'))
         <script>
             document.addEventListener('DOMContentLoaded', () => {
                 Swal.fire({
-                    icon: 'success',
-                    title: '{{ session('success') }}',
-                    confirmButtonText: 'OK',
-                    confirmButtonColor: '#0064A0'
+                        icon: 'success',
+                        title: '{{ session('success') }}',
+                        confirmButtonText: 'OK',
+                        confirmButtonColor: '#0064A0'
                 });
             });
         </script>
@@ -26,46 +25,48 @@
         <script>
             document.addEventListener('DOMContentLoader', () => {
                 Swal.fire([
-                    icon: 'error',
-                    title: '{{ session('error') }}',
-                    confirmButtonText: 'OK',
-                    confirmButtonColor: '#0064A0'
+                        icon: 'error',
+                        title: '{{ session('error') }}',
+                        confirmButtonText: 'OK',
+                        confirmButtonColor: '#0064A0'
                 ]);
             });
         </script>
     @endif
-        <a class="btn agregar"><i class="fa-solid fa-plus"></i> Ingresar nuevo funcionario</a>
-        <br><br>
-        {{-- Tabla de usuario --}}
-        <div class="table-responsive">
-            <table id="usuarios" class="table table-bordered mt-4">
-                <thead class="tablacolor">
+
+    <a class="btn agregar mb-4"><i class="fa-solid fa-plus"></i> Ingresar nuevo funcionario</a>
+    {{-- Tabla de usuario --}}
+    <div class="table-responsive">
+        <table id="usuarios" class="table table-bordered mt-4">
+            <thead class="tablacolor">
+                <tr>
+                    <th scope="col">Nombres</th>
+                    <th scope="col">Apellidos</th>
+                    <th scope="col">Rut</th>
+                    <th scope="col">Correo</th>
+                    <th scope="col">Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach($usuarios as $usuario)
                     <tr>
-                        <th scope="col">Nombres</th>
-                        <th scope="col">Apellidos</th>
-                        <th scope="col">Rut</th>
-                        <th scope="col">Correo</th>
-                        <th scope="col">Acciones</th>
+                        <td> {{$usuario->USUARIO_NOMBRES}} </td>
+                        <td> {{$usuario->USUARIO_APELLIDOS}} </td>
+                        <td> {{$usuario->USUARIO_RUT}} </td>
+                        <td> {{$usuario->email}} </td>
+                        <td>
+                            <div class="d-flex justify-content-center">
+                                <a class="btn botoneditar" ><i class="fa-solid fa-pen-to-square"></i> Administrar</a>
+                            </div>
+                        </td>
                     </tr>
-                </thead>
-                <tbody>
-                        @foreach($usuarios as $usuario)
-                            <tr>
-                                <td> {{$usuario->USUARIO_NOMBRES}} </td>
-                                <td> {{$usuario->USUARIO_APELLIDOS}} </td>
-                                <td> {{$usuario->USUARIO_RUT}} </td>
-                                <td> {{$usuario->email}} </td>
-                                <td><a class="btn botoneditar" ><i class="fa-solid fa-pen-to-square"></i> Administrar</a></td>
-                            </tr>
-                        @endforeach
-                </tbody>
+                @endforeach
+            </tbody>
         </table>
     </div>
-</div>    
 @stop
 
 @section('css')
-    <link rel="stylesheet" href="/css/admin_custom.css">
     <style>/* Estilos personalizados si es necesario */
         .tablacolor {
             background-color: #0064a0; /* Color de fondo personalizado */

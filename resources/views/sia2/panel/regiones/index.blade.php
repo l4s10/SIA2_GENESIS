@@ -9,8 +9,7 @@
 @stop
 
 @section('content')
-    <div class="container">
-        @if (session('success'))
+    @if (session('success'))
         <script>
             document.addEventListener('DOMContentLoaded', () => {
                 Swal.fire({
@@ -33,37 +32,37 @@
             });
         </script>
     @endif
-    
-    <a class="btn agregar"><i class="fa-solid fa-plus"></i> Ingresar nueva región</a>
-    <br><br>
-        <div class="table-responsive">
-            <table id="region" class="table text-justify table-bordered mt-4 mx-auto" style="white-space:nowrap;">
-                <thead class="tablacolor">
-                    <tr>
-                        <th scope="col">Nombres</th>
-                        <th scope="col">Administrar</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach($regiones as $region)
+
+    <a class="btn agregar mb-4"><i class="fa-solid fa-plus"></i> Ingresar nueva región</a>
+
+    <div class="table-responsive">
+        <table id="region" class="table table-bordered mt-4">
+            <thead class="tablacolor">
+                <tr>
+                    <th scope="col">Nombres</th>
+                    <th scope="col">Administrar</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach($regiones as $region)
                     <tr>
                         <td>{{$region->REGION_NOMBRE}}</td>
                         <td>
-                            <a class="btn botoneditar"><i class="fa-solid fa-gear"></i></a>
+                            <div class="d-flex justify-content-center">
+                                <a class="btn botoneditar"><i class="fa-solid fa-gear"></i></a>
+                            </div>
                         </td>
                     </tr>
                 @endforeach
-                </tbody>
-            </table>
-        </div>
+            </tbody>
+        </table>
     </div>
 @endsection
 
 @section('css')
-    <link rel="stylesheet" href="/css/admin_custom.css">
     <style>
         .alert {
-        opacity: 0.7; 
+        opacity: 0.7;
         background-color: #99CCFF;
         color:     #000000;
         }
@@ -95,7 +94,6 @@
         $(document).ready(function () {
             $('#region').DataTable({
                 "lengthMenu": [[5,10, 50, -1], [5, 10, 50, "All"]],
-                "responsive": true,
                 "columnDefs": [
                     { "orderable": false, "targets": 1 } // La séptima columna no es ordenable
                 ],

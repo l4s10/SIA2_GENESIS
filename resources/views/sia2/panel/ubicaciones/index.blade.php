@@ -9,8 +9,7 @@
 @stop
 
 @section('content')
-    <div class="container">
-        @if (session('success'))
+    @if (session('success'))
         <script>
             document.addEventListener('DOMContentLoaded', () => {
                 Swal.fire({
@@ -33,37 +32,37 @@
             });
         </script>
     @endif
-    
-    <a class="btn agregar"><i class="fa-solid fa-plus"></i> Ingresar nueva ubicación</a>
-    <br><br>
-        <div class="table-responsive">
-            <table id="ubicacion" class="table table-bordered mt-4 custom-table">
-                <thead class="tablacolor">
+
+    <a class="btn agregar mb-4"><i class="fa-solid fa-plus"></i> Ingresar nueva ubicación</a>
+
+    <div class="table-responsive">
+        <table id="ubicacion" class="table table-bordered mt-4">
+            <thead class="tablacolor">
+                <tr>
+                    <th scope="col">Ubicacion</th>
+                    <th scope="col">Administrar</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach($ubicaciones as $ubicacion)
                     <tr>
-                        <th scope="col">Ubicacion</th>
-                        <th scope="col">Administrar</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach($ubicaciones as $ubicacion)
-                        <tr>
-                            <td>{{ $ubicacion->UBICACION_NOMBRE }}</td>
-                            <td>
+                        <td>{{ $ubicacion->UBICACION_NOMBRE }}</td>
+                        <td>
+                            <div class="d-flex justify-content-center">
                                 <a class="btn botoneditar"><i class="fa-solid fa-gear"></i></a>
-                            </td>
-                        </tr>
-                    @endforeach
-                </tbody>
-            </table>
-        </div>
+                            </div>
+                        </td>
+                    </tr>
+                @endforeach
+            </tbody>
+        </table>
     </div>
 @endsection
 
 @section('css')
-    <link rel="stylesheet" href="/css/admin_custom.css">
     <style>
         .alert {
-        opacity: 0.7; 
+        opacity: 0.7;
         background-color: #99CCFF;
         color:     #000000;
         }
@@ -95,7 +94,6 @@
         $(document).ready(function () {
             $('#ubicacion').DataTable({
                 "lengthMenu": [[5,10, 50, -1], [5, 10, 50, "All"]],
-                "responsive": true,
                 "columnDefs": [
                     { "orderable": false, "targets": 1 } // La séptima columna no es ordenable
                 ],
