@@ -497,27 +497,32 @@ return [
         ['header' => 'AJUSTES DEL SISTEMA SIAV2.5'],
         [
             'text' => 'Administrar usuarios',
-            'url'  => '#',
+            'route'  => 'panel.usuarios.index',
             'icon' => 'fas fa-fw fa-solid fa-users-cog',
         ],
         [
             'text' => 'Administrar regiones',
-            'url'  => '#',
+            'route'  => 'panel.regiones.index',
             'icon' => 'fas fa-fw fa-solid fa-globe-americas',
         ],
         [
             'text' => 'Administrar comunas',
-            'url'  => '#',
+            'route'  => 'panel.comunas.index',
             'icon' => 'fas fa-fw fa-solid fa-map-marked-alt',
         ],
         [
             'text' => 'Administrar direcciones regionales',
-            'url'  => '#',
+            'route'  => 'panel.oficinas.index',
             'icon' => 'fas fa-fw fa-solid fa-building',
         ],
         [
-            'text' => 'Administrar unidades y departamentos',
-            'url'  => '#',
+            'text' => 'Administrar departamentos',
+            'route'  => 'panel.departamentos.index',
+            'icon' => 'fas fa-fw fa-solid fa-building-un',
+        ],
+        [
+            'text' => 'Administrar ubicaciones',
+            'route'  => 'panel.ubicaciones.index',
             'icon' => 'fas fa-fw fa-solid fa-building-un',
         ],
         ['header' => 'account_settings'],
