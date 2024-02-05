@@ -58,6 +58,26 @@
                     </div>
                     <h4>Descripción</h4>
                     <p><strong>Descripción:</strong> {{ $solicitud->SOLICITUD_MOTIVO }}</p>
+                    {{-- Llamar a relacion 'formularios' para traer el pedido en una tabla --}}
+                    <h4 class="mt-4">Formularios Solicitados</h4>
+                    <table class="table table-bordered">
+                        <thead>
+                            <tr>
+                                <th>Tipo de formulario</th>
+                                <th>Nombre del formulario</th>
+                                <th>Cantidad solicitada</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach($solicitud->formularios as $formulario)
+                                <tr>
+                                    <td>{{ $formulario->FORMULARIO_TIPO }}</td>
+                                    <td>{{ $formulario->FORMULARIO_NOMBRE }}</td>
+                                    <td>{{ $formulario->pivot->SOLICITUD_FORMULARIOS_CANTIDAD }}</td>
+                                </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
                 </div>
             </div>
         </div>
@@ -67,41 +87,45 @@
         <div class="card">
             <div class="card-header" id="headingObservaciones">
                 <h2 class="mb-0">
-                    <button class="btn btn-link" type="button" data-toggle="collapse" data-target="#collapseObservaciones" aria-expanded="true" aria-controls="collapseObservaciones">
+                    <button class="btn btn-link" type="button" data-toggle="collapse" data-target="#collapseObservaciones" aria-expanded="false" aria-controls="collapseObservaciones">
                         Observaciones
                     </button>
                 </h2>
             </div>
 
-            <div id="collapseObservaciones" class="collapse show" aria-labelledby="headingObservaciones" data-parent="#accordionObservaciones">
+            <div id="collapseObservaciones" class="collapse" aria-labelledby="headingObservaciones" data-parent="#accordionObservaciones">
                 <div class="card-body">
-                    <div id="carouselObservaciones" class="carousel slide" data-ride="carousel">
-                        <ol class="carousel-indicators">
-                            @foreach ($solicitud->revisiones as $key => $observacion)
-                                <li data-target="#carouselObservaciones" data-slide-to="{{ $key }}" class="{{ $key == 0 ? 'active' : '' }}"></li>
-                            @endforeach
-                        </ol>
+                    @if ($solicitud->revisiones->isEmpty())
+                        <p>SOLICITUD SIN OBSERVACIONES</p>
+                    @else
+                        <div id="carouselObservaciones" class="carousel slide" data-ride="carousel">
+                            <ol class="carousel-indicators">
+                                @foreach ($solicitud->revisiones as $key => $observacion)
+                                    <li data-target="#carouselObservaciones" data-slide-to="{{ $key }}" class="{{ $key == 0 ? 'active' : '' }}"></li>
+                                @endforeach
+                            </ol>
 
-                        <div class="carousel-inner text-center">
-                            @foreach ($solicitud->revisiones as $key => $observacion)
-                                <div class="carousel-item {{ $key == 0 ? 'active' : '' }}">
-                                    <h5>Observación {{ $key + 1 }}</h5>
-                                    <p>{{ $observacion->REVISION_SOLICITUD_OBSERVACION }}</p>
-                                </div>
-                            @endforeach
-                        </div>
+                            <div class="carousel-inner text-center">
+                                @foreach ($solicitud->revisiones as $key => $observacion)
+                                    <div class="carousel-item {{ $key == 0 ? 'active' : '' }}">
+                                        <h5>Observación {{ $key + 1 }}</h5>
+                                        <p>{{ $observacion->REVISION_SOLICITUD_OBSERVACION }}</p>
+                                    </div>
+                                @endforeach
+                            </div>
 
-                        <div class="carousel-footer d-flex justify-content-between" style="margin-top: 2%;">
-                            <a class="carousel-control-prev btn btn-primary btn-sm" href="#carouselObservaciones" role="button" data-slide="prev">
-                                <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-                                <span class="sr-only">Anterior</span>
-                            </a>
-                            <a class="carousel-control-next btn btn-primary btn-sm" href="#carouselObservaciones" role="button" data-slide="next">
-                                <span class="carousel-control-next-icon" aria-hidden="true"></span>
-                                <span class="sr-only">Siguiente</span>
-                            </a>
+                            <div class="carousel-footer d-flex justify-content-between" style="margin-top: 2%;">
+                                <a class="carousel-control-prev btn btn-primary btn-sm" href="#carouselObservaciones" role="button" data-slide="prev">
+                                    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                                    <span class="sr-only">Anterior</span>
+                                </a>
+                                <a class="carousel-control-next btn btn-primary btn-sm" href="#carouselObservaciones" role="button" data-slide="next">
+                                    <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                                    <span class="sr-only">Siguiente</span>
+                                </a>
+                            </div>
                         </div>
-                    </div>
+                    @endif
                 </div>
             </div>
         </div>

@@ -90,7 +90,7 @@
         </table>
 
         {{-- Formulario de Solicitud --}}
-        <form action="{{ route('solicitudesformularios.store') }}" method="POST">
+        <form action="{{ route('solicitudes.formularios.store') }}" method="POST">
             @csrf
 
             {{-- Motivo de la Solicitud --}}
@@ -132,7 +132,6 @@
 @stop
 
 @section('css')
-    <link rel="stylesheet" href="/css/admin_custom.css">
     <style>/* Estilos personalizados si es necesario */
         .centrar{
             text-align: center;
