@@ -15,24 +15,26 @@ return new class extends Migration
             //*Atributos de solicitudes */
             $table->id('SOLICITUD_VEHICULO_ID');
             $table->unsignedBigInteger('USUARIO_id');
-            $table->unsignedBigInteger('SOLICITUD_VEHICULO_COMUNA_ORIGEN');
-            $table->unsignedBigInteger('SOLICITUD_VEHICULO_COMUNA_DESTINO');
-            $table->unsignedBigInteger('TIPO_VEHICULO_ID'); 
-            $table->unsignedBigInteger('VEHICULO_ID')->nullable(); 
+            $table->unsignedBigInteger('COMUNA_ID');
+            $table->unsignedBigInteger('VEHICULO_ID');
             // $table->unsignedBigInteger('RENDICION_ID');
             $table->string('SOLICITUD_VEHICULO_MOTIVO', 255);
-            $table->string('SOLICITUD_VEHICULO_ESTADO', 128);
+            $table->string('SOLICITUD_VEHICULO_ESTADO', 30);
             $table->dateTime('SOLICITUD_VEHICULO_FECHA_HORA_INICIO_SOLICITADA');
             $table->dateTime('SOLICITUD_VEHICULO_FECHA_HORA_INICIO_ASIGNADA')->nullable();
             $table->dateTime('SOLICITUD_VEHICULO_FECHA_HORA_TERMINO_SOLICITADA');
             $table->dateTime('SOLICITUD_VEHICULO_FECHA_HORA_TERMINO_ASIGNADA')->nullable();
+            $table->time('SOLICITUD_VEHICULO_HORA_INICIO_CONDUCCION');
+            $table->time('SOLICITUD_VEHICULO_HORA_TERMINO_CONDUCCION');
+            $table->string('SOLICITUD_VEHICULO_JEFE_QUE_AUTORIZA',128);
+            $table->string('SOLICITUD_VEHICULO_VIATICO',4);
+
+
             //*Llaves foráneas*/
             $table->foreign('USUARIO_id')->references('id')->on('users');
-            $table->foreign('TIPO_VEHICULO_ID')->references('TIPO_VEHICULO_ID')->on('tipos_vehiculos');
             $table->foreign('VEHICULO_ID')->references('VEHICULO_ID')->on('vehiculos');
             // $table->foreign('RENDICION_ID')->references('RENDICION_ID')->on('rendiciones');
-            $table->foreign('SOLICITUD_VEHICULO_COMUNA_ORIGEN')->references('COMUNA_ID')->on('comunas');
-            $table->foreign('SOLICITUD_VEHICULO_COMUNA_DESTINO')->references('COMUNA_ID')->on('comunas');
+            $table->foreign('COMUNA_ID')->references('COMUNA_ID')->on('comunas');
             $table->timestamps();
 
             

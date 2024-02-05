@@ -16,7 +16,7 @@ return new class extends Migration
             $table->id('SOLICITUD_ID');
             $table->unsignedBigInteger('USUARIO_id');
             $table->string('SOLICITUD_MOTIVO', 255);
-            $table->string('SOLICITUD_ESTADO', 255);
+            $table->string('SOLICITUD_ESTADO', 30);
             $table->dateTime('SOLICITUD_FECHA_HORA_INICIO_SOLICITADA');
             $table->dateTime('SOLICITUD_FECHA_HORA_TERMINO_SOLICITADA');
             $table->dateTime('SOLICITUD_FECHA_HORA_INICIO_ASIGNADA')->nullable();

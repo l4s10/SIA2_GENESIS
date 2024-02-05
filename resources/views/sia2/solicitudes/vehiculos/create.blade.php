@@ -17,6 +17,10 @@
             @csrf
             <br>
             <br>
+            <div class="form-group">
+                <label for="fecha_solicitud">Fecha de Solicitud</label>
+                <input type="text" class="form-control" id="fecha_solicitud" name="fecha_solicitud" required>
+            </div>
             <h3>Titular</h3>
             {{-- *CAMPOS FUNCIONARIO* --}}
             <div class="row">
@@ -89,6 +93,31 @@
     
             </div>
 
+            <div class="row">
+                <div class="col">
+                    <div class="form-group">
+                        <label for="SOLICITUD_VEHICULO_HORA_INICIO_CONDUCCION">Hora de Inicio de Conducción</label>
+                        <input type="text" class="form-control" id="hora_inicio_conduccion" name="SOLICITUD_VEHICULO_HORA_INICIO_CONDUCCION" required>
+                    </div>
+                </div>
+                <div class="col">
+                    <div class="form-group">
+                        <label for="SOLICITUD_VEHICULO_HORA_TERMINO_CONDUCCION">Hora de Término de Conducción</label>
+                        <input type="text" class="form-control" id="hora_termino_conduccion" name="SOLICITUD_VEHICULO_HORA_TERMINO_CONDUCCION" required>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label for="SOLICITUD_VEHICULO_JEFE_QUE_AUTORIZA">Jefe que Autoriza</label>
+                <input type="text" class="form-control" id="SOLICITUD_VEHICULO_JEFE_QUE_AUTORIZA" name="SOLICITUD_VEHICULO_JEFE_QUE_AUTORIZA" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="SOLICITUD_VEHICULO_VIATICO">Viático</label>
+                <input type="text" class="form-control" id="SOLICITUD_VEHICULO_VIATICO" name="SOLICITUD_VEHICULO_VIATICO" required>
+            </div>
+
             <h3>Vehículo</h3>
             <div class="form-group">
                 <label for="TIPO_VEHICULO_ID" class="form-label"><i class="fa-solid fa-car-side"></i> Tipo de Vehículo</label>
@@ -128,17 +157,18 @@
             <br>
             <br>
             <h3>Datos Temporales</h3>
+
             <div class="row">
                 <div class="col">
                     <div class="form-group">
-                        <label for="SOLICITUD_VEHICULO_FECHA_HORA_INICIO_SOLICITADA">Fecha y Hora de Inicio Solicitada</label>
-                        <input type="datetime-local" class="form-control" id="SOLICITUD_VEHICULO_FECHA_HORA_INICIO_SOLICITADA" name="SOLICITUD_VEHICULO_FECHA_HORA_INICIO_SOLICITADA" required>
+                        <label for="fechaHoraInicioSolicitada">Fecha y Hora de  Salida del estacionamiento:</label>
+                        <input type="text" class="form-control" id="fechaHoraInicioSolicitada" name="SOLICITUD_VEHICULO_FECHA_HORA_INICIO_SOLICITADA" required placeholder="Selecciona la hora de inicio">
                     </div>
                 </div>
                 <div class="col">
                     <div class="form-group">
-                        <label for="SOLICITUD_VEHICULO_FECHA_HORA_TERMINO_SOLICITADA">Fecha y Hora de Término Solicitada</label>
-                        <input type="datetime-local" class="form-control" id="SOLICITUD_VEHICULO_FECHA_HORA_TERMINO_SOLICITADA" name="SOLICITUD_VEHICULO_FECHA_HORA_TERMINO_SOLICITADA" required>
+                        <label for="fechaHoraTerminoSolicitada">Hora de Término de Conducción</label>
+                        <input type="text" class="form-control" id="fechaHoraTerminoSolicitada" name="SOLICITUD_VEHICULO_FECHA_HORA_TERMINO_SOLICITADA" required placeholder="Selecciona la hora de término">
                     </div>
                 </div>
             </div>
@@ -200,13 +230,35 @@
 
 @section('css')
     <link rel="stylesheet" href="/css/admin_custom.css">
+    <style>
+        /* Aquí van tus reglas de estilo CSS personalizadas para los inputs de Flatpickr */
+        #fechaHoraInicioSolicitada {
+            background-color: #ffffff;
+            color: #495057;
+            border: 1px solid #ced4da;
+            border-radius: 0.25rem;
+            padding: 0.375rem 0.75rem;
+            font-size: 1rem;
+        }
+
+        #fechaHoraTerminoSolicitada {
+            background-color: #ffffff;
+            color: #495057;
+            border: 1px solid #ced4da;
+            border-radius: 0.25rem;
+            padding: 0.375rem 0.75rem;
+            font-size: 1rem;
+        }
 
 
-
+    
+    </style>
 @stop
 
 @section('js')
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+
     <script>
 
         // Obtener valores de inputs para llamar a la función que carga comunas filtradas por región
@@ -253,66 +305,104 @@
 
     </script>
 
-    
-    
-    
-    
     <script>
-         $(function () {
-            // Configuración de Flatpickr para la selección de fechas y horas en la solicitud de vehículos
+        const fechaInput = document.getElementById('fecha_solicitud');
 
-            // Validaciones: solo permitir solicitudes para el año actual en horario laboral,
-            // a menos que la solicitud sea realizada en diciembre,
-            // en cuyo caso se permitirá seleccionar un período de uso hasta enero y febrero del año siguiente.
+        const options = { 
+            weekday: 'long', 
+            year: 'numeric', 
+            month: 'long', 
+            day: 'numeric' 
+        };
 
-            // Crear objeto que almacena la fecha y hora actual
-            let today = new Date();
-            // Crear variable que recibe el límite superior del calendario.
-            let maxDate;
-            if (today.getMonth() === 11) {
-                // Si estamos en diciembre, permitir hasta febrero del año siguiente
-                maxDate = new Date(today.getFullYear() + 1, 1, 28); // maxDate = año actual + 1, mes 1 (contando de 0), día 28.
-            } else {
-                // En cualquier otro mes, permitir hasta el último día de este año
-                maxDate = new Date(today.getFullYear(), 11, 31); // maxDate = Último día del año actual
-            }
-            // Configuración para la fecha de inicio
-            $('#SOLICITUD_VEHICULO_FECHA_HORA_INICIO_SOLICITADA').flatpickr({
-                enableTime: true,
-                dateFormat: "Y-m-d H:i:s",
-                altFormat: "d-m-Y H:i",
-                altInput: true,
-                locale: "es",
-                minDate: "today", // No permitir fechas anteriores al día actual
-                maxDate: new Date(new Date().getFullYear(), 11, 31), // Permitir fechas hasta fin de año
-                defaultDate: "today", // Establecer la fecha por defecto como la fecha actual
-                minTime: "07:00", // Hora mínima permitida
-                maxTime: "19:00", // Hora máxima permitida
-                onChange: function(selectedDates, dateStr, instance) {
-                    // Al cambiar la fecha de inicio, actualizamos la fecha mínima para la fecha de término
-                    let selectedDate = selectedDates[0];
-                    $('#SOLICITUD_VEHICULO_FECHA_HORA_TERMINO_SOLICITADA').flatpickr({
-                        enableTime: true,
-                        dateFormat: "Y-m-d H:i:s",
-                        altFormat: "d-m-Y H:i",
-                        altInput: true,
-                        locale: "es",
-                        minDate: selectedDate, // La fecha mínima para la fecha de término es la fecha seleccionada de inicio
-                        maxDate: new Date(new Date().getFullYear() + 1, 1, 28), // Permitir fechas hasta febrero del siguiente año
-                        defaultDate: selectedDate, // Establecer la fecha por defecto como la fecha de inicio seleccionada
-                        minTime: "07:00", // Hora mínima permitida
-                        maxTime: "19:00", // Hora máxima permitida
-                        onReady: function(selectedDates, dateStr, instance) {
-                            $('#clearButton').on('click', function() {
-                                instance.clear();
-                            });
-                        }
-                    });
-                }
-            });
+        const fechaActual = new Date().toLocaleDateString('es-ES', options).toUpperCase();
+
+        fechaInput.value = fechaActual;
+    </script>
+
+    <script>
+        flatpickr("#hora_inicio_conduccion", {
+            enableTime: true,
+            noCalendar: true,
+            dateFormat: "H:i",
+            defaultDate: "00:00"
         });
 
+        flatpickr("#hora_termino_conduccion", {
+            enableTime: true,
+            noCalendar: true,
+            dateFormat: "H:i",
+            defaultDate: "00:00"
+        });
     </script>
+
+    <script>
+    document.addEventListener('DOMContentLoaded', function () {
+        let inputfechaHoraInicioSolicitada = document.getElementById('fechaHoraInicioSolicitada');
+        let inputfechaHoraTerminoSolicitada = document.getElementById('fechaHoraTerminoSolicitada');
+
+        let fechaActual = new Date(); // Fecha y hora actual
+        let añoActual = fechaActual.getFullYear(); // Año actual
+        let mesActual = fechaActual.getMonth(); // Mes actual
+        let diaActual = fechaActual.getDate(); // Día actual
+        let horaActual = fechaActual.getHours(); // Hora actual
+        let minutoActual = fechaActual.getMinutes(); // Minuto actual
+
+        // **Fecha mínima permitida (día actual)**
+        let fechaMinimaPermitida = new Date(añoActual, mesActual, diaActual, horaActual, minutoActual);
+
+        // **Fecha y hora predeterminada (fecha y hora actual)**
+        let fechaHoraPredeterminada = new Date(añoActual, mesActual, diaActual, horaActual, minutoActual);
+
+        // **Fecha máxima permitida**
+        let fechaMaximaPermitida;
+
+        // Si estamos en diciembre, permitir hasta febrero del próximo año
+        if (mesActual === 11) {
+            fechaMaximaPermitida = new Date(añoActual + 1, 1, 28);
+        } else {
+            // Permitir hasta diciembre del año actual
+            fechaMaximaPermitida = new Date(añoActual, 11, 31);
+        }
+
+        /// **Configuración del selector de fecha y hora de inicio**
+        flatpickr(inputfechaHoraInicioSolicitada, {
+            enableTime: true,
+            dateFormat: "Y-m-d H:i",
+            minDate: fechaMinimaPermitida,
+            maxDate: fechaMaximaPermitida,
+            defaultDate: fechaHoraPredeterminada,
+            locale: "es", // Establecer el idioma en español
+            onChange: function(selectedDates, dateStr, instance) {
+                if (selectedDates[0] < fechaMinimaPermitida) {
+                    alert("La fecha y hora seleccionada es menor a la hora mínima permitida");
+                    inputfechaHoraInicioSolicitada.value = "";
+                } else {
+                    // Habilitar el input de término una vez que se ha seleccionado la hora de inicio
+                    inputfechaHoraTerminoSolicitada.disabled = false;
+                    // Actualizar minDate para el input de término
+                    inputfechaHoraTerminoSolicitada._flatpickr.set("minDate", selectedDates[0]);
+                }
+            }
+        });
+
+        // **Configuración del selector de fecha y hora de término**
+        flatpickr(inputfechaHoraTerminoSolicitada, {
+            enableTime: true,
+            dateFormat: "Y-m-d H:i",
+            minDate: fechaMinimaPermitida, // Se establece inicialmente, luego se actualizará
+            maxDate: fechaMaximaPermitida,
+            locale: "es" // Establecer el idioma en español
+        });
+
+        // Deshabilitar el input de término al cargar la página y establecer su valor como vacío
+        inputfechaHoraTerminoSolicitada.disabled = true;
+        inputfechaHoraInicioSolicitada.value = "";
+        inputfechaHoraTerminoSolicitada.value = "";
+    });
+</script>
+
+
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             // Variables de control

@@ -19,7 +19,7 @@ return new class extends Migration
             $table->unsignedBigInteger('VEHICULO_ID')->nullable();
             $table->string('SOLICITUD_REPARACION_TIPO', 20);
             $table->string('SOLICITUD_REPARACION_MOTIVO', 255);
-            $table->string('SOLICITUD_REPARACION_ESTADO', 128);
+            $table->string('SOLICITUD_REPARACION_ESTADO', 30);
             $table->dateTime('SOLICITUD_REPARACION_FECHA_HORA_INICIO')->nullable();
             $table->dateTime('SOLICITUD_REPARACION_FECHA_HORA_TERMINO')->nullable();
             //*Llaves foráneas*/

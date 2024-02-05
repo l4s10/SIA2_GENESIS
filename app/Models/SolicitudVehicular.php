@@ -41,15 +41,6 @@ class SolicitudVehicular extends Model
         return $this->hasOne(Vehiculo::class, 'VEHICULO_ID', 'VEHICULO_ID');
     }
 
-    public function tipoVehiculo()
-    {
-        return $this->belongsTo(TipoVehiculo::class, 'TIPO_VEHICULO_ID', 'TIPO_VEHICULO_ID');
-    }
-
-    public function comunaOrigen()
-    {
-        return $this->belongsTo(Comuna::class, 'SOLICITUD_VEHICULO_COMUNA_ORIGEN', 'COMUNA_ID');
-    }
 
     public function comunaDestino()
     {

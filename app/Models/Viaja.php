@@ -14,12 +14,13 @@ class Viaja extends Model
     // Relación con el modelo User
     public function user()
     {
-        return $this->belongsTo(User::class, 'USUARIO_id');
+        return $this->belongsTo(User::class, 'USUARIO_id', 'id');
     }
+
 
     // Relación con el modelo SolicitudVehiculo
     public function solicitudVehiculo()
     {
-        return $this->belongsTo(SolicitudVehiculo::class, 'SOLICITUD_VEHICULO_ID');
+        return $this->belongsTo(SolicitudVehiculo::class, 'SOLICITUD_VEHICULO_ID', 'SOLICITUD_VEHICULO_ID');
     }
 }
