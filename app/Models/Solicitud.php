@@ -74,4 +74,10 @@ class Solicitud extends Model
             return $this->belongsToMany(Bodega::class, 'solicitudes_bodegas', 'SOLICITUD_ID', 'BODEGA_ID')
                 ->withTimestamps();
         }
+
+        // Relación de uno a muchos con RevisionSolicitud
+        public function revisiones()
+        {
+            return $this->hasMany(RevisionSolicitud::class, 'SOLICITUD_ID', 'SOLICITUD_ID');
+        }
 }

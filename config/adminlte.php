@@ -372,11 +372,11 @@ return [
             'submenu' => [
                 [
                     'text' => 'Solicitar',
-                    'route'  => 'solicitudesformularios.create',
+                    'route'  => 'solicitudes.formularios.create',
                 ],
                 [
                     'text' => 'Mis solicitudes',
-                    'route'  => 'solicitudesformularios.index',
+                    'route'  => 'solicitudes.formularios.index',
                 ],
             ],
         ],

@@ -11,6 +11,7 @@ use Exception;
 //Importamos modelos
 use App\Models\Solicitud;
 use App\Models\Formulario;
+use App\Models\RevisionSolicitud;
 
 class SolicitudFormulariosController extends Controller
 {
@@ -103,10 +104,10 @@ class SolicitudFormulariosController extends Controller
             Cart::instance('carrito_formularios')->destroy();
 
             // Redirecciona a la vista de solicitudes
-            return redirect()->route('solicitudesformularios.index')->with('success', 'Solicitud creada correctamente.');
+            return redirect()->route('solicitudes.formularios.index')->with('success', 'Solicitud creada correctamente.');
         }catch(Exception $e){
             // Manejo de excepciones
-            return redirect()->route('solicitudesformularios.index')->with('error', 'Error al crear la solicitud.');
+            return redirect()->route('solicitudes.formularios.index')->with('error', 'Error al crear la solicitud.');
         }
     }
 
@@ -122,16 +123,25 @@ class SolicitudFormulariosController extends Controller
             return view('sia2.solicitudes.formularios.show', compact('solicitud'));
         }catch(Exception $e){
             // Manejo de excepciones
-            return redirect()->route('solicitudesformularios.index')->with('error', 'Error al cargar la solicitud.');
+            return redirect()->route('solicitudes.formularios.index')->with('error', 'Error al cargar la solicitud.');
         }
     }
 
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(string $id)
+    public function edit($id)
     {
-        //
+        // try-catch
+        try{
+            // Recuperar la solicitud
+            $solicitud = Solicitud::has('formularios')->findOrFail($id);
+            // Retornar la vista con la solicitud
+            return view('sia2.solicitudes.formularios.edit', compact('solicitud'));
+        }catch(Exception $e){
+            // Manejo de excepciones
+            return redirect()->route('solicitudes.formularios.index')->with('error', 'Error al cargar la solicitud.');
+        }
     }
 
     /**
@@ -139,7 +149,52 @@ class SolicitudFormulariosController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        //
+        // Obtener la solicitud a actualizar
+        $solicitud = Solicitud::has('formularios')->findOrFail($id);
+
+        // Validar los datos del formulario (valores a recibir: SOLICITUD_ESTADO, SOLICITUD_FECHA_HORA_INICIO_ASIGNADA, SOLICITUD_FECHA_HORA_TERMINO_ASIGNADA, REVISION_SOLICITUD_OBSERVACION, REVISION_SOLICITUD_FECHA_HORA_TRAMITACION)
+        $validator = Validator::make($request->all(),[
+            //Estados de la solcitud: INGRESADO, EN REVISION, APROBADO, RECHAZADO, TERMINADO
+            'SOLICITUD_ESTADO' => 'required|string|max:255|in:INGRESADO,EN REVISION,APROBADO,RECHAZADO,TERMINADO',
+            'SOLICITUD_FECHA_HORA_INICIO_ASIGNADA' => 'required|date',
+            'SOLICITUD_FECHA_HORA_TERMINO_ASIGNADA' => 'required|date|after:SOLICITUD_FECHA_HORA_INICIO_ASIGNADA',
+            'REVISION_SOLICITUD_OBSERVACION' => 'required|string|max:255',
+            'REVISION_SOLICITUD_FECHA_HORA_TRAMITACION' => 'required|date',
+        ], [
+            //Mensajes de error
+            'required' => 'El campo :attribute es requerido.',
+            'date' => 'El campo :attribute debe ser una fecha.',
+            'after' => 'El campo :attribute debe ser una fecha posterior a la fecha de inicio asignada.',
+            'string' => 'El campo :attribute debe ser una cadena de caracteres.',
+            'in' => 'El campo :attribute debe ser uno de los siguientes valores: INGRESADO, EN REVISION, APROBADO, RECHAZADO, TERMINADO',
+        ]);
+
+        // Si la validación falla, redirecciona al formulario con los errores y el input antiguo
+        if ($validator->fails()) {
+            return redirect()->back()->withErrors($validator)->withInput();
+        }
+
+        // Actualizar la solicitud
+        $solicitud->update([
+            'SOLICITUD_ESTADO' => $request->input('SOLICITUD_ESTADO'),
+            'SOLICITUD_FECHA_HORA_INICIO_ASIGNADA' => $request->input('SOLICITUD_FECHA_HORA_INICIO_ASIGNADA'),
+            'SOLICITUD_FECHA_HORA_TERMINO_ASIGNADA' => $request->input('SOLICITUD_FECHA_HORA_TERMINO_ASIGNADA'),
+        ]);
+
+        // Crear la revisión de la solicitud si se actualizo correctamente la solicitud
+        // Llamar al modelo RevisionSolicitud::create
+        // RevisionSolicitud::create([
+        //     'USUARIO_ID' => Auth::user()->id,
+        //     'SOLICITUD_ID' => $solicitud->SOLICITUD_ID,
+        //     'REVISION_SOLICITUD_FECHA_HORA_TRAMITACION' => $request->input('REVISION_SOLICITUD_FECHA_HORA_TRAMITACION'),
+        //     'REVISION_SOLICITUD_OBSERVACION' => $request->input('REVISION_SOLICITUD_OBSERVACION'),
+        // ]);
+
+        // Llamar a la funcion createRevisionSolicitud para crear la revision de la solicitud
+        $this->createRevisionSolicitud($request, $solicitud);
+
+        // Redireccionar a la vista de solicitudes si ambas cosas se realizaron correctamente
+        return redirect()->route('solicitudes.formularios.index')->with('success', 'Solicitud actualizada correctamente.');
     }
 
     /**
@@ -159,12 +214,35 @@ class SolicitudFormulariosController extends Controller
             $solicitud->delete();
 
             // Redireccionar a la vista de solicitudes
-            return redirect()->route('solicitudesformularios.index')->with('success', 'Solicitud eliminada correctamente.');
+            return redirect()->route('solicitudes.formularios.index')->with('success', 'Solicitud eliminada correctamente.');
         }
         catch(Exception $e)
         {
             // Manejo de excepciones
             return redirect()->back()->with('error', 'Error al eliminar la solicitud.');
+        }
+    }
+
+    /**
+    * Create a new revision for the solicitud.
+    */
+    private function createRevisionSolicitud(Request $request, Solicitud $solicitud)
+    {
+        // try-catch
+        try
+        {
+            // Crear la revisión de la solicitud
+            RevisionSolicitud::create([
+                'USUARIO_ID' => Auth::user()->id,
+                'SOLICITUD_ID' => $solicitud->SOLICITUD_ID,
+                'REVISION_SOLICITUD_FECHA_HORA_TRAMITACION' => $request->input('REVISION_SOLICITUD_FECHA_HORA_TRAMITACION'),
+                'REVISION_SOLICITUD_OBSERVACION' => $request->input('REVISION_SOLICITUD_OBSERVACION'),
+            ]);
+        }
+        catch(Exception $e)
+        {
+            // Manejo de excepciones
+            return redirect()->route('solicitudes.formularios.index')->with('error', 'Error al crear la revisión de la solicitud.');
         }
     }
 }
