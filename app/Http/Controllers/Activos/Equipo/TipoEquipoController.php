@@ -88,7 +88,7 @@ class TipoEquipoController extends Controller
                 ])->exists();
 
                 if ($exists) {
-                    $validator->errors()->add('TIPO_EQUIPO_NOMBRE', 'El nombre del tipo de equipo ya existe en esta dirección regional.');
+                    $validator->errors()->add('TIPO_EQUIPO_NOMBRE', 'El nombre del tipo de equipo ya existe en su dirección regional.');
                 }
             });
 
@@ -192,7 +192,7 @@ class TipoEquipoController extends Controller
                 ])->where('TIPO_EQUIPO_ID', '!=', $id)->exists();
 
                 if ($exists) {
-                    $validator->errors()->add('TIPO_EQUIPO_NOMBRE', 'El nombre del tipo de equipo ya existe en esta dirección regional.');
+                    $validator->errors()->add('TIPO_EQUIPO_NOMBRE', 'El nombre del tipo de equipo ya existe en su dirección regional.');
                 }
             });
 
