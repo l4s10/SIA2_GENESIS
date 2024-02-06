@@ -159,7 +159,6 @@ class SolicitudFormulariosController extends Controller
             'SOLICITUD_FECHA_HORA_INICIO_ASIGNADA' => 'required|date',
             'SOLICITUD_FECHA_HORA_TERMINO_ASIGNADA' => 'required|date|after:SOLICITUD_FECHA_HORA_INICIO_ASIGNADA',
             'REVISION_SOLICITUD_OBSERVACION' => 'required|string|max:255',
-            'REVISION_SOLICITUD_FECHA_HORA_TRAMITACION' => 'required|date',
         ], [
             //Mensajes de error
             'required' => 'El campo :attribute es requerido.',
@@ -180,15 +179,6 @@ class SolicitudFormulariosController extends Controller
             'SOLICITUD_FECHA_HORA_INICIO_ASIGNADA' => $request->input('SOLICITUD_FECHA_HORA_INICIO_ASIGNADA'),
             'SOLICITUD_FECHA_HORA_TERMINO_ASIGNADA' => $request->input('SOLICITUD_FECHA_HORA_TERMINO_ASIGNADA'),
         ]);
-
-        // Crear la revisión de la solicitud si se actualizo correctamente la solicitud
-        // Llamar al modelo RevisionSolicitud::create
-        // RevisionSolicitud::create([
-        //     'USUARIO_ID' => Auth::user()->id,
-        //     'SOLICITUD_ID' => $solicitud->SOLICITUD_ID,
-        //     'REVISION_SOLICITUD_FECHA_HORA_TRAMITACION' => $request->input('REVISION_SOLICITUD_FECHA_HORA_TRAMITACION'),
-        //     'REVISION_SOLICITUD_OBSERVACION' => $request->input('REVISION_SOLICITUD_OBSERVACION'),
-        // ]);
 
         // Llamar a la funcion createRevisionSolicitud para crear la revision de la solicitud
         $this->createRevisionSolicitud($request, $solicitud);
@@ -235,7 +225,6 @@ class SolicitudFormulariosController extends Controller
             RevisionSolicitud::create([
                 'USUARIO_ID' => Auth::user()->id,
                 'SOLICITUD_ID' => $solicitud->SOLICITUD_ID,
-                'REVISION_SOLICITUD_FECHA_HORA_TRAMITACION' => $request->input('REVISION_SOLICITUD_FECHA_HORA_TRAMITACION'),
                 'REVISION_SOLICITUD_OBSERVACION' => $request->input('REVISION_SOLICITUD_OBSERVACION'),
             ]);
         }

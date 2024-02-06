@@ -147,7 +147,7 @@ class SolicitudEquiposController extends Controller
         try{
             // Valida los datos del formulario de solicitud de equipos.
             $validator = Validator::make($request->all(),[
-                'SOLICITUD_ESTADO' => 'required|string|max:255|in:INGRESADO,EN REVISION, AUTORIZADO,RECHAZADO,TERMINADO',
+                'SOLICITUD_ESTADO' => 'required|string|max:255|in:INGRESADO,EN REVISION,APROBADO,RECHAZADO,TERMINADO',
                 'SOLICITUD_FECHA_HORA_INICIO_ASIGNADA' => 'required|date',
                 'SOLICITUD_FECHA_HORA_TERMINO_ASIGNADA' => 'required|date|after:SOLICITUD_FECHA_HORA_INICIO_ASIGNADA',
 
@@ -159,7 +159,7 @@ class SolicitudEquiposController extends Controller
                 'date' => 'El campo :attribute debe ser una fecha.',
                 'after' => 'El campo :attribute debe ser una fecha posterior a la fecha de inicio solicitada.',
                 'string' => 'El campo :attribute debe ser una cadena de caracteres.',
-                'in' => 'El campo :attribute debe ser uno de los valores: INGRESADO, EN REVISION, AUTORIZADO, RECHAZADO, TERMINADO',
+                'in' => 'El campo :attribute debe ser uno de los valores: INGRESADO, EN REVISION, APROBADO, RECHAZADO, TERMINADO',
                 'numeric' => 'El campo :attribute debe ser un número.',
                 'min' => 'El campo :attribute debe ser un número no negativo.'
             ]);
@@ -227,7 +227,6 @@ class SolicitudEquiposController extends Controller
             RevisionSolicitud::create([
                 'USUARIO_ID' => Auth::user()->id,
                 'SOLICITUD_ID' => $solicitud->SOLICITUD_ID,
-                'REVISION_SOLICITUD_FECHA_HORA_TRAMITACION' => now(),
                 'REVISION_SOLICITUD_OBSERVACION' => $request->input('REVISION_SOLICITUD_OBSERVACION'),
             ]);
         }

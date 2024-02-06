@@ -187,8 +187,6 @@ class SolicitudSalasController extends Controller
                 // PARA REVISION
                 'SOLICITUD_SALA_ID_ASIGNADA' => 'required|exists:salas,SALA_ID', // Asegura que la sala asignada exista en la base de datos
                 'REVISION_SOLICITUD_OBSERVACION' => 'required|string|max:255',
-                // 'REVISION_SOLICITUD_FECHA_HORA_TRAMITACION' => 'required|date',
-                // Campo para los equipos autorizados
                 'autorizar.*' => 'required|numeric|min:0', // Asegura que todos los valores en el array sean numéricos y no negativos
             ], [
                 //Mensajes de error
@@ -272,9 +270,6 @@ class SolicitudSalasController extends Controller
             RevisionSolicitud::create([
                 'USUARIO_ID' => Auth::user()->id,
                 'SOLICITUD_ID' => $solicitud->SOLICITUD_ID,
-                // REVISION_SOLICITUD_FECHA_HORA_TRAMITACION debe capturarse la fecha actual (reemplaza al created_at)
-                'REVISION_SOLICITUD_FECHA_HORA_TRAMITACION' => now(), // '2024-01-29 12:18:38
-                // 'REVISION_SOLICITUD_FECHA_HORA_TRAMITACION' => $request->input('REVISION_SOLICITUD_FECHA_HORA_TRAMITACION'),
                 'REVISION_SOLICITUD_OBSERVACION' => $request->input('REVISION_SOLICITUD_OBSERVACION'),
             ]);
         }
