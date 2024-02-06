@@ -15,7 +15,7 @@
                 <div class="col-md-6">
                     <div class="mb-3">
                         <label for="VEHICULO_PATENTE" class="form-label"><i class="fa-solid fa-credit-card"></i> Patente</label>
-                        <input id="VEHICULO_PATENTE" name="VEHICULO_PATENTE" type="text" class="form-control" tabindex="1" placeholder="Ej: AB12-34" maxlength="7" tabindex="1" required>
+                        <input id="VEHICULO_PATENTE" name="VEHICULO_PATENTE" type="text" class="form-control" tabindex="1" placeholder="Ej: AB12-34" maxlength="7" tabindex="1" required value="{{ old('VEHICULO_PATENTE') }}">
                         @error('VEHICULO_PATENTE')
                             <div class="alert alert-danger mt-2">{{ $message }}</div>
                         @enderror
@@ -27,7 +27,9 @@
                         <select name="TIPO_VEHICULO_ID" id="TIPO_VEHICULO_ID" class="form-control" tabindex="2" required>
                             <option value="">-- Seleccione un tipo de vehiculo --</option>
                             @foreach ($tiposVehiculos as $tipoVehiculo)
-                                <option value="{{ $tipoVehiculo->TIPO_VEHICULO_ID }}">{{ $tipoVehiculo->TIPO_VEHICULO_NOMBRE }}</option>
+                                <option value="{{ $tipoVehiculo->TIPO_VEHICULO_ID }}" {{ old('TIPO_VEHICULO_ID') == $tipoVehiculo->TIPO_VEHICULO_ID ? 'selected' : '' }}>
+                                    {{ $tipoVehiculo->TIPO_VEHICULO_NOMBRE }}
+                                </option>
                             @endforeach
                         </select>
                         @error('TIPO_VEHICULO_ID')
@@ -41,7 +43,7 @@
                 <div class="col-md-4">
                     <div class="mb-3">
                         <label for="VEHICULO_MARCA" class="form-label"><i class="fa-solid fa-car-rear"></i> Marca</label>
-                        <input id="VEHICULO_MARCA" name="VEHICULO_MARCA" type="text" class="form-control" tabindex="3" placeholder="Toyota" maxlength="20" required>
+                        <input id="VEHICULO_MARCA" name="VEHICULO_MARCA" type="text" class="form-control" tabindex="3" placeholder="Toyota" maxlength="20" required value="{{ old('VEHICULO_MARCA') }}">
                         @error('VEHICULO_MARCA')
                             <div class="alert alert-danger mt-2">{{ $message }}</div>
                         @enderror
@@ -50,7 +52,7 @@
                 <div class="col-md-4">
                     <div class="mb-3">
                         <label for="VEHICULO_MODELO" class="form-label"><i class="fa-solid fa-car-on"></i> Modelo</label>
-                        <input id="VEHICULO_MODELO" name="VEHICULO_MODELO" type="text" class="form-control" tabindex="4" placeholder="Corolla" maxlength="20" required>
+                        <input id="VEHICULO_MODELO" name="VEHICULO_MODELO" type="text" class="form-control" tabindex="4" placeholder="Corolla" maxlength="20" required value="{{ old('VEHICULO_MODELO') }}">
                         @error('VEHICULO_MODELO')
                             <div class="alert alert-danger mt-2">{{ $message }}</div>
                         @enderror
@@ -59,7 +61,7 @@
                 <div class="col-md-4">
                     <div class="mb-3">
                         <label for="VEHICULO_ANO" class="form-label"><i class="fa-regular fa-calendar-days"></i> Año</label>
-                        <input type="number" min="2000" step="1" id="VEHICULO_ANO" name="VEHICULO_ANO" placeholder="(2000 - Año actual)" tabindex="5" required class="form-control"/>
+                        <input type="number" min="2000" step="1" id="VEHICULO_ANO" name="VEHICULO_ANO" placeholder="(2000 - Año actual)" tabindex="5" required class="form-control" value="{{ old('VEHICULO_ANO') }}">
                         @error('VEHICULO_ANO')
                             <div class="alert alert-danger mt-2">{{ $message }}</div>
                         @enderror
@@ -87,7 +89,7 @@
 
                             <optgroup label="Ubicaciones">
                                 @foreach ($ubicacionesLocales as $ubicacion)
-                                    <option value="{{ $ubicacion->UBICACION_ID }}">
+                                    <option value="{{ $ubicacion->UBICACION_ID }}" {{ old('DEPENDENCIA_ID') == $ubicacion->UBICACION_ID ? 'selected' : '' }}>
                                         {{ $ubicacion->UBICACION_NOMBRE }}
                                     </option>
                                 @endforeach
@@ -95,7 +97,7 @@
 
                             <optgroup label="Departamentos">
                                 @foreach ($departamentosLocales as $departamento)
-                                    <option value="{{ $departamento->DEPARTAMENTO_ID }}">
+                                    <option value="{{ $departamento->DEPARTAMENTO_ID }}" {{ old('DEPENDENCIA_ID') == $departamento->DEPARTAMENTO_ID ? 'selected' : '' }}>
                                         {{ $departamento->DEPARTAMENTO_NOMBRE }}
                                     </option>
                                 @endforeach
@@ -112,7 +114,7 @@
                 <div class="col-md-6">
                     <div class="mb-3">
                         <label for="VEHICULO_KILOMETRAJE" class="form-label"><i class="fa-solid fa-gauge-high"></i> Kilometraje</label>
-                        <input id="VEHICULO_KILOMETRAJE" name="VEHICULO_KILOMETRAJE" type="number" class="form-control" tabindex="8" placeholder="Ingrese el kilometraje" min="0" max="400000"required>
+                        <input id="VEHICULO_KILOMETRAJE" name="VEHICULO_KILOMETRAJE" type="number" class="form-control" tabindex="8" placeholder="Ingrese el kilometraje" min="0" max="400000" required value="{{ old('VEHICULO_KILOMETRAJE') }}">
                         @error('VEHICULO_KILOMETRAJE')
                             <div class="alert alert-danger mt-2">{{ $message }}</div>
                         @enderror
@@ -123,11 +125,11 @@
                         <label for="VEHICULO_NIVEL_ESTANQUE" class="form-label"><i class="fa-solid fa-gas-pump"></i> Nivel de Estanque</label>
                         <select id="VEHICULO_NIVEL_ESTANQUE" name="VEHICULO_NIVEL_ESTANQUE" class="form-control" tabindex="9" required>
                             <option value="">-- Seleccione un nivel de estanque --</option>
-                            <option value="BAJO">BAJO</option>
-                            <option value="MEDIO BAJO">MEDIO BAJO</option>
-                            <option value="MEDIO">MEDIO</option>
-                            <option value="MEDIO LLENO">MEDIO LLENO</option>
-                            <option value="LLENO">LLENO</option>
+                            <option value="BAJO" {{ old('VEHICULO_NIVEL_ESTANQUE') == 'BAJO' ? 'selected' : '' }}>BAJO</option>
+                            <option value="MEDIO BAJO" {{ old('VEHICULO_NIVEL_ESTANQUE') == 'MEDIO BAJO' ? 'selected' : '' }}>MEDIO BAJO</option>
+                            <option value="MEDIO" {{ old('VEHICULO_NIVEL_ESTANQUE') == 'MEDIO' ? 'selected' : '' }}>MEDIO</option>
+                            <option value="MEDIO LLENO" {{ old('VEHICULO_NIVEL_ESTANQUE') == 'MEDIO LLENO' ? 'selected' : '' }}>MEDIO LLENO</option>
+                            <option value="LLENO" {{ old('VEHICULO_NIVEL_ESTANQUE') == 'LLENO' ? 'selected' : '' }}>LLENO</option>
                         </select>
                         @error('VEHICULO_NIVEL_ESTANQUE')
                             <div class="alert alert-danger mt-2">{{ $message }}</div>
@@ -142,8 +144,8 @@
                         <label for="VEHICULO_ESTADO" class="form-label"><i class="fa-solid fa-square-check"></i> Estado</label>
                         <select name="VEHICULO_ESTADO" id="VEHICULO_ESTADO" class="form-control" tabindex="10" required>
                             <option value="">-- Seleccione un estado --</option>
-                            <option value="DISPONIBLE">DISPONIBLE</option>
-                            <option value="OCUPADO">OCUPADO</option>
+                            <option value="DISPONIBLE" {{ old('VEHICULO_ESTADO') == 'DISPONIBLE' ? 'selected' : '' }}>DISPONIBLE</option>
+                            <option value="OCUPADO" {{ old('VEHICULO_ESTADO') == 'OCUPADO' ? 'selected' : '' }}>OCUPADO</option>
                         </select>
                         @error('VEHICULO_ESTADO')
                             <div class="alert alert-danger mt-2">{{ $message }}</div>
@@ -161,6 +163,7 @@
         </form>
     </div>
 @stop
+
 
 @section('css')
     <link rel="stylesheet" href="/css/admin_custom.css">

@@ -86,6 +86,21 @@ class MaterialController extends Controller
                 'DETALLE_MOVIMIENTO.max' => 'El campo Detalle de Movimiento no debe exceder los :max caracteres.',
             ]);
 
+
+            // Validar clave única compuesta
+            $validator->after(function ($validator) use ($request) {
+                $exists = Material::where([
+                    'OFICINA_ID' => Auth::user()->OFICINA_ID,
+                    'TIPO_MATERIAL_ID' => $request->input('TIPO_MATERIAL_ID'),
+                    'MATERIAL_NOMBRE' => strtoupper($request->input('MATERIAL_NOMBRE')),
+                ])->exists();
+
+                if ($exists) {
+                    $validator->errors()->add('MATERIAL_NOMBRE', 'Este nombre de material con el tipo de material especificado, ya existen en su dirección regional.');
+                    $validator->errors()->add('TIPO_MATERIAL_ID', 'Este tipo de material con el nombre de material especificado, ya existen en su dirección regional.');
+                }
+            });
+
             // Validar y redirigir mensaje al blade, si falla
             if ($validator->fails()) {
                 return redirect()->back()->withErrors($validator)->withInput();
@@ -194,6 +209,19 @@ class MaterialController extends Controller
                 'TIPO_MOVIMIENTO.string' => 'El campo "Tipo de Movimiento" debe ser una cadena de texto.',
                 'TIPO_MOVIMIENTO.max' => 'El campo "Tipo de Movimiento" no debe exceder los :max caracteres.'
             ]);
+
+            $validator->after(function ($validator) use ($request) {
+                $exists = Material::where([
+                    'OFICINA_ID' => Auth::user()->OFICINA_ID,
+                    'MATERIAL_NOMBRE' => $request->input('MATERIAL_NOMBRE'),
+                    'TIPO_MATERIAL_ID' => $request->input('TIPO_MATERIAL_ID'),
+                ])->exists();
+            
+                if ($exists) {
+                    $validator->errors()->add('MATERIAL_NOMBRE', 'Este nombre de material con el tipo de material especificado, ya existen en su dirección regional.');
+                    $validator->errors()->add('TIPO_MATERIAL_ID', 'Este tipo de material con el nombre de material especificado, ya existen en su dirección regional.');
+                }
+            });
 
             // Validar y redirigir mensaje al blade, si falla
             if ($validator->fails()) {

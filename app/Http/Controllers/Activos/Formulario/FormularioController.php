@@ -64,6 +64,20 @@ class FormularioController extends Controller
                 'max' => 'El campo :attribute no debe exceder los :max caracteres',
             ]);
 
+            $validator->after(function ($validator) use ($request) {
+                $exists = Formulario::where([
+                    'OFICINA_ID' => Auth::user()->OFICINA_ID,
+                    'FORMULARIO_NOMBRE' => $request->input('FORMULARIO_NOMBRE'),
+                    'FORMULARIO_TIPO' => $request->input('FORMULARIO_TIPO'),
+                ])->exists();
+            
+                if ($exists) {
+                    $validator->errors()->add('FORMULARIO_NOMBRE', 'Este formulario ya existe en su dirección regional con este tipo.');
+                    $validator->errors()->add('FORMULARIO_TIPO', 'Este tipo de formulario ya existe en su dirección regional para el nombre ingresado.');
+                }
+            });
+
+            
             // Validacion y redireccion con mensajes de error
             if ($validator->fails())
             {
@@ -139,6 +153,21 @@ class FormularioController extends Controller
                 'max' => 'El campo :attribute no debe exceder los :max caracteres',
             ]);
 
+            $validator->after(function ($validator) use ($request, $id) {
+                $exists = Formulario::where([
+                    'OFICINA_ID' => Auth::user()->OFICINA_ID,
+                    'FORMULARIO_NOMBRE' => $request->input('FORMULARIO_NOMBRE'),
+                    'FORMULARIO_TIPO' => $request->input('FORMULARIO_TIPO'),
+                ])->where('FORMULARIO_ID', '!=', $id)->exists();
+            
+                if ($exists) {
+                    $validator->errors()->add('FORMULARIO_NOMBRE', 'Este formulario ya existe en su dirección regional con este tipo.');
+                    $validator->errors()->add('FORMULARIO_TIPO', 'Este tipo de formulario ya existe en su dirección regional para el nombre ingresado.');
+                }
+            });
+
+
+            
             // Validacion y redireccion con mensajes de error
             if ($validator->fails())
             {

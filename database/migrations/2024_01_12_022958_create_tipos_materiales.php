@@ -20,6 +20,9 @@ return new class extends Migration
             $table->foreign('OFICINA_ID')->references('OFICINA_ID')->on('oficinas');
             //Timestamps (Fecha de creacion y de modificacion del registro)
             $table->timestamps();
+
+            // Clave única compuesta
+            $table->unique(['OFICINA_ID', 'TIPO_MATERIAL_NOMBRE']); 
         });
     }
 

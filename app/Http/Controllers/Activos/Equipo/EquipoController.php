@@ -101,6 +101,20 @@ class EquipoController extends Controller
                 'DETALLE_MOVIMIENTO.max' => 'El campo Detalle de Movimiento no debe exceder los :max caracteres.',
             ]);
 
+            $validator->after(function ($validator) use ($request) {
+                $exists = Equipo::where([
+                    'OFICINA_ID' => Auth::user()->OFICINA_ID,
+                    'EQUIPO_MARCA' => $request->input('EQUIPO_MARCA'),
+                    'EQUIPO_MODELO' => $request->input('EQUIPO_MODELO'),
+                ])->exists();
+            
+                if ($exists) {
+                    $validator->errors()->add('EQUIPO_MARCA', 'Esta marca de equipo con el modelo de equipo especificado, ya existen en su dirección regional.');
+                    $validator->errors()->add('EQUIPO_MODELO', 'Este modelo de equipo con la marca de equipo especificada, ya existen en su dirección regional.');
+
+                }
+            });
+
             // Validar y redirigir mensaje al blade si falla
             if ($validator->fails()) {
                 return redirect()->back()->withErrors($validator)->withInput();
@@ -235,6 +249,20 @@ class EquipoController extends Controller
                 'TIPO_MOVIMIENTO.string' => 'El campo "Tipo de Movimiento" debe ser una cadena de texto.',
                 'TIPO_MOVIMIENTO.max' => 'El campo "Tipo de Movimiento" no debe exceder los :max caracteres.'
             ]);
+
+            // Validar clave única compuesta
+            $validator->after(function ($validator) use ($request, $id) {
+                $exists = Equipo::where([
+                    'OFICINA_ID' => Auth::user()->OFICINA_ID,
+                    'EQUIPO_MARCA' => $request->input('EQUIPO_MARCA'),
+                    'EQUIPO_MODELO' => $request->input('EQUIPO_MODELO'),
+                ])->where('EQUIPO_ID', '!=', $id)->exists();
+            
+                if ($exists) {
+                    $validator->errors()->add('EQUIPO_MARCA', 'Esta marca de equipo con el modelo de equipo especificado, ya existen en su dirección regional.');
+                    $validator->errors()->add('EQUIPO_MODELO', 'Este modelo de equipo con la marca de equipo especificada, ya existen en su dirección regional.');
+                }
+            });
 
             // Validar y redirigir mensaje al blade, si falla
             if ($validator->fails()) {

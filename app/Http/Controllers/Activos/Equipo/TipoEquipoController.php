@@ -80,6 +80,19 @@ class TipoEquipoController extends Controller
                 'TIPO_EQUIPO_NOMBRE.max' => 'El campo "Nombre Tipo" no debe exceder los :max caracteres.'
             ]);
 
+            // Validar clave única compuesta
+            $validator->after(function ($validator) use ($request) {
+                $exists = TipoEquipo::where([
+                    'OFICINA_ID' => Auth::user()->OFICINA_ID,
+                    'TIPO_EQUIPO_NOMBRE' => strtoupper($request->input('TIPO_EQUIPO_NOMBRE'))
+                ])->exists();
+
+                if ($exists) {
+                    $validator->errors()->add('TIPO_EQUIPO_NOMBRE', 'El nombre del tipo de equipo ya existe en esta dirección regional.');
+                }
+            });
+
+
             // Validar y redirigir si falla
             if ($validator->fails()) {
                 return redirect()->back()->withErrors($validator)->withInput();
@@ -169,6 +182,19 @@ class TipoEquipoController extends Controller
                 'TIPO_EQUIPO_NOMBRE.string' => 'El campo "Nombre Tipo" debe ser una cadena de texto.',
                 'TIPO_EQUIPO_NOMBRE.max' => 'El campo "Nombre Tipo" no debe exceder los :max caracteres.'
             ]);
+
+            
+            // Validar clave única compuesta
+            $validator->after(function ($validator) use ($request, $id) {
+                $exists = TipoEquipo::where([
+                    'OFICINA_ID' => Auth::user()->OFICINA_ID,
+                    'TIPO_EQUIPO_NOMBRE' => strtoupper($request->input('TIPO_EQUIPO_NOMBRE'))
+                ])->where('TIPO_EQUIPO_ID', '!=', $id)->exists();
+
+                if ($exists) {
+                    $validator->errors()->add('TIPO_EQUIPO_NOMBRE', 'El nombre del tipo de equipo ya existe en esta dirección regional.');
+                }
+            });
 
             // Validar y redirigir si falla
             if ($validator->fails()) {

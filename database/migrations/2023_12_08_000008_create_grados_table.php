@@ -20,6 +20,8 @@ return new class extends Migration
             
             //*Llaves foráneas */
             $table->foreign('OFICINA_ID')->references('OFICINA_ID')->on('oficinas');
+            // Clave única compuesta
+            $table->unique(['OFICINA_ID', 'GRADO_NUMERO']); 
         });
     }
 
