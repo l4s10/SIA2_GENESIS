@@ -65,6 +65,7 @@ class Solicitud extends Model
         public function salas()
         {
             return $this->belongsToMany(Sala::class, 'solicitudes_salas', 'SOLICITUD_ID', 'SALA_ID')
+                ->withPivot('SOLICITUD_SALA_ID_ASIGNADA')
                 ->withTimestamps();
         }
 

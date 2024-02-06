@@ -12,3 +12,4 @@ class SolicitudSala extends Model
 
     public $timestamps = true;
 }
+
