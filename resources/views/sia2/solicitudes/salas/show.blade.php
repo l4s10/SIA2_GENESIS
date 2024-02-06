@@ -56,6 +56,9 @@
             </table>
         </div>
     </div>
+
+    {{-- Boton para volver a index --}}
+    <a href="{{ route('solicitudes.salas.index') }}" class="btn btn-primary mt-4">Volver a la lista de solicitudes</a>
 @stop
 
 @section('css')
