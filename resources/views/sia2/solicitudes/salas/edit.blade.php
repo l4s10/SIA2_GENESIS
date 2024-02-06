@@ -31,8 +31,12 @@
             });
         </script>
     @endif
-    {{-- Acordeon para datos de la solicitud --}}
-    <div class="accordion" id="solicitudSalasAccordion">
+
+
+    {{-- Contenedor general para los acordeones --}}
+    <div class="accordion" id="generalAccordion">
+
+        {{-- Acordeon para datos de la solicitud --}}
         <div class="card">
             <div class="card-header" id="datosSolicitudHeading">
                 <h2 class="mb-0">
@@ -41,8 +45,9 @@
                     </button>
                 </h2>
             </div>
-            <div id="datosSolicitudCollapse" class="collapse show" aria-labelledby="datosSolicitudHeading" data-parent="#solicitudSalasAccordion">
+            <div id="datosSolicitudCollapse" class="collapse show" aria-labelledby="datosSolicitudHeading" data-parent="#generalAccordion">
                 <div class="card-body">
+                    {{-- Contenido de datos de la solicitud --}}
                     <div class="row">
                         <div class="col-6">
                             <h4>Datos solicitante</h4>
@@ -84,10 +89,8 @@
                 </div>
             </div>
         </div>
-    </div>
 
-    {{-- Acordeones para salas y tipos de equipos solicitados --}}
-    <div class="accordion" id="salasEquiposAccordion">
+        {{-- Acordeon para sala solicitada y asignada --}}
         <div class="card">
             <div class="card-header" id="salasSolicitadasHeading">
                 <h2 class="mb-0">
@@ -96,11 +99,10 @@
                     </button>
                 </h2>
             </div>
-            <div id="salasSolicitadasCollapse" class="collapse show" aria-labelledby="salasSolicitadasHeading" data-parent="#salasEquiposAccordion">
+            <div id="salasSolicitadasCollapse" class="collapse" aria-labelledby="salasSolicitadasHeading" data-parent="#generalAccordion">
                 <div class="card-body">
                     {{-- Aquí va el contenido de las salas solicitadas --}}
                     <h5>Salas Solicitadas</h5>
-
                     <table class="table table-bordered">
                         <thead>
                             <tr>
@@ -135,55 +137,55 @@
                 </div>
             </div>
         </div>
-        @if ($solicitud->equipos->count() > 0)
-            <div class="card">
-                <div class="card-header" id="equiposSolicitadosHeading">
-                    <h2 class="mb-0">
-                        <button class="btn btn-link" type="button" data-toggle="collapse" data-target="#equiposSolicitadosCollapse" aria-expanded="true" aria-controls="equiposSolicitadosCollapse" data-parent="#salasEquiposAccordion">
-                            Tipos de equipos solicitados
-                        </button>
-                    </h2>
-                </div>
-                <div id="equiposSolicitadosCollapse" class="collapse" aria-labelledby="equiposSolicitadosHeading" data-parent="#salasEquiposAccordion">
-                    <div class="card-body">
-                        {{-- Aquí va el contenido de los tipos de equipos solicitados --}}
-                        <h5>Equipos Solicitados</h5>
-                        <table class="table table-bordered">
-                            <thead>
+
+        {{-- Acordeon para equipos solicitados --}}
+        <div class="card">
+            <div class="card-header" id="equiposSolicitadosHeading">
+                <h2 class="mb-0">
+                    <button class="btn btn-link" type="button" data-toggle="collapse" data-target="#equiposSolicitadosCollapse" aria-expanded="false" aria-controls="equiposSolicitadosCollapse">
+                        Equipos solicitados
+                    </button>
+                </h2>
+            </div>
+            <div id="equiposSolicitadosCollapse" class="collapse" aria-labelledby="equiposSolicitadosHeading" data-parent="#generalAccordion">
+                <div class="card-body">
+                    {{-- Contenido de equipos solicitados --}}
+                    <table class="table table-bordered">
+                        <thead>
+                            <tr>
+                                <th>Tipo de Equipo</th>
+                                <th>Cantidad</th>
+                                <th>Cantidad autorizada</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach($solicitud->equipos as $tipoEquipo)
                                 <tr>
-                                    <th>Tipo de Equipo</th>
-                                    <th>Cantidad solicitada</th>
-                                    <th>Cantidad autorizada</th>
+                                    <td>{{ $tipoEquipo->TIPO_EQUIPO_NOMBRE }}</td>
+                                    <td>{{ $tipoEquipo->pivot->SOLICITUD_EQUIPOS_CANTIDAD }}</td>
+                                    <td>{{ $tipoEquipo->pivot->SOLICITUD_EQUIPOS_CANTIDAD_AUTORIZADA }}</td>
                                 </tr>
-                            </thead>
-                            <tbody>
-                                @foreach($solicitud->equipos as $tipoEquipo)
-                                    <tr>
-                                        <td>{{ $tipoEquipo->TIPO_EQUIPO_NOMBRE }}</td>
-                                        <td>{{ $tipoEquipo->pivot->SOLICITUD_EQUIPOS_CANTIDAD }}</td>
-                                        <td>{{ $tipoEquipo->pivot->SOLICITUD_EQUIPOS_CANTIDAD_AUTORIZADA ?? 'SIN AUTORIZACION POR AHORA' }}</td>
-                                    </tr>
-                                @endforeach
-                            </tbody>
-                        </table>
-                    </div>
+                            @endforeach
+                        </tbody>
+                    </table>
                 </div>
             </div>
-        @endif
-    </div>
-    @if ($solicitud->revisiones->isNotEmpty())
-        <div class="accordion" id="accordionObservaciones">
+        </div>
+
+        {{-- Acordeon para las observaciones --}}
+        @if ($solicitud->revisiones->isNotEmpty())
             <div class="card">
                 <div class="card-header" id="headingObservaciones">
                     <h2 class="mb-0">
-                        <button class="btn btn-link" type="button" data-toggle="collapse" data-target="#collapseObservaciones" aria-expanded="false" aria-controls="collapseObservaciones" data-parent="#accordionObservaciones">
+                        <button class="btn btn-link" type="button" data-toggle="collapse" data-target="#collapseObservaciones" aria-expanded="false" aria-controls="collapseObservaciones">
                             Observaciones
                         </button>
                     </h2>
                 </div>
 
-                <div id="collapseObservaciones" class="collapse" aria-labelledby="headingObservaciones" data-parent="#accordionObservaciones">
+                <div id="collapseObservaciones" class="collapse" aria-labelledby="headingObservaciones" data-parent="#generalAccordion">
                     <div class="card-body">
+                        {{-- Contenido de las observaciones --}}
                         <div id="carouselObservaciones" class="carousel slide" data-ride="carousel">
                             <ol class="carousel-indicators">
                                 @foreach ($solicitud->revisiones as $key => $observacion)
@@ -214,11 +216,8 @@
                     </div>
                 </div>
             </div>
-        </div>
-    @endif
-
+        @endif
     </div>
-
 
     {{-- Formulario para revisar la solicitud --}}
     <h2>Formulario de revision</h2>
@@ -320,4 +319,13 @@
     </form>
 @stop
 
-
+@section('css')
+    <style>
+        #carouselObservaciones .carousel-indicators li {
+            background-color: orange; /* Cambia el color de fondo a naranja */
+        }
+        #carouselObservaciones .carousel-indicators .active {
+            background-color: darkorange; /* Un tono más oscuro para el indicador activo */
+        }
+    </style>
+@stop

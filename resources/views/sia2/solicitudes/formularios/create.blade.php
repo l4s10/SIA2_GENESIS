@@ -32,103 +32,101 @@
         </script>
     @endif
 
-    <div class="container">
-        {{-- Tabla de Formularios --}}
-        <h3 class="centrar">Formularios Disponibles</h3>
-        <table class="table table-bordered" id="formularios">
-            <thead class="tablacolor">
+    {{-- Tabla de Formularios --}}
+    <h3 class="centrar">Formularios Disponibles</h3>
+    <table class="table table-bordered" id="formularios">
+        <thead class="tablacolor">
+            <tr>
+                <th>Tipo formulario</th>
+                <th>Nombre formulario</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach($formularios as $formulario)
                 <tr>
-                    <th>Tipo formulario</th>
-                    <th>Nombre formulario</th>
-                    <th>Acciones</th>
+                    <td>{{ $formulario->FORMULARIO_TIPO}}</td>
+                    <td>{{ $formulario->FORMULARIO_NOMBRE }}</td>
+                    <td>
+                        <form action="{{ route('formularios.addToCart', $formulario->FORMULARIO_ID) }}" method="POST">
+                            @csrf
+                            <button type="submit" class="btn botoneditar">
+                                <i class="fa-solid fa-plus"></i> Agregar al Carrito
+                            </button>
+                        </form>
+                    </td>
                 </tr>
-            </thead>
-            <tbody>
-                @foreach($formularios as $formulario)
-                    <tr>
-                        <td>{{ $formulario->FORMULARIO_TIPO}}</td>
-                        <td>{{ $formulario->FORMULARIO_NOMBRE }}</td>
-                        <td>
-                            <form action="{{ route('formularios.addToCart', $formulario->FORMULARIO_ID) }}" method="POST">
-                                @csrf
-                                <button type="submit" class="btn botoneditar">
-                                    <i class="fa-solid fa-plus"></i> Agregar al Carrito
-                                </button>
-                            </form>
-                        </td>
-                    </tr>
-                @endforeach
-            </tbody>
-        </table>
+            @endforeach
+        </tbody>
+    </table>
 
-        {{-- Carrito --}}
-        <h3 class="centrar">Carrito</h3>
-        <table class="table table-bordered" id="carrito">
-            <thead class="tablacarrito">
+    {{-- Carrito --}}
+    <h3 class="centrar">Carrito</h3>
+    <table class="table table-bordered" id="carrito">
+        <thead class="tablacarrito">
+            <tr>
+                <th>Formulario</th>
+                <th>Cantidad</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach($cartItems as $cartItem)
                 <tr>
-                    <th>Formulario</th>
-                    <th>Cantidad</th>
-                    <th>Acciones</th>
+                    <td>{{ $cartItem->name }}</td>
+                    <td>{{ $cartItem->qty }}</td>
+                    <td>
+                        <form action="{{ route('formularios.removeItem', $cartItem->rowId) }}" method="POST">
+                            @csrf
+                            @method('DELETE')
+                            <button type="submit" class="btn btn-danger">
+                                <i class="fa-solid fa-trash"></i> Eliminar
+                            </button>
+                        </form>
                 </tr>
-            </thead>
-            <tbody>
-                @foreach($cartItems as $cartItem)
-                    <tr>
-                        <td>{{ $cartItem->name }}</td>
-                        <td>{{ $cartItem->qty }}</td>
-                        <td>
-                            <form action="{{ route('formularios.removeItem', $cartItem->rowId) }}" method="POST">
-                                @csrf
-                                @method('DELETE')
-                                <button type="submit" class="btn btn-danger">
-                                    <i class="fa-solid fa-trash"></i> Eliminar
-                                </button>
-                            </form>
-                    </tr>
-                @endforeach
-            </tbody>
-        </table>
+            @endforeach
+        </tbody>
+    </table>
 
-        {{-- Formulario de Solicitud --}}
-        <form action="{{ route('solicitudes.formularios.store') }}" method="POST">
-            @csrf
+    {{-- Formulario de Solicitud --}}
+    <form action="{{ route('solicitudes.formularios.store') }}" method="POST">
+        @csrf
 
-            {{-- Motivo de la Solicitud --}}
-            <div class="form-group {{ $errors->has('SOLICITUD_MOTIVO') ? 'has-error' : '' }}">
-                <label for="SOLICITUD_MOTIVO"><i class="fa-solid fa-pen-to-square"></i> Motivo de la Solicitud</label>
-                <input type="text" class="form-control" id="SOLICITUD_MOTIVO" name="SOLICITUD_MOTIVO" required>
-                @error('SOLICITUD_MOTIVO')
-                    <span class="text-danger">{{ $message }}</span>
-                @enderror
-            </div>
+        {{-- Motivo de la Solicitud --}}
+        <div class="form-group {{ $errors->has('SOLICITUD_MOTIVO') ? 'has-error' : '' }}">
+            <label for="SOLICITUD_MOTIVO"><i class="fa-solid fa-pen-to-square"></i> Motivo de la Solicitud</label>
+            <input type="text" class="form-control" id="SOLICITUD_MOTIVO" name="SOLICITUD_MOTIVO" required>
+            @error('SOLICITUD_MOTIVO')
+                <span class="text-danger">{{ $message }}</span>
+            @enderror
+        </div>
 
-            {{-- Estado de la Solicitud (Sin contenedor de error ya que es un campo de solo lectura) --}}
-            <div class="form-group">
-                <label for="SOLICITUD_ESTADO"><i class="fa-solid fa-file-circle-check"></i> Estado de la Solicitud</label>
-                <input type="text" class="form-control" id="SOLICITUD_ESTADO" name="SOLICITUD_ESTADO" value="🟠INGRESADO" readonly>
-            </div>
+        {{-- Estado de la Solicitud (Sin contenedor de error ya que es un campo de solo lectura) --}}
+        <div class="form-group">
+            <label for="SOLICITUD_ESTADO"><i class="fa-solid fa-file-circle-check"></i> Estado de la Solicitud</label>
+            <input type="text" class="form-control" id="SOLICITUD_ESTADO" name="SOLICITUD_ESTADO" value="🟠INGRESADO" readonly>
+        </div>
 
-            {{-- Fecha y Hora de Inicio Solicitada --}}
-            <div class="form-group {{ $errors->has('SOLICITUD_FECHA_HORA_INICIO_SOLICITADA') ? 'has-error' : '' }}">
-                <label for="SOLICITUD_FECHA_HORA_INICIO_SOLICITADA"><i class="fa-solid fa-calendar-days"></i> Fecha y Hora de Inicio Solicitada</label>
-                <input type="datetime-local" class="form-control" id="SOLICITUD_FECHA_HORA_INICIO_SOLICITADA" name="SOLICITUD_FECHA_HORA_INICIO_SOLICITADA" required>
-                @error('SOLICITUD_FECHA_HORA_INICIO_SOLICITADA')
-                    <span class="text-danger">{{ $message }}</span>
-                @enderror
-            </div>
+        {{-- Fecha y Hora de Inicio Solicitada --}}
+        <div class="form-group {{ $errors->has('SOLICITUD_FECHA_HORA_INICIO_SOLICITADA') ? 'has-error' : '' }}">
+            <label for="SOLICITUD_FECHA_HORA_INICIO_SOLICITADA"><i class="fa-solid fa-calendar-days"></i> Fecha y Hora de Inicio Solicitada</label>
+            <input type="datetime-local" class="form-control" id="SOLICITUD_FECHA_HORA_INICIO_SOLICITADA" name="SOLICITUD_FECHA_HORA_INICIO_SOLICITADA" required>
+            @error('SOLICITUD_FECHA_HORA_INICIO_SOLICITADA')
+                <span class="text-danger">{{ $message }}</span>
+            @enderror
+        </div>
 
-            {{-- Fecha y Hora de Término Solicitada --}}
-            <div class="form-group {{ $errors->has('SOLICITUD_FECHA_HORA_TERMINO_SOLICITADA') ? 'has-error' : '' }}">
-                <label for="SOLICITUD_FECHA_HORA_TERMINO_SOLICITADA"><i class="fa-solid fa-calendar-xmark"></i> Fecha y Hora de Término Solicitada</label>
-                <input type="datetime-local" class="form-control" id="SOLICITUD_FECHA_HORA_TERMINO_SOLICITADA" name="SOLICITUD_FECHA_HORA_TERMINO_SOLICITADA" required>
-                @error('SOLICITUD_FECHA_HORA_TERMINO_SOLICITADA')
-                    <span class="text-danger">{{ $message }}</span>
-                @enderror
-            </div>
+        {{-- Fecha y Hora de Término Solicitada --}}
+        <div class="form-group {{ $errors->has('SOLICITUD_FECHA_HORA_TERMINO_SOLICITADA') ? 'has-error' : '' }}">
+            <label for="SOLICITUD_FECHA_HORA_TERMINO_SOLICITADA"><i class="fa-solid fa-calendar-xmark"></i> Fecha y Hora de Término Solicitada</label>
+            <input type="datetime-local" class="form-control" id="SOLICITUD_FECHA_HORA_TERMINO_SOLICITADA" name="SOLICITUD_FECHA_HORA_TERMINO_SOLICITADA" required>
+            @error('SOLICITUD_FECHA_HORA_TERMINO_SOLICITADA')
+                <span class="text-danger">{{ $message }}</span>
+            @enderror
+        </div>
 
-            <button type="submit" class="btn agregar"><i class="fa-solid fa-plus"></i> Crear Solicitud</button>
-        </form>
-    </div>
+        <button type="submit" class="btn agregar"><i class="fa-solid fa-plus"></i> Crear Solicitud</button>
+    </form>
 @stop
 
 @section('css')

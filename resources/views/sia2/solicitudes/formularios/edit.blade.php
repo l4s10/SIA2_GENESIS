@@ -7,7 +7,11 @@
 @stop
 
 @section('content')
-    <div class="accordion" id="accordionExample">
+
+    {{-- Contenedor general para los acordeones --}}
+    <div class="accordion" id="generalAccordion">
+
+        {{-- Accordeon para los datos de la solicitud --}}
         <div class="card">
             <div class="card-header" id="headingOne">
                 <h2 class="mb-0">
@@ -17,9 +21,9 @@
                 </h2>
             </div>
 
-            <div id="collapseOne" class="collapse show" aria-labelledby="headingOne" data-parent="#accordionExample">
-                {{-- Mostrar datos de la solicitud en una tarjeta como en la vista show --}}
+            <div id="collapseOne" class="collapse show" aria-labelledby="headingOne" data-parent="#generalAccordion">
                 <div class="card-body">
+                    {{-- Contenido de los datos de la solicitud --}}
                     <div class="row">
                         <div class="col-6">
                             <h4>Datos Solicitante</h4>
@@ -58,7 +62,23 @@
                     </div>
                     <h4>Descripción</h4>
                     <p><strong>Descripción:</strong> {{ $solicitud->SOLICITUD_MOTIVO }}</p>
-                    {{-- Llamar a relacion 'formularios' para traer el pedido en una tabla --}}
+                </div>
+            </div>
+        </div>
+
+        {{-- Accordeon para los formularios solicitados --}}
+        <div class="card">
+            <div class="card-header" id="headingFormularios">
+                <h2 class="mb-0">
+                    <button class="btn btn-link" type="button" data-toggle="collapse" data-target="#collapseFormularios" aria-expanded="false" aria-controls="collapseFormularios">
+                        Formularios Solicitados
+                    </button>
+                </h2>
+            </div>
+
+            <div id="collapseFormularios" class="collapse" aria-labelledby="headingFormularios" data-parent="#generalAccordion">
+                <div class="card-body">
+                    {{-- Contenido de los formularios solicitados --}}
                     <h4 class="mt-4">Formularios Solicitados</h4>
                     <table class="table table-bordered">
                         <thead>
@@ -81,23 +101,21 @@
                 </div>
             </div>
         </div>
-    </div>
 
-    <div class="accordion" id="accordionObservaciones">
-        <div class="card">
-            <div class="card-header" id="headingObservaciones">
-                <h2 class="mb-0">
-                    <button class="btn btn-link" type="button" data-toggle="collapse" data-target="#collapseObservaciones" aria-expanded="false" aria-controls="collapseObservaciones">
-                        Observaciones
-                    </button>
-                </h2>
-            </div>
+        {{-- Acordeon para las observaciones --}}
+        @if ($solicitud->revisiones->isNotEmpty())
+            <div class="card">
+                <div class="card-header" id="headingObservaciones">
+                    <h2 class="mb-0">
+                        <button class="btn btn-link" type="button" data-toggle="collapse" data-target="#collapseObservaciones" aria-expanded="false" aria-controls="collapseObservaciones">
+                            Observaciones
+                        </button>
+                    </h2>
+                </div>
 
-            <div id="collapseObservaciones" class="collapse" aria-labelledby="headingObservaciones" data-parent="#accordionObservaciones">
-                <div class="card-body">
-                    @if ($solicitud->revisiones->isEmpty())
-                        <p>SOLICITUD SIN OBSERVACIONES</p>
-                    @else
+                <div id="collapseObservaciones" class="collapse" aria-labelledby="headingObservaciones" data-parent="#generalAccordion">
+                    <div class="card-body">
+                        {{-- Contenido de las observaciones --}}
                         <div id="carouselObservaciones" class="carousel slide" data-ride="carousel">
                             <ol class="carousel-indicators">
                                 @foreach ($solicitud->revisiones as $key => $observacion)
@@ -109,7 +127,7 @@
                                 @foreach ($solicitud->revisiones as $key => $observacion)
                                     <div class="carousel-item {{ $key == 0 ? 'active' : '' }}">
                                         <h5>Observación {{ $key + 1 }}</h5>
-                                        <p>{{ $observacion->REVISION_SOLICITUD_OBSERVACION }}</p>
+                                        <p>"{{ $observacion->REVISION_SOLICITUD_OBSERVACION }}" -- {{$observacion->usuario->USUARIO_NOMBRES}} {{$observacion->usuario->USUARIO_APELLIDOS}}</p>
                                     </div>
                                 @endforeach
                             </div>
@@ -125,21 +143,13 @@
                                 </a>
                             </div>
                         </div>
-                    @endif
+                    </div>
                 </div>
             </div>
-        </div>
+        @endif
     </div>
 
-
-
-
-    {{-- Formulario con los datos que recibira la request de update
-            'SOLICITUD_ESTADO' => 'required|string|max:255|in:INGRESADO,EN REVISION,APROBADO,RECHAZADO,TERMINADO',
-            'SOLICITUD_FECHA_HORA_INICIO_ASIGNADA' => 'required|date',
-            'SOLICITUD_FECHA_HORA_TERMINO_ASIGNADA' => 'required|date|after:SOLICITUD_FECHA_HORA_INICIO_ASIGNADA',
-            'REVISION_SOLICITUD_OBSERVACION' => 'required|string|max:255',
-            'REVISION_SOLICITUD_FECHA_HORA_TRAMITACION' => 'required|date', --}}
+    {{-- Formulario de revision --}}
     <h2>Formulario de revision</h2>
     <form action="{{ route('solicitudes.formularios.update', $solicitud->SOLICITUD_ID) }}" method="POST">
         @csrf
@@ -157,28 +167,28 @@
             </select>
         </div>
 
-        {{-- FECHA Y HORA DE INICIO ASIGNADA --}}
-        <div class="form-group">
-            <label for="SOLICITUD_FECHA_HORA_INICIO_ASIGNADA">Fecha y hora de inicio asignada</label>
-            <input type="datetime-local" class="form-control" id="SOLICITUD_FECHA_HORA_INICIO_ASIGNADA" name="SOLICITUD_FECHA_HORA_INICIO_ASIGNADA" value="{{ $solicitud->SOLICITUD_FECHA_HORA_INICIO_ASIGNADA }}">
-        </div>
+        <div class="row">
+            <div class="col-md-6">
+                {{-- FECHA Y HORA DE INICIO ASIGNADA --}}
+                <div class="form-group">
+                    <label for="SOLICITUD_FECHA_HORA_INICIO_ASIGNADA">Fecha y hora de inicio asignada</label>
+                    <input type="datetime-local" class="form-control" id="SOLICITUD_FECHA_HORA_INICIO_ASIGNADA" name="SOLICITUD_FECHA_HORA_INICIO_ASIGNADA" value="{{ $solicitud->SOLICITUD_FECHA_HORA_INICIO_ASIGNADA }}">
+                </div>
+            </div>
 
-        {{-- FECHA Y HORA DE TÉRMINO ASIGNADA --}}
-        <div class="form-group">
-            <label for="SOLICITUD_FECHA_HORA_TERMINO_ASIGNADA">Fecha y hora de término asignada</label>
-            <input type="datetime-local" class="form-control" id="SOLICITUD_FECHA_HORA_TERMINO_ASIGNADA" name="SOLICITUD_FECHA_HORA_TERMINO_ASIGNADA" value="{{ $solicitud->SOLICITUD_FECHA_HORA_TERMINO_ASIGNADA }}">
+            <div class="col-md-6">
+                {{-- FECHA Y HORA DE TÉRMINO ASIGNADA --}}
+                <div class="form-group">
+                    <label for="SOLICITUD_FECHA_HORA_TERMINO_ASIGNADA">Fecha y hora de término asignada</label>
+                    <input type="datetime-local" class="form-control" id="SOLICITUD_FECHA_HORA_TERMINO_ASIGNADA" name="SOLICITUD_FECHA_HORA_TERMINO_ASIGNADA" value="{{ $solicitud->SOLICITUD_FECHA_HORA_TERMINO_ASIGNADA }}">
+                </div>
+            </div>
         </div>
 
         {{-- OBSERVACION --}}
         <div class="form-group">
             <label for="REVISION_SOLICITUD_OBSERVACION">Observación</label>
             <textarea class="form-control" id="REVISION_SOLICITUD_OBSERVACION" name="REVISION_SOLICITUD_OBSERVACION" rows="3">{{ $solicitud->REVISION_SOLICITUD_OBSERVACION }}</textarea>
-        </div>
-
-        {{-- FECHA Y HORA DE TRAMITACIÓN --}}
-        <div class="form-group">
-            <label for="REVISION_SOLICITUD_FECHA_HORA_TRAMITACION">Fecha y hora de trámite</label>
-            <input type="datetime-local" class="form-control" id="REVISION_SOLICITUD_FECHA_HORA_TRAMITACION" name="REVISION_SOLICITUD_FECHA_HORA_TRAMITACION" value="{{ $solicitud->REVISION_SOLICITUD_FECHA_HORA_TRAMITACION }}">
         </div>
 
         {{-- BOTONES DE ENVIO Y REGRESAR A INDEX DE SOLICITUDES FORMULARIOS --}}

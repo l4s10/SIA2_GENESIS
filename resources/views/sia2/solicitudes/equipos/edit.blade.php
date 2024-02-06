@@ -33,8 +33,10 @@
     @endif
 
 
-    {{-- Acordeon para datos de la solicitud --}}
-    <div class="accordion" id="solicitudSalasAccordion">
+    {{-- Contenedor general para los acordeones --}}
+    <div class="accordion" id="generalAccordion">
+
+        {{-- Acordeon para datos de la solicitud --}}
         <div class="card">
             <div class="card-header" id="datosSolicitudHeading">
                 <h2 class="mb-0">
@@ -43,8 +45,9 @@
                     </button>
                 </h2>
             </div>
-            <div id="datosSolicitudCollapse" class="collapse show" aria-labelledby="datosSolicitudHeading" data-parent="#solicitudSalasAccordion">
+            <div id="datosSolicitudCollapse" class="collapse show" aria-labelledby="datosSolicitudHeading" data-parent="#generalAccordion">
                 <div class="card-body">
+                    {{-- Contenido de datos de la solicitud --}}
                     <div class="row">
                         <div class="col-6">
                             <h4>Datos solicitante</h4>
@@ -86,20 +89,19 @@
                 </div>
             </div>
         </div>
-    </div>
 
-    {{-- Acordeon para equipos solicitados --}}
-    <div class="accordion" id="equiposSolicitadosAccordion">
+        {{-- Acordeon para equipos solicitados --}}
         <div class="card">
             <div class="card-header" id="equiposSolicitadosHeading">
                 <h2 class="mb-0">
-                    <button class="btn btn-link" type="button" data-toggle="collapse" data-target="#equiposSolicitadosCollapse" aria-expanded="true" aria-controls="equiposSolicitadosCollapse">
+                    <button class="btn btn-link" type="button" data-toggle="collapse" data-target="#equiposSolicitadosCollapse" aria-expanded="false" aria-controls="equiposSolicitadosCollapse">
                         Equipos solicitados
                     </button>
                 </h2>
             </div>
-            <div id="equiposSolicitadosCollapse" class="collapse show" aria-labelledby="equiposSolicitadosHeading" data-parent="#equiposSolicitadosAccordion">
+            <div id="equiposSolicitadosCollapse" class="collapse" aria-labelledby="equiposSolicitadosHeading" data-parent="#generalAccordion">
                 <div class="card-body">
+                    {{-- Contenido de equipos solicitados --}}
                     <table class="table table-bordered">
                         <thead>
                             <tr>
@@ -121,22 +123,21 @@
                 </div>
             </div>
         </div>
-    </div>
 
-
-    @if ($solicitud->revisiones->isNotEmpty())
-        <div class="accordion" id="accordionObservaciones">
+        {{-- Acordeon para las observaciones --}}
+        @if ($solicitud->revisiones->isNotEmpty())
             <div class="card">
                 <div class="card-header" id="headingObservaciones">
                     <h2 class="mb-0">
-                        <button class="btn btn-link" type="button" data-toggle="collapse" data-target="#collapseObservaciones" aria-expanded="false" aria-controls="collapseObservaciones" data-parent="#accordionObservaciones">
+                        <button class="btn btn-link" type="button" data-toggle="collapse" data-target="#collapseObservaciones" aria-expanded="false" aria-controls="collapseObservaciones">
                             Observaciones
                         </button>
                     </h2>
                 </div>
 
-                <div id="collapseObservaciones" class="collapse" aria-labelledby="headingObservaciones" data-parent="#accordionObservaciones">
+                <div id="collapseObservaciones" class="collapse" aria-labelledby="headingObservaciones" data-parent="#generalAccordion">
                     <div class="card-body">
+                        {{-- Contenido de las observaciones --}}
                         <div id="carouselObservaciones" class="carousel slide" data-ride="carousel">
                             <ol class="carousel-indicators">
                                 @foreach ($solicitud->revisiones as $key => $observacion)
@@ -167,8 +168,8 @@
                     </div>
                 </div>
             </div>
-        </div>
-    @endif
+        @endif
+    </div>
 
     {{-- Formulario para revisar la solicitud --}}
     <h2>Formulario de revision</h2>
@@ -255,4 +256,15 @@
         <a href="{{ route('solicitudes.equipos.index') }}" class="btn btn-secondary">Volver</a>
         <button type="submit" class="btn btn-primary">Guardar cambios</button>
     </form>
+@stop
+
+@section('css')
+    <style>
+        #carouselObservaciones .carousel-indicators li {
+            background-color: orange; /* Cambia el color de fondo a naranja */
+        }
+        #carouselObservaciones .carousel-indicators .active {
+            background-color: darkorange; /* Un tono más oscuro para el indicador activo */
+        }
+    </style>
 @stop

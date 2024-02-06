@@ -32,98 +32,103 @@
         </script>
     @endif
 
-    <div class="container">
-        {{-- Tabla de Equipos --}}
-        <h3 class="centrar">Tipos de equipos disponibles (opcional)</h3>
-        <table class="table table-bordered" id="equipos">
-            <thead class="tablacolor">
-                <tr>
-                    <th>Tipo equipo</th>
-                    <th>Acciones</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach($tiposEquipos as $tipoEquipo)
-                    <tr>
-                        <td>{{ $tipoEquipo->TIPO_EQUIPO_NOMBRE }}</td>
-                        <td>
-                            <form action="{{ route('tiposequipos.addToCart', $tipoEquipo->TIPO_EQUIPO_ID) }}" method="POST">
-                                @csrf
-                                <button type="submit" class="btn botoneditar">
-                                    <i class="fa-solid fa-plus"></i> Agregar al Carrito
-                                </button>
-                            </form>
-                        </td>
-                    </tr>
+{{-- Tabla de Equipos --}}
+<h3 class="centrar">Tipos de equipos disponibles (opcional)</h3>
+<table class="table table-bordered" id="equipos">
+    <thead class="tablacolor">
+        <tr>
+            <th>Tipo equipo</th>
+            <th>Acciones</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach($tiposEquipos as $tipoEquipo)
+            <tr>
+                <td>{{ $tipoEquipo->TIPO_EQUIPO_NOMBRE }}</td>
+                <td>
+                    <form action="{{ route('tiposequipos.addToCart', $tipoEquipo->TIPO_EQUIPO_ID) }}" method="POST">
+                        @csrf
+                        <button type="submit" class="btn botoneditar">
+                            <i class="fa-solid fa-plus"></i> Agregar al Carrito
+                        </button>
+                    </form>
+                </td>
+            </tr>
+        @endforeach
+    </tbody>
+</table>
+
+{{-- Carrito --}}
+<h3 class="centrar">Carrito</h3>
+<table class="table table-bordered" id="carrito">
+    <thead class="tablacarrito">
+        <tr>
+            <th>Tipo equipo</th>
+            <th>Cantidad</th>
+            <th>Acciones</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach($cartItems as $cartItem)
+            <tr>
+                <td>{{ $cartItem->name }}</td>
+                <td>{{ $cartItem->qty }}</td>
+                <td>
+                    <form action="{{ route('tiposequipos.removeItem', $cartItem->rowId) }}" method="POST">
+                        @csrf
+                        @method('DELETE')
+                        <button type="submit" class="btn btn-danger">
+                            <i class="fa-solid fa-trash"></i> Eliminar
+                        </button>
+                    </form>
+                </td>
+            </tr>
+        @endforeach
+    </tbody>
+</table>
+
+    {{-- Formulario de Solicitud --}}
+    <form action="{{ route('solicitudes.salas.store') }}" method="POST">
+        @csrf
+        <div class="form-group">
+            <label for="SALA_ID"><i class="fa-solid fa-door-open"></i> Sala</label>
+            <select name="SALA_ID" id="SALA_ID" class="form-control" required>
+                <option value="">Seleccione una sala</option>
+                @foreach($salas as $sala)
+                    <option value="{{ $sala->SALA_ID }}">{{ $sala->SALA_NOMBRE }}</option>
                 @endforeach
-            </tbody>
-        </table>
+            </select>
+        </div>
 
-        {{-- Carrito --}}
-        <h3 class="centrar">Carrito</h3>
-        <table class="table table-bordered" id="carrito">
-            <thead class="tablacarrito">
-                <tr>
-                    <th>Tipo equipo</th>
-                    <th>Cantidad</th>
-                    <th>Acciones</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach($cartItems as $cartItem)
-                    <tr>
-                        <td>{{ $cartItem->name }}</td>
-                        <td>{{ $cartItem->qty }}</td>
-                        <td>
-                            <form action="{{ route('tiposequipos.removeItem', $cartItem->rowId) }}" method="POST">
-                                @csrf
-                                @method('DELETE')
-                                <button type="submit" class="btn btn-danger">
-                                    <i class="fa-solid fa-trash"></i> Eliminar
-                                </button>
-                            </form>
-                        </td>
-                    </tr>
-                @endforeach
-            </tbody>
-        </table>
+        <div class="form-group">
+            <label for="SOLICITUD_MOTIVO"><i class="fa-solid fa-pen-to-square"></i>Motivo de la Solicitud</label>
+            <input type="text" class="form-control" id="SOLICITUD_MOTIVO" name="SOLICITUD_MOTIVO" required>
+        </div>
 
-        {{-- Formulario de Solicitud --}}
-        <form action="{{ route('solicitudes.salas.store') }}" method="POST">
-            @csrf
-            <div class="form-group">
-                <label for="SALA_ID"><i class="fa-solid fa-door-open"></i> Sala</label>
-                <select name="SALA_ID" id="SALA_ID" class="form-control" required>
-                    <option value="">Seleccione una sala</option>
-                    @foreach($salas as $sala)
-                        <option value="{{ $sala->SALA_ID }}">{{ $sala->SALA_NOMBRE }}</option>
-                    @endforeach
-                </select>
+        <div class="form-group">
+            <label for="SOLICITUD_ESTADO"><i class="fa-solid fa-file-circle-check"></i>Estado de la Solicitud</label>
+            <input type="text" class="form-control" id="SOLICITUD_ESTADO" name="SOLICITUD_ESTADO" value="🟠INGRESADO" readonly>
+        </div>
+
+        <div class="row">
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label for="SOLICITUD_FECHA_HORA_INICIO_SOLICITADA"><i class="fa-solid fa-calendar-days"></i>Fecha y Hora de Inicio Solicitada</label>
+                    <input type="datetime-local" class="form-control" id="SOLICITUD_FECHA_HORA_INICIO_SOLICITADA" name="SOLICITUD_FECHA_HORA_INICIO_SOLICITADA" required>
+                </div>
             </div>
 
-            <div class="form-group">
-                <label for="SOLICITUD_MOTIVO"><i class="fa-solid fa-pen-to-square"></i>Motivo de la Solicitud</label>
-                <input type="text" class="form-control" id="SOLICITUD_MOTIVO" name="SOLICITUD_MOTIVO" required>
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label for="SOLICITUD_FECHA_HORA_TERMINO_SOLICITADA"><i class="fa-solid fa-calendar-xmark"></i>Fecha y Hora de Término Solicitada</label>
+                    <input type="datetime-local" class="form-control" id="SOLICITUD_FECHA_HORA_TERMINO_SOLICITADA" name="SOLICITUD_FECHA_HORA_TERMINO_SOLICITADA" required>
+                </div>
             </div>
-
-            <div class="form-group">
-                <label for="SOLICITUD_ESTADO"><i class="fa-solid fa-file-circle-check"></i>Estado de la Solicitud</label>
-                <input type="text" class="form-control" id="SOLICITUD_ESTADO" name="SOLICITUD_ESTADO" value="🟠INGRESADO" readonly>
-            </div>
-
-            <div class="form-group">
-                <label for="SOLICITUD_FECHA_HORA_INICIO_SOLICITADA"><i class="fa-solid fa-calendar-days"></i>Fecha y Hora de Inicio Solicitada</label>
-                <input type="datetime-local" class="form-control" id="SOLICITUD_FECHA_HORA_INICIO_SOLICITADA" name="SOLICITUD_FECHA_HORA_INICIO_SOLICITADA" required>
-            </div>
-
-            <div class="form-group">
-                <label for="SOLICITUD_FECHA_HORA_TERMINO_SOLICITADA"><i class="fa-solid fa-calendar-xmark"></i>Fecha y Hora de Término Solicitada</label>
-                <input type="datetime-local" class="form-control" id="SOLICITUD_FECHA_HORA_TERMINO_SOLICITADA" name="SOLICITUD_FECHA_HORA_TERMINO_SOLICITADA" required>
-            </div>
-
-            <button type="submit" class="btn agregar"><i class="fa-solid fa-plus"></i> Crear Solicitud</button>
-        </form>
-    </div>
+        </div>
+        {{-- Botones de envio y retorno --}}
+        <a href="{{ route('solicitudes.salas.index') }}" class="btn btn-danger"><i class="fa-solid fa-reply"></i> Volver</a>
+        <button type="submit" class="btn agregar"><i class="fa-solid fa-plus"></i> Crear Solicitud</button>
+    </form>
 @stop
 
 @section('css')
