@@ -18,6 +18,7 @@ return new class extends Migration
             $table->unsignedBigInteger('SOLICITUD_VEHICULO_ID')->nullable();
             $table->unsignedBigInteger('SOLICITUD_ID')->nullable();
             $table->string('REVISION_SOLICITUD_OBSERVACION', 255)->nullable();
+            $table->timestamps();
 
             //foraneas
             $table->foreign('USUARIO_ID')->references('id')->on('users');

@@ -12,8 +12,10 @@ class RevisionSolicitud extends Model
 
     protected $fillable = [
         'USUARIO_ID',
+        'SOLICITUD_VEHICULO_ID',
+        'SOLICITUD_REPARACION_ID',
         'SOLICITUD_ID',
-        'REVISION_SOLICITUD_FECHA_HORA_TRAMITACION', 'REVISION_SOLICITUD_OBSERVACION'
+        'REVISION_SOLICITUD_OBSERVACION'
     ];
 
     public $timestamps = true;
