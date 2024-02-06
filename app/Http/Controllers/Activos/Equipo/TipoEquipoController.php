@@ -31,7 +31,7 @@ class TipoEquipoController extends Controller
 
             // Función que lista tipos de materiales basados en la OFICINA_ID del usuario
             $tiposEquipo = TipoEquipo::where('OFICINA_ID', $oficinaIdUsuario)->get();
-            
+
             // Retornar la vista con los datos
             return view('sia2.activos.modequipos.tiposequipos.index', compact('tiposEquipo'));
         }
@@ -53,7 +53,7 @@ class TipoEquipoController extends Controller
             $oficinaIdUsuario = Auth::user()->OFICINA_ID;
             // Obtener el objeto oficina asociada al usuario actual
             $oficina = Oficina::where('OFICINA_ID', $oficinaIdUsuario)->firstOrFail();
-            
+
             return view('sia2.activos.modequipos.tiposequipos.create', compact('oficina'));
         } catch (ModelNotFoundException $e) {
             // Manejar excepción de modelo no encontrado
@@ -134,7 +134,7 @@ class TipoEquipoController extends Controller
 
             // Obtenemos la informacion de la oficina
             $oficina = Oficina::where('OFICINA_ID', $oficinaIdUsuario)->firstOrFail();
-            
+
             // Retornar a la vista con los datos compactados
             return view('sia2.activos.modequipos.tiposequipos.edit', compact('tipoEquipo', 'oficina'));
         }
@@ -226,7 +226,7 @@ class TipoEquipoController extends Controller
         // Agregamos el tipo de equipo al carrito
         $carritoEquipos->add($tipoequipo, 1);
 
-        // Retornar a la vista con un mensaje de éxito
+        // Retornar a la vista con un mensaje de éxito y mantener los datos de entrada del formulario
         return redirect()->back()->with('success', 'Tipo de equipo agregado exitosamente')->withInput();
     }
 

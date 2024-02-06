@@ -23,5 +23,5 @@ Route::prefix('formulario')->name('formularios.')->group(function () {
 // Rutas para Tipos de Equipos
 Route::prefix('tipoequipo')->name('tiposequipos.')->group(function () {
     Route::post('/addToCart/{tipoequipo}', [TipoEquipoController::class, 'addToCart'])->name('addToCart');
-    Route::delete('/removeItem/{id}', [TipoEquipoController::class, 'deleteFromCart'])->name('removeItem');
+    Route::delete('/removeItem/{id}', [TipoEquipoController::class, 'removeFromCart'])->name('removeItem');
 });

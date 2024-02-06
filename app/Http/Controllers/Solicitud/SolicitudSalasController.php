@@ -181,9 +181,9 @@ class SolicitudSalasController extends Controller
             // Validar los datos del formulario de edición de la solicitud
             $validator = Validator::make($request->all(),[
                 // PARA ASIGNACION
-                'SOLICITUD_ESTADO' => 'required|string|max:255|in:INGRESADO,EN REVISION,APROBADO,RECHAZADO',
+                'SOLICITUD_ESTADO' => 'required|string|max:255|in:INGRESADO,EN REVISION,APROBADO,RECHAZADO,TERMINADO',
                 'SOLICITUD_FECHA_HORA_INICIO_ASIGNADA' => 'required|date',
-                'SOLICITUD_FECHA_HORA_TERMINO_ASIGNADA' => 'required|date|after:SOLICITUD_FECHA_HORA_INICIO_SOLICITADA',
+                'SOLICITUD_FECHA_HORA_TERMINO_ASIGNADA' => 'required|date|after:SOLICITUD_FECHA_HORA_INICIO_ASIGNADA',
                 // PARA REVISION
                 'SOLICITUD_SALA_ID_ASIGNADA' => 'required|exists:salas,SALA_ID', // Asegura que la sala asignada exista en la base de datos
                 'REVISION_SOLICITUD_OBSERVACION' => 'required|string|max:255',

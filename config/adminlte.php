@@ -358,11 +358,11 @@ return [
             'submenu' => [
                 [
                     'text' => 'Solicitar',
-                    'route'  => 'solicitudesequipos.create',
+                    'route'  => 'solicitudes.equipos.create',
                 ],
                 [
                     'text' => 'Mis solicitudes',
-                    'route'  => 'solicitudesequipos.index',
+                    'route'  => 'solicitudes.equipos.index',
                 ],
             ],
         ],

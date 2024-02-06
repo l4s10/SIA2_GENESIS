@@ -305,16 +305,6 @@
             </table>
         </div>
 
-
-        {{-- Fecha tramitacion --}}
-        {{-- <div class="form-group">
-            <label for="REVISION_SOLICITUD_FECHA_HORA_TRAMITACION">Fecha de tramitación</label>
-            <input type="datetime-local" class="form-control" id="REVISION_SOLICITUD_FECHA_HORA_TRAMITACION" name="REVISION_SOLICITUD_FECHA_HORA_TRAMITACION" value="{{ old('REVISION_SOLICITUD_FECHA_HORA_TRAMITACION', $solicitud->REVISION_SOLICITUD_FECHA_HORA_TRAMITACION) }}">
-            @error('REVISION_SOLICITUD_FECHA_HORA_TRAMITACION')
-                <div class="alert alert-danger">{{ $message }}</div>
-            @enderror
-        </div> --}}
-
         {{-- Observaciones de la solicitud --}}
         <div class="form-group">
             <label for="REVISION_SOLICITUD_OBSERVACION">Observaciones</label>
