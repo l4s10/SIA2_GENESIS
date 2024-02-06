@@ -151,20 +151,20 @@
             <br>
             <h3>Datos Temporales</h3>
 
-            <div class="row">
+ {{--           <div class="row">
                 <div class="col">
-                    <div class="form-group" style="display: none;">
+                    <div class="form-group">
                         <label for="SOLICITUD_VEHICULO_HORA_INICIO_CONDUCCION">Hora de Inicio de Conducción</label>
-                        <input type="text" class="form-control" id="hora_inicio_conduccion" name="SOLICITUD_VEHICULO_HORA_INICIO_CONDUCCION" required placeholder="-- Seleccione la hora --" style="background-color: #fff; color: #000; text-align: center;">
+                        <input type="text" class="form-control" id="SOLICITUD_VEHICULO_HORA_INICIO_CONDUCCION" name="SOLICITUD_VEHICULO_HORA_INICIO_CONDUCCION" required placeholder="-- Seleccione la hora --" style="background-color: #fff; color: #000; text-align: center;">
                     </div>
                 </div>
                 <div class="col">
-                    <div class="form-group" style="display: none;">
+                    <div class="form-group">
                         <label for="SOLICITUD_VEHICULO_HORA_TERMINO_CONDUCCION">Hora de Término de Conducción</label>
-                        <input type="text" class="form-control" id="hora_termino_conduccion" name="SOLICITUD_VEHICULO_HORA_TERMINO_CONDUCCION" required placeholder="-- Seleccione la hora --" style="background-color: #fff; color: #000; text-align: center;">
+                        <input type="text" class="form-control" id="SOLICITUD_VEHICULO_HORA_TERMINO_CONDUCCION" name="SOLICITUD_VEHICULO_HORA_TERMINO_CONDUCCION" required placeholder="-- Seleccione la hora --" style="background-color: #fff; color: #000; text-align: center;">
                     </div>
                 </div>
-            </div>
+            </div>--}}
             
             <br>
             <h3>Datos Geográficos</h3>
@@ -388,19 +388,33 @@
             let capacidadMaxima = 0; // Capacidad máxima de pasajeros para el vehículo seleccionado
             let pasajerosSeleccionados = new Set(); // Conjunto que almacena los IDs de pasajeros seleccionados
 
+            // Ocultar inputs para horas de conducción al inicio
+            //document.getElementById('SOLICITUD_VEHICULO_HORA_INICIO_CONDUCCION').style.display = 'none';
+            //document.getElementById('SOLICITUD_VEHICULO_HORA_TERMINO_CONDUCCION').style.display = 'none';
+            // Ocultar botones y registro de pasajeros al inicio
+            document.getElementById('agregarPasajeroBtn').style.display = 'none';
+            document.getElementById('eliminarPasajeroBtn').style.display = 'none';
+
+
             // Función para reiniciar el conjunto de pasajeros seleccionados
             function reiniciarPasajerosSeleccionados() {
                 pasajerosSeleccionados = new Set();
             }
 
-            // Ocultar botones y registro de pasajeros al inicio
-            document.getElementById('agregarPasajeroBtn').style.display = 'none';
-            document.getElementById('eliminarPasajeroBtn').style.display = 'none';
 
             // Evento de cambio en el vehículo
             document.getElementById('VEHICULO_ID').addEventListener('change', function() {
                 let vehiculoIdSeleccionado = this.value;
                 document.getElementById('SOLICITUD_VEHICULO_MOTIVO').style.display = 'block';
+               /* // Mostrar los campos de hora de inicio y término de conducción cuando se selecciona un vehículo
+                if (vehiculoIdSeleccionado !== '') {
+                    document.getElementById('SOLICITUD_VEHICULO_HORA_INICIO_CONDUCCION').style.display = 'block';
+                    document.getElementById('SOLICITUD_VEHICULO_HORA_TERMINO_CONDUCCION').style.display = 'block';
+                } else {
+                    document.getElementById('SOLICITUD_VEHICULO_HORA_INICIO_CONDUCCION').style.display = 'none';
+                    document.getElementById('SOLICITUD_VEHICULO_HORA_TERMINO_CONDUCCION').style.display = 'none';
+                }*/
+
                 //controlarVisibilidadRegistroPasajeros(vehiculoIdSeleccionado);
                 contadorFilas = 1;
                 capacidadMaxima = 0;
@@ -537,6 +551,23 @@
                 let nuevaFila = document.createElement('div');
                 nuevaFila.classList.add('pasajero-row', 'border', 'p-3', 'mb-3');
                 nuevaFila.id = 'fila_' + numeroFila;
+                // Condición para mostrar los campos de hora de inicio y término de conducción solo cuando el número de fila sea 1
+                let camposHoraConduccion = '';
+                if (numeroFila === 1) {
+                    camposHoraConduccion = `
+                        <div class="form-group col-md-4">
+                        </div>
+                        <div class="form-group col-md-4">
+                            <label for="SOLICITUD_VEHICULO_HORA_INICIO_CONDUCCION">Hora de Inicio de Conducción</label>
+                            <input type="text" class="form-control" id="SOLICITUD_VEHICULO_HORA_INICIO_CONDUCCION" name="SOLICITUD_VEHICULO_HORA_INICIO_CONDUCCION" required placeholder="-- Seleccione la hora --" style="background-color: #fff; color: #000; text-align: center;">
+                        </div>
+                        <div class="form-group col-md-4">
+                            <label for="SOLICITUD_VEHICULO_HORA_TERMINO_CONDUCCION">Hora de Término de Conducción</label>
+                            <input type="text" class="form-control" id="SOLICITUD_VEHICULO_HORA_TERMINO_CONDUCCION" name="SOLICITUD_VEHICULO_HORA_TERMINO_CONDUCCION" required placeholder="-- Seleccione la hora --" style="background-color: #fff; color: #000; text-align: center;">
+                        </div>
+                    `;
+                }
+
                 nuevaFila.innerHTML = `
                     <h5>${numeroFila === 1 ? 'Conductor' : 'Pasajero N°' + (numeroFila - 1)}</h5>
                     <div class="form-row">
@@ -577,6 +608,7 @@
                                 </optgroup>
                             </select>
                         </div>
+                        ${camposHoraConduccion} <!-- Aquí se incluyen los campos de hora de conducción -->
                     </div>
                 `;
                 pasajeros.appendChild(nuevaFila);
