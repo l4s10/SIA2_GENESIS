@@ -61,7 +61,7 @@
             <h3>Especificaciones</h3>
                 <div class="form-group">
                     <label for="TIPO_VEHICULO_ID" class="form-label"><i class="fa-solid fa-car-side"></i> Tipo de Vehículo</label>
-                    <input type="text" class="form-control" value="{{ $solicitud->tipoVehiculo->TIPO_VEHICULO_NOMBRE }}" readonly>
+                    <input type="text" class="form-control" value="{{ $solicitud->vehiculo->tipoVehiculo->TIPO_VEHICULO_NOMBRE }}" readonly>
                 </div>
 
             <div class="form-group">
@@ -87,7 +87,7 @@
 
             <!-- Datos Geográficos -->
             <div class="row">
-                <div class="col">
+                {{--<div class="col">
                     <div class="form-group">
                         <label for="SOLICITUD_VEHICULO_REGION_ORIGEN">Región de Origen</label>
                         <input type="text" class="form-control" value="{{ $solicitud->comunaOrigen->region->REGION_NOMBRE }}" readonly>
@@ -98,11 +98,11 @@
                         <label for="SOLICITUD_VEHICULO_COMUNA_ORIGEN">Comuna de Origen</label>
                         <input type="text" class="form-control" value="{{ $solicitud->comunaOrigen->COMUNA_NOMBRE }}" readonly>
                     </div>
-                </div>
+                </div>--}}
             </div>
 
             <div class="row">
-                <div class="col">
+                {{--<div class="col">
                     <div class="form-group">
                         <label for="SOLICITUD_VEHICULO_REGION_DESTINO">Región de Destino</label>
                         <input type="text" class="form-control" value="{{ $solicitud->comunaDestino->region->REGION_NOMBRE }}" readonly>
@@ -113,7 +113,7 @@
                         <label for="SOLICITUD_VEHICULO_COMUNA_DESTINO">Comuna de Destino</label>
                         <input type="text" class="form-control" value="{{ $solicitud->comunaDestino->COMUNA_NOMBRE }}" readonly>
                     </div>
-                </div>
+                </div>--}}
             </div>
 
             <br>

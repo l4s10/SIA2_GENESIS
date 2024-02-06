@@ -16,39 +16,68 @@
         <form action="{{ route('solicitudesvehiculos.store') }}" method="POST">
             @csrf
             <br>
-            <br>
-            <div class="form-group">
-                <label for="fecha_solicitud">Fecha de Solicitud</label>
-                <input type="text" class="form-control" id="fecha_solicitud" name="fecha_solicitud" required>
-            </div>
-            <h3>Titular</h3>
-            {{-- *CAMPOS FUNCIONARIO* --}}
+            <h3>Detalles</h3>
+
+
             <div class="row">
                 <div class="col-md-6">
-                    <input type="text" name="SOLICITANTE_ID" value="{{ auth()->user()->id }}" hidden>
                     <div class="mb-3">
-                        <label for="USUARIO_NOMBRES" class="form-label"><i class="fa-solid fa-user"></i> Nombres:</label>
-                        <input type="text" id="USUARIO_NOMBRES" name="USUARIO_NOMBRES" class="form-control{{ $errors->has('USUARIO_NOMBRES') ? ' is-invalid' : '' }}" value="{{ auth()->user()->USUARIO_NOMBRES }} {{ auth()->user()->USUARIO_APELLIDOS }}" readonly required>
-                        @if ($errors->has('USUARIO_NOMBRES'))
-                        <div class="invalid-feedback">
-                            {{ $errors->first('USUARIO_NOMBRES') }}
-                        </div>
-                        @endif
-                    </div>
-
-                    <div class="mb-3">
-                        <label for="USUARIO_RUT" class="form-label"><i class="fa-solid fa-id-card"></i> RUT:</label>
-                        <input type="text" id="USUARIO_RUT" name="USUARIO_RUT" class="form-control{{ $errors->has('USUARIO_RUT') ? ' is-invalid' : '' }}" value="{{ auth()->user()->USUARIO_RUT }}" readonly required>
-                        @if ($errors->has('USUARIO_RUT'))
-                        <div class="invalid-feedback">
-                            {{ $errors->first('USUARIO_RUT') }}
-                        </div>
-                        @endif
+                        <label for="fecha_solicitud"><i class="fa-regular fa-calendar-days"></i> Fecha de Solicitud</label>
+                        <input type="text" class="form-control" id="fecha_solicitud" name="fecha_solicitud" disabled required>
                     </div>
                 </div>
 
                 <div class="col-md-6">
                     <div class="mb-3">
+                        <label for="SOLICITUD_ESTADO"><i class="fa-solid fa-right-to-bracket"></i> Estado de la Solicitud</label>
+                        <input type="text" class="form-control" id="SOLICITUD_ESTADO" name="SOLICITUD_ESTADO" value="POR INGRESAR" readonly style="color: green;">
+                    </div>
+                    {{-- Leyenda --}}
+                    <div class="mb-3">
+                        <small>La solicitud todavía <strong>no</strong> ha sido ingresada</small>
+                    </div>
+                </div>
+            </div>
+            
+            <br>
+            <h3>Solicitante</h3>
+
+            <div class="row mb-4">
+                <div class="col-md-6">
+                    <input type="text" name="SOLICITANTE_ID" value="{{ auth()->user()->id    }}" hidden>
+                        <label for="USUARIO_NOMBRES" class="form-label"><i class="fa-solid fa-user"></i> Nombres y Apellidos:</label>
+                        <input type="text" id="USUARIO_NOMBRES" name="USUARIO_NOMBRES" class="form-control{{ $errors->has('USUARIO_NOMBRES') ? ' is-invalid' : '' }}" value="{{ auth()->user()->USUARIO_NOMBRES }} {{ auth()->user()->USUARIO_APELLIDOS }}" readonly required>
+                        @if ($errors->has('USUARIO_NOMBRES'))
+                            <div class="invalid-feedback">
+                                {{ $errors->first('USUARIO_NOMBRES') }}
+                            </div>
+                        @endif
+                </div>
+
+                <div class="col-md-4">
+                    <label for="EMAIL" class="form-label"><i class="fa-solid fa-envelope"></i> Email:</label>
+                    <input type="email" id="EMAIL" name="EMAIL" class="form-control{{ $errors->has('EMAIL') ? ' is-invalid' : '' }}" value="{{ auth()->user()->email }}" readonly required>
+                    @if ($errors->has('EMAIL'))
+                        <div class="invalid-feedback">
+                            {{ $errors->first('EMAIL') }}
+                        </div>
+                    @endif
+                </div>
+
+                <div class="col-md-2">
+                    <label for="USUARIO_RUT" class="form-label"><i class="fa-solid fa-id-card"></i> RUT:</label>
+                    <input type="text" id="USUARIO_RUT" name="USUARIO_RUT" class="form-control{{ $errors->has('USUARIO_RUT') ? ' is-invalid' : '' }}" value="{{ auth()->user()->USUARIO_RUT }}" readonly required>
+                    @if ($errors->has('USUARIO_RUT'))
+                    <div class="invalid-feedback">
+                        {{ $errors->first('USUARIO_RUT') }}
+                    </div>
+                    @endif
+                </div>
+            </div>
+
+
+            <div class="row mb-4">
+                <div class="col-md-6">
                         <label for="DEPARTAMENTO_O_UBICACION" class="form-label"><i class="fa-solid fa-building-user"></i> Ubicación o Departamento:</label>
                         <input type="text" id="DEPARTAMENTO_O_UBICACION" name="DEPARTAMENTO_O_UBICACION" class="form-control{{ $errors->has('DEPARTAMENTO_O_UBICACION') ? ' is-invalid' : '' }}" value="{{ isset(auth()->user()->departamento) ? auth()->user()->departamento->DEPARTAMENTO_NOMBRE : auth()->user()->ubicacion->UBICACION_NOMBRE }}"  readonly required>
                         @if ($errors->has('DEPARTAMENTO_O_UBICACION'))
@@ -56,81 +85,45 @@
                                 {{ $errors->first('DEPARTAMENTO_O_UBICACION') }}
                             </div>
                         @endif
-                    </div>
-                    
-
-                    <div class="mb-3">
-                        <label for="EMAIL" class="form-label"><i class="fa-solid fa-envelope"></i> Email:</label>
-                        <input type="email" id="EMAIL" name="EMAIL" class="form-control{{ $errors->has('EMAIL') ? ' is-invalid' : '' }}" value="{{ auth()->user()->email }}" readonly required>
-                        @if ($errors->has('EMAIL'))
-                        <div class="invalid-feedback">
-                            {{ $errors->first('EMAIL') }}
-                        </div>
-                        @endif
-                    </div>
                 </div>
-
                 <div class="col-md-6">
-                    <div class="mb-3">
                         <label for="OFICINA" class="form-label"><i class="fa-solid fa-map-location-dot"></i> Dirección Regional </label>
                         <input type="text" id="OFICINA" class="form-control" name="OFICINA" value="{{ auth::user()->oficina->OFICINA_NOMBRE }}" required readonly>
                         @error('ID_REGION')
                             <div class="alert alert-danger mt-2">{{ $message }}</div>
                         @enderror
-                    </div>
-                </div>
-
-                <div class="col-md-6">
-                    <div class="mb-3">
-                        <label for="SOLICITUD_ESTADO">Estado de la Solicitud</label>
-                        <input type="text" class="form-control" id="SOLICITUD_ESTADO" name="SOLICITUD_ESTADO" value="POR INGRESAR" readonly style="color: green;">
-                    </div>
-                    <!-- Aquí se añade la leyenda -->
-                    <div class="mb-3">
-                        <small>La solicitud todavía <strong>no</strong> ha sido ingresada</small>
-                    </div>
-                </div>
+                </div>     
+            </div>
+                
     
-            </div>
-
-            <div class="row">
-                <div class="col">
-                    <div class="form-group">
-                        <label for="SOLICITUD_VEHICULO_HORA_INICIO_CONDUCCION">Hora de Inicio de Conducción</label>
-                        <input type="text" class="form-control" id="hora_inicio_conduccion" name="SOLICITUD_VEHICULO_HORA_INICIO_CONDUCCION" required>
-                    </div>
-                </div>
-                <div class="col">
-                    <div class="form-group">
-                        <label for="SOLICITUD_VEHICULO_HORA_TERMINO_CONDUCCION">Hora de Término de Conducción</label>
-                        <input type="text" class="form-control" id="hora_termino_conduccion" name="SOLICITUD_VEHICULO_HORA_TERMINO_CONDUCCION" required>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="form-group">
-                <label for="SOLICITUD_VEHICULO_JEFE_QUE_AUTORIZA">Jefe que Autoriza</label>
-                <input type="text" class="form-control" id="SOLICITUD_VEHICULO_JEFE_QUE_AUTORIZA" name="SOLICITUD_VEHICULO_JEFE_QUE_AUTORIZA" required>
-            </div>
-            
-            <div class="form-group">
-                <label for="SOLICITUD_VEHICULO_VIATICO">Viático</label>
-                <input type="text" class="form-control" id="SOLICITUD_VEHICULO_VIATICO" name="SOLICITUD_VEHICULO_VIATICO" required>
-            </div>
-
+            <br>
             <h3>Vehículo</h3>
-            <div class="form-group">
-                <label for="TIPO_VEHICULO_ID" class="form-label"><i class="fa-solid fa-car-side"></i> Tipo de Vehículo</label>
-                <select name="TIPO_VEHICULO_ID" id="TIPO_VEHICULO_ID" class="form-control" required>
-                    <option value="">-- Seleccione un tipo de vehiculo --</option>
-                    @foreach ($tiposVehiculos as $tipoVehiculo)
-                        <option value="{{ $tipoVehiculo->TIPO_VEHICULO_ID }}" data-capacidad="{{ $tipoVehiculo->TIPO_VEHICULO_CAPACIDAD }}">{{ $tipoVehiculo->TIPO_VEHICULO_NOMBRE }}</option>
-                    @endforeach
-                </select>
-                @error('TIPO_VEHICULO_ID')
-                    <div class="alert alert-danger mt-2">{{ $message }}</div>
-                @enderror
+            <div class="row mb-4">
+                <div class="col-md-6">
+                    <label for="VEHICULO_ID" class="form-label"><i class="fa-solid fa-car-side"></i> Vehículo</label>
+                    <select name="VEHICULO_ID" id="VEHICULO_ID" class="form-control" required>
+                        <option value="">-- Seleccione un vehículo --</option>
+                        @foreach ($vehiculos as $vehiculo)
+                            <option value="{{ $vehiculo->VEHICULO_ID }}" data-capacidad="{{ $vehiculo->tipoVehiculo->TIPO_VEHICULO_CAPACIDAD }}">
+                                {{ $vehiculo->VEHICULO_PATENTE }}  - {{ $vehiculo->tipoVehiculo->TIPO_VEHICULO_NOMBRE }} - Capacidad: {{ $vehiculo->tipoVehiculo->TIPO_VEHICULO_CAPACIDAD }}
+                            </option>
+                        @endforeach
+                    </select>
+                    @error('VEHICULO_ID')
+                        <div class="alert alert-danger mt-2">{{ $message }}</div>
+                    @enderror
+                </div>
+                <div class="col-md-3">
+                    <label for="fechaHoraInicioSolicitada"> Salida del estacionamiento:</label>
+                    <input type="text" class="form-control" id="fechaHoraInicioSolicitada" name="SOLICITUD_VEHICULO_FECHA_HORA_INICIO_SOLICITADA" required placeholder="-- Seleccione la fecha y hora --" style="background-color: #fff; color: #000; text-align: center;"> 
+                </div>
+                <div class="col-md-3">
+                    <label for="fechaHoraTerminoSolicitada"> Reingreso al estacionaiento</label>
+                    <input type="text" class="form-control" id="fechaHoraTerminoSolicitada" name="SOLICITUD_VEHICULO_FECHA_HORA_TERMINO_SOLICITADA" required placeholder="-- Seleccione la fecha y hora --" style="background-color: #fff; color: #000; text-align: center;">
+                </div>
             </div>
+
+            
             <div class="form-group" id=SOLICITUD_VEHICULO_MOTIVO style="display: none;>
                 <label for="SOLICITUD_VEHICULO_MOTIVO"><i class="fa-solid fa-file-pen"></i> Labor a realizar:</label>
                 <textarea id="SOLICITUD_VEHICULO_MOTIVO" name="SOLICITUD_VEHICULO_MOTIVO" rows="5" class="form-control" placeholder="Indique la labor a realizar (MÁX 255 CARACTERES)"  maxlength="255" required></textarea>
@@ -160,15 +153,15 @@
 
             <div class="row">
                 <div class="col">
-                    <div class="form-group">
-                        <label for="fechaHoraInicioSolicitada">Fecha y Hora de  Salida del estacionamiento:</label>
-                        <input type="text" class="form-control" id="fechaHoraInicioSolicitada" name="SOLICITUD_VEHICULO_FECHA_HORA_INICIO_SOLICITADA" required placeholder="Selecciona la hora de inicio">
+                    <div class="form-group" style="display: none;">
+                        <label for="SOLICITUD_VEHICULO_HORA_INICIO_CONDUCCION">Hora de Inicio de Conducción</label>
+                        <input type="text" class="form-control" id="hora_inicio_conduccion" name="SOLICITUD_VEHICULO_HORA_INICIO_CONDUCCION" required placeholder="-- Seleccione la hora --" style="background-color: #fff; color: #000; text-align: center;">
                     </div>
                 </div>
                 <div class="col">
-                    <div class="form-group">
-                        <label for="fechaHoraTerminoSolicitada">Hora de Término de Conducción</label>
-                        <input type="text" class="form-control" id="fechaHoraTerminoSolicitada" name="SOLICITUD_VEHICULO_FECHA_HORA_TERMINO_SOLICITADA" required placeholder="Selecciona la hora de término">
+                    <div class="form-group" style="display: none;">
+                        <label for="SOLICITUD_VEHICULO_HORA_TERMINO_CONDUCCION">Hora de Término de Conducción</label>
+                        <input type="text" class="form-control" id="hora_termino_conduccion" name="SOLICITUD_VEHICULO_HORA_TERMINO_CONDUCCION" required placeholder="-- Seleccione la hora --" style="background-color: #fff; color: #000; text-align: center;">
                     </div>
                 </div>
             </div>
@@ -230,29 +223,7 @@
 
 @section('css')
     <link rel="stylesheet" href="/css/admin_custom.css">
-    <style>
-        /* Aquí van tus reglas de estilo CSS personalizadas para los inputs de Flatpickr */
-        #fechaHoraInicioSolicitada {
-            background-color: #ffffff;
-            color: #495057;
-            border: 1px solid #ced4da;
-            border-radius: 0.25rem;
-            padding: 0.375rem 0.75rem;
-            font-size: 1rem;
-        }
 
-        #fechaHoraTerminoSolicitada {
-            background-color: #ffffff;
-            color: #495057;
-            border: 1px solid #ced4da;
-            border-radius: 0.25rem;
-            padding: 0.375rem 0.75rem;
-            font-size: 1rem;
-        }
-
-
-    
-    </style>
 @stop
 
 @section('js')
@@ -304,109 +275,115 @@
 
 
     </script>
-
     <script>
-        const fechaInput = document.getElementById('fecha_solicitud');
+    // Inicializar el selector de hora de inicio
+    flatpickr("#hora_inicio_conduccion", {
+        enableTime: true,
+        noCalendar: true,
+        dateFormat: "H:i",
+    });
 
-        const options = { 
-            weekday: 'long', 
-            year: 'numeric', 
-            month: 'long', 
-            day: 'numeric' 
-        };
+    // Obtener el elemento del selector de hora de término
+    var horaTerminoSelector = document.getElementById("hora_termino_conduccion");
 
-        const fechaActual = new Date().toLocaleDateString('es-ES', options).toUpperCase();
-
-        fechaInput.value = fechaActual;
-    </script>
-
-    <script>
-        flatpickr("#hora_inicio_conduccion", {
+    // Función para configurar la hora mínima del selector de hora de término
+    function configurarHoraTermino(horaInicio) {
+        flatpickr(horaTerminoSelector, {
             enableTime: true,
             noCalendar: true,
             dateFormat: "H:i",
-            defaultDate: "00:00"
+            minTime: horaInicio, // Establecer la hora mínima como la hora de inicio seleccionada
         });
+    }
 
-        flatpickr("#hora_termino_conduccion", {
-            enableTime: true,
-            noCalendar: true,
-            dateFormat: "H:i",
-            defaultDate: "00:00"
-        });
-    </script>
-
-    <script>
-    document.addEventListener('DOMContentLoaded', function () {
-        let inputfechaHoraInicioSolicitada = document.getElementById('fechaHoraInicioSolicitada');
-        let inputfechaHoraTerminoSolicitada = document.getElementById('fechaHoraTerminoSolicitada');
-
-        let fechaActual = new Date(); // Fecha y hora actual
-        let añoActual = fechaActual.getFullYear(); // Año actual
-        let mesActual = fechaActual.getMonth(); // Mes actual
-        let diaActual = fechaActual.getDate(); // Día actual
-        let horaActual = fechaActual.getHours(); // Hora actual
-        let minutoActual = fechaActual.getMinutes(); // Minuto actual
-
-        // **Fecha mínima permitida (día actual)**
-        let fechaMinimaPermitida = new Date(añoActual, mesActual, diaActual, horaActual, minutoActual);
-
-        // **Fecha y hora predeterminada (fecha y hora actual)**
-        let fechaHoraPredeterminada = new Date(añoActual, mesActual, diaActual, horaActual, minutoActual);
-
-        // **Fecha máxima permitida**
-        let fechaMaximaPermitida;
-
-        // Si estamos en diciembre, permitir hasta febrero del próximo año
-        if (mesActual === 11) {
-            fechaMaximaPermitida = new Date(añoActual + 1, 1, 28);
-        } else {
-            // Permitir hasta diciembre del año actual
-            fechaMaximaPermitida = new Date(añoActual, 11, 31);
+    // Configurar la función onChange para el selector de hora de inicio
+    flatpickr("#hora_inicio_conduccion", {
+        enableTime: true,
+        noCalendar: true,
+        dateFormat: "H:i",
+        // Función llamada cuando se selecciona una hora de inicio
+        onChange: function(selectedDates, dateStr, instance) {
+            // Obtener la hora de inicio seleccionada
+            var horaInicio = dateStr;
+            // Configurar la hora mínima del selector de hora de término
+            configurarHoraTermino(horaInicio);
         }
-
-        /// **Configuración del selector de fecha y hora de inicio**
-        flatpickr(inputfechaHoraInicioSolicitada, {
-            enableTime: true,
-            dateFormat: "Y-m-d H:i",
-            minDate: fechaMinimaPermitida,
-            maxDate: fechaMaximaPermitida,
-            defaultDate: fechaHoraPredeterminada,
-            locale: "es", // Establecer el idioma en español
-            onChange: function(selectedDates, dateStr, instance) {
-                if (selectedDates[0] < fechaMinimaPermitida) {
-                    alert("La fecha y hora seleccionada es menor a la hora mínima permitida");
-                    inputfechaHoraInicioSolicitada.value = "";
-                } else {
-                    // Habilitar el input de término una vez que se ha seleccionado la hora de inicio
-                    inputfechaHoraTerminoSolicitada.disabled = false;
-                    // Actualizar minDate para el input de término
-                    inputfechaHoraTerminoSolicitada._flatpickr.set("minDate", selectedDates[0]);
-                }
-            }
-        });
-
-        // **Configuración del selector de fecha y hora de término**
-        flatpickr(inputfechaHoraTerminoSolicitada, {
-            enableTime: true,
-            dateFormat: "Y-m-d H:i",
-            minDate: fechaMinimaPermitida, // Se establece inicialmente, luego se actualizará
-            maxDate: fechaMaximaPermitida,
-            locale: "es" // Establecer el idioma en español
-        });
-
-        // Deshabilitar el input de término al cargar la página y establecer su valor como vacío
-        inputfechaHoraTerminoSolicitada.disabled = true;
-        inputfechaHoraInicioSolicitada.value = "";
-        inputfechaHoraTerminoSolicitada.value = "";
     });
 </script>
+
+
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            let inputfechaHoraInicioSolicitada = document.getElementById('fechaHoraInicioSolicitada');
+            let inputfechaHoraTerminoSolicitada = document.getElementById('fechaHoraTerminoSolicitada');
+
+            let fechaActual = new Date(); // Fecha y hora actual
+            let añoActual = fechaActual.getFullYear(); // Año actual
+            let mesActual = fechaActual.getMonth(); // Mes actual
+            let diaActual = fechaActual.getDate(); // Día actual
+            let horaActual = fechaActual.getHours(); // Hora actual
+            let minutoActual = fechaActual.getMinutes(); // Minuto actual
+
+            // **Fecha mínima permitida (día actual)**
+            let fechaMinimaPermitida = new Date(añoActual, mesActual, diaActual, horaActual, minutoActual);
+
+            // **Fecha y hora predeterminada (fecha y hora actual)**
+            let fechaHoraPredeterminada = new Date(añoActual, mesActual, diaActual, horaActual, minutoActual);
+
+            // **Fecha máxima permitida**
+            let fechaMaximaPermitida;
+
+            // Si estamos en diciembre, permitir hasta febrero del próximo año
+            if (mesActual === 11) {
+                fechaMaximaPermitida = new Date(añoActual + 1, 1, 28);
+            } else {
+                // Permitir hasta diciembre del año actual
+                fechaMaximaPermitida = new Date(añoActual, 11, 31);
+            }
+
+            /// **Configuración del selector de fecha y hora de inicio**
+            flatpickr(inputfechaHoraInicioSolicitada, {
+                enableTime: true,
+                dateFormat: "Y-m-d H:i",
+                minDate: fechaMinimaPermitida,
+                maxDate: fechaMaximaPermitida,
+                defaultDate: fechaHoraPredeterminada,
+                locale: "es", // Establecer el idioma en español
+                onChange: function(selectedDates, dateStr, instance) {
+                    if (selectedDates[0] < fechaMinimaPermitida) {
+                        alert("La fecha y hora seleccionada es menor a la hora mínima permitida");
+                        inputfechaHoraInicioSolicitada.value = "";
+                    } else {
+                        // Habilitar el input de término una vez que se ha seleccionado la hora de inicio
+                        inputfechaHoraTerminoSolicitada.disabled = false;
+                        // Actualizar minDate para el input de término
+                        inputfechaHoraTerminoSolicitada._flatpickr.set("minDate", selectedDates[0]);
+                    }
+                }
+            });
+
+            // **Configuración del selector de fecha y hora de término**
+            flatpickr(inputfechaHoraTerminoSolicitada, {
+                enableTime: true,
+                dateFormat: "Y-m-d H:i",
+                minDate: fechaMinimaPermitida, // Se establece inicialmente, luego se actualizará
+                maxDate: fechaMaximaPermitida,
+                locale: "es" // Establecer el idioma en español
+            });
+
+            // Deshabilitar el input de término al cargar la página y establecer su valor como vacío
+            inputfechaHoraTerminoSolicitada.disabled = true;
+            inputfechaHoraInicioSolicitada.value = "";
+            inputfechaHoraTerminoSolicitada.value = "";
+        });
+    </script>
 
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             // Variables de control
-            let prevTipoVehiculoId = ''; // Almacena el ID del tipo de vehículo previamente seleccionado
+            let prevVehiculoId = ''; // Almacena el ID del vehículo previamente seleccionado
             let contadorFilas = 1; // Contador de filas de pasajeros
             let capacidadMaxima = 0; // Capacidad máxima de pasajeros para el vehículo seleccionado
             let pasajerosSeleccionados = new Set(); // Conjunto que almacena los IDs de pasajeros seleccionados
@@ -420,54 +397,54 @@
             document.getElementById('agregarPasajeroBtn').style.display = 'none';
             document.getElementById('eliminarPasajeroBtn').style.display = 'none';
 
-            // Evento de cambio en el tipo de vehículo
-            document.getElementById('TIPO_VEHICULO_ID').addEventListener('change', function() {
-                let tipoVehiculoIdSeleccionado = this.value;
+            // Evento de cambio en el vehículo
+            document.getElementById('VEHICULO_ID').addEventListener('change', function() {
+                let vehiculoIdSeleccionado = this.value;
                 document.getElementById('SOLICITUD_VEHICULO_MOTIVO').style.display = 'block';
-                //controlarVisibilidadRegistroPasajeros(tipoVehiculoIdSeleccionado);
+                //controlarVisibilidadRegistroPasajeros(vehiculoIdSeleccionado);
                 contadorFilas = 1;
                 capacidadMaxima = 0;
                 document.getElementById('agregarPasajeroBtn').innerHTML = '<i class="fas fa-plus"></i> Agregar Conductor';
                 document.getElementById('eliminarPasajeroBtn').innerHTML = '<i class="fas fa-minus"></i> Eliminar Conductor';
                 reiniciarPasajerosSeleccionados();
 
-                if (tipoVehiculoIdSeleccionado === '') {
-                    // Confirmar eliminación si se deselecciona el tipo de vehículo
-                    let confirmacion = confirm('¿Está seguro de eliminar el tipo de vehículo solicitado y el registro de pasajeros asociados?');
+                if (vehiculoIdSeleccionado === '') {
+                    // Confirmar eliminación si se deselecciona el vehículo
+                    let confirmacion = confirm('¿Está seguro de eliminar el vehículo solicitado y el registro de pasajeros asociados?');
                     if (!confirmacion) {
-                        this.value = prevTipoVehiculoId;
+                        this.value = prevVehiculoId;
                         return;
                     } else {
                         document.getElementById('SOLICITUD_VEHICULO_MOTIVO').style.display = 'none';
                         document.getElementById('agregarPasajeroBtn').style.display = 'none';
                         document.getElementById('eliminarPasajeroBtn').style.display = 'none';
                         document.getElementById('pasajeros').style.display = 'none';
-                        prevTipoVehiculoId = '';
+                        prevVehiculoId = '';
                         return;
                     }
-                } else if (tipoVehiculoIdSeleccionado !== '' && prevTipoVehiculoId !== '') {
-                    // Confirmar cambio si se selecciona un nuevo tipo de vehículo
-                    let confirmacion = confirm('¿Está seguro de cambiar el tipo de vehículo solicitado?, se eliminará el registro de pasajeros asociados.');
+                } else if (vehiculoIdSeleccionado !== '' && prevVehiculoId !== '') {
+                    // Confirmar cambio si se selecciona un nuevo vehículo
+                    let confirmacion = confirm('¿Está seguro de cambiar el vehículo solicitado?, se eliminará el registro de pasajeros asociados.');
                     if (!confirmacion) {
-                        this.value = prevTipoVehiculoId;
+                        this.value = prevVehiculoId;
                         return;
                     } else {
                         document.getElementById('SOLICITUD_VEHICULO_MOTIVO').style.display = 'block';
                     }
                 }
 
-                // Obtener información del tipo de vehículo seleccionado
-                let tiposVehiculosJSON = JSON.parse('@json($tiposVehiculos)');
-                let tipoVehiculoSeleccionado = tiposVehiculosJSON.find(function(tipoVehiculo) {
-                    return tipoVehiculo.TIPO_VEHICULO_ID == tipoVehiculoIdSeleccionado;
+                // Obtener información del vehículo seleccionado
+                let vehiculosJSON = JSON.parse('@json($vehiculos)');
+                let vehiculoSeleccionado = vehiculosJSON.find(function(vehiculo) {
+                    return vehiculo.VEHICULO_ID == vehiculoIdSeleccionado;
                 });
 
                 let pasajeros = document.getElementById('pasajeros');
                 pasajeros.innerHTML = '';
 
                 // Configurar el registro de pasajeros según la capacidad del vehículo
-                if (tipoVehiculoSeleccionado.TIPO_VEHICULO_CAPACIDAD > 0) {
-                    capacidadMaxima = tipoVehiculoSeleccionado.TIPO_VEHICULO_CAPACIDAD;
+                if (vehiculoSeleccionado.tipo_vehiculo.TIPO_VEHICULO_CAPACIDAD > 0) {
+                    capacidadMaxima = vehiculoSeleccionado.tipo_vehiculo.TIPO_VEHICULO_CAPACIDAD;
                     agregarFila(contadorFilas);
                     document.getElementById('agregarPasajeroBtn').style.display = 'block';
                     document.getElementById('eliminarPasajeroBtn').style.display = 'block';
@@ -478,7 +455,7 @@
                     pasajeros.style.display = 'none';
                 }
 
-                prevTipoVehiculoId = tipoVehiculoIdSeleccionado;
+                prevVehiculoId = vehiculoIdSeleccionado;
             });
 
             // Evento de clic en el botón para agregar pasajero
@@ -675,6 +652,7 @@
                         }
                     });
                 });
+
             }
         });
 
