@@ -52,7 +52,7 @@
 
         {{-- Motivo de la solicitud --}}
         <div class="form-group {{ $errors->has('SOLICITUD_MOTIVO') ? 'has-error' : '' }}">
-            <label for="SOLICITUD_MOTIVO"><i class="fa-solid fa-pen-to-square"></i>Motivo de la Solicitud</label>
+            <label for="SOLICITUD_MOTIVO"><i class="fa-solid fa-pen-to-square"></i> Motivo de la Solicitud</label>
             <input type="text" class="form-control" id="SOLICITUD_MOTIVO" name="SOLICITUD_MOTIVO" required>
             @error('SOLICITUD_MOTIVO')
                 <span class="text-danger">{{ $message }}</span>
@@ -61,13 +61,13 @@
 
         {{-- Estado de la Solicitud --}}
         <div class="form-group">
-            <label for="SOLICITUD_ESTADO"><i class="fa-solid fa-file-circle-check"></i>Estado de la Solicitud</label>
+            <label for="SOLICITUD_ESTADO"><i class="fa-solid fa-file-circle-check"></i> Estado de la Solicitud</label>
             <input type="text" class="form-control" id="SOLICITUD_ESTADO" name="SOLICITUD_ESTADO" value="🟠INGRESADO" readonly>
         </div>
 
         {{-- Fecha inicio solicitada --}}
         <div class="form-group {{ $errors->has('SOLICITUD_FECHA_HORA_INICIO_SOLICITADA') ? 'has-error' : '' }}">
-            <label for="SOLICITUD_FECHA_HORA_INICIO_SOLICITADA"><i class="fa-solid fa-calendar-days"></i>Fecha y Hora de Inicio Solicitada</label>
+            <label for="SOLICITUD_FECHA_HORA_INICIO_SOLICITADA"><i class="fa-solid fa-calendar-days"></i> Fecha y Hora de Inicio Solicitada</label>
             <input type="datetime-local" class="form-control" id="SOLICITUD_FECHA_HORA_INICIO_SOLICITADA" name="SOLICITUD_FECHA_HORA_INICIO_SOLICITADA" required>
             @error('SOLICITUD_FECHA_HORA_INICIO_SOLICITADA')
                 <span class="text-danger">{{ $message }}</span>
@@ -76,7 +76,7 @@
 
         {{-- Fecha termino solicitud --}}
         <div class="form-group {{ $errors->has('SOLICITUD_FECHA_HORA_TERMINO_SOLICITADA') ? 'has-error' : '' }}">
-            <label for="SOLICITUD_FECHA_HORA_TERMINO_SOLICITADA"><i class="fa-solid fa-calendar-xmark"></i>Fecha y Hora de Término Solicitada</label>
+            <label for="SOLICITUD_FECHA_HORA_TERMINO_SOLICITADA"><i class="fa-solid fa-calendar-xmark"></i> Fecha y Hora de Término Solicitada</label>
             <input type="datetime-local" class="form-control" id="SOLICITUD_FECHA_HORA_TERMINO_SOLICITADA" name="SOLICITUD_FECHA_HORA_TERMINO_SOLICITADA" required>
             @error('SOLICITUD_FECHA_HORA_TERMINO_SOLICITADA')
                 <span class="text-danger">{{ $message }}</span>

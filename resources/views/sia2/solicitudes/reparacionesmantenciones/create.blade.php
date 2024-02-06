@@ -32,14 +32,13 @@
         </script>
     @endif
 
-    <div class="container">
         {{-- Formulario de Solicitud --}}
         <form action="{{ route('solicitudes.reparaciones.store') }}" method="POST">
             @csrf
 
             {{-- Tipo de Solicitud --}}
             <div class="form-group {{ $errors->has('SOLICITUD_REPARACION_TIPO') ? 'has-error' : '' }}">
-                <label for="SOLICITUD_REPARACION_TIPO">Tipo de solicitud</label>
+                <label for="SOLICITUD_REPARACION_TIPO"><i class="fa-solid fa-file-pen"></i> Tipo de solicitud</label>
                 <select name="SOLICITUD_REPARACION_TIPO" id="SOLICITUD_REPARACION_TIPO" class="form-control" required>
                     <option value="">Seleccione un tipo</option>
                     <option value="REPARACION">Reparación</option>
@@ -52,7 +51,7 @@
 
             {{-- Categoría de Solicitud --}}
             <div class="form-group {{ $errors->has('CATEGORIA_REPARACION_ID') ? 'has-error' : '' }}">
-                <label for="CATEGORIA_REPARACION_ID">Categoría de solicitud</label>
+                <label for="CATEGORIA_REPARACION_ID"><i class="fa-solid fa-car-on"></i> Categoría de solicitud</label>
                 <select name="CATEGORIA_REPARACION_ID" id="CATEGORIA_REPARACION_ID" class="form-control" required>
                     <option value="">Seleccione una categoría</option>
                     @foreach ($categorias as $categoria)
@@ -66,7 +65,7 @@
 
             {{-- Vehículo con Problemas --}}
             <div class="form-group {{ $errors->has('VEHICULO_ID') ? 'has-error' : '' }}">
-                <label for="VEHICULO_ID">Vehículo con problemas</label>
+                <label for="VEHICULO_ID"><i class="fa-solid fa-car-burst"></i> Vehículo con problemas</label>
                 <select name="VEHICULO_ID" id="VEHICULO_ID" class="form-control">
                     <option value="">Seleccione un vehículo</option>
                     @foreach ($vehiculos as $vehiculo)
@@ -80,7 +79,7 @@
 
             {{-- Motivo de la Solicitud --}}
             <div class="form-group {{ $errors->has('SOLICITUD_REPARACION_MOTIVO') ? 'has-error' : '' }}">
-                <label for="SOLICITUD_REPARACION_MOTIVO">Motivo de la Solicitud</label>
+                <label for="SOLICITUD_REPARACION_MOTIVO"><i class="fa-solid fa-pen-to-square"></i> Motivo de la Solicitud</label>
                 <input type="text" class="form-control" id="SOLICITUD_REPARACION_MOTIVO" name="SOLICITUD_REPARACION_MOTIVO" required>
                 @error('SOLICITUD_REPARACION_MOTIVO')
                     <span class="text-danger">{{ $message }}</span>
@@ -89,14 +88,14 @@
 
             {{-- Estado de la Solicitud --}}
             <div class="form-group">
-                <label for="SOLICITUD_ESTADO">Estado de la Solicitud</label>
+                <label for="SOLICITUD_ESTADO"><i class="fa-solid fa-file-circle-check"></i> Estado de la Solicitud</label>
                 <input type="text" class="form-control" id="SOLICITUD_ESTADO" name="SOLICITUD_ESTADO" value="🟠INGRESADO" readonly>
             </div>
 
             {{-- Botón de envío --}}
-            <button type="submit" class="btn agregar">Crear Solicitud</button>
+            <button type="submit" class="btn agregar"><i class="fa-solid fa-plus"></i> Crear Solicitud</button>
         </form>
-    </div>
+
 @stop
 
 @section('css')

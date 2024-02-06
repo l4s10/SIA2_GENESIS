@@ -4,15 +4,9 @@
 
 @section('content_header')
     <h1>Solicitar Vehículo</h1>
-    <br>
-    <br>
-
 @stop
 
 @section('content')
-
-
-    <div class="container">
         <form action="{{ route('solicitudesvehiculos.store') }}" method="POST">
             @csrf
 
@@ -77,8 +71,8 @@
                 <div class="col-md-6">
                     <!-- Aquí está tu primer div -->
                     <div class="mb-3">
-                        <label for="SOLICITUD_ESTADO">Estado de la Solicitud</label>
-                        <input type="text" class="form-control" id="SOLICITUD_ESTADO" name="SOLICITUD_ESTADO" value="POR INGRESAR" readonly style="color: green;">
+                        <label for="SOLICITUD_ESTADO"><i class="fa-solid fa-file-circle-check"></i> Estado de la Solicitud</label>
+                        <input type="text" class="form-control" id="SOLICITUD_ESTADO" name="SOLICITUD_ESTADO" value="🟠POR INGRESAR" readonly>
                     </div>
                 </div>
         
@@ -127,13 +121,13 @@
             <div class="row">
                 <div class="col">
                     <div class="form-group">
-                        <label for="SOLICITUD_VEHICULO_FECHA_HORA_INICIO_SOLICITADA">Fecha y Hora de Inicio Solicitada</label>
+                        <label for="SOLICITUD_VEHICULO_FECHA_HORA_INICIO_SOLICITADA"><i class="fa-solid fa-calendar-days"></i> Fecha y Hora de Inicio Solicitada</label>
                         <input type="datetime-local" class="form-control" id="SOLICITUD_VEHICULO_FECHA_HORA_INICIO_SOLICITADA" name="SOLICITUD_VEHICULO_FECHA_HORA_INICIO_SOLICITADA" required>
                     </div>
                 </div>
                 <div class="col">
                     <div class="form-group">
-                        <label for="SOLICITUD_VEHICULO_FECHA_HORA_TERMINO_SOLICITADA">Fecha y Hora de Término Solicitada</label>
+                        <label for="SOLICITUD_VEHICULO_FECHA_HORA_TERMINO_SOLICITADA"><i class="fa-solid fa-calendar-xmark"></i> Fecha y Hora de Término Solicitada</label>
                         <input type="datetime-local" class="form-control" id="SOLICITUD_VEHICULO_FECHA_HORA_TERMINO_SOLICITADA" name="SOLICITUD_VEHICULO_FECHA_HORA_TERMINO_SOLICITADA" required>
                     </div>
                 </div>
@@ -145,7 +139,7 @@
             <div class="row">
                 <div class="col">
                     <div class="form-group">
-                        <label for="SOLICITUD_VEHICULO_REGION_ORIGEN">Región de Origen</label>
+                        <label for="SOLICITUD_VEHICULO_REGION_ORIGEN"><i class="fa-solid fa-map-location-dot"></i> Región de Origen</label>
                         <select name="SOLICITUD_VEHICULO_REGION_ORIGEN" id="SOLICITUD_VEHICULO_REGION_ORIGEN" class="form-control" required>
                             <option value="">-- Seleccione la región de origen --</option>
                             @foreach ($regiones as $region)
@@ -156,7 +150,7 @@
                 </div>
                 <div class="col">
                     <div class="form-group">
-                        <label for="SOLICITUD_VEHICULO_COMUNA_ORIGEN">Comuna de Origen</label>
+                        <label for="SOLICITUD_VEHICULO_COMUNA_ORIGEN"><i class="fa-solid fa-map-location-dot"></i> Comuna de Origen</label>
                         <select name="SOLICITUD_VEHICULO_COMUNA_ORIGEN" id="SOLICITUD_VEHICULO_COMUNA_ORIGEN" class="form-control" required>
                             <option value="">-- Seleccione la comuna de origen --</option>
                             <!-- Aquí se cargarán las comunas dinámicamente según la región seleccionada -->
@@ -168,7 +162,7 @@
             <div class="row">
                 <div class="col">
                     <div class="form-group">
-                        <label for="SOLICITUD_VEHICULO_REGION_DESTINO">Región de Destino</label>
+                        <label for="SOLICITUD_VEHICULO_REGION_DESTINO"><i class="fa-solid fa-map-location"></i> Región de Destino</label>
                         <select name="SOLICITUD_VEHICULO_REGION_DESTINO" id="SOLICITUD_VEHICULO_REGION_DESTINO" class="form-control" required>
                             <option value="">-- Seleccione la región de destino --</option>
                             @foreach ($regiones as $region)
@@ -179,7 +173,7 @@
                 </div>
                 <div class="col">
                     <div class="form-group">
-                        <label for="SOLICITUD_VEHICULO_COMUNA_DESTINO">Comuna de Destino</label>
+                        <label for="SOLICITUD_VEHICULO_COMUNA_DESTINO"><i class="fa-solid fa-map-location"></i> Comuna de Destino</label>
                         <select name="SOLICITUD_VEHICULO_COMUNA_DESTINO" id="SOLICITUD_VEHICULO_COMUNA_DESTINO" class="form-control" required>
                             <option value="">-- Seleccione la comuna de destino --</option>
                             <!-- Aquí se cargarán las comunas dinámicamente según la región seleccionada -->
@@ -187,19 +181,18 @@
                     </div>
                 </div>
             </div>
-            <br><br><br><br>
-        <button type="submit" class="btn btn-primary">Crear Solicitud</button>
-
-    </div>
-     
-
+            <br>
+        <button type="submit" class="btn agregar"><i class="fa-solid fa-plus"></i> Crear Solicitud</button>
 @stop
 
 @section('css')
     <link rel="stylesheet" href="/css/admin_custom.css">
-
-
-
+    <style>
+        .agregar{
+            background-color: #e6500a;
+            color: #fff;
+        }
+    </style>
 @stop
 
 @section('js')
@@ -568,7 +561,7 @@
                         <h5>${numeroFila === 1 ? 'Conductor' : 'Pasajero N°' + (numeroFila - 1)}</h5>
                         <div class="form-row">
                             <div class="form-group col-md-4">
-                                <label for="oficina_${numeroFila}">Oficina</label>
+                                <label for="oficina_${numeroFila}"><i class="fa-solid fa-building-user"></i> Oficina</label>
                                 <select id="oficina_${numeroFila}" class="form-control oficina" data-row="${numeroFila}" required>
                                     <option value="">-- Seleccione una opción --</option>
                                     <optgroup label="Direcciones Regionales">
@@ -579,7 +572,7 @@
                                 </select>
                             </div>
                             <div class="form-group col-md-4">
-                                <label for="dependencia_${numeroFila}">Ubicación o Departamento</label>
+                                <label for="dependencia_${numeroFila}"><i class="fa-solid fa-building"></i> Ubicación o Departamento</label>
                                 <select id="dependencia_${numeroFila}" class="form-control dependencia" data-row="${numeroFila}" disabled required>
                                     <option value="">-- Seleccione una opción --</option>
                                     <optgroup label="Ubicaciones">
@@ -595,7 +588,7 @@
                                 </select>
                             </div>
                             <div class="form-group col-md-4">
-                                <label for="pasajero${numeroFila}">Funcionario</label>
+                                <label for="pasajero${numeroFila}"><i class="fa-solid fa-user"></i> Funcionario</label>
                                 <select id="pasajero${numeroFila}" class="form-control pasajero" name="PASAJERO_${numeroFila}" data-row="${numeroFila}" disabled required>
                                     <option value="">${numeroFila === 1 ? '-- Seleccione al conductor --' : '-- Seleccione al pasajero N°' + (numeroFila - 1) + ' --'}</option>
                                     <optgroup label="Funcionarios Asociados">

@@ -91,12 +91,6 @@
     <form action="{{ route('solicitudes.equipos.store') }}" method="POST">
         @csrf
 
-        {{-- Estado de la Solicitud (Sin contenedor de error ya que es un campo de solo lectura) --}}
-        <div class="form-group">
-            <label for="SOLICITUD_ESTADO"><i class="fa-solid fa-file-circle-check"></i> Estado de la Solicitud</label>
-            <input type="text" class="form-control" id="SOLICITUD_ESTADO" name="SOLICITUD_ESTADO" value="🟠INGRESADO" readonly>
-        </div>
-
         {{-- Motivo de la Solicitud --}}
         <div class="form-group {{ $errors->has('SOLICITUD_MOTIVO') ? 'has-error' : '' }}">
             <label for="SOLICITUD_MOTIVO"><i class="fa-solid fa-pen-to-square"></i> Motivo de la Solicitud</label>
@@ -104,6 +98,12 @@
             @error('SOLICITUD_MOTIVO')
                 <span class="text-danger">{{ $message }}</span>
             @enderror
+        </div>
+
+        {{-- Estado de la Solicitud (Sin contenedor de error ya que es un campo de solo lectura) --}}
+        <div class="form-group">
+            <label for="SOLICITUD_ESTADO"><i class="fa-solid fa-file-circle-check"></i> Estado de la Solicitud</label>
+            <input type="text" class="form-control" id="SOLICITUD_ESTADO" name="SOLICITUD_ESTADO" value="🟠INGRESADO" readonly>
         </div>
 
         <div class="row">
@@ -128,7 +128,6 @@
                 </div>
             </div>
         </div>
-
         <button type="submit" class="btn agregar mt-4"><i class="fa-solid fa-plus"></i> Crear Solicitud</button>
     </form>
 @stop
