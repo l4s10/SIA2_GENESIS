@@ -14,12 +14,15 @@ return new class extends Migration
         Schema::create('revisiones_solicitudes', function (Blueprint $table) {
             $table->id('REVISION_SOLICITUD_ID');
             $table->unsignedBigInteger('USUARIO_ID');
-            $table->unsignedBigInteger('SOLICITUD_ID');
-            $table->timestamp('REVISION_SOLICITUD_FECHA_HORA_TRAMITACION'); //Equivalente al created_at
+            $table->unsignedBigInteger('SOLICITUD_REPARACION_ID')->nullable();
+            $table->unsignedBigInteger('SOLICITUD_VEHICULO_ID')->nullable();
+            $table->unsignedBigInteger('SOLICITUD_ID')->nullable();
             $table->string('REVISION_SOLICITUD_OBSERVACION', 255)->nullable();
 
             //foraneas
             $table->foreign('USUARIO_ID')->references('id')->on('users');
+            $table->foreign('SOLICITUD_REPARACION_ID')->references('SOLICITUD_REPARACION_ID')->on('solicitudes_reparaciones');
+            $table->foreign('SOLICITUD_VEHICULO_ID')->references('SOLICITUD_VEHICULO_ID')->on('solicitudes_vehiculos');
             $table->foreign('SOLICITUD_ID')->references('SOLICITUD_ID')->on('solicitudes');
         });
     }
