@@ -102,7 +102,7 @@
             <div id="salasSolicitadasCollapse" class="collapse" aria-labelledby="salasSolicitadasHeading" data-parent="#generalAccordion">
                 <div class="card-body">
                     {{-- Aquí va el contenido de las salas solicitadas --}}
-                    <h5>Salas Solicitadas</h5>
+                    <h5>Sala Solicitadas</h5>
                     <table class="table table-bordered">
                         <thead>
                             <tr>
