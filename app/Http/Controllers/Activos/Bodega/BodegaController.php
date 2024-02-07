@@ -86,7 +86,7 @@ class BodegaController extends Controller
                 ])->exists();
 
                 if ($exists) {
-                    $validator->errors()->add('BODEGA_NOMBRE', 'El nombre de la bodega ya existe en esta dirección regional.');
+                    $validator->errors()->add('BODEGA_NOMBRE', 'El nombre de la bodega ya existe en su dirección regional.');
                 }
             });
 
