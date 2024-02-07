@@ -41,7 +41,7 @@
             <div class="card-header" id="datosSolicitudHeading">
                 <h2 class="mb-0">
                     <button class="btn btn-link" type="button" data-toggle="collapse" data-target="#datosSolicitudCollapse" aria-expanded="true" aria-controls="datosSolicitudCollapse">
-                        Datos de la solicitud de salas
+                        Datos de la solicitud de equipos
                     </button>
                 </h2>
             </div>
