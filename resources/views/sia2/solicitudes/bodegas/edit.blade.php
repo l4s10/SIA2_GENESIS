@@ -108,7 +108,6 @@
                             <tr>
                                 <th>Nombre bodega</th>
                                 <th>Estado bodega</th>
-                                <th>Bodega autorizada</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -127,7 +126,6 @@
                                                 <span class="badge badge-secondary">{{ $sala->SALA_ESTADO }}</span>
                                         @endswitch
                                     </td>
-                                    <td>{{$bodegaAsignada->BODEGA_NOMBRE ?? 'NO SE HA ASIGNADO UNA SALA POR AHORA.'}}</td>
                                 </tr>
                             @endforeach
                         </tbody>
@@ -199,20 +197,6 @@
                 <option value="TERMINADO" {{ old('SOLICITUD_ESTADO', $solicitud->SOLICITUD_ESTADO) == 'TERMINADO' ? 'selected' : '' }}>TERMINADO</option>
             </select>
             @error('SOLICITUD_ESTADO')
-                <div class="alert alert-danger">{{ $message }}</div>
-            @enderror
-        </div>
-
-        {{-- Bodega asignada--}}
-        <div class="form-group">
-            <label for="SOLICITUD_BODEGA_ID_ASIGNADA">Bodega asignada</label>
-            <select class="form-control" id="SOLICITUD_BODEGA_ID_ASIGNADA" name="SOLICITUD_BODEGA_ID_ASIGNADA">
-                <option value="">Asigne una bodega</option>
-                @foreach ($bodegas as $bodega)
-                    <option value="{{$bodega->BODEGA_ID}}" {{ (old('SOLICITUD_BODEGA_ID_ASIGNADA') ?? $solicitud->SOLICITUD_BODEGA_ID_ASIGNADA) == $bodega->BODEGA_ID ? 'selected' : '' }}>{{$bodega->BODEGA_NOMBRE}}</option>
-                @endforeach
-            </select>
-            @error('SOLICITUD_BODEGA_ID_ASIGNADA')
                 <div class="alert alert-danger">{{ $message }}</div>
             @enderror
         </div>

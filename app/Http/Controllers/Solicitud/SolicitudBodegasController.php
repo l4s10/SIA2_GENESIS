@@ -159,8 +159,6 @@ class SolicitudBodegasController extends Controller
                 'SOLICITUD_ESTADO' => 'required|string|max:255|in:INGRESADO,EN REVISION,APROBADO,RECHAZADO,TERMINADO',
                 'SOLICITUD_FECHA_HORA_INICIO_ASIGNADA' => 'required|date',
                 'SOLICITUD_FECHA_HORA_TERMINO_ASIGNADA' => 'required|date|after:SOLICITUD_FECHA_HORA_INICIO_ASIGNADA',
-                // PARA REVISION
-                'SOLICITUD_BODEGA_ID_ASIGNADA' => 'required|exists:bodegas,BODEGA_ID', // Asegura que la bodega asignada exista en la base de datos
                 'REVISION_SOLICITUD_OBSERVACION' => 'required|string|max:255',
             ], [
                 //Mensajes de error
@@ -186,8 +184,6 @@ class SolicitudBodegasController extends Controller
                 'SOLICITUD_FECHA_HORA_INICIO_ASIGNADA' => $request->input('SOLICITUD_FECHA_HORA_INICIO_ASIGNADA'),
                 'SOLICITUD_FECHA_HORA_TERMINO_ASIGNADA' => $request->input('SOLICITUD_FECHA_HORA_TERMINO_ASIGNADA'),
             ]);
-            // Llamar a la función para autorizar la bodega
-            $this->autorizarBodega($request, $solicitud);
 
             // Crear una nueva revisión para la solicitud
             $this->createRevisionSolicitud($request, $solicitud);
@@ -241,24 +237,6 @@ class SolicitudBodegasController extends Controller
         {
             // Manejo de excepciones
             return redirect()->route('solicitudes.formularios.index')->with('error', 'Error al crear la revisión de la solicitud.');
-        }
-    }
-
-    /**
-     * Autorizar la bodega para la solicitud.
-    */
-    private function autorizarBodega(Request $request, Solicitud $solicitud){
-        try {
-            // Recuperar el ID de la sala a asignar desde el input
-            $bodegaId = $request->input('SOLICITUD_BODEGA_ID_ASIGNADA');
-
-            if (!empty($bodegaId)) {
-                // Actualizar la sala asignada
-                SolicitudBodega::where('SOLICITUD_ID', $solicitud->SOLICITUD_ID)->update(['SOLICITUD_BODEGA_ID_ASIGNADA' => $bodegaId]);
-            }
-        } catch (Exception $e) {
-            // Considera loguear el error para depuración
-            return redirect()->back()->with('error', 'Error al autorizar la sala, vuelva a intentarlo más tarde.');
         }
     }
 

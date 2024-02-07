@@ -14,7 +14,6 @@ return new class extends Migration
         Schema::create('solicitudes_bodegas', function (Blueprint $table) {
             $table->unsignedBigInteger('SOLICITUD_ID');
             $table->unsignedBigInteger('BODEGA_ID');
-            $table->integer('SOLICITUD_BODEGA_ID_ASIGNADA')->nullable();
             $table->timestamps();
 
             //foraneas

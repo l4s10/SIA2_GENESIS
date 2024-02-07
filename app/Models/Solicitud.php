@@ -73,7 +73,6 @@ class Solicitud extends Model
         public function bodegas()
         {
             return $this->belongsToMany(Bodega::class, 'solicitudes_bodegas', 'SOLICITUD_ID', 'BODEGA_ID')
-                ->withPivot('SOLICITUD_BODEGA_ID_ASIGNADA')
                 ->withTimestamps();
         }
 

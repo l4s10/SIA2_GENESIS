@@ -8,7 +8,7 @@ class SolicitudBodega extends Model
 {
     protected $table = 'solicitudes_bodegas';
 
-    protected $fillable = ['SOLICITUD_ID', 'BODEGA_ID', 'SOLICITUD_BODEGA_ID_ASIGNADA'];
+    protected $fillable = ['SOLICITUD_ID', 'BODEGA_ID'];
 
     public $timestamps = true;
 }

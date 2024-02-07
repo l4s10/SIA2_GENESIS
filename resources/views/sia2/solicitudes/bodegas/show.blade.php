@@ -21,14 +21,12 @@
                 <thead>
                     <tr>
                         <th>Nombre bodega</th>
-                        <th>Bodega asignada</th>
                     </tr>
                 </thead>
                 <tbody>
                     @foreach($solicitud->bodegas as $bodega)
                         <tr>
                             <td>{{ $bodega->BODEGA_NOMBRE }}</td>
-                            <td>{{ $bodegaAsignada->BODEGA_NOMBRE ?? 'SIN ASIGNACION.'}}</td>
                         </tr>
                     @endforeach
                 </tbody>
