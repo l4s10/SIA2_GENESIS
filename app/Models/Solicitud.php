@@ -73,6 +73,7 @@ class Solicitud extends Model
         public function bodegas()
         {
             return $this->belongsToMany(Bodega::class, 'solicitudes_bodegas', 'SOLICITUD_ID', 'BODEGA_ID')
+                ->withPivot('SOLICITUD_BODEGA_ID_ASIGNADA')
                 ->withTimestamps();
         }
 
@@ -80,5 +81,15 @@ class Solicitud extends Model
         public function revisiones()
         {
             return $this->hasMany(RevisionSolicitud::class, 'SOLICITUD_ID', 'SOLICITUD_ID');
+        }
+
+        // Funcion para devolver las fechas en formato correcto CHILE
+        public function mostrarFecha($value)
+        {
+            //caso vacio retornar nulo
+            if ($value == null) {
+                return null;
+            }
+            return date('d-m-Y H:i', strtotime($value));
         }
 }
