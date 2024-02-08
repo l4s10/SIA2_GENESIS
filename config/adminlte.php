@@ -343,11 +343,11 @@ return [
             'submenu' => [
                 [
                     'text' => 'Solicitar',
-                    'route'  => 'solicitudesmateriales.create',
+                    'route'  => 'solicitudes.materiales.create',
                 ],
                 [
                     'text' => 'Mis solicitudes',
-                    'route'  => 'solicitudesmateriales.index',
+                    'route'  => 'solicitudes.materiales.index',
                 ],
             ],
         ],

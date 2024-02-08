@@ -56,9 +56,9 @@
                         <td>{{ $solicitud->created_at }}</td>
                         <td>
                             <div class="d-flex justify-content-center">
-                                <a href="{{ route('solicitudesmateriales.show', $solicitud->SOLICITUD_ID) }}" class="btn btn-primary"><i class="fa-solid fa-eye"></i></a>
-                                <a href="{{ route('solicitudesmateriales.edit', $solicitud->SOLICITUD_ID) }}" class="btn btn-secondary ml-2"><i class="fa-solid fa-pencil"></i></a>
-                                <form action="{{ route('solicitudesmateriales.destroy', $solicitud->SOLICITUD_ID) }}" method="POST" class="d-inline">
+                                <a href="{{ route('solicitudes.materiales.show', $solicitud->SOLICITUD_ID) }}" class="btn btn-primary"><i class="fa-solid fa-eye"></i></a>
+                                <a href="{{ route('solicitudes.materiales.edit', $solicitud->SOLICITUD_ID) }}" class="btn btn-secondary ml-2"><i class="fa-solid fa-pencil"></i></a>
+                                <form action="{{ route('solicitudes.materiales.destroy', $solicitud->SOLICITUD_ID) }}" method="POST" class="d-inline">
                                     @csrf
                                     @method('DELETE')
                                     <button type="submit" class="btn btn-danger ml-2"><i class="fa-solid fa-trash"></i></button>
@@ -73,7 +73,7 @@
 @stop
 
 @section('css')
-<style>/* Estilos personalizados si es necesario */
+    <style>/* Estilos personalizados si es necesario */
         .tablacolor {
             background-color: #0064a0; /* Color de fondo personalizado */
             color: #fff; /* Color de texto personalizado */
