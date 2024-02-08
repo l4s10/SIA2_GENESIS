@@ -29,6 +29,11 @@ use App\Models\Departamento;
 use App\Models\User;
 use App\Models\Vehiculo;
 use App\Models\Viaja;
+use App\Models\Cargo;
+use App\Models\Poliza;
+
+
+
 
 class SolicitudVehiculosController extends Controller
 {
@@ -86,9 +91,17 @@ class SolicitudVehiculosController extends Controller
             })
             ->get();
 
-            //dd($vehiculos);
-            
-            return view('sia2.solicitudes.vehiculos.create', compact('vehiculos','oficinas','ubicaciones','departamentos','regiones', 'comunas', 'users'));
+            // Obtener los jefes que autorizan en la dirección regional
+            $jefesQueAutorizan = Cargo::where('OFICINA_ID', $oficinaSesion)
+                ->where('CARGO_NOMBRE', 'like', 'JEFE %')
+                ->get();
+
+            /*// Obtener conductores que tienen pólizas y están en la misma oficina
+            $conductores = User::whereHas('polizas', function ($query) use ($oficinaSesion) {
+                $query->where('OFICINA_ID', $oficinaSesion);
+            })->get();
+            dd($conductores);*/
+        return view('sia2.solicitudes.vehiculos.create', compact('vehiculos','oficinas','ubicaciones','departamentos','regiones', 'comunas', 'users', 'jefesQueAutorizan'/*, 'conductores'*/));
         } catch (Exception $e) {
             // Manejar excepciones si es necesario
             return redirect()->route('solicitudesvehiculos.index')->with('error', 'Error al intentar crear la solicitud de vehículo.');
@@ -104,21 +117,45 @@ class SolicitudVehiculosController extends Controller
         try {
             // Validar los datos de entrada
             $validator = Validator::make($request->all(), [
-                //'SOLICITUD_VEHICULO_COMUNA_ORIGEN' => 'required|exists:comunas,COMUNA_ID',
-                'SOLICITUD_VEHICULO_COMUNA_DESTINO' => 'required|exists:comunas,COMUNA_ID',
+                'VEHICULO_ID' => 'required|exists:vehiculos,VEHICULO_ID',
+                //'RENDICION_ID' => 'nullable|unique:solicitudes_vehiculares,RENDICION_ID',
+                'SOLICITUD_VEHICULO_COMUNA' => 'required|exists:comunas,COMUNA_ID',
                 'SOLICITUD_VEHICULO_MOTIVO' => 'required|string|max:255',
-                //'SOLICITUD_VEHICULO_FECHA_HORA_INICIO_SOLICITADA' => 'required|date',
-                //'SOLICITUD_VEHICULO_FECHA_HORA_TERMINO_SOLICITADA' => 'required|date|after:SOLICITUD_VEHICULO_FECHA_HORA_INICIO_SOLICITADA',
+                'SOLICITUD_VEHICULO_FECHA_HORA_INICIO_SOLICITADA' => 'required|date',
+                'SOLICITUD_VEHICULO_FECHA_HORA_INICIO_ASIGNADA' => 'nullable|date',
+                'SOLICITUD_VEHICULO_FECHA_HORA_TERMINO_SOLICITADA' => 'required|date|after_or_equal:SOLICITUD_VEHICULO_FECHA_HORA_INICIO_SOLICITADA',
+                'SOLICITUD_VEHICULO_FECHA_HORA_TERMINO_ASIGNADA' => 'nullable|date|after:SOLICITUD_VEHICULO_FECHA_HORA_INICIO_ASIGNADA',
+                'SOLICITUD_VEHICULO_HORA_INICIO_CONDUCCION' => 'required|date_format:H:i',
+                'SOLICITUD_VEHICULO_HORA_TERMINO_CONDUCCION' => 'required|date_format:H:i|after_or_equal:SOLICITUD_VEHICULO_HORA_INICIO_CONDUCCION',
+                'SOLICITUD_VEHICULO_JEFE_QUE_AUTORIZA' => 'nullable|string|max:128',
+                'SOLICITUD_VEHICULO_VIATICO' => 'required',
             ], [
-                //'SOLICITUD_VEHICULO_COMUNA_ORIGEN.required' => 'El campo Comuna de Origen es obligatorio.',
-                'SOLICITUD_VEHICULO_COMUNA_DESTINO.required' => 'El campo Comuna de Destino es obligatorio.',
-                'SOLICITUD_VEHICULO_MOTIVO.required' => 'El campo Motivo es obligatorio.',
-                'SOLICITUD_VEHICULO_MOTIVO.max' => 'El campo Motivo no puede tener más de 255 caracteres.',
-                'SOLICITUD_VEHICULO_FECHA_HORA_INICIO_SOLICITADA.required' => 'El campo Fecha y Hora de Inicio Solicitada es obligatorio.',
-                'SOLICITUD_VEHICULO_FECHA_HORA_TERMINO_SOLICITADA.required' => 'El campo Fecha y Hora de Término Solicitada es obligatorio.',
-                'SOLICITUD_VEHICULO_FECHA_HORA_TERMINO_SOLICITADA.after' => 'El campo Fecha y Hora de Término Solicitada debe ser posterior a la Fecha y Hora de Inicio Solicitada.'
+                'VEHICULO_ID.required' => 'El campo VEHICULO_ID es obligatorio.',
+                'VEHICULO_ID.exists' => 'El vehículo seleccionado no es válido.',
+                //'RENDICION_ID.unique' => 'El valor ingresado para RENDICION_ID ya ha sido registrado.',
+                'SOLICITUD_VEHICULO_COMUNA.required' => 'El campo "comuna destino" es obligatorio.',
+                'SOLICITUD_VEHICULO_COMUNA.exists' => 'La comuna seleccionada no es válida.',
+                'SOLICITUD_VEHICULO_MOTIVO.required' => 'El motivo de la solicitud es obligatorio.',
+                'SOLICITUD_VEHICULO_MOTIVO.string' => 'El motivo de la solicitud debe ser una cadena de caracteres.',
+                'SOLICITUD_VEHICULO_MOTIVO.max' => 'El motivo de la solicitud no puede tener más de 255 caracteres.',
+                'SOLICITUD_VEHICULO_FECHA_HORA_INICIO_SOLICITADA.required' => 'La fecha y hora de inicio de la solicitud es obligatoria.',
+                'SOLICITUD_VEHICULO_FECHA_HORA_INICIO_SOLICITADA.date' => 'La fecha y hora de inicio de la solicitud debe ser válida.',
+                'SOLICITUD_VEHICULO_FECHA_HORA_TERMINO_SOLICITADA.required' => 'El campo fecha y hora de término de solicitud es obligatorio.',
+                'SOLICITUD_VEHICULO_FECHA_HORA_TERMINO_SOLICITADA.date' => 'El campo fecha y hora de término de solicitud debe ser una fecha válida.',
+                'SOLICITUD_VEHICULO_FECHA_HORA_TERMINO_SOLICITADA.after_or_equal' => 'La fecha y hora de término de solicitud debe ser posterior o igual a la fecha y hora de inicio de solicitud.',
+                'SOLICITUD_VEHICULO_FECHA_HORA_TERMINO_ASIGNADA.date' => 'La fecha y hora de término asignada debe ser válida.',
+                'SOLICITUD_VEHICULO_FECHA_HORA_TERMINO_ASIGNADA.after' => 'La fecha y hora de término asignada debe ser posterior a la fecha y hora de inicio asignada.',
+                'SOLICITUD_VEHICULO_HORA_INICIO_CONDUCCION.required' => 'La hora de inicio de conducción es obligatoria.',
+                'SOLICITUD_VEHICULO_HORA_INICIO_CONDUCCION.date_format' => 'La hora de inicio de conducción debe tener un formato válido (HH:MM).',
+                'SOLICITUD_VEHICULO_HORA_TERMINO_CONDUCCION.required' => 'El campo hora de término de conducción es obligatorio.',
+                'SOLICITUD_VEHICULO_HORA_TERMINO_CONDUCCION.date_format' => 'El campo hora de término de conducción debe tener un formato de hora válido (HH:MM).',
+                'SOLICITUD_VEHICULO_HORA_TERMINO_CONDUCCION.after_or_equal' => 'La hora de término de conducción debe ser posterior o igual a la hora de inicio de conducción.',
+                'SOLICITUD_VEHICULO_JEFE_QUE_AUTORIZA.string' => 'El jefe que autoriza debe ser una cadena de caracteres.',
+                'SOLICITUD_VEHICULO_JEFE_QUE_AUTORIZA.max' => 'El jefe que autoriza no puede tener más de 128 caracteres.',
+                'SOLICITUD_VEHICULO_VIATICO.required' => 'Es obligatorio especificar si se requiere viático.',
+                //'SOLICITUD_VEHICULO_VIATICO.in' => 'El campo SOLICITUD_VEHICULO_VIATICO debe ser uno de: SI, NO.',
             ]);
-
+            
             // Manejar errores de validación
                 if ($validator->fails()) {
                     dd($validator);
@@ -129,16 +166,16 @@ class SolicitudVehiculosController extends Controller
             $solicitud = new SolicitudVehicular();
             $solicitud->USUARIO_id = auth()->user()->id;
             $solicitud->VEHICULO_ID = $request->input('VEHICULO_ID');
-            //$solicitud->SOLICITUD_VEHICULO_COMUNA_ORIGEN = $request->input('SOLICITUD_VEHICULO_COMUNA_ORIGEN');
-            $solicitud->COMUNA_ID = $request->input('SOLICITUD_VEHICULO_COMUNA_DESTINO');
-            $solicitud->SOLICITUD_VEHICULO_MOTIVO = $request->input('SOLICITUD_VEHICULO_MOTIVO');
+            //$solicitud->RENDICION_ID = ;
+            $solicitud->COMUNA_ID = $request->input('SOLICITUD_VEHICULO_COMUNA');
+            $solicitud->SOLICITUD_VEHICULO_MOTIVO = strtoupper($request->input('SOLICITUD_VEHICULO_MOTIVO'));
             $solicitud->SOLICITUD_VEHICULO_ESTADO = 'INGRESADO'; // Valor por defecto
             $solicitud->SOLICITUD_VEHICULO_FECHA_HORA_INICIO_SOLICITADA = $request->input('SOLICITUD_VEHICULO_FECHA_HORA_INICIO_SOLICITADA');
             $solicitud->SOLICITUD_VEHICULO_FECHA_HORA_TERMINO_SOLICITADA = $request->input('SOLICITUD_VEHICULO_FECHA_HORA_TERMINO_SOLICITADA');
-            $solicitud->SOLICITUD_VEHICULO_HORA_INICIO_CONDUCCION = '00:00:00';
-            $solicitud->SOLICITUD_VEHICULO_HORA_TERMINO_CONDUCCION = '00:00:00';
-            $solicitud->SOLICITUD_VEHICULO_JEFE_QUE_AUTORIZA = 'HOLAA :D';
-            $solicitud->SOLICITUD_VEHICULO_VIATICO = 'SI';
+            $solicitud->SOLICITUD_VEHICULO_HORA_INICIO_CONDUCCION = $request->input('SOLICITUD_VEHICULO_HORA_INICIO_CONDUCCION');
+            $solicitud->SOLICITUD_VEHICULO_HORA_TERMINO_CONDUCCION =  $request->input('SOLICITUD_VEHICULO_HORA_TERMINO_CONDUCCION');
+            $solicitud->SOLICITUD_VEHICULO_JEFE_QUE_AUTORIZA = $request->input('SOLICITUD_VEHICULO_JEFE_QUE_AUTORIZA');
+            $solicitud->SOLICITUD_VEHICULO_VIATICO = $request->input('SOLICITUD_VEHICULO_VIATICO');
             //dd($solicitud);
             $solicitud->save();
             //    dd($solicitud->SOLICITUD_VEHICULO_ID);
@@ -187,7 +224,6 @@ class SolicitudVehiculosController extends Controller
         try {
             // Encontrar la solicitud por su ID
             $solicitud = SolicitudVehicular::findOrFail($id);
-            //dd($solicitud);
             // Obtener conductor y pasajeros que viajan en esta solicitud
             $pasajeros = $solicitud->viajan()->get();
     

@@ -99,4 +99,9 @@ class User extends Authenticatable
     {
         return $this->belongsToMany(SolicitudVehicular::class, 'viajan', 'USUARIO_id', 'SOLICITUD_VEHICULO_ID');
     }
+
+    public function polizas()
+    {
+        return $this->hasMany(Poliza::class, 'USUARIO_id');
+    }
 }
