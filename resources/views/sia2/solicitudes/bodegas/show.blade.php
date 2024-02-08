@@ -16,7 +16,7 @@
             <p class="card-text">Estado: {{ $solicitud->SOLICITUD_ESTADO }}</p>
             <p class="card-text">Fecha y Hora de Inicio Solicitada: {{ $solicitud->SOLICITUD_FECHA_HORA_INICIO_SOLICITADA }}</p>
             <p class="card-text">Fecha y Hora de Término Solicitada: {{ $solicitud->SOLICITUD_FECHA_HORA_TERMINO_SOLICITADA }}</p>
-            <h5 class="mt-4">Bodega Solicita</h5>
+            <h5 class="mt-4">Bodega Solicitada</h5>
             <table class="table table-bordered">
                 <thead>
                     <tr>
@@ -33,6 +33,7 @@
             </table>
         </div>
     </div>
+    <a href="{{ route('solicitudes.bodegas.index') }}" class="btn btn-primary mt-3">Volver</a>
 @stop
 
 @section('css')
