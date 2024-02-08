@@ -45,7 +45,7 @@
             <p class="card-text">Este módulo permite ver los reportes de <strong>Materiales</strong>. Para saber las cantidades de solicitudes de <strong>Materiales</strong> del sistema completo.</p>
         </div>
         <div class="card-footer">
-            <a class="btn btn-primary" href=" "><i class="fa-solid fa-chart-pie"></i> Graficos</a>
+            <a class="btn btn-primary" href="{{route('reportes.materiales.index')}}"><i class="fa-solid fa-chart-pie"></i> Graficos</a>
         </div>
     </div>
     <div class="card text-bg-primary mb-3">
