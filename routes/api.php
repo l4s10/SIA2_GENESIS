@@ -2,6 +2,7 @@
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Auth\LoginController;
 
 /*
 |--------------------------------------------------------------------------
@@ -17,3 +18,7 @@ use Illuminate\Support\Facades\Route;
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
+
+Route::post('/getToken', [LoginController::class, 'getToken']);
+
+Route::middleware('auth:sanctum')->get('/reportes/materiales', 'App\Http\Controllers\Api\ReportesMaterialesController@Grafico1');

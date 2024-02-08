@@ -21,7 +21,7 @@ class RevisionSolicitud extends Model
     public $timestamps = true;
 
 
-    public function usuario()
+    public function gestionador()
     {
         return $this->belongsTo(User::class, 'USUARIO_ID', 'id');
     }
