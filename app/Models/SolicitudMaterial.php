@@ -12,4 +12,11 @@ class SolicitudMaterial extends Model
 
     public $timestamps = true;
 
+
+    // Funcion para traer todas las solicitudes que contenengan un material
+    public function solicitudes()
+    {
+        return $this->belongsTo(Solicitud::class, 'SOLICITUD_ID', 'SOLICITUD_ID');
+    }
+
 }
