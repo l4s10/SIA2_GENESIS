@@ -31,7 +31,7 @@
         </script>
     @endif
 
-    
+
         {{-- Tabla de Materiales --}}
         <h3 class="centrar">Materiales Disponibles</h3>
         <table class="table table-bordered" id="materiales">
@@ -90,7 +90,7 @@
         </table>
 
         {{-- Formulario de Solicitud --}}
-        <form action="{{ route('solicitudesmateriales.store') }}" method="POST">
+        <form action="{{ route('solicitudes.materiales.store') }}" method="POST">
             @csrf
 
         {{-- Motivo de la Solicitud --}}
@@ -128,7 +128,7 @@
                     @enderror
                 </div>
             </div>
-        </div>  
+        </div>
         <br>
         <button type="submit" class="btn agregar"><i class="fa-solid fa-plus"></i> Crear Solicitud</button>
         </form>
