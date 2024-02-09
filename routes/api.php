@@ -3,6 +3,7 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Auth\LoginController;
+use App\Http\Controllers\Api\ReportesMaterialesController;
 
 /*
 |--------------------------------------------------------------------------
@@ -21,4 +22,9 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 
 Route::post('/getToken', [LoginController::class, 'getToken']);
 
-Route::middleware('auth:sanctum')->get('/reportes/materiales', 'App\Http\Controllers\Api\ReportesMaterialesController@Grafico1');
+Route::middleware('auth:sanctum')->get('/reportes/materiales/get-graficos', [ReportesMaterialesController::class, 'getGraficos']);
+
+// Route::get('/reportes/materiales', [ReportesMaterialesController::class, 'Grafico1']);
+
+Route::middleware('auth:sanctum')->post('/reportes/materiales/filtrar-general', [ReportesMaterialesController::class, 'filtrarGeneral']);
+
