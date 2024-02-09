@@ -1,6 +1,10 @@
+// Objetivo: Generar el gráfico de gestiones por usuario
+
 document.addEventListener('DOMContentLoaded', function() {
+    // Obtener el contexto del canvas (Inicializar)
     const ctx1 = document.getElementById('grafico1').getContext('2d');
 
+    // Inicializar el data [] del gráfico
     const initialChartData = {
         labels: [],
         datasets: [{
@@ -10,7 +14,7 @@ document.addEventListener('DOMContentLoaded', function() {
             borderWidth: 1
         }]
     };
-
+    // Crear el gráfico
     const myChart = new Chart(ctx1, {
         type: 'pie',
         data: initialChartData,
@@ -23,6 +27,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 
+    // Función para obtener un color aleatorio
     function getRandomColor() {
         const letters = '0123456789ABCDEF';
         let color = '#';
@@ -32,6 +37,7 @@ document.addEventListener('DOMContentLoaded', function() {
         return color;
     }
 
+    // Función para actualizar el gráfico
     function updateChart(data) {
         const newData = data.grafico1.ranking.map(item => ({
             label: item.nombre_completo,
@@ -60,6 +66,7 @@ document.addEventListener('DOMContentLoaded', function() {
         })
         .catch(error => console.error('Error:', error));
 
+        // Al hacer click en el botón de actualizar (LISTENER)
         document.querySelector('#refresh-button').addEventListener('click', function () {
             var fechaInicio = document.querySelector('#start-date').value;
             var fechaFin = document.querySelector('#end-date').value;

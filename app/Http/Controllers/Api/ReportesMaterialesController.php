@@ -56,13 +56,16 @@ class ReportesMaterialesController extends Controller
             $rankingGestionadores = $this->Grafico1($request);
             // Cargamos el grafico2
             $solicitudesPorUbicacionDepto = $this->Grafico2($request);
+            // Cargamos el grafico3
+            $rankingEstados = $this->Grafico3($request);
             // Retornamos en JSON la data filtrada de los gráficos
             // Ahora 'data' contiene un array con todos los datos de los gráficos
             return response()->json([
                 'status' => 'success',
                 'data' => [
                     'grafico1' => $rankingGestionadores,
-                    'grafico2' => $solicitudesPorUbicacionDepto
+                    'grafico2' => $solicitudesPorUbicacionDepto,
+                    'grafico3' => $rankingEstados
                 ]
             ]);
         } catch (\Exception $e) {
