@@ -24,13 +24,15 @@ class ReportesMaterialesController extends Controller
             // y devolver todos los datos relevantes en ese caso
             $rankingGestionadores = $this->Grafico1(new Request());
             $solicitudesPorUbicacionDepto = $this->Grafico2(new Request());
+            $rankingEstados = $this->Grafico3(new Request());
 
             // Construye la respuesta con todos los datos de los gráficos para la carga inicial
             return response()->json([
                 'status' => 'success',
                 'data' => [
                     'grafico1' => $rankingGestionadores,
-                    'grafico2' => $solicitudesPorUbicacionDepto
+                    'grafico2' => $solicitudesPorUbicacionDepto,
+                    'grafico3' => $rankingEstados
                 ]
             ]);
         } catch (\Exception $e) {
@@ -159,5 +161,39 @@ class ReportesMaterialesController extends Controller
         }
     }
 
+    /*
+    *   Grafico materiales 3: RANKING DE ESTADOS DE SOLICITUDES DE MATERIALES
+    *   Viajamos a traves de la tabla "solicitudes_materiales" y obtenemos las "SOLCIITUD_ID" para luego obtener las solicitudes filtradas.
+    *   Despues accedemos al campo "SOLICITUD_ESTADO" de la tabla "solicitudes" para obtener el estado de cada solicitud.
+    * luego agrupamos los estados y devolvemos la cantidad que hay en cada uno
+    */
+
+    public function Grafico3(Request $request)
+    {
+        try {
+            // Opcionalmente recibidos desde el request
+            $fechaInicio = $request->input('fecha_inicio');
+            $fechaFin = $request->input('fecha_fin');
+
+            $rankingEstados = SolicitudMaterial::query()
+                ->join('solicitudes', 'solicitudes_materiales.SOLICITUD_ID', '=', 'solicitudes.SOLICITUD_ID')
+                ->select('solicitudes.SOLICITUD_ESTADO', DB::raw('count(*) as total_solicitudes'))
+                ->when($fechaInicio && $fechaFin, function ($query) use ($fechaInicio, $fechaFin) {
+                    return $query->whereBetween('solicitudes.created_at', [$fechaInicio, $fechaFin]);
+                })
+                ->groupBy('solicitudes.SOLICITUD_ESTADO')
+                ->orderBy('total_solicitudes', 'DESC')
+                ->get();
+
+            return [
+                'rankingEstados' => $rankingEstados
+            ];
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Error al obtener el ranking de estados: ' . $e->getMessage()
+            ], 500);
+        }
+    }
 
 }
