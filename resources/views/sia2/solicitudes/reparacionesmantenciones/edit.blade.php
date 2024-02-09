@@ -118,7 +118,7 @@
                                 @foreach ($solicitud->revisiones as $key => $observacion)
                                     <div class="carousel-item {{ $key == 0 ? 'active' : '' }}">
                                         <h5>Observación {{ $key + 1 }}</h5>
-                                        <p>"{{ $observacion->REVISION_SOLICITUD_OBSERVACION }}" -- {{$observacion->usuario->USUARIO_NOMBRES}} {{$observacion->usuario->USUARIO_APELLIDOS}}</p>
+                                        <p>"{{ $observacion->REVISION_SOLICITUD_OBSERVACION }}" -- {{$observacion->gestionador->USUARIO_NOMBRES}} {{$observacion->gestionador->USUARIO_APELLIDOS}}</p>
                                     </div>
                                 @endforeach
                             </div>
