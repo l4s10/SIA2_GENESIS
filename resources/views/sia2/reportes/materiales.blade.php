@@ -1,96 +1,84 @@
 @extends('adminlte::page')
 
-@section('title', 'Estadísticas de materiales')
+@section('title', 'Reportes de Materiales')
 
 @section('content_header')
-    <h1>Estadísticas de materiales</h1>
-@stop
+    <h1>Reportes de Materiales</h1>
+@endsection
 
 @section('content')
-    <div class="row">
-        <div class="col-md-6">
-            <div class="card">
-                <canvas id="graficoGestiones" width="100" height="100"></canvas>
+
+    <!-- Agregar los elementos input de fecha aquí -->
+    <div class="container">
+        <div class="row">
+            <div class="col-md-6">
+                <label for="start-date">Fecha de inicio:</label>
+                <input type="date" id="start-date" name="start-date" class="form-control">
+            </div>
+            <div class="col-md-6">
+                <label for="end-date">Fecha de fin:</label>
+                <input type="date" id="end-date" name="end-date" class="form-control">
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                <button id="refresh-button" class="btn btn-primary">Actualizar</button>
             </div>
         </div>
     </div>
-@stop
+
+    <div class="row">
+        <div class="col-md-6">
+            <canvas id="grafico1"></canvas>
+        </div>
+        <div class="col-md-6">
+            <canvas id="grafico2"></canvas>
+        </div>
+    </div>
+@endsection
 
 @section('css')
-@stop
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+@endsection
 
 @section('js')
     <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
 
     <script>
+        // Inicializar Flatpickr
         document.addEventListener('DOMContentLoaded', function() {
-            // Primero, solicita la cookie CSRF
-            fetch('http://localhost:8000/sanctum/csrf-cookie', {
-                method: 'GET',
-                credentials: 'include', // Importante para incluir cookies con la solicitud
-            }).then(response => {
-                // La cookie CSRF se ha establecido, ahora puedes hacer solicitudes POST, PUT, etc.
-                console.log('CSRF cookie set successfully');
-                const apiToken = localStorage.getItem('api_token');
-                console.log(localStorage.getItem('api_token'));
-                // Solicitud GET a tu API
-                fetch('http://localhost:8000/api/reportes/materiales/get-graficos', {
-                    method: 'GET',
-                    headers: {
-                        'Accept': 'application/json',
-                        'Authorization': 'Bearer ' + localStorage.getItem('api_token')
-                    },
-                    credentials: 'include' // Necesario para las cookies de sesión cuando se usa Sanctum
-                })
-                .then(response => response.json())
-                .then(data => {
-                    if(data.status === 'success') {
-                        // Aquí es donde procesarías la data para cada gráfico.
-                        // Por ejemplo, para grafico1:
-                        if(data.data.grafico1 && data.data.grafico1.ranking) {
-                            const ctx = document.getElementById('graficoGestiones').getContext('2d');
-                            const chartGrafico1 = new Chart(ctx, {
-                                type: 'pie', // Tipo de gráfico
-                                data: {
-                                    labels: data.data.grafico1.ranking.map(item => item.nombre_completo),
-                                    datasets: [{
-                                        data: data.data.grafico1.ranking.map(item => item.total_gestiones),
-                                        backgroundColor: [
-                                            'rgba(255, 99, 132, 0.8)', 'rgba(54, 162, 235, 0.8)',
-                                            'rgba(255, 206, 86, 0.8)', 'rgba(75, 192, 192, 0.8)',
-                                            'rgba(153, 102, 255, 0.8)', 'rgba(255, 159, 64, 0.8)',
-                                            'rgba(201, 203, 207, 0.8)'
-                                        ],
-                                        borderColor: [
-                                            'rgba(255, 99, 132, 1)', 'rgba(54, 162, 235, 1)',
-                                            'rgba(255, 206, 86, 1)', 'rgba(75, 192, 192, 1)',
-                                            'rgba(153, 102, 255, 1)', 'rgba(255, 159, 64, 1)',
-                                            'rgba(201, 203, 207, 1)'
-                                        ],
-                                        borderWidth: 1
-                                    }]
-                                },
-                                options: {
-                                    responsive: true,
-                                    plugins: {
-                                        legend: { position: 'top' },
-                                        title: {
-                                            display: true,
-                                            text: 'Grafico 1: Ranking de Gestiones'
-                                        }
-                                    }
-                                }
-                            });
-                        }
-                        // Aquí podrías añadir más lógica para procesar y mostrar otros gráficos como grafico2, etc.
-                    }
-                })
-                .catch(error => console.error('Error al cargar los datos de los gráficos:', error));
-            }).catch(error => {
-                console.error('Error al establecer la cookie CSRF:', error);
+            flatpickr('#start-date', {
+                minDate: '2019-01-01',
+                maxDate: 'today',
+                dateFormat: 'Y-m-d', // Formato visible al usuario
+                altFormat: 'd-m-Y', // Formato de envío al servidor
+                altInput: true, // Habilitar el campo de entrada alternativo
+                defaultDate: 'today'
+            });
+            flatpickr('#end-date', {
+                minDate: '2019-01-01',
+                maxDate: 'today',
+                dateFormat: 'Y-m-d', // Formato visible al usuario
+                altFormat: 'd-m-Y', // Formato de envío al servidor
+                altInput: true, // Habilitar el campo de entrada alternativo
+                defaultDate: 'today'
             });
         });
     </script>
 
-@stop
+
+    @if(session('api_token'))
+    <script>
+        localStorage.setItem('api_token', '{{ session('api_token') }}');
+        console.log('API Token stored:', localStorage.getItem('api_token'));
+    </script>
+    @endif
+
+    {{-- Importar el archivo JS para el gráfico 1 --}}
+    <script src="{{ asset('js/grafico1.js') }}"></script>
+    {{-- Importar el archivo JS para el gráfico 2 --}}
+    <script src="{{ asset('js/grafico2.js') }}"></script>
+@endsection

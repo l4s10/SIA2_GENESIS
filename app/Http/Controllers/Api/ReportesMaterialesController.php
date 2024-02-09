@@ -23,18 +23,14 @@ class ReportesMaterialesController extends Controller
             // Asumiendo que las funciones de gráfico pueden manejar una llamada sin parámetros de fecha
             // y devolver todos los datos relevantes en ese caso
             $rankingGestionadores = $this->Grafico1(new Request());
-
-            // Aquí se asume que Grafico1 y posiblemente otras funciones como Grafico2, etc.,
-            // son capaces de manejar una solicitud sin parámetros de fecha y devolver todos los datos
-            $grafico2 = 'PILINDOLA'; // Aquí puedes llamar a otra función real de gráfico si la tienes
+            $solicitudesPorUbicacionDepto = $this->Grafico2(new Request());
 
             // Construye la respuesta con todos los datos de los gráficos para la carga inicial
             return response()->json([
                 'status' => 'success',
                 'data' => [
                     'grafico1' => $rankingGestionadores,
-                    // Incluye aquí los datos de otros gráficos de forma similar
-                    // 'grafico2' => $grafico2,
+                    'grafico2' => $solicitudesPorUbicacionDepto
                 ]
             ]);
         } catch (\Exception $e) {
@@ -54,18 +50,17 @@ class ReportesMaterialesController extends Controller
             $fechaInicio = $request->input('fecha_inicio');
             $fechaFin = $request->input('fecha_fin');
 
-            // Cambio aquí: cada gráfico devuelve su propia estructura de datos
+            // Cada gráfico devuelve su propia estructura de datos
             $rankingGestionadores = $this->Grafico1($request);
-
+            // Cargamos el grafico2
+            $solicitudesPorUbicacionDepto = $this->Grafico2($request);
             // Retornamos en JSON la data filtrada de los gráficos
             // Ahora 'data' contiene un array con todos los datos de los gráficos
             return response()->json([
                 'status' => 'success',
                 'data' => [
                     'grafico1' => $rankingGestionadores,
-                    // Ejemplo agregando otro gráfico
-                    // 'grafico2' => $this->Grafico2($request),
-                    'grafico2' => 'PILINDOLA'
+                    'grafico2' => $solicitudesPorUbicacionDepto
                 ]
             ]);
         } catch (\Exception $e) {
@@ -110,5 +105,59 @@ class ReportesMaterialesController extends Controller
             ], 500);
         }
     }
+
+    /*
+    *   Grafico materiales 2: SOLICITUDES DE MATERIALES DE MATERIALES REQUERIDOS POR DEPARTAMENTO / UNIDAD
+    *   Viajamos a traves de la tabla "solicitudes_materiales" y obtenemos las "SOLCIITUD_ID"
+    *   Luego viajamos en la tabla "solicitudes" y obtenemos el "USUARIO_id" de cada solicitud de materiales a traves de la relacion "solicitante"
+    *   Luego viajamos en la tabla "users" y obtenemos el DEPARTAMENTO_ID o UNIDAD_ID de cada usuario a traves de la relacion "departamento" o "ubicacion"
+    */
+    public function Grafico2(Request $request)
+    {
+        try {
+            // Opcionalmente recibidos desde el request
+            $fechaInicio = $request->input('fecha_inicio');
+            $fechaFin = $request->input('fecha_fin');
+
+            // Subconsulta para departamentos
+            $departamentosQuery = SolicitudMaterial::query()
+                ->join('solicitudes', 'solicitudes_materiales.SOLICITUD_ID', '=', 'solicitudes.SOLICITUD_ID')
+                ->join('users', 'solicitudes.USUARIO_id', '=', 'users.id')
+                ->join('departamentos', 'users.DEPARTAMENTO_ID', '=', 'departamentos.DEPARTAMENTO_ID')
+                ->select('departamentos.DEPARTAMENTO_NOMBRE as entidad', DB::raw('COUNT(*) as total_solicitudes'))
+                ->whereNotNull('users.DEPARTAMENTO_ID')
+                ->groupBy('departamentos.DEPARTAMENTO_NOMBRE');
+
+            // Subconsulta para ubicaciones
+            $ubicacionesQuery = SolicitudMaterial::query()
+                ->join('solicitudes', 'solicitudes_materiales.SOLICITUD_ID', '=', 'solicitudes.SOLICITUD_ID')
+                ->join('users', 'solicitudes.USUARIO_id', '=', 'users.id')
+                ->join('ubicaciones', 'users.UBICACION_ID', '=', 'ubicaciones.UBICACION_ID')
+                ->select('ubicaciones.UBICACION_NOMBRE as entidad', DB::raw('COUNT(*) as total_solicitudes'))
+                ->whereNotNull('users.UBICACION_ID')
+                ->groupBy('ubicaciones.UBICACION_NOMBRE');
+
+            // Combinar los resultados
+            $solicitudesPorEntidad = $departamentosQuery->union($ubicacionesQuery);
+
+            // Aplicar filtro de fechas si están presentes
+            if ($fechaInicio && $fechaFin) {
+                $solicitudesPorEntidad = $solicitudesPorEntidad->whereBetween('solicitudes.created_at', [$fechaInicio, $fechaFin]);
+            }
+
+            // Obtener los resultados
+            $solicitudesPorEntidad = $solicitudesPorEntidad->get();
+
+            return [
+                'solicitudesPorEntidad' => $solicitudesPorEntidad
+            ];
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Error al obtener las solicitudes por entidad: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
 
 }
