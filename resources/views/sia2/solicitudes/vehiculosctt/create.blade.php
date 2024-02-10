@@ -3,7 +3,7 @@
 @section('title', 'Crear Solicitud Vehicular')
 
 @section('content_header')
-    <h1>Solicitud Vehicular</h1>
+    <h1>Solicitud Vehicular CTT</h1>
     <br>
     <br>
 
@@ -13,7 +13,7 @@
 
 
     <div class="container">
-        <form action="{{ route('solicitudesvehiculos.store') }}" method="POST">
+        <form action="{{ route('solicitudesvehiculosctt.store') }}" method="POST">
             @csrf
 
             {{-- ENCABEZADO DE LA SOLICITUD: FECHA DE CREACIÓN, TIPO Y ESTADO DE LA SOLICITUD --}}
@@ -29,9 +29,10 @@
                 <div class="col-md-4">
                     <div class="mb-3">
                         <label for="tipo_solicitud"><i class="fa-solid fa-clipboard-question"></i> Tipo de Solicitud:</label>
-                        <input type="text" class="form-control" id="tipo_solicitud" name="tipo_solicitud" value="GENERAL" disabled required style="text-align: center;">
+                        <input type="text" class="form-control" id="tipo_solicitud" name="tipo_solicitud" value="CUMPLIMIENTO TRIBUTARIO EN TERRENO" disabled required style="text-align: center;">
                     </div>
                 </div>
+                
 
                 <div class="col-md-4">
                     <div class="mb-3">
@@ -94,55 +95,53 @@
                         <label for="OFICINA" class="form-label"><i class="fa-solid fa-map-location-dot"></i> Cargo:</label>
                         <input type="text" id="OFICINA" class="form-control" name="OFICINA" value="{{ auth::user()->cargo->CARGO_NOMBRE }}" required readonly>
                         @error('ID_REGION')
-                        <div class="error" style="color: #721c24">{{ $message }}</div>
+                            <div class="alert alert-danger mt-2">{{ $message }}</div>
                         @enderror
                 </div>     
             </div>
                 
             {{-- CAMPOS PARA SOLICITUD CTT --}}
-            {{--<div id="ordenTrabajoInputs" style="display: none;">
-                <br>
-                <h3>Orden de Trabajo (CTT)</h3>
-                <div class="row mb-4">
-                    <div class="form-group col-md-4">
-                        <label for="TRABAJA_NUMERO_ORDEN_TRABAJO">Número de la Orden de Trabajo:</label>
-                        <input type="number" class="form-control" id="TRABAJA_NUMERO_ORDEN_TRABAJO" name="TRABAJA_NUMERO_ORDEN_TRABAJO" required min="0" max="999999">
-                        @if ($errors->has('TRABAJA_NUMERO_ORDEN_TRABAJO'))
-                            <div class="invalid-feedback">
-                                {{ $errors->first('TRABAJA_NUMERO_ORDEN_TRABAJO') }}
-                            </div>
-                        @endif
-                    </div>
-                    <div class="form-group col-md-2">
-    
-                    </div>
-                    <div class="form-group col-md-3">
-                        <label for="TRABAJA_HORA_INICIO_ORDEN_TRABAJO"> Inicio orden de trabajo:</label>
-                        <input type="time" class="form-control" id="TRABAJA_HORA_INICIO_ORDEN_TRABAJO" name="TRABAJA_HORA_INICIO_ORDEN_TRABAJO" required placeholder="-- Seleccione la hora de inicio --" style="background-color: #fff; color: #000; text-align: center;">
-                    </div>
-                    <div class="form-group col-md-3">
-                        <label for="TRABAJA_HORA_TERMINO_ORDEN_TRABAJO"> Fin orden de trabajo:</label>
-                        <input type="time" class="form-control" id="TRABAJA_HORA_TERMINO_ORDEN_TRABAJO" name="TRABAJA_HORA_TERMINO_ORDEN_TRABAJO" required placeholder="-- Seleccione la hora de término--" style="background-color: #fff; color: #000; text-align: center;" >
-                    </div>
+            <br>
+            <h3>Orden de Trabajo (CTT)</h3>
+            <div class="row mb-4">
+                <div class="form-group col-md-4">
+                    <label for="TRABAJA_NUMERO_ORDEN_TRABAJO">Número de la Orden de Trabajo:</label>
+                    <input type="number" class="form-control" id="TRABAJA_NUMERO_ORDEN_TRABAJO" name="TRABAJA_NUMERO_ORDEN_TRABAJO" placeholder="-- Ingrese el número de orden --" required min="0" max="999999">
+                    @if ($errors->has('TRABAJA_NUMERO_ORDEN_TRABAJO'))
+                        <div class="invalid-feedback">
+                            {{ $errors->first('TRABAJA_NUMERO_ORDEN_TRABAJO') }}
+                        </div>
+                    @endif
                 </div>
-            </div>--}}
+                <div class="form-group col-md-2">
+
+                </div>
+                <div class="form-group col-md-3">
+                    <label for="TRABAJA_HORA_INICIO_ORDEN_TRABAJO"> Inicio orden de trabajo:</label>
+                    <input type="time" class="form-control" id="TRABAJA_HORA_INICIO_ORDEN_TRABAJO" name="TRABAJA_HORA_INICIO_ORDEN_TRABAJO" required placeholder="-- Seleccione la hora de inicio --" style="background-color: #fff; color: #000; text-align: center;">
+                </div>
+                <div class="form-group col-md-3">
+                    <label for="TRABAJA_HORA_TERMINO_ORDEN_TRABAJO"> Fin orden de trabajo:</label>
+                    <input type="time" class="form-control" id="TRABAJA_HORA_TERMINO_ORDEN_TRABAJO" name="TRABAJA_HORA_TERMINO_ORDEN_TRABAJO" required placeholder="-- Seleccione la hora de término--" style="background-color: #fff; color: #000; text-align: center;" >
+                </div>
+            </div>
             
 
             {{-- VEHICULO, FECHAS Y HORAS DE EGRESO E INGRESO AL ESTACIONAMIENTO --}}
             <br>
-            <h3>Vehículo</h3>            
+            <h3>Vehículo</h3>
             <div class="row mb-4">
                 <div class="col-md-4">
-                    <label for="TIPO_VEHICULO_ID" class="form-label"><i class="fa-solid fa-car-side"></i> Tipo de Vehículo</label>
-                    <select name="TIPO_VEHICULO_ID" id="TIPO_VEHICULO_ID" class="form-control" required>
-                        <option style="text-align: center;" value="">-- Seleccione un tipo de vehiculo --</option>
-                        @foreach ($tiposVehiculos as $tipoVehiculo)
-                            <option value="{{ $tipoVehiculo->TIPO_VEHICULO_ID }}" data-capacidad="{{ $tipoVehiculo->TIPO_VEHICULO_CAPACIDAD }}">
-                                Tipo: {{ $tipoVehiculo->TIPO_VEHICULO_NOMBRE }} - Capacidad: {{ $tipoVehiculo->TIPO_VEHICULO_CAPACIDAD-1 }}
+                    <label for="VEHICULO_ID" class="form-label"><i class="fa-solid fa-car-side"></i> Vehículo</label>
+                    <select name="VEHICULO_ID" id="VEHICULO_ID" class="form-control" required>
+                        <option style="text-align: center;" value="">-- Seleccione un vehículo --</option>
+                        @foreach ($vehiculos as $vehiculo)
+                            <option value="{{ $vehiculo->VEHICULO_ID }}" data-capacidad="{{ $vehiculo->tipoVehiculo->TIPO_VEHICULO_CAPACIDAD }}" >
+                                {{ $vehiculo->VEHICULO_PATENTE }}  - {{ $vehiculo->tipoVehiculo->TIPO_VEHICULO_NOMBRE }} - Capacidad: {{ $vehiculo->tipoVehiculo->TIPO_VEHICULO_CAPACIDAD }}
                             </option>
                         @endforeach
                     </select>
-                    @error('TIPO_VEHICULO_ID')
+                    @error('VEHICULO_ID')
                         <div class="alert alert-danger mt-2">{{ $message }}</div>
                     @enderror
                 </div>
@@ -150,17 +149,11 @@
                 </div>
                 <div class="col-md-3">
                     <label for="fechaHoraInicioSolicitada"> Salida del estacionamiento:</label>
-                    <input type="text" class="form-control @error('SOLICITUD_VEHICULO_FECHA_HORA_INICIO_SOLICITADA') is-invalid @enderror" id="fechaHoraInicioSolicitada" name="SOLICITUD_VEHICULO_FECHA_HORA_INICIO_SOLICITADA" required placeholder="-- Seleccione la fecha y hora --" style="background-color: #fff; color: #000; text-align: center;"> 
-                    @error('SOLICITUD_VEHICULO_FECHA_HORA_INICIO_SOLICITADA')
-                    <div class="error" style="color: #721c24">{{ $message }}</div>
-                    @enderror
+                    <input type="text" class="form-control" id="fechaHoraInicioSolicitada" name="SOLICITUD_VEHICULO_FECHA_HORA_INICIO_SOLICITADA" required placeholder="-- Seleccione la fecha y hora --" style="background-color: #fff; color: #000; text-align: center;"> 
                 </div>
                 <div class="col-md-3">
                     <label for="fechaHoraTerminoSolicitada"> Reingreso al estacionaiento</label>
-                    <input type="text" class="form-control @error('SOLICITUD_VEHICULO_FECHA_HORA_TERMINO_SOLICITADA') is-invalid @enderror" id="fechaHoraTerminoSolicitada" name="SOLICITUD_VEHICULO_FECHA_HORA_TERMINO_SOLICITADA" required placeholder="-- Seleccione la fecha y hora --" style="background-color: #fff; color: #000; text-align: center;">
-                    @error('SOLICITUD_VEHICULO_FECHA_HORA_TERMINO_SOLICITADA')
-                        <div class="error" style="color: #721c24">{{ $message }}</div>
-                    @enderror
+                    <input type="text" class="form-control" id="fechaHoraTerminoSolicitada" name="SOLICITUD_VEHICULO_FECHA_HORA_TERMINO_SOLICITADA" required placeholder="-- Seleccione la fecha y hora --" style="background-color: #fff; color: #000; text-align: center;">
                 </div>
             </div>
 
@@ -219,7 +212,7 @@
                         <select name="SOLICITUD_VEHICULO_REGION" id="SOLICITUD_VEHICULO_REGION" class="form-control" required>
                             <option value="">-- Seleccione la región de destino --</option>
                             @foreach ($regiones as $region)
-                                <option value="{{ $region->REGION_ID }}" >{{ $region->REGION_NOMBRE }}</option>
+                                <option value="{{ $region->REGION_ID }}">{{ $region->REGION_NOMBRE }}</option>
                             @endforeach
                         </select>
                     </div>
@@ -233,19 +226,19 @@
                         </select>
                     </div>
                 </div>
-                <div class="col-md-4">
+                {{--<div class="col-md-4">
                     <div class="form-group">
-                        <div id="jefeQueAutoriza">
+                        <div id=jefeQueAutoriza>
                             <label for="SOLICITUD_VEHICULO_JEFE_QUE_AUTORIZA">Jefe que autoriza</label>
                             <select name="SOLICITUD_VEHICULO_JEFE_QUE_AUTORIZA" id="SOLICITUD_VEHICULO_JEFE_QUE_AUTORIZA" class="form-control" required>
                                 <option value="">-- Seleccione el jefe que autoriza --</option>
                                 @foreach ($jefesQueAutorizan as $jefe)
-                                    <option value="{{ $jefe->CARGO_ID }}" @if(old('SOLICITUD_VEHICULO_JEFE_QUE_AUTORIZA') == $jefe->CARGO_ID) selected @endif>{{ $jefe->CARGO_NOMBRE }}</option>
+                                    <option value="{{ $jefe->CARGO_ID }}">{{ $jefe->CARGO_NOMBRE }}</option>
                                 @endforeach
                             </select>
                         </div>
                     </div>
-                </div>
+                </div>--}}
             </div>
             <br><br><br><br>
         <button type="submit" class="btn btn-primary">Crear Solicitud</button>
@@ -257,16 +250,7 @@
 
 @section('css')
     <link rel="stylesheet" href="/css/admin_custom.css">
-    <style>
-        .error-message {
-            color: #721c24;
-            background-color: #f8d7da;
-            border: 1px solid #f5c6cb;
-            padding: 8px 15px;
-            border-radius: 4px;
-            margin-top: 5px;
-        }
-</style>
+
 @stop
 
 @section('js')
@@ -290,131 +274,144 @@
         fechaInput.value = fechaActual;
     </script>
 
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            let regionSelect = document.getElementById('SOLICITUD_VEHICULO_REGION');
+            let comunaSelect = document.getElementById('SOLICITUD_VEHICULO_COMUNA');
+            let comunas = {!! json_encode($comunas) !!}; // Convertimos las comunas de PHP a JavaScript
+
+            regionSelect.addEventListener('change', function() {
+                let selectedRegionId = regionSelect.value;
+                comunaSelect.innerHTML = ''; // Limpiamos las opciones de comuna
+
+                if (selectedRegionId !== '') {
+                    // Filtramos las comunas según la región seleccionada
+                    let filteredComunas = comunas.filter(function(comuna) {
+                        return comuna.REGION_ID == selectedRegionId;
+                    });
+
+                    // Agregamos las opciones de comuna filtradas al select de comuna
+                    filteredComunas.forEach(function(comuna) {
+                        let option = document.createElement('option');
+                        option.value = comuna.COMUNA_ID;
+                        option.textContent = comuna.COMUNA_NOMBRE;
+                        comunaSelect.appendChild(option);
+                    });
+                } else {
+                    // Si no se selecciona ninguna región, mostramos el mensaje predeterminado
+                    let defaultOption = document.createElement('option');
+                    defaultOption.value = '';
+                    defaultOption.textContent = '-- Seleccione la comuna de destino --';
+                    comunaSelect.appendChild(defaultOption);
+                }
+            });
+        });
+    </script>
+
+
+
 <script>
     document.addEventListener('DOMContentLoaded', function() {
-        let regionSelect = document.getElementById('SOLICITUD_VEHICULO_REGION');
-        let comunaSelect = document.getElementById('SOLICITUD_VEHICULO_COMUNA');
-        let comunas = {!! json_encode($comunas) !!}; // Convertimos las comunas de PHP a JavaScript
+        let inputHoraInicioOrdenTrabajo = document.getElementById('TRABAJA_HORA_INICIO_ORDEN_TRABAJO');
+        let inputHoraTerminoOrdenTrabajo = document.getElementById('TRABAJA_HORA_TERMINO_ORDEN_TRABAJO');
 
-        // Recuperar la región y la comuna seleccionadas en caso de error de validación
-        let selectedRegionId = "{{ old('SOLICITUD_VEHICULO_REGION') }}";
-        let selectedComunaId = "{{ old('SOLICITUD_VEHICULO_COMUNA') }}";
-
-        regionSelect.addEventListener('change', function() {
-            let selectedRegionId = regionSelect.value;
-            comunaSelect.innerHTML = ''; // Limpiamos las opciones de comuna
-
-            if (selectedRegionId !== '') {
-                // Filtramos las comunas según la región seleccionada
-                let filteredComunas = comunas.filter(function(comuna) {
-                    return comuna.REGION_ID == selectedRegionId;
-                });
-
-                // Agregamos las opciones de comuna filtradas al select de comuna
-                filteredComunas.forEach(function(comuna) {
-                    let option = document.createElement('option');
-                    option.value = comuna.COMUNA_ID;
-                    option.textContent = comuna.COMUNA_NOMBRE;
-
-                    // Establecer la opción seleccionada si coincide con la comuna seleccionada anteriormente
-                    if (comuna.COMUNA_ID === selectedComunaId) {
-                        option.selected = true;
-                    }
-
-                    comunaSelect.appendChild(option);
-                });
-            } else {
-                // Si no se selecciona ninguna región, mostramos el mensaje predeterminado
-                let defaultOption = document.createElement('option');
-                defaultOption.value = '';
-                defaultOption.textContent = '-- Seleccione la comuna de destino --';
-                comunaSelect.appendChild(defaultOption);
-            }
-        });
-
-        // Establecer la región seleccionada si se ha seleccionado previamente
-        if (selectedRegionId !== '') {
-            regionSelect.value = selectedRegionId;
-
-            // Disparar el evento change manualmente para que se carguen las comunas correspondientes
-            var event = new Event('change');
-            regionSelect.dispatchEvent(event);
-        }
-
-        // Establecer la comuna seleccionada si se ha seleccionado previamente
-        if (selectedComunaId !== '') {
-            comunaSelect.value = selectedComunaId;
-        }
-    });
-</script>
-
-<script>
-    document.addEventListener('DOMContentLoaded', function () {
-        let inputfechaHoraInicioSolicitada = document.getElementById('fechaHoraInicioSolicitada');
-        let inputfechaHoraTerminoSolicitada = document.getElementById('fechaHoraTerminoSolicitada');
-
-        let fechaActual = new Date(); // Fecha y hora actual
-        let añoActual = fechaActual.getFullYear(); // Año actual
-        let mesActual = fechaActual.getMonth(); // Mes actual
-        let diaActual = fechaActual.getDate(); // Día actual
-        let horaActual = fechaActual.getHours(); // Hora actual
-        let minutoActual = fechaActual.getMinutes(); // Minuto actual
-
-
-        // **Fecha mínima permitida (día actual)**
-        let fechaMinimaPermitida = new Date(añoActual, mesActual, diaActual, horaActual, minutoActual);
-
-
-        // **Fecha máxima permitida**
-        let fechaMaximaPermitida;
-
-        // Si estamos en diciembre, permitir hasta febrero del próximo año
-        if (mesActual === 11) {
-            fechaMaximaPermitida = new Date(añoActual + 1, 1, 28);
-        } else {
-            // Permitir hasta diciembre del año actual
-            fechaMaximaPermitida = new Date(añoActual, 11, 31);
-        }
-
-        /// **Configuración del selector de fecha y hora de inicio**
-        flatpickr(inputfechaHoraInicioSolicitada, {
+        // Configurar Flatpickr para el campo de hora de inicio
+        let flatpickrInicioOrdenTrabajo = flatpickr(inputHoraInicioOrdenTrabajo, {
             enableTime: true,
-            dateFormat: "Y-m-d H:i",
-            minDate: fechaMinimaPermitida,
-            maxDate: fechaMaximaPermitida,
-            defaultDate: fechaMinimaPermitida,
-            locale: "es", // Establecer el idioma en español
+            noCalendar: true,
+            dateFormat: "H:i",
             onChange: function(selectedDates, dateStr, instance) {
-                if (selectedDates[0] < fechaMinimaPermitida) {
-                    alert("La fecha y hora seleccionada es menor a la hora mínima permitida");
-                    inputfechaHoraInicioSolicitada.value = "";
-                } else {
-                    // Habilitar el input de término una vez que se ha seleccionado la hora de inicio
-                    inputfechaHoraTerminoSolicitada.disabled = false;
-                    // Actualizar minDate para el input de término
-                    inputfechaHoraTerminoSolicitada._flatpickr.set("minDate", selectedDates[0]);
-                }
+                let horaTerminoSelector = document.getElementById("TRABAJA_HORA_TERMINO_ORDEN_TRABAJO");
+                horaTerminoSelector._flatpickr.clear(); // Limpiar la selección anterior
+                horaTerminoSelector._flatpickr.set("minTime", dateStr); // Establecer la hora mínima
+                horaTerminoSelector.disabled = false; // Habilitar el input de hora de término
             }
         });
 
-        // **Configuración del selector de fecha y hora de término**
-        flatpickr(inputfechaHoraTerminoSolicitada, {
+        // Configurar Flatpickr para el campo de hora de término (inicialmente deshabilitado)
+        let flatpickrTerminoOrdenTrabajo = flatpickr(inputHoraTerminoOrdenTrabajo, {
             enableTime: true,
-            dateFormat: "Y-m-d H:i",
-            minDate: fechaMinimaPermitida, // Se establece inicialmente, luego se actualizará
-            maxDate: fechaMaximaPermitida,
-            locale: "es" // Establecer el idioma en español
+            noCalendar: true,
+            dateFormat: "H:i",
+            placeholder: "-- Seleccione la hora --", // Establecer el marcador de posición
         });
 
-        // Deshabilitar el input de término al cargar la página y establecer su valor como vacío
-        inputfechaHoraTerminoSolicitada.disabled = true;
-        inputfechaHoraInicioSolicitada.value = null;
-        inputfechaHoraTerminoSolicitada.value = null;
+        // Deshabilitar el input de hora de término inicialmente
+        inputHoraTerminoOrdenTrabajo.disabled = true;
+
+        // Limpiar los valores iniciales
+        inputHoraInicioOrdenTrabajo.value = "";
+        inputHoraTerminoOrdenTrabajo.value = "";
     });
 </script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            let inputfechaHoraInicioSolicitada = document.getElementById('fechaHoraInicioSolicitada');
+            let inputfechaHoraTerminoSolicitada = document.getElementById('fechaHoraTerminoSolicitada');
+
+            let fechaActual = new Date(); // Fecha y hora actual
+            let añoActual = fechaActual.getFullYear(); // Año actual
+            let mesActual = fechaActual.getMonth(); // Mes actual
+            let diaActual = fechaActual.getDate(); // Día actual
+            let horaActual = fechaActual.getHours(); // Hora actual
+            let minutoActual = fechaActual.getMinutes(); // Minuto actual
+
+            // **Fecha mínima permitida (día actual)**
+            let fechaMinimaPermitida = new Date(añoActual, mesActual, diaActual, horaActual, minutoActual);
+
+            // **Fecha y hora predeterminada (fecha y hora actual)**
+            let fechaHoraPredeterminada = new Date(añoActual, mesActual, diaActual, horaActual, minutoActual);
+
+            // **Fecha máxima permitida**
+            let fechaMaximaPermitida;
+
+            // Si estamos en diciembre, permitir hasta febrero del próximo año
+            if (mesActual === 11) {
+                fechaMaximaPermitida = new Date(añoActual + 1, 1, 28);
+            } else {
+                // Permitir hasta diciembre del año actual
+                fechaMaximaPermitida = new Date(añoActual, 11, 31);
+            }
+
+            /// **Configuración del selector de fecha y hora de inicio**
+            flatpickr(inputfechaHoraInicioSolicitada, {
+                enableTime: true,
+                dateFormat: "Y-m-d H:i",
+                minDate: fechaMinimaPermitida,
+                maxDate: fechaMaximaPermitida,
+                defaultDate: fechaHoraPredeterminada,
+                locale: "es", // Establecer el idioma en español
+                onChange: function(selectedDates, dateStr, instance) {
+                    if (selectedDates[0] < fechaMinimaPermitida) {
+                        alert("La fecha y hora seleccionada es menor a la hora mínima permitida");
+                        inputfechaHoraInicioSolicitada.value = "";
+                    } else {
+                        // Habilitar el input de término una vez que se ha seleccionado la hora de inicio
+                        inputfechaHoraTerminoSolicitada.disabled = false;
+                        // Actualizar minDate para el input de término
+                        inputfechaHoraTerminoSolicitada._flatpickr.set("minDate", selectedDates[0]);
+                    }
+                }
+            });
+
+            // **Configuración del selector de fecha y hora de término**
+            flatpickr(inputfechaHoraTerminoSolicitada, {
+                enableTime: true,
+                dateFormat: "Y-m-d H:i",
+                minDate: fechaMinimaPermitida, // Se establece inicialmente, luego se actualizará
+                maxDate: fechaMaximaPermitida,
+                locale: "es" // Establecer el idioma en español
+            });
+
+            // Deshabilitar el input de término al cargar la página y establecer su valor como vacío
+            inputfechaHoraTerminoSolicitada.disabled = true;
+            inputfechaHoraInicioSolicitada.value = "";
+            inputfechaHoraTerminoSolicitada.value = "";
+        });
+    </script>
 
 
-
+    
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             // Variables de control
@@ -434,18 +431,18 @@
             }
 
 
-            
-
-                // Evento de cambio en el tipo de vehículo
-                document.getElementById('TIPO_VEHICULO_ID').addEventListener('change', function() {
-                let tipoVehiculoIdSeleccionado = this.value;
+            // Evento de cambio en el vehículo
+            document.getElementById('VEHICULO_ID').addEventListener('change', function() {
+                let vehiculoIdSeleccionado = this.value;
                 document.getElementById('motivoSolicitud').style.display = 'block';
 
                 contadorFilas = 1;
                 capacidadMaxima = 0;
+                document.getElementById('agregarPasajeroBtn').innerHTML = '<i class="fas fa-plus"></i> Agregar Conductor';
+                document.getElementById('eliminarPasajeroBtn').innerHTML = '<i class="fas fa-minus"></i> Eliminar Conductor';
                 reiniciarPasajerosSeleccionados();
 
-                if (tipoVehiculoIdSeleccionado === '') {
+                if (vehiculoIdSeleccionado === '') {
                     // Confirmar eliminación si se deselecciona el vehículo
                     let confirmacion = confirm('¿Está seguro de eliminar el vehículo solicitado y el registro de pasajeros asociados?');
                     if (!confirmacion) {
@@ -459,7 +456,7 @@
                         prevVehiculoId = '';
                         return;
                     }
-                } else if (tipoVehiculoIdSeleccionado !== '' && prevVehiculoId !== '') {
+                } else if (vehiculoIdSeleccionado !== '' && prevVehiculoId !== '') {
                     // Confirmar cambio si se selecciona un nuevo vehículo
                     let confirmacion = confirm('¿Está seguro de cambiar el vehículo solicitado?, se eliminará el registro de pasajeros asociados.');
                     if (!confirmacion) {
@@ -470,20 +467,19 @@
                     }
                 }
 
-                // Obtener información del tipo de vehículo seleccionado
-                let tiposVehiculosJSON = JSON.parse('@json($tiposVehiculos)');
-                let tipoVehiculoSeleccionado = tiposVehiculosJSON.find(function(tipoVehiculo) {
-                    return tipoVehiculo.TIPO_VEHICULO_ID == tipoVehiculoIdSeleccionado;
+                // Obtener información del vehículo seleccionado
+                let vehiculosJSON = JSON.parse('@json($vehiculos)');
+                let vehiculoSeleccionado = vehiculosJSON.find(function(vehiculo) {
+                    return vehiculo.VEHICULO_ID == vehiculoIdSeleccionado;
                 });
 
                 let pasajeros = document.getElementById('pasajeros');
                 pasajeros.innerHTML = '';
 
                 // Configurar el registro de pasajeros según la capacidad del vehículo
-                if (tipoVehiculoSeleccionado.TIPO_VEHICULO_CAPACIDAD > 0) {
-                    capacidadMaxima = tipoVehiculoSeleccionado.TIPO_VEHICULO_CAPACIDAD-1;
+                if (vehiculoSeleccionado.tipo_vehiculo.TIPO_VEHICULO_CAPACIDAD > 0) {
+                    capacidadMaxima = vehiculoSeleccionado.tipo_vehiculo.TIPO_VEHICULO_CAPACIDAD;
                     agregarFila(contadorFilas);
-                    console.log(capacidadMaxima);
                     document.getElementById('agregarPasajeroBtn').style.display = 'block';
                     document.getElementById('eliminarPasajeroBtn').style.display = 'block';
                     pasajeros.style.display = 'block';
@@ -493,7 +489,7 @@
                     pasajeros.style.display = 'none';
                 }
 
-                prevVehiculoId = tipoVehiculoIdSeleccionado;
+                prevVehiculoId = vehiculoIdSeleccionado;
             });
 
             // Evento de clic en el botón para agregar pasajero
@@ -502,21 +498,27 @@
                 for (let i = 1; i <= contadorFilas; i++) {
                     let oficinaValue = document.getElementById('oficina_' + i).value;
                     let dependenciaValue = document.getElementById('dependencia_' + i).value;
-                    let pasajeroValue = document.getElementById('pasajero_' + i).value;
+                    let pasajeroValue = document.getElementById('pasajero' + i).value;
                    // Verificar campos del conductor (primera fila)
                     if (i === 1) {
-                        //let horaInicioValue = document.getElementById('SOLICITUD_VEHICULO_HORA_INICIO_CONDUCCION').value;
-                        //let horaTerminoValue = document.getElementById('SOLICITUD_VEHICULO_HORA_TERMINO_CONDUCCION').value;
+                        let horaInicioValue = document.getElementById('SOLICITUD_VEHICULO_HORA_INICIO_CONDUCCION').value;
+                        let horaTerminoValue = document.getElementById('SOLICITUD_VEHICULO_HORA_TERMINO_CONDUCCION').value;
                         let motivoValue = document.getElementById('SOLICITUD_VEHICULO_MOTIVO').value; // Cambiado el ID aquí
-                        //let viaticoValue = document.getElementById('SOLICITUD_VEHICULO_VIATICO').value;
+                        let viaticoValue = document.getElementById('SOLICITUD_VEHICULO_VIATICO').value;
 
                         if (motivoValue === '') {
                             todosSelectoresConValor = false;
                             alert('Por favor, especifique la labor a realizar.');
                             break;
-                        } else if (oficinaValue === '' || dependenciaValue === '' || pasajeroValue === '') {
+                        } else if (oficinaValue === '' || dependenciaValue === '' || pasajeroValue === '' || horaInicioValue === '' || horaTerminoValue === '' || viaticoValue === '') {
                             todosSelectoresConValor = false;
-                            alert('Por favor, complete todos los campos requeridos para el Pasajero N°' + (i) + '.');
+                            alert('Por favor, complete todos los campos requeridos para el Conductor.');
+                            break;
+                        }
+                    } else { // Para los demás pasajeros
+                        if (oficinaValue === '' || dependenciaValue === '' || pasajeroValue === '') {
+                            todosSelectoresConValor = false;
+                            alert('Por favor, complete todos los campos requeridos para el Pasajero N°' + (i - 1) + '.');
                             break;
                         }
                     }
@@ -541,31 +543,40 @@
 
             // Evento de clic en el botón para eliminar pasajero
             document.getElementById('eliminarPasajeroBtn').addEventListener('click', function() {
+                if (contadorFilas > 1) {
                     eliminarPasajero();
+                } else {
+                    let confirmacion = confirm('¿Está seguro de eliminar la información registrada para el conductor?');
+                    if (confirmacion) {
+                        eliminarConductor();
+                    }
+                }
+
+                if (contadorFilas === 1) {
+                    document.getElementById('agregarPasajeroBtn').innerHTML = '<i class="fas fa-plus"></i> Agregar Conductor';
+                    document.getElementById('eliminarPasajeroBtn').innerHTML = '<i class="fas fa-minus"></i> Eliminar Conductor';
+                }
             });
 
-
             // Función para eliminar la información del conductor
-             // Escuchador de eventos para el botón "Eliminar pasajero"
-            $('#eliminarPasajeroBtn').click(function() {
-                if (contadorFilas > 1) {
-                    $('#fila_' + contadorFilas).remove();
-                    contadorFilas--;
-                } else {
-                                        // Restablecer los selectores a sus opciones predeterminadas
-                    $('#oficina_1').val('');
-                    $('#dependencia_1').val('').prop('disabled', true);
-                    $('#pasajero_1').val('').prop('disabled', true);
-                    alert('Pasajero N°1 eliminado del registro, por favor ingrese uno nuevamente.');
-                    reiniciarPasajerosSeleccionados();
-                    ocupantes.empty();
-                }
+            function eliminarConductor() {
+                document.getElementById('oficina_1').value = '';
+                document.getElementById('dependencia_1').value = '';
+                document.getElementById('dependencia_1').disabled = true;
+                document.getElementById('pasajero1').value = '';
+                document.getElementById('pasajero1').disabled = true;
+                reiniciarPasajerosSeleccionados();
+            }
+
+            // Función para eliminar un pasajero
+            function eliminarPasajero() {
+                document.getElementById('fila_' + contadorFilas).remove();
+                contadorFilas--;
+
                 if (contadorFilas < capacidadMaxima) {
                     document.getElementById('agregarPasajeroBtn').style.display = 'block';
                 }
-
-            });
-
+            }
 
             // Función para agregar una fila de pasajero al registro
             function agregarFila(numeroFila) {
@@ -575,7 +586,7 @@
                 nuevaFila.id = 'fila_' + numeroFila;
 
                 let contenidoHTML = `
-                    <h5>Pasajero N°${numeroFila}</h5>
+                    <h5>${numeroFila === 1 ? 'Conductor' : 'Pasajero N°' + (numeroFila - 1)}</h5>
                     <div class="form-row">
                         <div class="form-group col-md-4">
                             <label for="oficina_${numeroFila}">Oficina</label>
@@ -603,9 +614,14 @@
                             </select>
                         </div>
                         <div class="form-group col-md-4">
-                            <label for="pasajero_${numeroFila}">Funcionario</label>
-                            <select id="pasajero_${numeroFila}" class="form-control pasajero" name="PASAJERO_${numeroFila}" data-row="${numeroFila}" disabled required>
-                                <option style="text-align: center;" value="">-- Seleccione al pasajero N°${numeroFila} --</option>
+                            <label for="pasajero${numeroFila}">Funcionario</label>
+                            <select id="pasajero${numeroFila}" class="form-control pasajero" name="PASAJERO_${numeroFila}" data-row="${numeroFila}" disabled required>
+                                <option style="text-align: center;" value="">${numeroFila === 1 ? '-- Seleccione al conductor --' : '-- Seleccione al pasajero N°' + (numeroFila - 1) + ' --'}</option>
+                            {{-- <optgroup label="Conductores">
+                                        @foreach ($conductores as $conductor)
+                                            <option value="{{ $conductor->id }}">{{ $conductor->USUARIO_NOMBRES }} {{ $conductor->USUARIO_APELLIDOS }}</option>
+                                        @endforeach
+                                </optgroup>--}}
                                 <optgroup label="Funcionarios Asociados">
                                     @foreach($users as $user)
                                         <option value="{{ $user->id }}" data-ubicacion-id="{{ $user->UBICACION_ID }}" data-departamento-id="{{ $user->DEPARTAMENTO_ID }}">{{ $user->USUARIO_NOMBRES }} {{ $user->USUARIO_APELLIDOS }}</option>
@@ -613,13 +629,68 @@
                                 </optgroup>
                             </select>
                         </div>
+                        ${numeroFila === 1 ? `
+                            <div class="form-group col-md-4">
+                                <label for="SOLICITUD_VEHICULO_VIATICO"> Viático:</label>
+                                <select class="form-control" id="SOLICITUD_VEHICULO_VIATICO" name="SOLICITUD_VEHICULO_VIATICO" >
+                                    <option style="text-align: center;" value="" required selected>-- Seleccione una opción --</option>
+                                    <option value="SI">SI</option>
+                                    <option value="NO">NO</option>
+                                </select>
+                            </div>
+                            <div class="form-group col-md-4">
+                                <label for="SOLICITUD_VEHICULO_HORA_INICIO_CONDUCCION">Hora de Inicio de Conducción:</label>
+                                <input type="time" class="form-control" id="SOLICITUD_VEHICULO_HORA_INICIO_CONDUCCION" name="SOLICITUD_VEHICULO_HORA_INICIO_CONDUCCION" required placeholder="-- Seleccione la hora de inicio --" style="background-color: #fff; color: #000; text-align: center;">
+                            </div>
+                            <div class="form-group col-md-4">
+                                <label for="SOLICITUD_VEHICULO_HORA_TERMINO_CONDUCCION">Hora de Término de Conducción:</label>
+                                <input type="time" class="form-control" id="SOLICITUD_VEHICULO_HORA_TERMINO_CONDUCCION" name="SOLICITUD_VEHICULO_HORA_TERMINO_CONDUCCION" required placeholder="-- Seleccione la hora de término --" style="background-color: #fff; color: #000; text-align: center;">
+                            </div>
+                        ` : ''}
                     </div>
                 `;
-
+                    
                 nuevaFila.innerHTML = contenidoHTML;
                 pasajeros.appendChild(nuevaFila);
-                    
-               
+
+                // Inicializar flatpickr después de que los elementos hayan sido insertados
+                flatpickr("#SOLICITUD_VEHICULO_HORA_INICIO_CONDUCCION", {
+                    enableTime: true,
+                    noCalendar: true,
+                    dateFormat: "H:i",
+                });
+
+                // Inicializar flatpickr después de que los elementos hayan sido insertados
+                flatpickr("#SOLICITUD_VEHICULO_HORA_TERMINO_CONDUCCION", {
+                    enableTime: true,
+                    noCalendar: true,
+                    dateFormat: "H:i",
+                });
+
+                var horaTerminoSelector = document.getElementById("SOLICITUD_VEHICULO_HORA_TERMINO_CONDUCCION");
+
+                function configurarHoraTermino(horaInicio) {
+                    flatpickr(horaTerminoSelector, {
+                        enableTime: true,
+                        noCalendar: true,
+                        dateFormat: "H:i",
+                        minTime: horaInicio,
+                    });
+                }
+
+                flatpickr("#SOLICITUD_VEHICULO_HORA_INICIO_CONDUCCION", {
+                    enableTime: true,
+                    noCalendar: true,
+                    dateFormat: "H:i",
+                    onChange: function(selectedDates, dateStr, instance) {
+                        var horaInicio = dateStr;
+                        configurarHoraTermino(horaInicio);
+                        document.getElementById("SOLICITUD_VEHICULO_HORA_TERMINO_CONDUCCION").disabled = false;
+                    }
+                });
+
+                document.getElementById("SOLICITUD_VEHICULO_HORA_TERMINO_CONDUCCION").disabled = false;
+
 
                 if (contadorFilas < capacidadMaxima) {
                     document.getElementById('agregarPasajeroBtn').style.display = 'block';
@@ -630,7 +701,7 @@
                 document.getElementById('oficina_' + numeroFila).addEventListener('change', function() {
                     let selectedOfficeId = this.value;
                     let $dependenciaSelect = document.getElementById('dependencia_' + numeroFila);
-                    let $pasajeroSelect = document.getElementById('pasajero_' + numeroFila);
+                    let $pasajeroSelect = document.getElementById('pasajero' + numeroFila);
                     $dependenciaSelect.value = '';
                     $pasajeroSelect.value = '';
                     $dependenciaSelect.disabled = true;
@@ -654,7 +725,7 @@
 
                 document.getElementById('dependencia_' + numeroFila).addEventListener('change', function() {
                     let selectedDependenciaId = this.value;
-                    let $pasajeroSelect = document.getElementById('pasajero_' + numeroFila);
+                    let $pasajeroSelect = document.getElementById('pasajero' + numeroFila);
 
                     $pasajeroSelect.querySelectorAll('option').forEach(function(option) {
                         let optionUbicacionId = option.getAttribute('data-ubicacion-id');
@@ -675,19 +746,19 @@
                     }
                 });
 
-                document.getElementById('pasajero_' + numeroFila).addEventListener('change', function() {
+                document.getElementById('pasajero' + numeroFila).addEventListener('change', function() {
                     let selectedPasajeroId = this.value;
 
                     if (pasajerosSeleccionados.has(selectedPasajeroId)) {
-                        alert('Este funcionario ya fue seleccionado como pasajero. Por favor, elija otra persona.');
+                        alert('Esta persona ya ha sido seleccionada como pasajero. Por favor, elija otra persona.');
                         this.value = '';
                         return;
                     }
 
                     pasajerosSeleccionados.add(selectedPasajeroId);
 
-                    document.querySelectorAll('.pasajero_').forEach(function(select) {
-                        if (select.id !== 'pasajero_' + numeroFila) {
+                    document.querySelectorAll('.pasajero').forEach(function(select) {
+                        if (select.id !== 'pasajero' + numeroFila) {
                             select.querySelector('option[value="' + selectedPasajeroId + '"]').disabled = true;
                         }
                     });

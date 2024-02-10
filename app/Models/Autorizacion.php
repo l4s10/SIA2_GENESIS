@@ -2,11 +2,12 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Viaja extends Model
+class Autorizacion extends Model
 {
-    protected $table = 'viajan';
+    protected $table = 'autorizaciones';
     protected $primaryKey = ['USUARIO_id', 'SOLICITUD_VEHICULO_ID'];
     public $incrementing = false;
     public $timestamps = true;
@@ -21,6 +22,6 @@ class Viaja extends Model
     // Relación con el modelo SolicitudVehiculo
     public function solicitudVehiculo()
     {
-        return $this->belongsTo(SolicitudVehiculo::class, 'SOLICITUD_VEHICULO_ID', 'SOLICITUD_VEHICULO_ID');
+        return $this->belongsTo(SolicitudVehicular::class, 'SOLICITUD_VEHICULO_ID', 'SOLICITUD_VEHICULO_ID');
     }
 }

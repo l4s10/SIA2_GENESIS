@@ -28,15 +28,14 @@ use App\Models\Ubicacion;
 use App\Models\Departamento;
 use App\Models\User;
 use App\Models\Vehiculo;
-use App\Models\TipoVehiculo;
-use App\Models\Pasajero;
+use App\Models\Viaja;
 use App\Models\Cargo;
 use App\Models\Poliza;
 
 
 
 
-class SolicitudVehiculosController extends Controller
+class SolicitudVehiculosCttController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -56,7 +55,7 @@ class SolicitudVehiculosController extends Controller
 
 
             // Retornar la vista con las solicitudes
-            return view('sia2.solicitudes.vehiculos.index', compact('solicitudes'));
+            return view('sia2.solicitudes.vehiculosctt.index', compact('solicitudes'));
         } catch (Exception $e) {
             // Manejar excepciones si es necesario
             return redirect()->back()->with('error', 'Error al cargar las solicitudes.');
@@ -78,11 +77,22 @@ class SolicitudVehiculosController extends Controller
             $regiones = Region::all();
             $comunas = Comuna::all();
             $users = User::all();
-            // Obtener tipos de vehículos basados en la OFICINA_ID del usuario
-            $tiposVehiculos = TipoVehiculo::where('OFICINA_ID', Auth::user()->OFICINA_ID)->get();
+            // Obtener vehículos basados en la OFICINA_ID del usuario junto con su respectiva relación para tipos de vehículo.  
+            $oficinaSesion = Auth::user()->OFICINA_ID;
+            $vehiculos = Vehiculo::with('tipoVehiculo')->where(function ($query) use ($oficinaSesion) {
+                $query->whereHas('ubicacion', function ($subquery) use ($oficinaSesion) {
+                    $subquery->where('OFICINA_ID', $oficinaSesion);
+                });
+            })
+            ->orWhere(function ($query) use ($oficinaSesion) {
+                $query->whereHas('departamento', function ($subquery) use ($oficinaSesion) {
+                    $subquery->where('OFICINA_ID', $oficinaSesion);
+                });
+            })
+            ->get();
 
             // Obtener los jefes que autorizan en la dirección regional
-            $jefesQueAutorizan = Cargo::where('OFICINA_ID', Auth::user()->OFICINA_ID)
+            $jefesQueAutorizan = Cargo::where('OFICINA_ID', $oficinaSesion)
                 ->where('CARGO_NOMBRE', 'like', 'JEFE %')
                 ->get();
 
@@ -91,10 +101,10 @@ class SolicitudVehiculosController extends Controller
                 $query->where('OFICINA_ID', $oficinaSesion);
             })->get();
             dd($conductores);*/
-        return view('sia2.solicitudes.vehiculos.create', compact('tiposVehiculos','oficinas','ubicaciones','departamentos','regiones', 'comunas', 'users', 'jefesQueAutorizan'));
+        return view('sia2.solicitudes.vehiculosctt.create', compact('vehiculos','oficinas','ubicaciones','departamentos','regiones', 'comunas', 'users', 'jefesQueAutorizan'/*, 'conductores'*/));
         } catch (Exception $e) {
             // Manejar excepciones si es necesario
-            return redirect()->route('solicitudesvehiculos.index')->with('error', 'Error al intentar crear la solicitud de vehículo.');
+            return redirect()->route('solicitudesvehiculosctt.index')->with('error', 'Error al intentar crear la solicitud de vehículo.');
         }
     }
 
@@ -103,21 +113,26 @@ class SolicitudVehiculosController extends Controller
      */
     public function store(Request $request)
     {
-        //dd($request);
+        dd($request);
         // Intentar guardar la solicitud en la base de datos
         try {
             // Validar los datos de entrada
             $validator = Validator::make($request->all(), [
-                'TIPO_VEHICULO_ID' => 'required|exists:tipos_vehiculos,TIPO_VEHICULO_ID',
+                'VEHICULO_ID' => 'required|exists:vehiculos,VEHICULO_ID',
                 //'RENDICION_ID' => 'nullable|unique:solicitudes_vehiculares,RENDICION_ID',
                 'SOLICITUD_VEHICULO_COMUNA' => 'required|exists:comunas,COMUNA_ID',
                 'SOLICITUD_VEHICULO_MOTIVO' => 'required|string|max:255',
                 'SOLICITUD_VEHICULO_FECHA_HORA_INICIO_SOLICITADA' => 'required|date',
+                'SOLICITUD_VEHICULO_FECHA_HORA_INICIO_ASIGNADA' => 'nullable|date',
                 'SOLICITUD_VEHICULO_FECHA_HORA_TERMINO_SOLICITADA' => 'required|date|after_or_equal:SOLICITUD_VEHICULO_FECHA_HORA_INICIO_SOLICITADA',
+                'SOLICITUD_VEHICULO_FECHA_HORA_TERMINO_ASIGNADA' => 'nullable|date|after:SOLICITUD_VEHICULO_FECHA_HORA_INICIO_ASIGNADA',
+                'SOLICITUD_VEHICULO_HORA_INICIO_CONDUCCION' => 'required|date_format:H:i',
+                'SOLICITUD_VEHICULO_HORA_TERMINO_CONDUCCION' => 'required|date_format:H:i|after_or_equal:SOLICITUD_VEHICULO_HORA_INICIO_CONDUCCION',
                 'SOLICITUD_VEHICULO_JEFE_QUE_AUTORIZA' => 'nullable|string|max:128',
+                'SOLICITUD_VEHICULO_VIATICO' => 'required',
             ], [
-                'TIPO_VEHICULO_ID.required' => 'El campo "tipo vehículo" es obligatorio.',
-                'TIPO_VEHICULO_ID.exists' => 'El "tipo vehículo" seleccionado no es válido.',
+                'VEHICULO_ID.required' => 'El campo VEHICULO_ID es obligatorio.',
+                'VEHICULO_ID.exists' => 'El vehículo seleccionado no es válido.',
                 //'RENDICION_ID.unique' => 'El valor ingresado para RENDICION_ID ya ha sido registrado.',
                 'SOLICITUD_VEHICULO_COMUNA.required' => 'El campo "comuna destino" es obligatorio.',
                 'SOLICITUD_VEHICULO_COMUNA.exists' => 'La comuna seleccionada no es válida.',
@@ -126,12 +141,20 @@ class SolicitudVehiculosController extends Controller
                 'SOLICITUD_VEHICULO_MOTIVO.max' => 'El motivo de la solicitud no puede tener más de 255 caracteres.',
                 'SOLICITUD_VEHICULO_FECHA_HORA_INICIO_SOLICITADA.required' => 'La fecha y hora de inicio de la solicitud es obligatoria.',
                 'SOLICITUD_VEHICULO_FECHA_HORA_INICIO_SOLICITADA.date' => 'La fecha y hora de inicio de la solicitud debe ser válida.',
-                'SOLICITUD_VEHICULO_FECHA_HORA_TERMINO_SOLICITADA.required' => 'La fecha y hora de término de la solicitud es obligatoria.',
+                'SOLICITUD_VEHICULO_FECHA_HORA_TERMINO_SOLICITADA.required' => 'El campo fecha y hora de término de solicitud es obligatorio.',
                 'SOLICITUD_VEHICULO_FECHA_HORA_TERMINO_SOLICITADA.date' => 'El campo fecha y hora de término de solicitud debe ser una fecha válida.',
                 'SOLICITUD_VEHICULO_FECHA_HORA_TERMINO_SOLICITADA.after_or_equal' => 'La fecha y hora de término de solicitud debe ser posterior o igual a la fecha y hora de inicio de solicitud.',
+                'SOLICITUD_VEHICULO_FECHA_HORA_TERMINO_ASIGNADA.date' => 'La fecha y hora de término asignada debe ser válida.',
+                'SOLICITUD_VEHICULO_FECHA_HORA_TERMINO_ASIGNADA.after' => 'La fecha y hora de término asignada debe ser posterior a la fecha y hora de inicio asignada.',
+                'SOLICITUD_VEHICULO_HORA_INICIO_CONDUCCION.required' => 'La hora de inicio de conducción es obligatoria.',
+                'SOLICITUD_VEHICULO_HORA_INICIO_CONDUCCION.date_format' => 'La hora de inicio de conducción debe tener un formato válido (HH:MM).',
+                'SOLICITUD_VEHICULO_HORA_TERMINO_CONDUCCION.required' => 'El campo hora de término de conducción es obligatorio.',
+                'SOLICITUD_VEHICULO_HORA_TERMINO_CONDUCCION.date_format' => 'El campo hora de término de conducción debe tener un formato de hora válido (HH:MM).',
+                'SOLICITUD_VEHICULO_HORA_TERMINO_CONDUCCION.after_or_equal' => 'La hora de término de conducción debe ser posterior o igual a la hora de inicio de conducción.',
                 'SOLICITUD_VEHICULO_JEFE_QUE_AUTORIZA.string' => 'El jefe que autoriza debe ser una cadena de caracteres.',
                 'SOLICITUD_VEHICULO_JEFE_QUE_AUTORIZA.max' => 'El jefe que autoriza no puede tener más de 128 caracteres.',
-
+                'SOLICITUD_VEHICULO_VIATICO.required' => 'Es obligatorio especificar si se requiere viático.',
+                //'SOLICITUD_VEHICULO_VIATICO.in' => 'El campo SOLICITUD_VEHICULO_VIATICO debe ser uno de: SI, NO.',
             ]);
             
             // Manejar errores de validación
@@ -143,37 +166,37 @@ class SolicitudVehiculosController extends Controller
             // Crear una nueva instancia de SolicitudVehicular y asignar los valores
             $solicitud = new SolicitudVehicular();
             $solicitud->USUARIO_id = auth()->user()->id;
-            $solicitud->TIPO_VEHICULO_ID = $request->input('TIPO_VEHICULO_ID');
+            $solicitud->VEHICULO_ID = $request->input('VEHICULO_ID');
+            //$solicitud->RENDICION_ID = ;
             $solicitud->COMUNA_ID = $request->input('SOLICITUD_VEHICULO_COMUNA');
-            $solicitud->SOLICITUD_VEHICULO_TIPO = 'GENERAL'; // Valor por defecto
             $solicitud->SOLICITUD_VEHICULO_MOTIVO = strtoupper($request->input('SOLICITUD_VEHICULO_MOTIVO'));
             $solicitud->SOLICITUD_VEHICULO_ESTADO = 'INGRESADO'; // Valor por defecto
             $solicitud->SOLICITUD_VEHICULO_FECHA_HORA_INICIO_SOLICITADA = $request->input('SOLICITUD_VEHICULO_FECHA_HORA_INICIO_SOLICITADA');
             $solicitud->SOLICITUD_VEHICULO_FECHA_HORA_TERMINO_SOLICITADA = $request->input('SOLICITUD_VEHICULO_FECHA_HORA_TERMINO_SOLICITADA');
+            $solicitud->SOLICITUD_VEHICULO_HORA_INICIO_CONDUCCION = $request->input('SOLICITUD_VEHICULO_HORA_INICIO_CONDUCCION');
+            $solicitud->SOLICITUD_VEHICULO_HORA_TERMINO_CONDUCCION =  $request->input('SOLICITUD_VEHICULO_HORA_TERMINO_CONDUCCION');
             $solicitud->SOLICITUD_VEHICULO_JEFE_QUE_AUTORIZA = $request->input('SOLICITUD_VEHICULO_JEFE_QUE_AUTORIZA');
+            $solicitud->SOLICITUD_VEHICULO_VIATICO = $request->input('SOLICITUD_VEHICULO_VIATICO');
             //dd($solicitud);
             $solicitud->save();
             //    dd($solicitud->SOLICITUD_VEHICULO_ID);
-           
-           
-            // Obtener las IDs de los pasajeros de la solicitud
-            $pasajerosIds = [];
+            // Obtener los pasajeros seleccionados y asociarlos con la solicitud vehicular
+            $pasajeros = [];
             foreach ($request->all() as $key => $value) {
                 if (strpos($key, 'PASAJERO_') === 0) {
-                    $pasajerosIds[] = $value;
+                    $pasajeros[] = $value;
                 }
             }
 
-            // Asociar los pasajeros con la solicitud vehicular
-            foreach ($pasajerosIds as $pasajeroId) {
-                $pasajero = new Pasajero();
-                $pasajero->USUARIO_id = $pasajeroId;
-                $pasajero->SOLICITUD_VEHICULO_ID = $solicitud->SOLICITUD_VEHICULO_ID;
-                $pasajero->save();
+            foreach ($pasajeros as $pasajeroId) {
+                $viaja = new Viaja();
+                $viaja->USUARIO_id = $pasajeroId;
+                $viaja->SOLICITUD_VEHICULO_ID = $solicitud->SOLICITUD_VEHICULO_ID;
+                $viaja->save();
             }
-            return redirect()->route('solicitudesvehiculos.index')->with('success', 'Solicitud creada exitosamente.');
+            return redirect()->route('solicitudesvehiculosctt.index')->with('success', 'Solicitud creada exitosamente.');
         } catch (Exception $e) {
-            //dd($e);
+            dd($e);
             return redirect()->back()->with('error', 'Error al crear la solicitud. Inténtelo de nuevo.');
         }
     }
@@ -203,40 +226,35 @@ class SolicitudVehiculosController extends Controller
             // Encontrar la solicitud por su ID
             $solicitud = SolicitudVehicular::findOrFail($id);
             // Obtener conductor y pasajeros que viajan en esta solicitud
-            $pasajeros = $solicitud->pasajeros()->get();
+            $pasajeros = $solicitud->viajan()->get();
+    
+            // Obtener los vehículos filtrados por el vehículo solicitado, en la oficina del solicitante y oficina del usuario en sesion
+            $vehiculos = Vehiculo::where('VEHICULO_ID', $solicitud->vehiculo->Vehiculo->VEHICULO_ID)
+                ->where(function ($query) use ($solicitud) {
+                    $query->whereHas('ubicacion', function ($subquery) use ($solicitud) {
+                        $subquery->where('OFICINA_ID', $solicitud->user->OFICINA_ID); // comparación con oficina de solicitante para vehículos asociados con ubicaciones
+                    })->whereHas('departamento', function ($subquery) use ($solicitud) {
+                        $subquery->where('OFICINA_ID', $solicitud->user->OFICINA_ID);  // comparación con oficina de solicitante para vehículos asociados con departamentos
+                    });
+                })
+                // Comparación entre la ubicación asociada al vehículo y la oficina del usuario en sesión activa
+                ->whereHas('ubicacion', function ($subquery) {
+                    $subquery->where('OFICINA_ID', auth()->user()->OFICINA_ID);
+                })
+                // Comparación entre el departamento asociado al vehículo y la oficina del usuario en sesión activa
+                ->orWhereHas('departamento', function ($subquery) {
+                    $subquery->where('OFICINA_ID', auth()->user()->OFICINA_ID);
+                })
+                ->get();
 
-            // Obtiene la OFICINA_ID del usuario actual
-            $oficinaIdUsuario = Auth::user()->OFICINA_ID;
-
-            // Consulta SQL para obtener vehículos asociados a la oficina del usuario en sesión y también al usuario que realizó la solicitud (para maximizar la seguridad del módulo).
-            $vehiculos = Vehiculo::select('VEHICULOS.*')
-            ->leftJoin('UBICACIONES', 'VEHICULOS.UBICACION_ID', '=', 'UBICACIONES.UBICACION_ID')
-            ->leftJoin('DEPARTAMENTOS', 'VEHICULOS.DEPARTAMENTO_ID', '=', 'DEPARTAMENTOS.DEPARTAMENTO_ID')
-            ->where(function($query) use ($oficinaIdUsuario, $solicitud) {
-                $query->where('UBICACIONES.OFICINA_ID', $oficinaIdUsuario)
-                    ->whereNull('VEHICULOS.DEPARTAMENTO_ID');
-            })
-            ->orWhere(function($query) use ($oficinaIdUsuario, $solicitud) {
-                $query->where('DEPARTAMENTOS.OFICINA_ID', $oficinaIdUsuario)
-                    ->whereNull('VEHICULOS.UBICACION_ID');
-            })
-            ->where(function($query) use ($solicitud) {
-                $query->where(function($query) use ($solicitud) {
-                    $query->where('UBICACIONES.OFICINA_ID', $solicitud->user->OFICINA_ID)
-                        ->orWhere('DEPARTAMENTOS.OFICINA_ID', $solicitud->user->OFICINA_ID);
-                });
-            })
-            ->get();
-        
-            
             // Retornar la vista de edición con los datos de la solicitud y los usuarios que viajan
-            return view('sia2.solicitudes.vehiculos.edit', compact('solicitud', 'pasajeros', 'vehiculos'));
+            return view('sia2.solicitudes.vehiculosctt.edit', compact('solicitud', 'pasajeros', 'vehiculos'));
         } catch (ModelNotFoundException $e) {
             // Manejar excepción de modelo no encontrado
-            return redirect()->route('solicitudesvehiculos.index')->with('error', 'Ocurrió un error inesperado.');
+            return redirect()->route('solicitudesvehiculosctt.index')->with('error', 'Ocurrió un error inesperado.');
         } catch (Exception $e) {
             // Manejar excepciones si es necesario
-            return redirect()->route('solicitudesvehiculos.index')->with('error', 'Error al cargar la solicitud de vehículo para editar: ');
+            return redirect()->route('solicitudesvehiculosctt.index')->with('error', 'Error al cargar la solicitud de vehículo para editar: ' . $e->getMessage());
         }
     }
     
@@ -260,13 +278,13 @@ class SolicitudVehiculosController extends Controller
             $solicitud->save();
     
             // Redirigir a la vista de edición con un mensaje de éxito
-            return redirect()->route('solicitudesvehiculos.edit', $id)->with('success', 'Solicitud actualizada correctamente.');
+            return redirect()->route('solicitudesvehiculosctt.edit', $id)->with('success', 'Solicitud actualizada correctamente.');
         } catch (ModelNotFoundException $e) {
             // Manejar excepción de modelo no encontrado
-            return redirect()->route('solicitudesvehiculos.index')->with('error', 'Ocurrió un error inesperado.');
+            return redirect()->route('solicitudesvehiculosctt.index')->with('error', 'Ocurrió un error inesperado.');
         } catch (Exception $e) {
             // Manejar excepciones si es necesario
-            return redirect()->route('solicitudesvehiculos.index')->with('error', 'Error al actualizar la solicitud de vehículo.');
+            return redirect()->route('solicitudesvehiculosctt.index')->with('error', 'Error al actualizar la solicitud de vehículo.');
         }
     }
     /**

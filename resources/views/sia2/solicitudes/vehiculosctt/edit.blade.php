@@ -61,7 +61,7 @@
             <h3>Especificaciones</h3>
                 <div class="form-group">
                     <label for="TIPO_VEHICULO_ID" class="form-label"><i class="fa-solid fa-car-side"></i> Tipo de Vehículo</label>
-                    <input type="text" class="form-control" value="{{ $solicitud->tipoVehiculo->TIPO_VEHICULO_NOMBRE }}" readonly>
+                    <input type="text" class="form-control" value="{{ $solicitud->vehiculo->tipoVehiculo->TIPO_VEHICULO_NOMBRE }}" readonly>
                 </div>
 
             <div class="form-group">
