@@ -52,12 +52,16 @@
                 @foreach($solicitudes as $solicitud)
                     <tr>
                         <td>{{ $solicitud->solicitante->USUARIO_NOMBRES }} {{$solicitud->solicitante->USUARIO_APELLIDOS}}</td>
-                        <td>{{ $solicitud->SOLICITUD_ESTADO }}</td>
+                        <!-- Colores para el estado de las tablas -->
+                        <td><span class="badge rounded-pill estado-{{ strtolower(str_replace(' ', '-', $solicitud->SOLICITUD_ESTADO)) }}">
+                        {{ $solicitud->SOLICITUD_ESTADO }}
+                        </span>
+                        </td>
                         <td>{{ $solicitud->created_at }}</td>
                         <td>
                             <div class="d-flex justify-content-center">
                                 <a href="{{ route('solicitudes.formularios.show', $solicitud->SOLICITUD_ID) }}" class="btn btn-primary"><i class="fa-solid fa-eye"></i></a>
-                                <a href="{{ route('solicitudes.formularios.edit', $solicitud->SOLICITUD_ID) }}" class="btn btn-secondary ml-2"><i class="fa-solid fa-pencil"></i></a>
+                                <a href="{{ route('solicitudes.formularios.edit', $solicitud->SOLICITUD_ID) }}" class="btn botoneditar ml-2"><i class="fa-solid fa-pencil"></i></a>
                                 <form action="{{ route('solicitudes.formularios.destroy', $solicitud->SOLICITUD_ID) }}" method="POST" class="d-inline">
                                     @csrf
                                     @method('DELETE')
@@ -85,6 +89,32 @@
         .botoneditar{
             background-color: #1aa16b;
             color: #fff;
+        }
+        
+        /*Colores de los estados*/
+        .estado-ingresado {
+        color: #000000;
+        background-color: #FFA600;
+        }
+
+        .estado-en-revision {
+        color: #000000;
+        background-color: #F7F70B;
+        }
+
+        .estado-aprobado {
+        color: #ffffff;
+        background-color: #0CB009;
+        }
+
+        .estado-rechazado {
+        color: #FFFFFF;
+        background-color: #F70B0B;
+        }
+
+        .estado-terminado {
+        color: #000000;
+        background-color: #d9d9d9;
         }
     </style>
 @stop
