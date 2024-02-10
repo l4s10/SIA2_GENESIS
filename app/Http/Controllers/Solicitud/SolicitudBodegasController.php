@@ -12,6 +12,8 @@ use Illuminate\Support\Facades\Auth;
 // Importar modelos
 use App\Models\Solicitud;
 use App\Models\Bodega;
+use App\Models\RevisionSolicitud;
+use App\Models\SolicitudBodega;
 
 class SolicitudBodegasController extends Controller
 {
@@ -97,8 +99,18 @@ class SolicitudBodegasController extends Controller
             // Buscar la solicitud por ID
             $solicitud = Solicitud::has('bodegas')->findOrFail($id);
 
+            // Recuperar la tabla intermedia de la solicitud de bodegas asociaddas
+            $tablaIntermedia = SolicitudBodega::where('SOLICITUD_ID', $solicitud->SOLICITUD_ID)->first();
+
+            // Verificar si se encontró la tabla intermedia
+            if ($tablaIntermedia) {
+                $bodegaAsignada = Bodega::where('BODEGA_ID', $tablaIntermedia->SOLICITUD_BODEGA_ID_ASIGNADA)->first();
+            } else {
+                $bodegaAsignada = null;
+            }
+
             // Retornar la vista con la solicitud
-            return view('sia2.solicitudes.bodegas.show', compact('solicitud'));
+            return view('sia2.solicitudes.bodegas.show', compact('solicitud','bodegaAsignada'));
         }catch(Exception $e){
             return redirect()->back()->with('error', 'Error al cargar la solicitud.');
         }
@@ -109,7 +121,29 @@ class SolicitudBodegasController extends Controller
      */
     public function edit(string $id)
     {
-        //
+        // try-catch
+        try{
+            // Buscar la solicitud por ID
+            $solicitud = Solicitud::has('bodegas')->findOrFail($id);
+
+            // Buscar las bodegas por OFICINA_ID del usuario logueado
+            $bodegas = Bodega::where('OFICINA_ID', Auth::user()->OFICINA_ID)->get();
+
+            // Recuperar la tabla intermedia de la solicitud de bodegas asociaddas
+            $tablaIntermedia = SolicitudBodega::where('SOLICITUD_ID', $solicitud->SOLICITUD_ID)->first();
+
+            // Verificar si se encontró la tabla intermedia
+            if ($tablaIntermedia) {
+                $bodegaAsignada = Bodega::where('BODEGA_ID', $tablaIntermedia->SOLICITUD_BODEGA_ID_ASIGNADA)->first();
+            } else {
+                $bodegaAsignada = null;
+            }
+
+            // Retornar la vista con la solicitud
+            return view('sia2.solicitudes.bodegas.edit', compact('solicitud','bodegas','bodegaAsignada'));
+        }catch(Exception $e){
+            return redirect()->back()->with('error', 'Error al cargar la solicitud.');
+        }
     }
 
     /**
@@ -117,7 +151,49 @@ class SolicitudBodegasController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        //
+        // try-catch
+        try{
+            // Validar los datos del formulario de edición de la solicitud
+            $validator = Validator::make($request->all(),[
+                // PARA ASIGNACION
+                'SOLICITUD_ESTADO' => 'required|string|max:255|in:INGRESADO,EN REVISION,APROBADO,RECHAZADO,TERMINADO',
+                'SOLICITUD_FECHA_HORA_INICIO_ASIGNADA' => 'required|date',
+                'SOLICITUD_FECHA_HORA_TERMINO_ASIGNADA' => 'required|date|after:SOLICITUD_FECHA_HORA_INICIO_ASIGNADA',
+                'REVISION_SOLICITUD_OBSERVACION' => 'required|string|max:255',
+            ], [
+                //Mensajes de error
+                'required' => 'El campo :attribute es requerido.',
+                'date' => 'El campo :attribute debe ser una fecha.',
+                'after' => 'El campo :attribute debe ser una fecha posterior a la fecha de inicio solicitada.',
+                'string' => 'El campo :attribute debe ser una cadena de caracteres.',
+                'exists' => 'El campo :attribute no existe en la base de datos.',
+                'in' => 'El campo :attribute debe ser uno de los siguientes valores: INGRESADO, EN REVISION, APROBADO, RECHAZADO.',
+            ]);
+
+            // Si falla la validación, redirigir al formulario con los errores
+            if($validator->fails()){
+                return redirect()->back()->withErrors($validator)->withInput();
+            }
+
+            // Buscar la solicitud por ID
+            $solicitud = Solicitud::has('bodegas')->findOrFail($id);
+
+            // Actualizar la solicitud
+            $solicitud->update([
+                'SOLICITUD_ESTADO' => $request->input('SOLICITUD_ESTADO'),
+                'SOLICITUD_FECHA_HORA_INICIO_ASIGNADA' => $request->input('SOLICITUD_FECHA_HORA_INICIO_ASIGNADA'),
+                'SOLICITUD_FECHA_HORA_TERMINO_ASIGNADA' => $request->input('SOLICITUD_FECHA_HORA_TERMINO_ASIGNADA'),
+            ]);
+
+            // Crear una nueva revisión para la solicitud
+            $this->createRevisionSolicitud($request, $solicitud);
+
+            // Redirigir a la vista de solicitudes con mensaje de éxito
+            return redirect()->route('solicitudes.bodegas.index')->with('success', 'Solicitud actualizada exitosamente.');
+
+        }catch(Exception $e){
+            return redirect()->back()->with('error', 'Error al actualizar la solicitud.');
+        }
     }
 
     /**
@@ -141,4 +217,27 @@ class SolicitudBodegasController extends Controller
             return redirect()->back()->with('error', 'Error al eliminar la solicitud.');
         }
     }
+
+    /**
+    * Crear una nueva revision para la solicitud.
+    */
+    private function createRevisionSolicitud(Request $request, Solicitud $solicitud)
+    {
+        // try-catch
+        try
+        {
+            // Crear la revisión de la solicitud
+            RevisionSolicitud::create([
+                'USUARIO_ID' => Auth::user()->id,
+                'SOLICITUD_ID' => $solicitud->SOLICITUD_ID,
+                'REVISION_SOLICITUD_OBSERVACION' => $request->input('REVISION_SOLICITUD_OBSERVACION'),
+            ]);
+        }
+        catch(Exception $e)
+        {
+            // Manejo de excepciones
+            return redirect()->route('solicitudes.formularios.index')->with('error', 'Error al crear la revisión de la solicitud.');
+        }
+    }
+
 }

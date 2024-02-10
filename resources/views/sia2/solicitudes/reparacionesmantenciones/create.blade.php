@@ -32,14 +32,13 @@
         </script>
     @endif
 
-    <div class="container">
         {{-- Formulario de Solicitud --}}
         <form action="{{ route('solicitudes.reparaciones.store') }}" method="POST">
             @csrf
 
             {{-- Tipo de Solicitud --}}
             <div class="form-group {{ $errors->has('SOLICITUD_REPARACION_TIPO') ? 'has-error' : '' }}">
-                <label for="SOLICITUD_REPARACION_TIPO">Tipo de solicitud</label>
+                <label for="SOLICITUD_REPARACION_TIPO"><i class="fa-solid fa-file-pen"></i> Tipo de solicitud</label>
                 <select name="SOLICITUD_REPARACION_TIPO" id="SOLICITUD_REPARACION_TIPO" class="form-control" required>
                     <option value="">Seleccione un tipo</option>
                     <option value="REPARACION">Reparación</option>
@@ -52,7 +51,7 @@
 
             {{-- Categoría de Solicitud --}}
             <div class="form-group {{ $errors->has('CATEGORIA_REPARACION_ID') ? 'has-error' : '' }}">
-                <label for="CATEGORIA_REPARACION_ID">Categoría de solicitud</label>
+                <label for="CATEGORIA_REPARACION_ID"><i class="fa-solid fa-car-on"></i> Categoría de solicitud</label>
                 <select name="CATEGORIA_REPARACION_ID" id="CATEGORIA_REPARACION_ID" class="form-control" required>
                     <option value="">Seleccione una categoría</option>
                     @foreach ($categorias as $categoria)
@@ -66,11 +65,13 @@
 
             {{-- Vehículo con Problemas --}}
             <div class="form-group {{ $errors->has('VEHICULO_ID') ? 'has-error' : '' }}">
-                <label for="VEHICULO_ID">Vehículo con problemas</label>
+                <label for="VEHICULO_ID"><i class="fa-solid fa-car-burst"></i> Vehículo con problemas</label>
                 <select name="VEHICULO_ID" id="VEHICULO_ID" class="form-control">
                     <option value="">Seleccione un vehículo</option>
                     @foreach ($vehiculos as $vehiculo)
-                        <option value="{{ $vehiculo->VEHICULO_ID }}">{{ $vehiculo->VEHICULO_PATENTE }}</option>
+                    <option value="{{ $vehiculo->VEHICULO_ID }}">
+                        {{ $vehiculo->VEHICULO_PATENTE }} - {{ $vehiculo->VEHICULO_MODELO }}, {{ $vehiculo->tipoVehiculo->TIPO_VEHICULO_NOMBRE }}
+                    </option>
                     @endforeach
                 </select>
                 @error('VEHICULO_ID')
@@ -80,23 +81,24 @@
 
             {{-- Motivo de la Solicitud --}}
             <div class="form-group {{ $errors->has('SOLICITUD_REPARACION_MOTIVO') ? 'has-error' : '' }}">
-                <label for="SOLICITUD_REPARACION_MOTIVO">Motivo de la Solicitud</label>
-                <input type="text" class="form-control" id="SOLICITUD_REPARACION_MOTIVO" name="SOLICITUD_REPARACION_MOTIVO" required>
+                <label for="SOLICITUD_REPARACION_MOTIVO"><i class="fa-solid fa-pen-to-square"></i> Motivo de la Solicitud</label>
+                <textarea class="form-control" id="SOLICITUD_REPARACION_MOTIVO" name="SOLICITUD_REPARACION_MOTIVO" rows="3" placeholder="Indique el problema. Máx 1000 caracteres" required></textarea>
                 @error('SOLICITUD_REPARACION_MOTIVO')
                     <span class="text-danger">{{ $message }}</span>
                 @enderror
             </div>
 
+
             {{-- Estado de la Solicitud --}}
             <div class="form-group">
-                <label for="SOLICITUD_ESTADO">Estado de la Solicitud</label>
+                <label for="SOLICITUD_ESTADO"><i class="fa-solid fa-file-circle-check"></i> Estado de la Solicitud</label>
                 <input type="text" class="form-control" id="SOLICITUD_ESTADO" name="SOLICITUD_ESTADO" value="🟠INGRESADO" readonly>
             </div>
 
             {{-- Botón de envío --}}
-            <button type="submit" class="btn agregar">Crear Solicitud</button>
+            <button type="submit" class="btn agregar"><i class="fa-solid fa-plus"></i> Crear Solicitud</button>
         </form>
-    </div>
+
 @stop
 
 @section('css')
@@ -124,5 +126,57 @@
 @stop
 
 @section('js')
+    <script>
+        $(document).ready(function() {
+            // Función para manejar la visibilidad, habilitación/deshabilitación y requerimiento del campo de vehículo
+            function toggleVehiculoField(tipoSeleccionado) {
+                var $campoVehiculo = $('#VEHICULO_ID');
+                var $grupoCampoVehiculo = $campoVehiculo.closest('.form-group');
 
+                if(tipoSeleccionado === 'MANTENCION') {
+                    // Muestra y habilita el campo de vehículo para Mantención, y lo hace requerido
+                    $grupoCampoVehiculo.show();
+                    $campoVehiculo.prop('disabled', false);
+                    $campoVehiculo.attr('required', true);
+                } else {
+                    // Oculta y deshabilita el campo de vehículo para Reparación, y lo hace no requerido
+                    $grupoCampoVehiculo.hide();
+                    $campoVehiculo.prop('disabled', true);
+                    $campoVehiculo.removeAttr('required');
+                }
+            }
+
+            $('#SOLICITUD_REPARACION_TIPO').change(function() {
+                var tipoSeleccionado = $(this).val(); // Obtiene el tipo seleccionado
+
+                // Llama a la función para ajustar el estado del campo de vehículo basado en la selección
+                toggleVehiculoField(tipoSeleccionado);
+
+                // Filtrado de categorías basado en la selección
+                var opcionesCategoria = $('#CATEGORIA_REPARACION_ID option');
+                opcionesCategoria.each(function() {
+                    var opcion = $(this);
+                    opcion.hide(); // Oculta todas las opciones primero para filtrar luego
+
+                    if(tipoSeleccionado === 'REPARACION') {
+                        if(!['MANTENCION CORRECTIVA', 'MANTENCION PREVENTIVA'].includes(opcion.text())) {
+                            opcion.show();
+                        }
+                    } else if(tipoSeleccionado === 'MANTENCION') {
+                        if(['MANTENCION CORRECTIVA', 'MANTENCION PREVENTIVA', 'OTRO'].includes(opcion.text())) {
+                            opcion.show();
+                        }
+                    } else {
+                        opcion.show();
+                    }
+                });
+
+                // Reinicia la selección de categorías cada vez que se cambia el tipo
+                $('#CATEGORIA_REPARACION_ID').val('').trigger('change');
+            });
+
+            // Llamada inicial para establecer el estado del campo de vehículo basado en la selección actual
+            toggleVehiculoField($('#SOLICITUD_REPARACION_TIPO').val());
+        });
+    </script>
 @stop

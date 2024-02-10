@@ -17,7 +17,6 @@ class SolicitudReparacion extends Model
     //!! Recomendación, todos los atributos (MENOS EL ID) deben ir aquí.
     protected $fillable = [
         'USUARIO_id',
-        'UBICACION_NOMBRE',
         'SOLICITUD_REPARACION_TIPO',
         'CATEGORIA_REPARACION_ID',
         'SOLICITUD_REPARACION_MOTIVO',
@@ -42,10 +41,15 @@ class SolicitudReparacion extends Model
         return $this->belongsTo(CategoriaReparacion::class, 'CATEGORIA_REPARACION_ID', 'CATEGORIA_REPARACION_ID');
     }
 
-    //!! ESTA BASE ESTA HECHA PARA VEHICULOS UNA VEZ LISTO uwu
-    /*public function vehiculo()
+    // Relacion con revision_solicitudes a traves de su ID
+    public function revisiones()
     {
-        return $this->belongsTo(Oficina::class, 'USUARIO_id', 'USUARIO_ID');
+        return $this->hasMany(RevisionSolicitud::class, 'SOLICITUD_REPARACION_ID', 'SOLICITUD_REPARACION_ID');
     }
-    */
+
+    //!! Base para vehículo corregida
+    // public function vehiculo()
+    // {
+    //     return $this->belongsTo(Vehiculo::class, 'VEHICULO_ID', 'VEHICULO_ID');
+    // }
 }

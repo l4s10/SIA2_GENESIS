@@ -14,6 +14,8 @@ use Gloudemans\Shoppingcart\Facades\Cart;
 use App\Models\Solicitud;
 use App\Models\Sala;
 use App\Models\TipoEquipo;
+use App\Models\RevisionSolicitud;
+use App\Models\SolicitudSala;
 
 class SolicitudSalasController extends Controller
 {
@@ -122,8 +124,18 @@ class SolicitudSalasController extends Controller
             // Recuperar la solicitud con sus salas asociadas
             $solicitud = Solicitud::findOrFail($id);
 
+            // Recuperar la tabla intermedia de la solicitud con las salas asociadas
+            $tablaIntermedia = SolicitudSala::where('SOLICITUD_ID', $solicitud->SOLICITUD_ID)->first();
+
+            // Verificar si se encontró la tabla intermedia
+            if ($tablaIntermedia) {
+                $salaAsignada = Sala::where('SALA_ID', $tablaIntermedia->SOLICITUD_SALA_ID_ASIGNADA)->first();
+            } else {
+                $salaAsignada = null;
+            }
+
             // Retornar la vista con la solicitud
-            return view('sia2.solicitudes.salas.show', compact('solicitud'));
+            return view('sia2.solicitudes.salas.show', compact('solicitud', 'salaAsignada'));
         }catch(Exception $e){
             return redirect()->back()->with('error', 'Error al cargar la pagina, vuelva a intentarlo mas tarde.');
         }
@@ -134,7 +146,28 @@ class SolicitudSalasController extends Controller
      */
     public function edit(string $id)
     {
-        //
+        try
+        {
+            $solicitud = Solicitud::findOrFail($id);
+
+            $salas = Sala::where('OFICINA_ID', Auth::user()->OFICINA_ID)->get();
+
+            // Recuperar la tabla intermedia de la solicitud con las salas asociadas
+            $tablaIntermedia = SolicitudSala::where('SOLICITUD_ID', $solicitud->SOLICITUD_ID)->first();
+
+            // Verificar si se encontró la tabla intermedia
+            if ($tablaIntermedia) {
+                $salaAsignada = Sala::where('SALA_ID', $tablaIntermedia->SOLICITUD_SALA_ID_ASIGNADA)->first();
+            } else {
+                $salaAsignada = null;
+            }
+
+            return view('sia2.solicitudes.salas.edit', compact('solicitud', 'salas', 'salaAsignada'));
+        }
+        catch(Exception $e)
+        {
+            return redirect()->back()->with('error', 'Error al cargar la página, vuelva a intentarlo más tarde.');
+        }
     }
 
     /**
@@ -142,9 +175,62 @@ class SolicitudSalasController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        //
-    }
+        // try-catch
+        try
+        {
+            // Validar los datos del formulario de edición de la solicitud
+            $validator = Validator::make($request->all(),[
+                // PARA ASIGNACION
+                'SOLICITUD_ESTADO' => 'required|string|max:255|in:INGRESADO,EN REVISION,APROBADO,RECHAZADO,TERMINADO',
+                'SOLICITUD_FECHA_HORA_INICIO_ASIGNADA' => 'required|date',
+                'SOLICITUD_FECHA_HORA_TERMINO_ASIGNADA' => 'required|date|after:SOLICITUD_FECHA_HORA_INICIO_ASIGNADA',
+                // PARA REVISION
+                'SOLICITUD_SALA_ID_ASIGNADA' => 'required|exists:salas,SALA_ID', // Asegura que la sala asignada exista en la base de datos
+                'REVISION_SOLICITUD_OBSERVACION' => 'required|string|max:255',
+                'autorizar.*' => 'required|numeric|min:0', // Asegura que todos los valores en el array sean numéricos y no negativos
+            ], [
+                //Mensajes de error
+                'required' => 'El campo :attribute es requerido.',
+                'date' => 'El campo :attribute debe ser una fecha.',
+                'after' => 'El campo :attribute debe ser una fecha posterior a la fecha de inicio solicitada.',
+                'string' => 'El campo :attribute debe ser una cadena de caracteres.',
+                'exists' => 'El campo :attribute no existe en la base de datos.',
+                'in' => 'El campo :attribute debe ser uno de los siguientes valores: INGRESADO, EN REVISION, APROBADO, RECHAZADO.',
+                'numeric' => 'El campo :attribute debe ser un número.',
+                'min' => 'El campo :attribute debe ser un número positivo.',
+            ]);
 
+            // Si la validación falla, se redirecciona al formulario con los errores
+            if ($validator->fails()) {
+                return redirect()->back()->withErrors($validator)->withInput();
+            }
+
+            // Recuperar la solicitud que solo tenga salas asociadas
+            $solicitud = Solicitud::has('salas')->findOrFail($id);
+
+            // actualizar la solicitud
+            $solicitud->update([
+                'SOLICITUD_ESTADO' => $request->input('SOLICITUD_ESTADO'),
+                'SOLICITUD_FECHA_HORA_INICIO_ASIGNADA' => $request->input('SOLICITUD_FECHA_HORA_INICIO_ASIGNADA'),
+                'SOLICITUD_FECHA_HORA_TERMINO_ASIGNADA' => $request->input('SOLICITUD_FECHA_HORA_TERMINO_ASIGNADA'),
+            ]);
+
+            // Llamar a la funcion para autorizar la sala
+            $this->autorizarSala($request, $solicitud);
+
+            // Llamar a la funcion para autorizar los equipos
+            $this->autorizarEquipos($request, $solicitud);
+
+            // Llamar a la funcion para crear la revision de la solicitud
+            $this->createRevisionSolicitud($request, $solicitud);
+
+            //redireccionar a la vista de solicitudes con un mensaje de éxito
+            return redirect()->route('solicitudes.salas.index')->with('success', 'Solicitud actualizada correctamente.');
+
+        }catch(Exception $e){
+            return redirect()->back()->with('error', 'Error al cargar la pagina, vuelva a intentarlo mas tarde.');
+        }
+    }
     /**
      * Remove the specified resource from storage.
      */
@@ -170,4 +256,61 @@ class SolicitudSalasController extends Controller
             return redirect()->back()->with('error', 'Error al cargar la pagina, vuelva a intentarlo mas tarde.');
         }
     }
+
+
+    /**
+    * Crear una nueva revision para la solicitud.
+    */
+    private function createRevisionSolicitud(Request $request, Solicitud $solicitud)
+    {
+        // try-catch
+        try
+        {
+            // Crear la revisión de la solicitud
+            RevisionSolicitud::create([
+                'USUARIO_ID' => Auth::user()->id,
+                'SOLICITUD_ID' => $solicitud->SOLICITUD_ID,
+                'REVISION_SOLICITUD_OBSERVACION' => $request->input('REVISION_SOLICITUD_OBSERVACION'),
+            ]);
+        }
+        catch(Exception $e)
+        {
+            // Manejo de excepciones
+            return redirect()->route('solicitudes.formularios.index')->with('error', 'Error al crear la revisión de la solicitud.');
+        }
+    }
+
+    /**
+     * Autorizar la sala para la solicitud.
+     */
+    private function autorizarSala(Request $request, Solicitud $solicitud){
+        try {
+            // Recuperar el ID de la sala a asignar desde el input
+            $salaId = $request->input('SOLICITUD_SALA_ID_ASIGNADA');
+
+            if (!empty($salaId)) {
+                // Actualizar la sala asignada
+                SolicitudSala::where('SOLICITUD_ID', $solicitud->SOLICITUD_ID)->update(['SOLICITUD_SALA_ID_ASIGNADA' => $salaId]);
+            }
+        } catch (Exception $e) {
+            // Considera loguear el error para depuración
+            return redirect()->back()->with('error', 'Error al autorizar la sala, vuelva a intentarlo más tarde.');
+        }
+    }
+
+
+    // Funcion para autorizar los equipos si corresponde
+    private function autorizarEquipos(Request $request, Solicitud $solicitud){
+        try {
+            $autorizaciones = $request->input('autorizar', []); // Obtiene el array de autorizaciones o un array vacío si no hay nada
+
+            foreach ($autorizaciones as $tipoEquipoId => $cantidadAutorizada) {
+                $solicitud->equipos()->updateExistingPivot($tipoEquipoId, ['SOLICITUD_EQUIPOS_CANTIDAD_AUTORIZADA' => $cantidadAutorizada]);
+            }
+        } catch (Exception $e) {
+            // Considera loguear el error para depuración
+            return redirect()->back()->with('error', 'Error al autorizar los equipos, vuelva a intentarlo más tarde.');
+        }
+    }
+
 }

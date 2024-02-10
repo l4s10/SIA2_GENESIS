@@ -56,9 +56,9 @@
                         <td>{{ $solicitud->created_at }}</td>
                         <td>
                             <div class="d-flex justify-content-center">
-                                <a href="{{ route('solicitudesequipos.show', $solicitud->SOLICITUD_ID) }}" class="btn btn-primary"><i class="fa-solid fa-eye"></i></a>
-                                <a href="{{ route('solicitudesequipos.edit', $solicitud->SOLICITUD_ID) }}" class="btn btn-secondary ml-2"><i class="fa-solid fa-pencil"></i></a>
-                                <form action="{{ route('solicitudesequipos.destroy', $solicitud->SOLICITUD_ID) }}" method="POST">
+                                <a href="{{ route('solicitudes.equipos.show', $solicitud->SOLICITUD_ID) }}" class="btn btn-primary"><i class="fa-solid fa-eye"></i></a>
+                                <a href="{{ route('solicitudes.equipos.edit', $solicitud->SOLICITUD_ID) }}" class="btn btn-secondary ml-2"><i class="fa-solid fa-pencil"></i></a>
+                                <form action="{{ route('solicitudes.equipos.destroy', $solicitud->SOLICITUD_ID) }}" method="POST">
                                     @csrf
                                     @method('DELETE')
                                     <button type="submit" class="btn btn-danger ml-2"><i class="fa-solid fa-trash"></i></button>

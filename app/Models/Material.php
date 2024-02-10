@@ -50,4 +50,10 @@ class Material extends Model implements Buyable
         // El material no tiene un precio como tal, se le asigna un precio de 0.
         return 0;
     }
+
+    // Funcion para relacionar con la tabla movimientos
+    public function movimientos()
+    {
+        return $this->hasMany(Movimiento::class, 'MATERIAL_ID');
+    }
 }

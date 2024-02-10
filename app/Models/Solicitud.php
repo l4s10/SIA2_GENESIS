@@ -41,6 +41,7 @@ class Solicitud extends Model
         {
             return $this->belongsToMany(Material::class, 'solicitudes_materiales', 'SOLICITUD_ID', 'MATERIAL_ID')
                 ->withPivot('SOLICITUD_MATERIAL_CANTIDAD')
+                ->withPivot('SOLICITUD_MATERIAL_CANTIDAD_AUTORIZADA')
                 ->withTimestamps();
         }
 
@@ -65,6 +66,7 @@ class Solicitud extends Model
         public function salas()
         {
             return $this->belongsToMany(Sala::class, 'solicitudes_salas', 'SOLICITUD_ID', 'SALA_ID')
+                ->withPivot('SOLICITUD_SALA_ID_ASIGNADA')
                 ->withTimestamps();
         }
 
@@ -73,5 +75,21 @@ class Solicitud extends Model
         {
             return $this->belongsToMany(Bodega::class, 'solicitudes_bodegas', 'SOLICITUD_ID', 'BODEGA_ID')
                 ->withTimestamps();
+        }
+
+        // Relación de uno a muchos con RevisionSolicitud
+        public function revisiones()
+        {
+            return $this->hasMany(RevisionSolicitud::class, 'SOLICITUD_ID', 'SOLICITUD_ID');
+        }
+
+        // Funcion para devolver las fechas en formato correcto CHILE
+        public function mostrarFecha($value)
+        {
+            //caso vacio retornar nulo
+            if ($value == null) {
+                return null;
+            }
+            return date('d-m-Y H:i', strtotime($value));
         }
 }

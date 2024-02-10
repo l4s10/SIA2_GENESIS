@@ -10,23 +10,23 @@ use App\Http\Controllers\Solicitud\SolicitudFormulariosController;
 Route::prefix('solicitudes')->group(function () {
     //Definir cada ruta de solicitud de formularios con nombre "solicitudesformularios.{nombre_ruta}"
     //** Listar solicitudes */
-    Route::get('/formularios', [SolicitudFormulariosController::class, 'index'])->name('solicitudesformularios.index');
+    Route::get('/formularios', [SolicitudFormulariosController::class, 'index'])->name('solicitudes.formularios.index');
 
     //** Crear solicitud */
-    Route::get('/formularios/create', [SolicitudFormulariosController::class, 'create'])->name('solicitudesformularios.create');
+    Route::get('/formularios/create', [SolicitudFormulariosController::class, 'create'])->name('solicitudes.formularios.create');
 
     //** Guardar solicitud */
-    Route::post('/formularios', [SolicitudFormulariosController::class, 'store'])->name('solicitudesformularios.store');
+    Route::post('/formularios', [SolicitudFormulariosController::class, 'store'])->name('solicitudes.formularios.store');
 
     //** Mostrar solicitud */
-    Route::get('/formularios/{solicitudesformulario}', [SolicitudFormulariosController::class, 'show'])->name('solicitudesformularios.show');
+    Route::get('/formularios/{solicitudesformulario}', [SolicitudFormulariosController::class, 'show'])->name('solicitudes.formularios.show');
 
     //** Editar solicitud */
-    Route::get('/formularios/{solicitudesformulario}/edit', [SolicitudFormulariosController::class, 'edit'])->name('solicitudesformularios.edit');
+    Route::get('/formularios/{solicitudesformulario}/edit', [SolicitudFormulariosController::class, 'edit'])->name('solicitudes.formularios.edit');
 
     //** Actualizar solicitud */
-    Route::put('/formularios/{solicitudesformulario}', [SolicitudFormulariosController::class, 'update'])->name('solicitudesformularios.update');
+    Route::put('/formularios/{solicitudesformulario}', [SolicitudFormulariosController::class, 'update'])->name('solicitudes.formularios.update');
 
     //** Eliminar solicitud */
-    Route::delete('/formularios/{solicitudesformulario}', [SolicitudFormulariosController::class, 'destroy'])->name('solicitudesformularios.destroy');
+    Route::delete('/formularios/{solicitudesformulario}', [SolicitudFormulariosController::class, 'destroy'])->name('solicitudes.formularios.destroy');
 });

@@ -12,6 +12,7 @@ use Exception;
 use App\Models\SolicitudReparacion;
 use App\Models\CategoriaReparacion;
 use App\Models\Vehiculo;
+use App\Models\RevisionSolicitud;
 
 class SolicitudReparacionesController extends Controller
 {
@@ -118,7 +119,22 @@ class SolicitudReparacionesController extends Controller
      */
     public function edit(string $id)
     {
-        //
+        // try-catch
+        try
+        {
+            // Buscar la solicitud por ID
+            $solicitud = SolicitudReparacion::findOrFail($id);
+
+            // Cargar las categorias
+            // $categorias = CategoriaReparacion::all();
+
+            // Retornar la vista del formulario con la solicitud y las categorias
+            return view('sia2.solicitudes.reparacionesmantenciones.edit', compact('solicitud'));
+        }
+        catch(Exception $e)
+        {
+            return redirect()->back()->with('error', 'Error al cargar la solicitud.');
+        }
     }
 
     /**
@@ -126,7 +142,46 @@ class SolicitudReparacionesController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        //
+        // try-catch
+        try{
+            // Validar los datos del formulario de solicitud de reparaciones.
+            $validator = Validator::make($request->all(),[
+                'SOLICITUD_REPARACION_ESTADO' => 'required|string|max:20',
+                'SOLICITUD_REPARACION_FECHA_HORA_INICIO' => 'nullable|date',
+                'SOLICITUD_REPARACION_FECHA_HORA_TERMINO' => 'nullable|date|after_or_equal:SOLICITUD_REPARACION_FECHA_HORA_INICIO',
+                'REVISION_SOLICITUD_OBSERVACION' => 'required|string|max:255',
+            ], [
+                //Mensajes de error
+                'required' => 'El campo :attribute es requerido.',
+                'string' => 'El campo :attribute debe ser una cadena de caracteres.',
+                'max' => 'El campo :attribute debe tener un máximo de :max caracteres.',
+                'date' => 'El campo :attribute debe ser una fecha válida.',
+                'after_or_equal' => 'El campo :attribute debe ser una fecha posterior o igual a la fecha de inicio.',
+            ]);
+
+            // Si falla la validación, redirigir al formulario con los errores
+            if($validator->fails()){
+                return redirect()->back()->withErrors($validator)->withInput();
+            }
+
+            // Buscar la solicitud por ID
+            $solicitud = SolicitudReparacion::findOrFail($id);
+
+            // Actualizar la solicitud
+            $solicitud->update([
+                'SOLICITUD_REPARACION_ESTADO' => $request->input('SOLICITUD_REPARACION_ESTADO'),
+                'SOLICITUD_REPARACION_FECHA_HORA_INICIO' => $request->input('SOLICITUD_REPARACION_FECHA_HORA_INICIO'),
+                'SOLICITUD_REPARACION_FECHA_HORA_TERMINO' => $request->input('SOLICITUD_REPARACION_FECHA_HORA_TERMINO'),
+            ]);
+
+            // Crear la revisión de la solicitud
+            $this->createRevisionSolicitud($request, $solicitud);
+
+            // Redirigir a la vista de solicitudes con mensaje de éxito
+            return redirect()->route('solicitudes.reparaciones.index')->with('success', 'Solicitud actualizada exitosamente.');
+        }catch(Exception $e){
+            return redirect()->back()->with('error', 'Error al actualizar la solicitud.');
+        }
     }
 
     /**
@@ -145,6 +200,28 @@ class SolicitudReparacionesController extends Controller
             return redirect()->route('solicitudes.reparaciones.index')->with('success', 'Solicitud eliminada exitosamente.');
         }catch(Exception $e){
             return redirect()->back()->with('error', 'Error al eliminar la solicitud.');
+        }
+    }
+
+    /**
+    * Crear una nueva revision para la solicitud.
+    */
+    private function createRevisionSolicitud(Request $request, SolicitudReparacion $solicitud)
+    {
+        // try-catch
+        try
+        {
+            // Crear la revisión de la solicitud
+            RevisionSolicitud::create([
+                'USUARIO_ID' => Auth::user()->id,
+                'SOLICITUD_REPARACION_ID' => $solicitud->SOLICITUD_REPARACION_ID,
+                'REVISION_SOLICITUD_OBSERVACION' => $request->input('REVISION_SOLICITUD_OBSERVACION'),
+            ]);
+        }
+        catch(Exception $e)
+        {
+            // Manejo de excepciones
+            return redirect()->route('solicitudes.reparaciones.index')->with('error', 'Error al crear la revisión de la solicitud.');
         }
     }
 }

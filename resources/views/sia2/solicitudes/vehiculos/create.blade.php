@@ -10,9 +10,6 @@
 @stop
 
 @section('content')
-
-
-    <div class="container">
         <form action="{{ route('solicitudesvehiculos.store') }}" method="POST">
             @csrf
 
@@ -247,12 +244,8 @@
                     </div>
                 </div>
             </div>
-            <br><br><br><br>
-        <button type="submit" class="btn btn-primary">Crear Solicitud</button>
-
-    </div>
-     
-
+            <br>
+        <button type="submit" class="btn agregar"><i class="fa-solid fa-plus"></i> Crear Solicitud</button>
 @stop
 
 @section('css')

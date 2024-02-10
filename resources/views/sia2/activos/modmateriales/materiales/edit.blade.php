@@ -82,7 +82,7 @@
 
             <div class="mb-3">
                 <div class="form-group">
-                    <label for="DETALLE_MOVIMIENTO">Detalle del Movimiento</label>
+                    <label for="DETALLE_MOVIMIENTO"><i class="fa-solid fa-person-chalkboard"></i> Detalle del Movimiento</label>
                     <textarea required class="form-control{{ $errors->has('DETALLE_MOVIMIENTO') ? ' is-invalid' : '' }}" name="DETALLE_MOVIMIENTO" id="DETALLE_MOVIMIENTO" cols="30" rows="5" placeholder="Especificar según caso:
                         - OTRO: Nombre completo del editor, descripción de parámetro modificado.
                         - INGRESO: N° factura, código libro adquisiciones, nombre y rut proveedor, N° res. exenta de compra y de orden de compra.

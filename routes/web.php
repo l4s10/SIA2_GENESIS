@@ -29,6 +29,16 @@ Route::group(['middleware' => 'auth'], function (){
     // rutas para carrito
     require __DIR__.'/CarritoRoutes/CarritoRoutes.php';
 
+    // rutas para reportes
+    require __DIR__.'/Reportes/ReportesRoutes.php';
+
+    // rutas para panel de control
+    require __DIR__.'/Panel/RegionesRoutes.php';
+    require __DIR__.'/Panel/ComunasRoutes.php';
+    require __DIR__.'/Panel/DepartamentosRoutes.php';
+    require __DIR__.'/Panel/OficinasRoutes.php';
+    require __DIR__.'/Panel/UbicacionesRoutes.php';
+    require __DIR__.'/Panel/UsuariosRoutes.php';
 });
 /*
 |--------------------------------------------------------------------------

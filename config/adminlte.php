@@ -351,11 +351,11 @@ return [
             'submenu' => [
                 [
                     'text' => 'Solicitar',
-                    'route'  => 'solicitudesmateriales.create',
+                    'route'  => 'solicitudes.materiales.create',
                 ],
                 [
                     'text' => 'Mis solicitudes',
-                    'route'  => 'solicitudesmateriales.index',
+                    'route'  => 'solicitudes.materiales.index',
                 ],
             ],
         ],
@@ -366,11 +366,11 @@ return [
             'submenu' => [
                 [
                     'text' => 'Solicitar',
-                    'route'  => 'solicitudesequipos.create',
+                    'route'  => 'solicitudes.equipos.create',
                 ],
                 [
                     'text' => 'Mis solicitudes',
-                    'route'  => 'solicitudesequipos.index',
+                    'route'  => 'solicitudes.equipos.index',
                 ],
             ],
         ],
@@ -380,11 +380,11 @@ return [
             'submenu' => [
                 [
                     'text' => 'Solicitar',
-                    'route'  => 'solicitudesformularios.create',
+                    'route'  => 'solicitudes.formularios.create',
                 ],
                 [
                     'text' => 'Mis solicitudes',
-                    'route'  => 'solicitudesformularios.index',
+                    'route'  => 'solicitudes.formularios.index',
                 ],
             ],
         ],
@@ -481,7 +481,7 @@ return [
         ],
         [
             'text' => 'Reportes',
-            'url'  => '#',
+            'route'  => 'reportes.home.index',
             'icon' => 'fas fa-fw fa-solid fa-chart-pie',
         ],
         [
@@ -505,27 +505,32 @@ return [
         ['header' => 'AJUSTES DEL SISTEMA SIAV2.5'],
         [
             'text' => 'Administrar usuarios',
-            'url'  => '#',
+            'route'  => 'panel.usuarios.index',
             'icon' => 'fas fa-fw fa-solid fa-users-cog',
         ],
         [
             'text' => 'Administrar regiones',
-            'url'  => '#',
+            'route'  => 'panel.regiones.index',
             'icon' => 'fas fa-fw fa-solid fa-globe-americas',
         ],
         [
             'text' => 'Administrar comunas',
-            'url'  => '#',
+            'route'  => 'panel.comunas.index',
             'icon' => 'fas fa-fw fa-solid fa-map-marked-alt',
         ],
         [
             'text' => 'Administrar direcciones regionales',
-            'url'  => '#',
+            'route'  => 'panel.oficinas.index',
             'icon' => 'fas fa-fw fa-solid fa-building',
         ],
         [
-            'text' => 'Administrar unidades y departamentos',
-            'url'  => '#',
+            'text' => 'Administrar departamentos',
+            'route'  => 'panel.departamentos.index',
+            'icon' => 'fas fa-fw fa-solid fa-building-un',
+        ],
+        [
+            'text' => 'Administrar ubicaciones',
+            'route'  => 'panel.ubicaciones.index',
             'icon' => 'fas fa-fw fa-solid fa-building-un',
         ],
         ['header' => 'account_settings'],
