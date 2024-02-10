@@ -21,8 +21,20 @@ document.addEventListener('DOMContentLoaded', function() {
         options: {
             responsive: true,
             plugins: {
-                legend: { position: 'top' },
-                title: { display: true, text: 'Gestiones por Usuario' }
+                legend: {
+                    display: true,
+                    labels: {
+                        // Aquí puedes configurar las etiquetas de la leyenda
+                    }
+                },
+                title: {
+                    display: true,
+                    text: 'Gestionadores de solicitudes de Materiales',
+                    padding: {
+                        top: 10,
+                        bottom: 30
+                    }
+                }
             }
         }
     });

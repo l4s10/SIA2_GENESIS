@@ -17,8 +17,43 @@ document.addEventListener('DOMContentLoaded', function() {
         options: {
             responsive: true,
             plugins: {
-                legend: { position: 'top' },
-                title: { display: true, text: 'Solicitudes por Estado' }
+                legend: {
+                    display: true,
+                    labels: {
+                        // Aquí puedes configurar las etiquetas de la leyenda
+                        generateLabels: function (chart) {
+                            const data = chart.data;
+                            if (data.labels.length && data.datasets.length) {
+                                return data.labels.map(function (label, index) {
+                                    const dataset = data.datasets[0];
+                                    const backgroundColor = dataset.backgroundColor[index];
+                                    return {
+                                        text: label,
+                                        fillStyle: backgroundColor,
+                                        hidden: false,
+                                        lineCap: 'round',
+                                        lineDash: [],
+                                        lineDashOffset: 0,
+                                        lineJoin: 'round',
+                                        lineWidth: 1,
+                                        strokeStyle: backgroundColor,
+                                        pointStyle: 'circle',
+                                        rotation: 0
+                                    };
+                                });
+                            }
+                            return [];
+                        }
+                    }
+                },
+                title: {
+                    display: true,
+                    text: 'Tipo de materiales solicitados',
+                    padding: {
+                        top: 10,
+                        bottom: 30
+                    }
+                }
             },
             scales: {
                 y: {
@@ -27,7 +62,11 @@ document.addEventListener('DOMContentLoaded', function() {
                         precision: 0 // Evita los decimales en el eje y
                     }
                 }
-            }
+            },
+            // Opciones específicas de las barras
+            // Puedes ajustar el grosor de las barras aquí
+            barThickness: 65, // Ajusta este valor para hacer las barras más delgadas
+            borderWidth: 1
         }
     });
 

@@ -32,7 +32,7 @@
                     </div>
                 </div>
                 <div class="card-footer">
-                    <button id="refresh-button" class="btn btn-primary">Actualizar</button>
+                    <button id="refresh-button" class="btn guardar">Actualizar</button>
                 </div>
             </div>
         </div>
@@ -58,6 +58,12 @@
 
 @section('css')
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+    <style>/* Estilos personalizados si es necesario */
+        .guardar {
+            background-color: #e6500a;
+            color: #fff;
+        }
+    </style>
 @endsection
 
 @section('js')

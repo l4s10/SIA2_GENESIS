@@ -17,8 +17,20 @@ document.addEventListener('DOMContentLoaded', function() {
         options: {
             responsive: true,
             plugins: {
-                legend: { position: 'top' },
-                title: { display: true, text: 'Solicitudes por Entidad' }
+                legend: {
+                    display: true,
+                    labels: {
+                        // Aquí puedes configurar las etiquetas de la leyenda
+                    }
+                },
+                title: {
+                    display: true,
+                    text: 'Solicitudes de materiales requeridos por Ubicacion/Departamento',
+                    padding: {
+                        top: 10,
+                        bottom: 30
+                    }
+                }
             }
         }
     });
