@@ -7,7 +7,6 @@
 @stop
 
 @section('content')
-<div class="container">
     @if (session('success'))
         <script>
             document.addEventListener('DOMContentLoaded', () => {
@@ -31,73 +30,71 @@
             });
         </script>
     @endif
-    <div class="container-fluid d-flex justify-content-center align-items-center flex-column">
-            <div class="card text-bg-primary mb-3 mx-auto col-sm-12 col-md-6" style="max-width: 100%; text-align: justify;">
-                <div class="card-header">Módulo de Informes de vehículos</div>
-                <div class="card-body">
-                    <p class="card-text">Este módulo permite ver los reportes de <strong>Vehiculos</strong>. Estadísticas de uso de vehículos, georreferenciación, este módulo permite acceder a la información relacionada con las solicitudes de salida de vehículos.</p>
-                </div>
-                <div class="card-footer">
-                    <a class="btn btn-primary" href=" "><i class="fa-solid fa-chart-pie"></i> Graficos</a>
-                </div>
-            </div>
-            <div class="card text-bg-primary mb-3 mx-auto col-sm-12 col-md-6" style="max-width: 100%; text-align: justify;">
-                <div class="card-header">Módulo de Informes sobre Materiales</div>
-                <div class="card-body">
-                    <p class="card-text">Este módulo permite ver los reportes de <strong>Materiales</strong>. Para saber las cantidades de solicitudes de <strong>Materiales</strong> del sistema completo.</p>
-                </div>
-                <div class="card-footer">
-                    <a class="btn btn-primary" href=" "><i class="fa-solid fa-chart-pie"></i> Graficos</a>
-                </div>
-            </div>
-            <div class="card text-bg-primary mb-3 mx-auto col-sm-12 col-md-6" style="max-width: 100%; text-align: justify;">
-                <div class="card-header">Módulo de Informes de Reparaciones y Mantenimientos</div>
-                <div class="card-body">
-                    <p class="card-text">Este módulo permite ver los reportes de <strong>reparaciones y mantenciones</strong>. Para saber las cantidades de solicitudes de <strong>reparaciones y mantenciones</strong> del sistema completo.</p>
-                </div>
-                <div class="card-footer">
-                    <a class="btn btn-primary" href=" "><i class="fa-solid fa-chart-pie"></i> Graficos</a>
-                </div>
-            </div>
-            <div class="card text-bg-primary mb-3 mx-auto col-sm-12 col-md-6" style="max-width: 100%; text-align: justify;">
-                <div class="card-header">Módulo de Informes sobre equipos</div>
-                <div class="card-body">
-                    <p class="card-text">Este módulo permite ver los reportes de <strong>Equipos</strong>. Para saber las cantidades de solicitudes de <strong>Equipos</strong> del sistema completo.</p>
-                </div>
-                <div class="card-footer">
-                    <a class="btn btn-primary" href=" "><i class="fa-solid fa-chart-pie"></i> Graficos</a>
-                </div>
-            </div>
-            <div class="card text-bg-primary mb-3 mx-auto col-sm-12 col-md-6" style="max-width: 100%; text-align: justify;">
-                <div class="card-header">Módulo de Informes sobre reservas de salas</div>
-                <div class="card-body">
-                    <p class="card-text">Este módulo permite ver los reportes de <strong>Reservas de salas</strong>. Para saber las cantidades de solicitudes de <strong>Reservas de salas</strong> del sistema completo.</p>
-                </div>
-                <div class="card-footer">
-                    <a class="btn btn-primary" href=" "><i class="fa-solid fa-chart-pie"></i> Graficos</a>
-                </div>
-            </div>
-        
-        <div class="card text-bg-primary mb-3 mx-auto col-sm-12 col-md-6" style="max-width: 100%; text-align: justify;">
-            <div class="card-header">Módulo de Informes sobre inventario</div>
-            <div class="card-body">
-                <p class="card-text">Este módulo permite ver los reportes de <strong>Inventario</strong>. Para saber las cantidades de solicitudes de <strong>Inventario</strong> del sistema completo.</p>
-            </div>
-            <div class="card-footer">
-                <a class="btn btn-primary" href=" "><i class="fa-solid fa-chart-pie"></i> Graficos</a>
-            </div>
+    <div class="card text-bg-primary mb-3">
+        <div class="card-header">Módulo de Informes de vehículos</div>
+        <div class="card-body">
+            <p class="card-text">Este módulo permite ver los reportes de <strong>Vehiculos</strong>. Estadísticas de uso de vehículos, georreferenciación, este módulo permite acceder a la información relacionada con las solicitudes de salida de vehículos.</p>
         </div>
-            <div class="card text-bg-primary mb-3 mx-auto col-sm-12 col-md-6" style="max-width: 100%; text-align: justify;">
-                <div class="card-header">Módulo Informes del sistema</div>
-                <div class="card-body">
-                    <p class="card-text">Este módulo permite ver los reportes del <strong>Sistema</strong>. Para saber las cantidades de solicitudes del <strong>Sistema</strong> del sistema completo.</p>
-                </div>
-                <div class="card-footer">
-                    <a class="btn btn-primary" href=" "><i class="fa-solid fa-chart-pie"></i> Graficos</a>
-                </div>
-            </div>
+        <div class="card-footer">
+            <a class="btn btn-primary" href=" "><i class="fa-solid fa-chart-pie"></i> Graficos</a>
+        </div>
     </div>
-</div>
+    <div class="card text-bg-primary mb-3">
+        <div class="card-header">Módulo de Informes sobre Materiales</div>
+        <div class="card-body">
+            <p class="card-text">Este módulo permite ver los reportes de <strong>Materiales</strong>. Para saber las cantidades de solicitudes de <strong>Materiales</strong> del sistema completo.</p>
+        </div>
+        <div class="card-footer">
+            <a class="btn btn-primary" href="{{route('reportes.materiales.index')}}"><i class="fa-solid fa-chart-pie"></i> Graficos</a>
+        </div>
+    </div>
+    <div class="card text-bg-primary mb-3">
+        <div class="card-header">Módulo de Informes de Reparaciones y Mantenimientos</div>
+        <div class="card-body">
+            <p class="card-text">Este módulo permite ver los reportes de <strong>reparaciones y mantenciones</strong>. Para saber las cantidades de solicitudes de <strong>reparaciones y mantenciones</strong> del sistema completo.</p>
+        </div>
+        <div class="card-footer">
+            <a class="btn btn-primary" href=" "><i class="fa-solid fa-chart-pie"></i> Graficos</a>
+        </div>
+    </div>
+    <div class="card text-bg-primary mb-3">
+        <div class="card-header">Módulo de Informes sobre equipos</div>
+        <div class="card-body">
+            <p class="card-text">Este módulo permite ver los reportes de <strong>Equipos</strong>. Para saber las cantidades de solicitudes de <strong>Equipos</strong> del sistema completo.</p>
+        </div>
+        <div class="card-footer">
+            <a class="btn btn-primary" href=" "><i class="fa-solid fa-chart-pie"></i> Graficos</a>
+        </div>
+    </div>
+    <div class="card text-bg-primary mb-3">
+        <div class="card-header">Módulo de Informes sobre reservas de salas</div>
+        <div class="card-body">
+            <p class="card-text">Este módulo permite ver los reportes de <strong>Reservas de salas</strong>. Para saber las cantidades de solicitudes de <strong>Reservas de salas</strong> del sistema completo.</p>
+        </div>
+        <div class="card-footer">
+            <a class="btn btn-primary" href=" "><i class="fa-solid fa-chart-pie"></i> Graficos</a>
+        </div>
+    </div>
+
+    <div class="card text-bg-primary mb-3" style="max-width: 100%; text-align: justify;">
+        <div class="card-header">Módulo de Informes sobre inventario</div>
+        <div class="card-body">
+            <p class="card-text">Este módulo permite ver los reportes de <strong>Inventario</strong>. Para saber las cantidades de solicitudes de <strong>Inventario</strong> del sistema completo.</p>
+        </div>
+        <div class="card-footer">
+            <a class="btn btn-primary" href=" "><i class="fa-solid fa-chart-pie"></i> Graficos</a>
+        </div>
+    </div>
+
+    <div class="card text-bg-primary mb-3">
+        <div class="card-header">Módulo Informes del sistema</div>
+        <div class="card-body">
+            <p class="card-text">Este módulo permite ver los reportes del <strong>Sistema</strong>. Para saber las cantidades de solicitudes del <strong>Sistema</strong> del sistema completo.</p>
+        </div>
+        <div class="card-footer">
+            <a class="btn btn-primary" href=" "><i class="fa-solid fa-chart-pie"></i> Graficos</a>
+        </div>
+    </div>
 @stop
 
 @section('css')

@@ -10,4 +10,8 @@ class ReportesController extends Controller
     public function Home(){
         return view('sia2.reportes.home');
     }
+
+    public function Materiales(){
+        return view('sia2.reportes.materiales');
+    }
 }
