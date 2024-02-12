@@ -51,7 +51,7 @@
 
             {{-- Categoría de Solicitud --}}
             <div class="form-group {{ $errors->has('CATEGORIA_REPARACION_ID') ? 'has-error' : '' }}">
-                <label for="CATEGORIA_REPARACION_ID"><i class="fa-solid fa-car-on"></i> Categoría de solicitud</label>
+                <label for="CATEGORIA_REPARACION_ID"><i class="fa-solid fa-warehouse"></i> / </i><i class="fa-solid fa-car-on"></i> Categoría de solicitud</label>
                 <select name="CATEGORIA_REPARACION_ID" id="CATEGORIA_REPARACION_ID" class="form-control" required>
                     <option value="">Seleccione una categoría</option>
                     @foreach ($categorias as $categoria)

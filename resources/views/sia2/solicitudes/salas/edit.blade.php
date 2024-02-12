@@ -51,41 +51,41 @@
                     <div class="row">
                         <div class="col-6">
                             <h4>Datos solicitante</h4>
-                            <p><strong>Nombre del solicitante:</strong> {{$solicitud->solicitante->USUARIO_NOMBRES}} {{$solicitud->solicitante->USUARIO_APELLIDOS}}</p>
-                            <p><strong>Correo electrónico:</strong> {{$solicitud->solicitante->email}}</p>
-                            <p><strong>Teléfono:</strong> {{$solicitud->solicitante->USUARIO_FONO}}</p>
-                            <p><strong>Ubicación / Departamento: </strong> {{$solicitud->solicitante->ubicacion->UBICACION_NOMBRE ?? $solicitud->solicitante->departamento->DEPARTAMENTO_NOMBRE}}</p>
+                            <p><strong><i class="fa-solid fa-user"></i> Nombre del solicitante:</strong> {{$solicitud->solicitante->USUARIO_NOMBRES}} {{$solicitud->solicitante->USUARIO_APELLIDOS}}</p>
+                            <p><strong><i class="fa-solid fa-envelope"></i> Correo electrónico:</strong> {{$solicitud->solicitante->email}}</p>
+                            <p><strong><i class="fa-solid fa-phone"></i> Teléfono:</strong> {{$solicitud->solicitante->USUARIO_FONO}}</p>
+                            <p><strong><i class="fa-solid fa-building-user"></i> Ubicación / Departamento: </strong> {{$solicitud->solicitante->ubicacion->UBICACION_NOMBRE ?? $solicitud->solicitante->departamento->DEPARTAMENTO_NOMBRE}}</p>
                         </div>
                         <div class="col-6">
                             <h4>Datos solicitud</h4>
-                            <p><strong>Estado de la solicitud:</strong>
+                            <p><strong><i class="fa-solid fa-file-circle-check"></i> Estado de la solicitud:</strong>
                                 @switch($solicitud->SOLICITUD_ESTADO)
                                     @case('INGRESADO')
-                                    <span class="badge badge-secondary">INGRESADO</span>
+                                    <span class="badge estado-ingresado rounded-pill">INGRESADO</span>
                                     @break
                                     @case('EN REVISION')
-                                    <span class="badge badge-primary">EN REVISION</span>
+                                    <span class="badge estado-en-revision rounded-pill">EN REVISION</span>
                                     @break
                                     @case('APROBADO')
-                                    <span class="badge badge-success">APROBADO</span>
+                                    <span class="badge estado-aceptado rounded-pill">APROBADO</span>
                                     @break
                                     @case('RECHAZADO')
-                                    <span class="badge badge-danger">RECHAZADO</span>
+                                    <span class="badge estado-rechazado rounded-pill">RECHAZADO</span>
                                     @break
                                     @case('TERMINADO')
-                                    <span class="badge badge-warning">TERMINADO</span>
+                                    <span class="badge estado-terminado rounded-pill">TERMINADO</span>
                                     @break
                                 @endswitch
                             </p>
-                            <p><strong>Fecha y hora de solicitud:</strong> {{ $solicitud->created_at }}</p>
-                            <p><strong>Fecha y hora de inicio solicitada:</strong> {{ $solicitud->SOLICITUD_FECHA_HORA_INICIO_SOLICITADA }}</p>
-                            <p><strong>Fecha y hora de término solicitada:</strong> {{ $solicitud->SOLICITUD_FECHA_HORA_TERMINO_SOLICITADA }}</p>
-                            <p><strong>Fecha y hora de inicio autorizada:</strong> {{ $solicitud->SOLICITUD_FECHA_HORA_INICIO_ASIGNADA ?? 'SIN ASIGNACION POR AHORA' }}</p>
-                            <p><strong>Fecha y hora de término autorizada:</strong> {{ $solicitud->SOLICITUD_FECHA_HORA_TERMINO_ASIGNADA ?? 'SIN ASIGNACION POR AHORA' }}</p>
+                            <p><strong><i class="fa-solid fa-calendar-week"></i> Fecha y hora de solicitud:</strong> {{ $solicitud->created_at }}</p>
+                            <p><strong><i class="fa-solid fa-calendar-plus"></i> Fecha y hora de inicio solicitada:</strong> {{ $solicitud->SOLICITUD_FECHA_HORA_INICIO_SOLICITADA }}</p>
+                            <p><strong><i class="fa-regular fa-calendar-plus"></i> Fecha y hora de término solicitada:</strong> {{ $solicitud->SOLICITUD_FECHA_HORA_TERMINO_SOLICITADA }}</p>
+                            <p><strong><i class="fa-solid fa-calendar-check"></i> Fecha y hora de inicio autorizada:</strong> {{ $solicitud->SOLICITUD_FECHA_HORA_INICIO_ASIGNADA ?? 'SIN ASIGNACION POR AHORA' }}</p>
+                            <p><strong><i class="fa-regular fa-calendar-check"></i> Fecha y hora de término autorizada:</strong> {{ $solicitud->SOLICITUD_FECHA_HORA_TERMINO_ASIGNADA ?? 'SIN ASIGNACION POR AHORA' }}</p>
                         </div>
                     </div>
                     <h4>Descripción</h4>
-                    <p><strong>Descripción:</strong> {{ $solicitud->SOLICITUD_MOTIVO }}</p>
+                    <p><strong><i class="fa-solid fa-file-pen"></i> Descripción:</strong> {{ $solicitud->SOLICITUD_MOTIVO }}</p>
                 </div>
             </div>
         </div>
@@ -104,7 +104,7 @@
                     {{-- Aquí va el contenido de las salas solicitadas --}}
                     <h5>Sala Solicitadas</h5>
                     <table class="table table-bordered">
-                        <thead>
+                        <thead class="tablacolor">
                             <tr>
                                 <th>Nombre sala</th>
                                 <th>Capacidad sala</th>
@@ -120,10 +120,10 @@
                                     <td>
                                         @switch($sala->SALA_ESTADO)
                                             @case('DISPONIBLE')
-                                                <span class="badge badge-success">DISPONIBLE</span>
+                                                <span class="badge estado-aceptado rounded-pill">DISPONIBLE</span>
                                                 @break
                                             @case('OCUPADA')
-                                                <span class="badge badge-danger">OCUPADA</span>
+                                                <span class="badge estado-rechazado rounded-pill">OCUPADA</span>
                                                 @break
                                             @default
                                                 <span class="badge badge-secondary">{{ $sala->SALA_ESTADO }}</span>
@@ -151,7 +151,7 @@
                 <div class="card-body">
                     {{-- Contenido de equipos solicitados --}}
                     <table class="table table-bordered">
-                        <thead>
+                        <thead class="tablacarrito">
                             <tr>
                                 <th>Tipo de Equipo</th>
                                 <th>Cantidad</th>
@@ -226,13 +226,13 @@
         @method('PUT')
         {{-- Estado de la solicitud --}}
         <div class="form-group">
-            <label for="SOLICITUD_ESTADO">Estado de la solicitud</label>
+            <label for="SOLICITUD_ESTADO"><i class="fa-solid fa-file-circle-check"></i> Estado de la solicitud</label>
             <select class="form-control" id="SOLICITUD_ESTADO" name="SOLICITUD_ESTADO">
-                <option value="INGRESADO" {{ old('SOLICITUD_ESTADO', $solicitud->SOLICITUD_ESTADO) == 'INGRESADO' ? 'selected' : '' }}>INGRESADO</option>
-                <option value="EN REVISION" {{ old('SOLICITUD_ESTADO', $solicitud->SOLICITUD_ESTADO) == 'EN REVISION' ? 'selected' : '' }}>EN REVISION</option>
-                <option value="APROBADO" {{ old('SOLICITUD_ESTADO', $solicitud->SOLICITUD_ESTADO) == 'APROBADO' ? 'selected' : '' }}>APROBADO</option>
-                <option value="RECHAZADO" {{ old('SOLICITUD_ESTADO', $solicitud->SOLICITUD_ESTADO) == 'RECHAZADO' ? 'selected' : '' }}>RECHAZADO</option>
-                <option value="TERMINADO" {{ old('SOLICITUD_ESTADO', $solicitud->SOLICITUD_ESTADO) == 'TERMINADO' ? 'selected' : '' }}>TERMINADO</option>
+                <option value="INGRESADO" {{ old('SOLICITUD_ESTADO', $solicitud->SOLICITUD_ESTADO) == 'INGRESADO' ? 'selected' : '' }}>🟠 INGRESADO</option>
+                <option value="EN REVISION" {{ old('SOLICITUD_ESTADO', $solicitud->SOLICITUD_ESTADO) == 'EN REVISION' ? 'selected' : '' }}>🟡 EN REVISION</option>
+                <option value="APROBADO" {{ old('SOLICITUD_ESTADO', $solicitud->SOLICITUD_ESTADO) == 'APROBADO' ? 'selected' : '' }}>🟢 APROBADO</option>
+                <option value="RECHAZADO" {{ old('SOLICITUD_ESTADO', $solicitud->SOLICITUD_ESTADO) == 'RECHAZADO' ? 'selected' : '' }}>🔴 RECHAZADO</option>
+                <option value="TERMINADO" {{ old('SOLICITUD_ESTADO', $solicitud->SOLICITUD_ESTADO) == 'TERMINADO' ? 'selected' : '' }}>⚫ TERMINADO</option>
             </select>
             @error('SOLICITUD_ESTADO')
                 <div class="alert alert-danger">{{ $message }}</div>
@@ -243,7 +243,7 @@
             <div class="col-md-6">
                 {{-- Fecha y hora de inicio autorizada --}}
                 <div class="form-group">
-                    <label for="SOLICITUD_FECHA_HORA_INICIO_ASIGNADA">Fecha y hora de inicio autorizada</label>
+                    <label for="SOLICITUD_FECHA_HORA_INICIO_ASIGNADA"><i class="fa-solid fa-calendar-days"></i> Fecha y hora de inicio autorizada</label>
                     <input type="datetime-local" class="form-control" id="SOLICITUD_FECHA_HORA_INICIO_ASIGNADA" name="SOLICITUD_FECHA_HORA_INICIO_ASIGNADA" value="{{ old('SOLICITUD_FECHA_HORA_INICIO_ASIGNADA', $solicitud->SOLICITUD_FECHA_HORA_INICIO_ASIGNADA) }}">
                     @error('SOLICITUD_FECHA_HORA_INICIO_ASIGNADA')
                         <div class="alert alert-danger">{{ $message }}</div>
@@ -253,7 +253,7 @@
             <div class="col-md-6">
                 {{-- Fecha y hora de término autorizada --}}
                 <div class="form-group">
-                    <label for="SOLICITUD_FECHA_HORA_TERMINO_ASIGNADA">Fecha y hora de término autorizada</label>
+                    <label for="SOLICITUD_FECHA_HORA_TERMINO_ASIGNADA"><i class="fa-solid fa-calendar-xmark"></i> Fecha y hora de término autorizada</label>
                     <input type="datetime-local" class="form-control" id="SOLICITUD_FECHA_HORA_TERMINO_ASIGNADA" name="SOLICITUD_FECHA_HORA_TERMINO_ASIGNADA" value="{{ old('SOLICITUD_FECHA_HORA_TERMINO_ASIGNADA', $solicitud->SOLICITUD_FECHA_HORA_TERMINO_ASIGNADA) }}">
                     @error('SOLICITUD_FECHA_HORA_TERMINO_ASIGNADA')
                         <div class="alert alert-danger">{{ $message }}</div>
@@ -264,7 +264,7 @@
 
         {{-- Sala asignada (por defecto marcar la solicitada) --}}
         <div class="form-group">
-            <label for="SOLICITUD_SALA_ID_ASIGNADA">Sala asignada</label>
+            <label for="SOLICITUD_SALA_ID_ASIGNADA"><i class="fa-solid fa-door-open"></i> Sala asignada</label>
             <select class="form-control" id="SOLICITUD_SALA_ID_ASIGNADA" name="SOLICITUD_SALA_ID_ASIGNADA">
                 <option value="">Asigne una sala</option>
                 @foreach ($salas as $sala)
@@ -280,7 +280,7 @@
         <div class="form-group">
             <label for="autorizarEquipos">Autorizar cantidades de equipos solicitados</label>
             <table class="table table-bordered">
-                <thead>
+                <thead class="tablacolor">
                     <tr>
                         <th>Tipo de Equipo</th>
                         <th>Cantidad solicitada</th>
@@ -306,7 +306,7 @@
 
         {{-- Observaciones de la solicitud --}}
         <div class="form-group">
-            <label for="REVISION_SOLICITUD_OBSERVACION">Observaciones</label>
+            <label for="REVISION_SOLICITUD_OBSERVACION"><i class="fa-solid fa-eye"></i> Observaciones</label>
             <textarea class="form-control" id="REVISION_SOLICITUD_OBSERVACION" name="REVISION_SOLICITUD_OBSERVACION" rows="3">{{ old('REVISION_SOLICITUD_OBSERVACION', $solicitud->REVISION_SOLICITUD_OBSERVACION) }}</textarea>
             @error('REVISION_SOLICITUD_OBSERVACION')
                 <div class="alert alert-danger">{{ $message }}</div>
@@ -314,8 +314,8 @@
         </div>
 
         {{-- Botones de retorno y envo --}}
-        <a href="{{ route('solicitudes.salas.index') }}" class="btn btn-secondary">Volver</a>
-        <button type="submit" class="btn btn-primary">Guardar cambios</button>
+        <a href="{{ route('solicitudes.salas.index') }}" class="btn btn-secondary"><i class="fa-solid fa-hand-point-left"></i> Volver</a>
+        <button type="submit" class="btn agregar"><i class="fa-solid fa-plus"></i> Guardar cambios</button>
     </form>
 @stop
 
@@ -326,6 +326,45 @@
         }
         #carouselObservaciones .carousel-indicators .active {
             background-color: darkorange; /* Un tono más oscuro para el indicador activo */
+        }
+
+        .tablacolor {
+            background-color: #723E72; /* Color de fondo personalizado */
+            color: #fff; /* Color de texto personalizado */
+        }
+        .tablacarrito {
+            background-color: #956E95;
+            color: #fff;
+        }
+        .agregar{
+            background-color: #e6500a;
+            color: #fff;
+        }
+
+        /*Colores de los estados*/
+        .estado-ingresado {
+        color: #000000;
+        background-color: #FFA600;
+        }
+
+        .estado-en-revision {
+        color: #000000;
+        background-color: #F7F70B;
+        }
+
+        .estado-aceptado {
+        color: #ffffff;
+        background-color: #0CB009;
+        }
+
+        .estado-rechazado {
+        color: #FFFFFF;
+        background-color: #F70B0B;
+        }
+
+        .estado-terminado {
+        color: #000000;
+        background-color: #d9d9d9;
         }
     </style>
 @stop
