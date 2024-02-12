@@ -48,7 +48,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 },
                 title: {
                     display: true,
-                    text: 'Tipo de materiales solicitados',
+                    text: 'Ranking de estados por solicitudes de materiales',
                     padding: {
                         top: 10,
                         bottom: 30
