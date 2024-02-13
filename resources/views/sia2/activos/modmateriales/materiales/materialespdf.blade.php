@@ -34,6 +34,13 @@
         background-image: url('data:image/jpg;base64,{!! base64_encode(file_get_contents($imagePath2)) !!}') ;
         background-repeat: no-repeat;
         }
+        .container1 {
+        max-width: 600px;
+        margin: 0 auto;
+        padding: 20px;
+        border: 3px solid #ccc;
+        border-radius: 10px;
+        }
     </style>
 </head>
 <body class="background">
@@ -46,9 +53,12 @@
         <img src="data:image/jpg;base64, {!! base64_encode(file_get_contents($imagePath)) !!}" alt="Logotipo Sii" width="200px" height="100px">
         <h1>Reporte de Materiales</h1>
         {{-- Informacion del responsable --}}
+        <div class="container1">
         <p style="text-align: center">Responsable: {{ $responsable }}</p>
         <p style="text-align: center">Dirección regional: {{$direccion}}</p>
         <p style="text-align: center">Fecha y hora de generación del reporte: {{ $fecha }}</p>
+        </div>
+        <br>
         <table>
             <thead>
                 <tr>
