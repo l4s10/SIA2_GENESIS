@@ -314,7 +314,8 @@ class MaterialController extends Controller
     {
         $responsable = Auth::user()->USUARIO_NOMBRES.' '.Auth::user()->USUARIO_APELLIDOS . ' - ' . Auth::user()->USUARIO_RUT;
         $direccion = Auth::user()->oficina->OFICINA_NOMBRE;
-        $materiales = Material::orderBy('TIPO_MATERIAL_ID')->get();
+        // obtener materiales de la direccion regional del usuario.
+        $materiales = Material::where('OFICINA_ID', Auth::user()->OFICINA_ID)->get();
         $fecha = Carbon::now()->setTimezone('America/Santiago')->format('d/m/Y H:i');
         $imagePath = public_path('img/logosii.jpg');
         $imagePath2 = public_path('img/fondo_sii_intranet.jpg');
