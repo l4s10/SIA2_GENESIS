@@ -315,7 +315,9 @@ class MaterialController extends Controller
         $responsable = Auth::user()->USUARIO_NOMBRES.' '.Auth::user()->USUARIO_APELLIDOS . ' - ' . Auth::user()->USUARIO_RUT;
         $direccion = Auth::user()->oficina->OFICINA_NOMBRE;
         // Obtener materiales de la dirección regional del usuario.
-        $materiales = Material::where('OFICINA_ID', Auth::user()->OFICINA_ID)->get();
+        $materiales = Material::where('OFICINA_ID', Auth::user()->OFICINA_ID)
+            ->with('tipoMaterial') // Cargar la relación tipoMaterial
+            ->get();
         $fecha = Carbon::now()->setTimezone('America/Santiago')->format('d/m/Y H:i');
         // Reemplazar los caracteres '/' por '-' y ':' por '-' para evitar problemas en el nombre del archivo
         $fechaParaNombreArchivo = str_replace(['/', ':', ' '], '-', $fecha);
