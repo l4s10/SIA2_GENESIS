@@ -314,12 +314,14 @@ class MaterialController extends Controller
     {
         $responsable = Auth::user()->USUARIO_NOMBRES.' '.Auth::user()->USUARIO_APELLIDOS . ' - ' . Auth::user()->USUARIO_RUT;
         $direccion = Auth::user()->oficina->OFICINA_NOMBRE;
-        // obtener materiales de la direccion regional del usuario.
+        // Obtener materiales de la dirección regional del usuario.
         $materiales = Material::where('OFICINA_ID', Auth::user()->OFICINA_ID)->get();
         $fecha = Carbon::now()->setTimezone('America/Santiago')->format('d/m/Y H:i');
+        // Reemplazar los caracteres '/' por '-' y ':' por '-' para evitar problemas en el nombre del archivo
+        $fechaParaNombreArchivo = str_replace(['/', ':', ' '], '-', $fecha);
         $imagePath = public_path('img/logosii.jpg');
         $imagePath2 = public_path('img/fondo_sii_intranet.jpg');
-        $html = view('sia2.activos.modmateriales.materiales.materialespdf', compact('materiales', 'fecha', 'imagePath' , 'imagePath2','responsable', 'direccion'))->render();
+        $html = view('sia2.activos.modmateriales.materiales.materialespdf', compact('materiales', 'fecha', 'imagePath', 'imagePath2', 'responsable', 'direccion'))->render();
 
         $dompdf = new Dompdf();
         $dompdf->loadHtml($html);
@@ -327,6 +329,9 @@ class MaterialController extends Controller
         $dompdf->setPaper('A4', 'portrait');
         $dompdf->render();
 
-        $dompdf->stream("materiales.pdf", ["Attachment" => false]);
+        // Concatenar la fecha de creación al nombre del archivo, asegurando que sea compatible con los sistemas de archivos
+        $nombreArchivo = "Reporte_Materiales_" . $fechaParaNombreArchivo . ".pdf";
+
+        $dompdf->stream($nombreArchivo, ["Attachment" => false]);
     }
 }
