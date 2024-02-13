@@ -10,5 +10,8 @@ Route::resource('materiales', MaterialController::class);
 Route::resource('tiposmateriales', TipoMaterialController::class);
 
 // Ruta para exportar a excel
-Route::get('materiales/exportables/excel', [MaterialController::class, 'exportExcel'])->name('exportar-materiales');
+Route::get('materiales/exportables/excel', [MaterialController::class, 'exportExcel'])->name('exportar-materiales-excel');
+
+// Ruta para exportar a PDF
+Route::get('materiales/exportables/pdf', [MaterialController::class, 'exportPdf'])->name('exportar-materiales-pdf');
 
