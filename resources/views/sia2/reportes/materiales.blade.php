@@ -38,6 +38,40 @@
         </div>
     </div>
 
+    <div class="accordion" id="accordionExample">
+        <div class="card">
+            <div class="card-header" id="headingOne">
+                <h2 class="mb-0">
+                    <button class="btn btn-link" type="button" data-toggle="collapse" data-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+                        Información adicional sobre el modulo.
+                    </button>
+                </h2>
+            </div>
+
+            <div id="collapseOne" class="collapse show" aria-labelledby="headingOne" data-parent="#accordionExample">
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <label for="start-date">Ejemplo%</label>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="end-date">Ejemplo1%</label>
+                        </div>
+                    </div>
+                    <br>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <label for="start-date">Ejemplo2%</label>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="end-date">Ejemplo3%</label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <div class="row">
         <div class="col-md-6">
             <div class="card">
