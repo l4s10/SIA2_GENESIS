@@ -10,6 +10,9 @@ use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Exception;
 use Gloudemans\Shoppingcart\Facades\Cart;
 
+use Carbon\Carbon;
+use Dompdf\Dompdf;
+
 use Maatwebsite\Excel\Facades\Excel;
 use App\Exports\MaterialesExport;
 
@@ -304,5 +307,25 @@ class MaterialController extends Controller
     public function exportExcel()
     {
         return Excel::download(new MaterialesExport, 'Maestro_Materiales.xlsx');
+    }
+
+    // Exportable para PDF
+    public function exportPdf()
+    {
+        $responsable = Auth::user()->USUARIO_NOMBRES.' '.Auth::user()->USUARIO_APELLIDOS . ' - ' . Auth::user()->USUARIO_RUT;
+        $direccion = Auth::user()->oficina->OFICINA_NOMBRE;
+        $materiales = Material::orderBy('TIPO_MATERIAL_ID')->get();
+        $fecha = Carbon::now()->setTimezone('America/Santiago')->format('d/m/Y H:i');
+        $imagePath = public_path('img/logosii.jpg');
+        $imagePath2 = public_path('img/fondo_sii_intranet.jpg');
+        $html = view('sia2.activos.modmateriales.materiales.materialespdf', compact('materiales', 'fecha', 'imagePath' , 'imagePath2','responsable', 'direccion'))->render();
+
+        $dompdf = new Dompdf();
+        $dompdf->loadHtml($html);
+
+        $dompdf->setPaper('A4', 'portrait');
+        $dompdf->render();
+
+        $dompdf->stream("materiales.pdf", ["Attachment" => false]);
     }
 }

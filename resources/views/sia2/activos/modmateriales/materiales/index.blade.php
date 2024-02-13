@@ -43,8 +43,12 @@
             <a class="btn agregar" href="{{ route('materiales.create') }}"><i class="fa-solid fa-plus"></i> Agregar Material</a>
             <a class="btn btn-secondary" href="{{route('tiposmateriales.index')}}"><i class="fa-solid fa-eye"></i> Ver tipos de materiales</a>
             {{-- Boton para exportar a EXCEL --}}
-            <a href="{{ route('exportar-materiales') }}" class="btn btn-success">
+            <a href="{{ route('exportar-materiales-excel') }}" class="btn btn-success">
                 <i class="fa-solid fa-file-excel"></i> Exportar Excel
+            </a>
+            {{-- Boton para exportar a PDF --}}
+            <a href="{{ route('exportar-materiales-pdf') }}" class="btn btn-primary" target="_blank">
+                <i class="fa-solid fa-file-pdf"></i> Exportar PDF
             </a>
 
             <table id="materiales" class="table table-bordered mt-4">
@@ -84,7 +88,6 @@
 @stop
 
 @section('css')
-    <link rel="stylesheet" href="/css/admin_custom.css">
     <style>/* Estilos personalizados si es necesario */
         .tablacolor {
             background-color: #0064a0; /* Color de fondo personalizado */
