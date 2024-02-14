@@ -23,7 +23,7 @@ class RevisionSolicitud extends Model
 
     public function gestionador()
     {
-        return $this->belongsTo(User::class, 'USUARIO_ID', 'id');
+        return $this->belongsTo(User::class, 'USUARIO_id', 'id');
     }
 
     // relacion con solicitud
