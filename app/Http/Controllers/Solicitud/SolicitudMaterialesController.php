@@ -26,8 +26,10 @@ class SolicitudMaterialesController extends Controller
     {
         // Try-catch para el manejo de excepciones
         try {
-            // Query que a través de la relación has() filtra las solicitudes que SOLO tengan materiales asociados
-            $solicitudes = Solicitud::has('materiales')->get();
+            // Recuperar las solicitudes con sus materiales asociados y que el solicitante tenga la misma OFICINA_ID que el usuario logueado
+            $solicitudes = Solicitud::whereHas('solicitante', function ($query) {
+                $query->where('OFICINA_ID', Auth::user()->OFICINA_ID);
+            })->whereHas('materiales')->get();
 
             // Retornar la vista con las solicitudes
             return view('sia2.solicitudes.materiales.index', compact('solicitudes'));
@@ -77,6 +79,10 @@ class SolicitudMaterialesController extends Controller
                 'string' => 'El campo :attribute debe ser una cadena de caracteres.'
             ]);
 
+            // Validar que la instancia del carrito no esté vacía
+            if (Cart::instance('carrito_materiales')->count() === 0) {
+                return redirect()->back()->with('error', 'El carrito de materiales está vacío.');
+            }
             // Si la validación falla, redirige al formulario con los errores y el input antiguo
             if ($validator->fails()) {
                 return redirect()->back()->withErrors($validator)->withInput();
