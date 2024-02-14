@@ -94,4 +94,9 @@ class User extends Authenticatable
     {
         return $this->belongsTo(Cargo::class, 'CARGO_ID', 'CARGO_ID');
     }
+
+    public function viajes()
+    {
+        return $this->belongsToMany(SolicitudVehicular::class, 'viajan', 'USUARIO_id', 'SOLICITUD_VEHICULO_ID');
+    }
 }
