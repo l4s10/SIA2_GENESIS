@@ -11,7 +11,7 @@ class RevisionSolicitud extends Model
     protected $primaryKey = 'REVISION_SOLICITUD_ID';
 
     protected $fillable = [
-        'USUARIO_ID',
+        'USUARIO_id',
         'SOLICITUD_VEHICULO_ID',
         'SOLICITUD_REPARACION_ID',
         'SOLICITUD_ID',
