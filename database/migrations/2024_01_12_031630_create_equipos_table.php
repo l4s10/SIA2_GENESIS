@@ -23,6 +23,8 @@ return new class extends Migration
             //Relaciones
             $table->foreign('TIPO_EQUIPO_ID')->references('TIPO_EQUIPO_ID')->on('tipos_equipos');
             $table->foreign('OFICINA_ID')->references('OFICINA_ID')->on('oficinas');
+            // Clave única compuesta
+            $table->unique(['OFICINA_ID', 'EQUIPO_MARCA', 'EQUIPO_MODELO' ]); 
             //Timestamps
             $table->timestamps();
         });

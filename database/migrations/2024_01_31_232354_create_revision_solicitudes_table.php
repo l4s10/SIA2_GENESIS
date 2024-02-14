@@ -17,7 +17,7 @@ return new class extends Migration
             $table->unsignedBigInteger('SOLICITUD_REPARACION_ID')->nullable();
             $table->unsignedBigInteger('SOLICITUD_VEHICULO_ID')->nullable();
             $table->unsignedBigInteger('SOLICITUD_ID')->nullable();
-            $table->string('REVISION_SOLICITUD_OBSERVACION', 255)->nullable();
+            $table->string('REVISION_SOLICITUD_OBSERVACION', 255);
             $table->timestamps();
 
             $table->foreign('USUARIO_id')->references('id')->on('users'); // Si se elimina el usuario, se establece a NULL

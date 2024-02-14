@@ -20,6 +20,9 @@ return new class extends Migration
 
             $table->foreign('OFICINA_ID')->references('OFICINA_ID')->on('oficinas');
             $table->timestamps();
+
+            $table->unique(['OFICINA_ID', 'SALA_NOMBRE']); // Clave única compuesta
+
         });
     }
 

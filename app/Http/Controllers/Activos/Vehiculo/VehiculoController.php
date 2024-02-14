@@ -117,6 +117,40 @@ class VehiculoController extends Controller
                 'VEHICULO_NIVEL_ESTANQUE.max' => 'El campo Nivel Estanque no debe exceder los :max caracteres.',
             ]);
 
+            $validator->after(function ($validator) use ($request) {
+                $exists1 = Vehiculo::where([
+                    'TIPO_VEHICULO_ID' => $request->input('TIPO_VEHICULO_ID'),
+                    'VEHICULO_PATENTE' => $request->input('VEHICULO_PATENTE'),
+                    'UBICACION_ID' => $request->input('DEPENDENCIA_ID'),
+                    'VEHICULO_MARCA' => $request->input('VEHICULO_MARCA'),
+                    'VEHICULO_MODELO' => $request->input('VEHICULO_MODELO'),
+                ])->exists();
+            
+                if ($exists1) {
+                    $validator->errors()->add('TIPO_VEHICULO_ID', 'Este tipo ya existe para la patente, ubicación, marca y modelo del vehículo seleccionados.');
+                    $validator->errors()->add('VEHICULO_PATENTE', 'Esta patente ya existe para el tipo, ubicación, marca y modelo del vehículo seleccionados.');
+                    $validator->errors()->add('DEPENDENCIA_ID', 'Esta ubicación ya está asociada para el tipo, patente, marca y modelo del vehículo seleccionados.');
+                    $validator->errors()->add('VEHICULO_MARCA', 'Esta marca de vehiculo ya existe para la patente, tipo, ubicación y modelo del vehículo seleccionados.');
+                    $validator->errors()->add('VEHICULO_MODELO', 'Este modelo de vehículo ya existe para el tipo, patente, ubicación y marca del vehículo seleccionados.');
+                }
+            
+                $exists2 = Vehiculo::where([
+                    'TIPO_VEHICULO_ID' => $request->input('TIPO_VEHICULO_ID'),
+                    'VEHICULO_PATENTE' => $request->input('VEHICULO_PATENTE'),
+                    'DEPARTAMENTO_ID' => $request->input('DEPENDENCIA_ID'),
+                    'VEHICULO_MARCA' => $request->input('VEHICULO_MARCA'),
+                    'VEHICULO_MODELO' => $request->input('VEHICULO_MODELO'),
+                ])->exists();
+            
+                if ($exists2) {
+                    $validator->errors()->add('TIPO_VEHICULO_ID', 'Este tipo ya existe para la patente, departamento, marca y modelo del vehículo seleccionados.');
+                    $validator->errors()->add('VEHICULO_PATENTE', 'Esta patente ya existe para el tipo, departamento, marca y modelo del vehículo seleccionados.');
+                    $validator->errors()->add('DEPENDENCIA_ID', 'Este departamento ya está asociada para el tipo, patente, marca y modelo del vehículo seleccionados.');
+                    $validator->errors()->add('VEHICULO_MARCA', 'Esta marca de vehiculo ya existe para la patente, tipo, departamento y modelo del vehículo seleccionados.');
+                    $validator->errors()->add('VEHICULO_MODELO', 'Este modelo de vehículo ya existe para el tipo, patente, departamento y marca del vehículo seleccionados.');
+                }
+            });
+            
             
             // Validar y redirigir mensaje al blade, si falla
             if ($validator->fails()) {
@@ -234,6 +268,42 @@ class VehiculoController extends Controller
                 'VEHICULO_NIVEL_ESTANQUE.string' => 'El campo Nivel Estanque debe ser una cadena de texto.',
                 'VEHICULO_NIVEL_ESTANQUE.max' => 'El campo Nivel Estanque no debe exceder los :max caracteres.',
             ]);
+
+            $validator->after(function ($validator) use ($request, $id) {
+                $exists1 = Vehiculo::where([
+                    'TIPO_VEHICULO_ID' => $request->input('TIPO_VEHICULO_ID'),
+                    'VEHICULO_PATENTE' => $request->input('VEHICULO_PATENTE'),
+                    'UBICACION_ID' => $request->input('DEPENDENCIA_ID'),
+                    'VEHICULO_MARCA' => $request->input('VEHICULO_MARCA'),
+                    'VEHICULO_MODELO' => $request->input('VEHICULO_MODELO'),
+                ])->where('VEHICULO_ID', '!=', $id)->exists();
+            
+                if ($exists1) {
+                    $validator->errors()->add('TIPO_VEHICULO_ID', 'Este tipo ya existe para la patente, ubicación, marca y modelo del vehículo seleccionados.');
+                    $validator->errors()->add('VEHICULO_PATENTE', 'Esta patente ya existe para el tipo, ubicación, marca y modelo del vehículo seleccionados.');
+                    $validator->errors()->add('DEPENDENCIA_ID', 'Esta ubicación ya está asociada para el tipo, patente, marca y modelo del vehículo seleccionados.');
+                    $validator->errors()->add('VEHICULO_MARCA', 'Esta marca de vehiculo ya existe para la patente, tipo, ubicación y modelo del vehículo seleccionados.');
+                    $validator->errors()->add('VEHICULO_MODELO', 'Este modelo de vehículo ya existe para el tipo, patente, ubicación y marca del vehículo seleccionados.');
+                }
+            
+                $exists2 = Vehiculo::where([
+                    'TIPO_VEHICULO_ID' => $request->input('TIPO_VEHICULO_ID'),
+                    'VEHICULO_PATENTE' => $request->input('VEHICULO_PATENTE'),
+                    'DEPARTAMENTO_ID' => $request->input('DEPENDENCIA_ID'),
+                    'VEHICULO_MARCA' => $request->input('VEHICULO_MARCA'),
+                    'VEHICULO_MODELO' => $request->input('VEHICULO_MODELO'),
+                ])->where('VEHICULO_ID', '!=', $id)->exists();
+            
+                if ($exists2) {
+                    $validator->errors()->add('TIPO_VEHICULO_ID', 'Este tipo ya existe para la patente, departamento, marca y modelo del vehículo seleccionados.');
+                    $validator->errors()->add('VEHICULO_PATENTE', 'Esta patente ya existe para el tipo, departamento, marca y modelo del vehículo seleccionados.');
+                    $validator->errors()->add('DEPENDENCIA_ID', 'Este departamento ya está asociada para el tipo, patente, marca y modelo del vehículo seleccionados.');
+                    $validator->errors()->add('VEHICULO_MARCA', 'Esta marca de vehiculo ya existe para la patente, tipo, departamento y modelo del vehículo seleccionados.');
+                    $validator->errors()->add('VEHICULO_MODELO', 'Este modelo de vehículo ya existe para el tipo, patente, departamento y marca del vehículo seleccionados.');
+                }
+            });
+            
+            
 
             // Validar y redirigir mensaje al blade, si falla
             if ($validator->fails()) {

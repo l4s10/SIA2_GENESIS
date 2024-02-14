@@ -23,6 +23,9 @@ return new class extends Migration
 
              //Timestamps (Fecha de creacion y de modificacion del registro)
              $table->timestamps();
+
+            // Clave única compuesta
+            $table->unique(['OFICINA_ID', 'TIPO_VEHICULO_NOMBRE']); 
         });
     }
 

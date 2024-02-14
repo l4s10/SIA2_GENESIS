@@ -12,16 +12,20 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('materiales', function (Blueprint $table) {
-            //Atributos
+            // Atributos
             $table->id('MATERIAL_ID');
             $table->unsignedBigInteger('OFICINA_ID');
             $table->unsignedBigInteger('TIPO_MATERIAL_ID');
             $table->string('MATERIAL_NOMBRE', 128);
             $table->integer('MATERIAL_STOCK');
-            //Relaciones
+            // Relaciones
             $table->foreign('OFICINA_ID')->references('OFICINA_ID')->on('oficinas');
             $table->foreign('TIPO_MATERIAL_ID')->references('TIPO_MATERIAL_ID')->on('tipos_materiales');
 
+            // Clave única compuesta
+            $table->unique(['OFICINA_ID', 'TIPO_MATERIAL_ID', 'MATERIAL_NOMBRE']); 
+
+            // Timestamps
             $table->timestamps();
         });
     }

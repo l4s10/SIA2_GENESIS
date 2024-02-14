@@ -78,6 +78,18 @@ class BodegaController extends Controller
                 'BODEGA_ESTADO.max' => 'El campo "Estado" no debe exceder los 40 caracteres.',
             ]);
 
+            // Validar objeto único por oficina
+            $validator->after(function ($validator) use ($request) {
+                $exists = Bodega::where([
+                    'OFICINA_ID' => Auth::user()->OFICINA_ID,
+                    'BODEGA_NOMBRE' => strtoupper($request->input('BODEGA_NOMBRE'))
+                ])->exists();
+
+                if ($exists) {
+                    $validator->errors()->add('BODEGA_NOMBRE', 'El nombre de la bodega ya existe en su dirección regional.');
+                }
+            });
+
             if ($validator->fails()) {
                 return redirect()->back()->withErrors($validator)->withInput();
             }
@@ -142,6 +154,20 @@ class BodegaController extends Controller
                 'BODEGA_ESTADO.string' => 'El campo "Estado" debe ser una cadena de texto.',
                 'BODEGA_ESTADO.max' => 'El campo "Estado" no debe exceder los 40 caracteres.',
             ]);
+
+  
+            
+            // Agregar regla de validación única compuesta
+            $validator->after(function ($validator) use ($request, $id) {
+                $exists = Bodega::where([
+                    'OFICINA_ID' => Auth::user()->OFICINA_ID,
+                    'BODEGA_NOMBRE' => strtoupper($request->input('BODEGA_NOMBRE'))
+                ])->where('BODEGA_ID', '!=', $id)->exists();
+
+                if ($exists) {
+                    $validator->errors()->add('BODEGA_NOMBRE', 'El nombre de la bodega ya existe en esta dirección regional.');
+                }
+            });
 
             if ($validator->fails()) {
                 return redirect()->back()->withErrors($validator)->withInput();

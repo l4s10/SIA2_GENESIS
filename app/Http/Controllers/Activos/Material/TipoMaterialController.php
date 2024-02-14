@@ -71,6 +71,18 @@ class TipoMaterialController extends Controller
                 'TIPO_MATERIAL_NOMBRE.regex' => 'El campo "Nombre Tipo" sólo debe contener letras y espacios.',
             ]);
 
+            // Validar clave única compuesta
+            $validator->after(function ($validator) use ($request) {
+                $exists = TipoMaterial::where([
+                    'OFICINA_ID' => Auth::user()->OFICINA_ID,
+                    'TIPO_MATERIAL_NOMBRE' => strtoupper($request->input('TIPO_MATERIAL_NOMBRE'))
+                ])->exists();
+
+                if ($exists) {
+                    $validator->errors()->add('TIPO_MATERIAL_NOMBRE', 'El nombre del tipo de material ya existe en su dirección regional.');
+                }
+            });
+
             // Validar y redirigir si falla
             if ($validator->fails()) {
                 return redirect()->back()->withErrors($validator)->withInput();
@@ -127,6 +139,18 @@ class TipoMaterialController extends Controller
                 'TIPO_MATERIAL_NOMBRE.max' => 'El campo "Nombre Tipo" no debe exceder los :max caracteres.',
                 'TIPO_MATERIAL_NOMBRE.regex' => 'El campo "Nombre Tipo" sólo debe contener letras y espacios.',
             ]);
+
+            // Validar clave única compuesta
+            $validator->after(function ($validator) use ($request, $id) {
+                $exists = TipoMaterial::where([
+                    'OFICINA_ID' => Auth::user()->OFICINA_ID,
+                    'TIPO_MATERIAL_NOMBRE' => strtoupper($request->input('TIPO_MATERIAL_NOMBRE'))
+                ])->where('TIPO_MATERIAL_ID', '!=', $id)->exists();
+
+                if ($exists) {
+                    $validator->errors()->add('TIPO_MATERIAL_NOMBRE', 'El nombre del tipo de material ya existe en su dirección regional.');
+                }
+            });
 
             // Validar y redirigir si falla
             if ($validator->fails()) {

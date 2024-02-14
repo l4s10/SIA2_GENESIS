@@ -95,8 +95,13 @@ class User extends Authenticatable
         return $this->belongsTo(Cargo::class, 'CARGO_ID', 'CARGO_ID');
     }
 
-    public function viajes()
+    public function polizas()
     {
-        return $this->belongsToMany(SolicitudVehicular::class, 'viajan', 'USUARIO_id', 'SOLICITUD_VEHICULO_ID');
+        return $this->hasMany(Poliza::class, 'USUARIO_id', 'id');
+    }
+
+    public function pasajeros()
+    {
+        return $this->hasMany(Pasajero::class, 'USUARIO_id', 'id');
     }
 }

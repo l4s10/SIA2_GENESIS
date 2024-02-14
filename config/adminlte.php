@@ -333,8 +333,16 @@ return [
                     'route'  => 'solicitudesvehiculos.create',
                 ],
                 [
+                    'text' => 'Solicitar - CTT',
+                    'route'  => 'solicitudesvehiculosctt.create',
+                ],
+                [
                     'text' => 'Mis solicitudes',
                     'route'  => 'solicitudesvehiculos.index',
+                ],
+                [
+                    'text' => 'Mis solicitudes - CTT',
+                    'route'  => 'solicitudesvehiculosctt.index',
                 ],
             ],
         ],[

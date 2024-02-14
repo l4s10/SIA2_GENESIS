@@ -13,22 +13,28 @@ class SolicitudVehicular extends Model
 
     protected $fillable = [
         'USUARIO_id',
-        'TIPO_VEHICULO_ID',
         'VEHICULO_ID',
+        'TIPO_VEHICULO_ID',
         //'RENDICION_ID',
-        'SOLICITUD_VEHICULO_COMUNA_ORIGEN',
-        'SOLICITUD_VEHICULO_COMUNA_DESTINO',
+        'COMUNA_ID',
+        'ORDEN_TRABAJO_ID',
+        'CONDUCTOR_id',
+        'SOLICITUD_VEHICULO_TIPO',
         'SOLICITUD_VEHICULO_MOTIVO',
         'SOLICITUD_VEHICULO_ESTADO',
         'SOLICITUD_VEHICULO_FECHA_HORA_INICIO_SOLICITADA',
         'SOLICITUD_VEHICULO_FECHA_HORA_INICIO_ASIGNADA',
-        'SOLICITUD_VEHICULO_FECHA_HORA_TERMINO_SOLICIADA',
-        'SOLICITUD_VEHICULO_FECHA_HORA_TERMINO_ASIGNADA'
+        'SOLICITUD_VEHICULO_FECHA_HORA_TERMINO_SOLICITADA',
+        'SOLICITUD_VEHICULO_FECHA_HORA_TERMINO_ASIGNADA',
+        'SOLICITUD_VEHICULO_HORA_INICIO_CONDUCCION',
+        'SOLICITUD_VEHICULO_HORA_TERMINO_CONDUCCION',
+        'SOLICITUD_VEHICULO_JEFE_QUE_AUTORIZA',
+        'SOLICITUD_VEHICULO_VIATICO',
     ];
 
-    public function viajan()
+    public function pasajeros()
     {
-        return $this->belongsToMany(User::class, 'viajan', 'SOLICITUD_VEHICULO_ID', 'USUARIO_id');
+        return $this->hasMany(Pasajero::class, 'SOLICITUD_VEHICULO_ID', 'SOLICITUD_VEHICULO_ID');
     }
 
     public function user()
@@ -36,9 +42,9 @@ class SolicitudVehicular extends Model
         return $this->belongsTo(User::class, 'USUARIO_id', 'id');
     }
 
-    public function vehiculo()
+    public function conductor()
     {
-        return $this->hasOne(Vehiculo::class, 'VEHICULO_ID', 'VEHICULO_ID');
+        return $this->belongsTo(User::class, 'CONDUCTOR_id', 'id');
     }
 
     public function tipoVehiculo()
@@ -46,9 +52,14 @@ class SolicitudVehicular extends Model
         return $this->belongsTo(TipoVehiculo::class, 'TIPO_VEHICULO_ID', 'TIPO_VEHICULO_ID');
     }
 
-    public function comunaOrigen()
+    public function vehiculo()
     {
-        return $this->belongsTo(Comuna::class, 'SOLICITUD_VEHICULO_COMUNA_ORIGEN', 'COMUNA_ID');
+        return $this->belongsTo(Vehiculo::class, 'VEHICULO_ID', 'VEHICULO_ID');
+    }
+    
+    public function ordenTrabajo()
+    {
+        return $this->hasOne(OrdenDeTrabajo::class, 'ORDEN_TRABAJO_ID', 'ORDEN_TRABAJO_ID');
     }
 
     public function comunaDestino()

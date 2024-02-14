@@ -19,7 +19,7 @@
             </div>
 
             <div class="mb-3">
-                <label for="FORMULARIO_TIPO" class="form-label"><i class="fa-solid fa-person-chalkboard @error('FORMULARIO_TIPO') is-invalid @enderror"></i> Tipo de formulario:</label>
+                <label for="FORMULARIO_TIPO" class="form-label"><i class="fa-solid fa-person-chalkboard @error('FORMULARIO_TIPO') is-invalid @enderror" value="{{ old('FORMULARIO_TIPO') }}" ></i> Tipo de formulario:</label>
                 <select class="form-control" name="FORMULARIO_TIPO" id="FORMULARIO_TIPO" required>
                     <option value="" selected>-- Seleccione un tipo de formulario --</option>
                     <option value="TIPO A">TIPO A</option>

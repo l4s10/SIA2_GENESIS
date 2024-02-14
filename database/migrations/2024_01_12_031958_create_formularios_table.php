@@ -19,6 +19,10 @@ return new class extends Migration
             $table->string('FORMULARIO_TIPO', 128);
             //Relaciones
             $table->foreign('OFICINA_ID')->references('OFICINA_ID')->on('oficinas');
+
+            // Regla de unicidad compuesta
+            $table->unique(['OFICINA_ID', 'FORMULARIO_NOMBRE', 'FORMULARIO_TIPO']); 
+
             //Timestamps
             $table->timestamps();
         });

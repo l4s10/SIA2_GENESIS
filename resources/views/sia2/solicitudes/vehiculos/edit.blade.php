@@ -8,9 +8,9 @@
 
 @section('content')
     <div class="container">
-        {{--<form action="{{ route('solicitudesvehiculos.update', $solicitud->id) }}" method="POST">
+        <form action="{{ route('solicitudesvehiculos.update', $solicitud->SOLICITUD_VEHICULO_ID) }}" method="POST">
             @csrf
-            @method('PUT')--}}
+            @method('PUT')
             <br>
             <br>
             <h3>Solicitante</h3>
@@ -87,7 +87,7 @@
 
             <!-- Datos Geográficos -->
             <div class="row">
-                <div class="col">
+                {{--<div class="col">
                     <div class="form-group">
                         <label for="SOLICITUD_VEHICULO_REGION_ORIGEN">Región de Origen</label>
                         <input type="text" class="form-control" value="{{ $solicitud->comunaOrigen->region->REGION_NOMBRE }}" readonly>
@@ -98,11 +98,11 @@
                         <label for="SOLICITUD_VEHICULO_COMUNA_ORIGEN">Comuna de Origen</label>
                         <input type="text" class="form-control" value="{{ $solicitud->comunaOrigen->COMUNA_NOMBRE }}" readonly>
                     </div>
-                </div>
+                </div>--}}
             </div>
 
             <div class="row">
-                <div class="col">
+                {{--<div class="col">
                     <div class="form-group">
                         <label for="SOLICITUD_VEHICULO_REGION_DESTINO">Región de Destino</label>
                         <input type="text" class="form-control" value="{{ $solicitud->comunaDestino->region->REGION_NOMBRE }}" readonly>
@@ -113,7 +113,7 @@
                         <label for="SOLICITUD_VEHICULO_COMUNA_DESTINO">Comuna de Destino</label>
                         <input type="text" class="form-control" value="{{ $solicitud->comunaDestino->COMUNA_NOMBRE }}" readonly>
                     </div>
-                </div>
+                </div>--}}
             </div>
 
             <br>
@@ -149,6 +149,25 @@
             </div>
             <br><br><br>
             <button type="submit" class="btn btn-primary">Guardar Cambios</button>
+            <a href="{{ route('solicitudesvehiculos.exportar') }}" class="btn btn-primary">Descargar Excel</a>
+            <a href="{{ route('descargar.plantilla', ['id' => $solicitud->SOLICITUD_VEHICULO_ID]) }}">Descargar Plantilla Excel</a>
+
         </form>
     </div>
 @stop
+
+@section('scripts')
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+
+
+            // Después de 2 segundos, redirigir al usuario a la vista de edición
+            setTimeout(function() {
+                // Obtén el ID de la solicitud del objeto $solicitud
+                var solicitudId = "{{ $solicitud->id }}";
+                // Redirige al usuario a la ruta de edición con el ID de la solicitud
+                window.location.href = "{{ route('solicitudesvehiculos.edit', ['solicitudesvehiculo' => 'solicitudId']) }}".replace('solicitudId', solicitudId);
+            }, 2000); // Redirigir después de 2 segundos
+        });
+    </script>
+@endsection

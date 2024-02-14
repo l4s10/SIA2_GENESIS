@@ -19,6 +19,9 @@ return new class extends Migration
             $table->timestamps();
             //** LLaves foráneas
             $table->foreign('OFICINA_ID')->references('OFICINA_ID')->on('oficinas');
+
+            // Clave única compuesta
+            $table->unique(['OFICINA_ID', 'DEPARTAMENTO_NOMBRE']); 
         });
     }
 

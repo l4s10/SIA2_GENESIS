@@ -30,6 +30,12 @@ return new class extends Migration
             $table->foreign('UBICACION_ID')->references('UBICACION_ID')->on('ubicaciones');
             //Timestamps
             $table->timestamps();
+
+            // Clave de unicidad compuesta: TIPO_VEHICULO_ID, UBICACION_ID, VEHICULO_PATENTE, VEHICULO_MARCA, VEHICULO_MODELO
+            $table->unique(['TIPO_VEHICULO_ID', 'UBICACION_ID', 'VEHICULO_PATENTE', 'VEHICULO_MARCA', 'VEHICULO_MODELO'], 'unicidad_ubicacion_vehiculo');
+
+            // Clave de unicidad compuesta: TIPO_VEHICULO_ID, DEPARTAMENTO_ID, VEHICULO_PATENTE, VEHICULO_MARCA, VEHICULO_MODELO
+            $table->unique(['TIPO_VEHICULO_ID', 'DEPARTAMENTO_ID', 'VEHICULO_PATENTE', 'VEHICULO_MARCA', 'VEHICULO_MODELO'], 'unicidad_departamento_vehiculo');
         });
     }
 

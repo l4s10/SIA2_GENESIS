@@ -82,6 +82,20 @@ class SalaController extends Controller
                 'SALA_ESTADO.max' => 'El campo "Estado" no debe exceder los 40 caracteres.',
             ]);
 
+
+            // Validar clave única compuesta
+            $validator->after(function ($validator) use ($request) {
+                $exists = Sala::where([
+                    'OFICINA_ID' => Auth::user()->OFICINA_ID,
+                    'SALA_NOMBRE' => strtoupper($request->input('SALA_NOMBRE'))
+                ])->exists();
+
+                if ($exists) {
+                    $validator->errors()->add('SALA_NOMBRE', 'El nombre de la sala ya existe en su dirección regional.');
+                }
+            });
+
+
             if ($validator->fails()) {
                 return redirect()->back()->withErrors($validator)->withInput();
             }
@@ -151,6 +165,19 @@ class SalaController extends Controller
                 'SALA_ESTADO.string' => 'El campo "Estado" debe ser una cadena de texto.',
                 'SALA_ESTADO.max' => 'El campo "Estado" no debe exceder los 40 caracteres.',
             ]);
+
+            // Validar clave única compuesta
+            $validator->after(function ($validator) use ($request, $id) {
+                $exists = Sala::where([
+                    'OFICINA_ID' => Auth::user()->OFICINA_ID,
+                    'SALA_NOMBRE' => strtoupper($request->input('SALA_NOMBRE'))
+                ])->where('SALA_ID', '!=', $id)->exists();
+
+                if ($exists) {
+                    $validator->errors()->add('SALA_NOMBRE', 'El nombre de la sala ya existe en su dirección regional.');
+                }
+            });
+
 
             if ($validator->fails()) {
                 return redirect()->back()->withErrors($validator)->withInput();
