@@ -93,7 +93,7 @@ class ReportesMaterialesController extends Controller
                 ->join('solicitudes', 'solicitudes_materiales.SOLICITUD_ID', '=', 'solicitudes.SOLICITUD_ID')
                 ->join('revisiones_solicitudes', 'solicitudes.SOLICITUD_ID', '=', 'revisiones_solicitudes.SOLICITUD_ID')
                 ->join('users as solicitantes', 'solicitudes.USUARIO_id', '=', 'solicitantes.id') // Usuario que hizo la solicitud
-                ->join('users as revisores', 'revisiones_solicitudes.USUARIO_ID', '=', 'revisores.id') // Usuario que revisó la solicitud
+                ->join('users as revisores', 'revisiones_solicitudes.USUARIO_id', '=', 'revisores.id') // Usuario que revisó la solicitud
                 ->where('solicitantes.OFICINA_ID', $oficinaId) // Filtrar por la oficina del usuario autenticado
                 ->where('revisores.OFICINA_ID', $oficinaId) // Asegurar que el revisor también pertenezca a la misma oficina
                 ->select('revisores.id', DB::raw('CONCAT(revisores.USUARIO_NOMBRES, " ", revisores.USUARIO_APELLIDOS) as nombre_completo'), DB::raw('COUNT(*) as total_gestiones'))
