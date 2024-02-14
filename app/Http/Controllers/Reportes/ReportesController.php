@@ -14,4 +14,8 @@ class ReportesController extends Controller
     public function Materiales(){
         return view('sia2.reportes.materiales');
     }
+
+    public function Equipos(){
+        return view('sia2.reportes.equipos');
+    }
 }

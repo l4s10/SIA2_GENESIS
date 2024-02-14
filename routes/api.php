@@ -4,6 +4,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Api\ReportesMaterialesController;
+use App\Http\Controllers\Api\ReportesEquiposController;
 
 /*
 |--------------------------------------------------------------------------
@@ -28,3 +29,8 @@ Route::middleware('auth:sanctum')->get('/reportes/materiales/get-graficos', [Rep
 
 Route::middleware('auth:sanctum')->post('/reportes/materiales/filtrar-general', [ReportesMaterialesController::class, 'filtrarGeneral']);
 
+
+// rutas para api de equipos
+Route::middleware('auth:sanctum')->get('/reportes/equipos/get-graficos', [ReportesEquiposController::class, 'getGraficos']);
+
+Route::middleware('auth:sanctum')->post('/reportes/equipos/filtrar-general', [ReportesEquiposController::class, 'filtrarGeneral']);

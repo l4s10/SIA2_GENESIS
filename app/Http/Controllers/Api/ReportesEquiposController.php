@@ -4,20 +4,12 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use App\Models\SolicitudMaterial;
+use App\Models\SolicitudEquipos;
 use Illuminate\Support\Facades\DB;
 use Exception;
-use Illuminate\Support\Facades\Auth;
 
-class ReportesMaterialesController extends Controller
+class ReportesEquiposController extends Controller
 {
-    public function home()
-    {
-        return response()->json([
-            'status' => 'success',
-            'message' => 'Bienvenido a la API de reportes de materiales. MEOW MEOW NIGGA'
-        ]);
-    }
     //Obtener general GET para la primera carga
     public function getGraficos()
     {
@@ -45,7 +37,6 @@ class ReportesMaterialesController extends Controller
         }
     }
 
-
     // Filtrar general
     public function filtrarGeneral(Request $request)
     {
@@ -60,8 +51,8 @@ class ReportesMaterialesController extends Controller
             $solicitudesPorUbicacionDepto = $this->Grafico2($request);
             // Cargamos el grafico3
             $rankingEstados = $this->Grafico3($request);
-            // Retornamos en JSON la data filtrada de los gráficos
-            // Ahora 'data' contiene un array con todos los datos de los gráficos
+
+            // Construye la respuesta con todos los datos de los gráficos para la carga inicial
             return response()->json([
                 'status' => 'success',
                 'data' => [
@@ -70,56 +61,48 @@ class ReportesMaterialesController extends Controller
                     'grafico3' => $rankingEstados
                 ]
             ]);
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             return response()->json([
                 'status' => 'error',
-                'message' => 'Error al filtrar los reportes: ' . $e->getMessage()
+                'message' => 'Error al obtener los datos de los gráficos: ' . $e->getMessage()
             ], 500);
         }
     }
 
-    /*
-    *   Grafico materiales 1: RANKING DE GESTIONADORES DE SOLICITUDES DE MATERIALES
-    */
+    /**
+     * Grafico Equipos 1: Ranking de gestionadores de solicitudes de equipos
+     */
     public function Grafico1(Request $request)
     {
         try {
             // Opcionalmente recibidos desde el request
             $fechaInicio = $request->input('fecha_inicio');
             $fechaFin = $request->input('fecha_fin');
-            $oficinaId = Auth::user()->OFICINA_ID; // Obtener el ID de la oficina del usuario autenticado
 
-            $rankingGestionadores = SolicitudMaterial::query()
-                ->join('solicitudes', 'solicitudes_materiales.SOLICITUD_ID', '=', 'solicitudes.SOLICITUD_ID')
+            $rankingGestionadores = SolicitudEquipos::query()
+                ->join('solicitudes', 'solicitudes_equipos.SOLICITUD_ID', '=', 'solicitudes.SOLICITUD_ID')
                 ->join('revisiones_solicitudes', 'solicitudes.SOLICITUD_ID', '=', 'revisiones_solicitudes.SOLICITUD_ID')
-                ->join('users as solicitantes', 'solicitudes.USUARIO_id', '=', 'solicitantes.id') // Usuario que hizo la solicitud
-                ->join('users as revisores', 'revisiones_solicitudes.USUARIO_ID', '=', 'revisores.id') // Usuario que revisó la solicitud
-                ->where('solicitantes.OFICINA_ID', $oficinaId) // Filtrar por la oficina del usuario autenticado
-                ->where('revisores.OFICINA_ID', $oficinaId) // Asegurar que el revisor también pertenezca a la misma oficina
-                ->select('revisores.id', DB::raw('CONCAT(revisores.USUARIO_NOMBRES, " ", revisores.USUARIO_APELLIDOS) as nombre_completo'), DB::raw('COUNT(*) as total_gestiones'))
+                ->join('users', 'revisiones_solicitudes.USUARIO_ID', '=', 'users.id')
+                ->select('users.id', DB::raw('CONCAT(users.USUARIO_NOMBRES, " ", users.USUARIO_APELLIDOS) as nombre_completo'), DB::raw('count(*) as total_gestiones'))
                 ->when($fechaInicio && $fechaFin, function ($query) use ($fechaInicio, $fechaFin) {
+                    // Se tiene una columna de tipo timestamp en 'revisiones_solicitudes' para la fecha de la revisión
+                    // la cual es 'created_at', si mas adelante se llegase a cambiar. Favor actualizar el nombre de la columna aqui debajo.
                     return $query->whereBetween('revisiones_solicitudes.created_at', [$fechaInicio, $fechaFin]);
                 })
-                ->groupBy('revisores.id', 'revisores.USUARIO_NOMBRES', 'revisores.USUARIO_APELLIDOS')
+                ->groupBy('users.id', 'users.USUARIO_NOMBRES', 'users.USUARIO_APELLIDOS')
                 ->orderBy('total_gestiones', 'DESC')
                 ->get();
 
             return [
                 'ranking' => $rankingGestionadores
             ];
-        } catch (\Exception $e) {
-            return response()->json([
-                'status' => 'error',
-                'message' => 'Error al obtener el ranking de gestionadores: ' . $e->getMessage()
-            ], 500);
+        } catch (Exception $e) {
+            throw new Exception('Error al obtener el ranking de gestionadores: ' . $e->getMessage());
         }
     }
 
-    /*
-    *   Grafico materiales 2: SOLICITUDES DE MATERIALES DE MATERIALES REQUERIDOS POR DEPARTAMENTO / UNIDAD
-    *   Viajamos a traves de la tabla "solicitudes_materiales" y obtenemos las "SOLCIITUD_ID"
-    *   Luego viajamos en la tabla "solicitudes" y obtenemos el "USUARIO_id" de cada solicitud de materiales a traves de la relacion "solicitante"
-    *   Luego viajamos en la tabla "users" y obtenemos el DEPARTAMENTO_ID o UNIDAD_ID de cada usuario a traves de la relacion "departamento" o "ubicacion"
+    /**
+     * Grafico Equipos 2: Solicitudes de equipos por ubicación y departamento
     */
     public function Grafico2(Request $request)
     {
@@ -127,24 +110,21 @@ class ReportesMaterialesController extends Controller
             // Opcionalmente recibidos desde el request
             $fechaInicio = $request->input('fecha_inicio');
             $fechaFin = $request->input('fecha_fin');
-            $oficinaId = Auth::user()->OFICINA_ID; // Obtener el ID de la oficina del usuario autenticado
 
             // Subconsulta para departamentos
-            $departamentosQuery = SolicitudMaterial::query()
-                ->join('solicitudes', 'solicitudes_materiales.SOLICITUD_ID', '=', 'solicitudes.SOLICITUD_ID')
+            $departamentosQuery = SolicitudEquipos::query()
+                ->join('solicitudes', 'solicitudes_equipos.SOLICITUD_ID', '=', 'solicitudes.SOLICITUD_ID')
                 ->join('users', 'solicitudes.USUARIO_id', '=', 'users.id')
                 ->join('departamentos', 'users.DEPARTAMENTO_ID', '=', 'departamentos.DEPARTAMENTO_ID')
-                ->where('users.OFICINA_ID', '=', $oficinaId)
                 ->select('departamentos.DEPARTAMENTO_NOMBRE as entidad', DB::raw('COUNT(*) as total_solicitudes'))
                 ->whereNotNull('users.DEPARTAMENTO_ID')
                 ->groupBy('departamentos.DEPARTAMENTO_NOMBRE');
 
             // Subconsulta para ubicaciones
-            $ubicacionesQuery = SolicitudMaterial::query()
-                ->join('solicitudes', 'solicitudes_materiales.SOLICITUD_ID', '=', 'solicitudes.SOLICITUD_ID')
+            $ubicacionesQuery = SolicitudEquipos::query()
+                ->join('solicitudes', 'solicitudes_equipos.SOLICITUD_ID', '=', 'solicitudes.SOLICITUD_ID')
                 ->join('users', 'solicitudes.USUARIO_id', '=', 'users.id')
                 ->join('ubicaciones', 'users.UBICACION_ID', '=', 'ubicaciones.UBICACION_ID')
-                ->where('users.OFICINA_ID', '=', $oficinaId)
                 ->select('ubicaciones.UBICACION_NOMBRE as entidad', DB::raw('COUNT(*) as total_solicitudes'))
                 ->whereNotNull('users.UBICACION_ID')
                 ->groupBy('ubicaciones.UBICACION_NOMBRE');
@@ -163,33 +143,23 @@ class ReportesMaterialesController extends Controller
             return [
                 'solicitudesPorEntidad' => $solicitudesPorEntidad
             ];
-        } catch (\Exception $e) {
-            return response()->json([
-                'status' => 'error',
-                'message' => 'Error al obtener las solicitudes por entidad: ' . $e->getMessage()
-            ], 500);
+        } catch (Exception $e) {
+            throw new Exception('Error al obtener las solicitudes por ubicación y departamento: ' . $e->getMessage());
         }
     }
 
-    /*
-    *   Grafico materiales 3: RANKING DE ESTADOS DE SOLICITUDES DE MATERIALES
-    *   Viajamos a traves de la tabla "solicitudes_materiales" y obtenemos las "SOLCIITUD_ID" para luego obtener las solicitudes filtradas.
-    *   Despues accedemos al campo "SOLICITUD_ESTADO" de la tabla "solicitudes" para obtener el estado de cada solicitud.
-    * luego agrupamos los estados y devolvemos la cantidad que hay en cada uno
+    /**
+     * Grafico Equipos 3: Ranking de estados de solicitudes de equipos
     */
-
     public function Grafico3(Request $request)
     {
         try {
             // Opcionalmente recibidos desde el request
             $fechaInicio = $request->input('fecha_inicio');
             $fechaFin = $request->input('fecha_fin');
-            $oficinaId = Auth::user()->OFICINA_ID; // Obtener el ID de la oficina del usuario autenticado
 
-            $rankingEstados = SolicitudMaterial::query()
-                ->join('solicitudes', 'solicitudes_materiales.SOLICITUD_ID', '=', 'solicitudes.SOLICITUD_ID')
-                ->join('users', 'solicitudes.USUARIO_id', '=', 'users.id') // Asegúrate de unirte a la tabla de usuarios para acceder a OFICINA_ID
-                ->where('users.OFICINA_ID', '=', $oficinaId) // Filtrar por OFICINA_ID
+            $rankingEstados = SolicitudEquipos::query()
+                ->join('solicitudes', 'solicitudes_equipos.SOLICITUD_ID', '=', 'solicitudes.SOLICITUD_ID')
                 ->select('solicitudes.SOLICITUD_ESTADO', DB::raw('count(*) as total_solicitudes'))
                 ->when($fechaInicio && $fechaFin, function ($query) use ($fechaInicio, $fechaFin) {
                     return $query->whereBetween('solicitudes.created_at', [$fechaInicio, $fechaFin]);
@@ -208,5 +178,4 @@ class ReportesMaterialesController extends Controller
             ], 500);
         }
     }
-
 }
