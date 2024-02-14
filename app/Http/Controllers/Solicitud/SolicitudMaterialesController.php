@@ -241,7 +241,7 @@ class SolicitudMaterialesController extends Controller
         {
             // Crear la revisión de la solicitud
             RevisionSolicitud::create([
-                'USUARIO_ID' => Auth::user()->id,
+                'USUARIO_id' => Auth::user()->id,
                 'SOLICITUD_ID' => $solicitud->SOLICITUD_ID,
                 'REVISION_SOLICITUD_OBSERVACION' => $request->input('REVISION_SOLICITUD_OBSERVACION'),
             ]);
@@ -272,7 +272,7 @@ class SolicitudMaterialesController extends Controller
 
                 // Registra el movimiento
                 Movimiento::create([
-                    'USUARIO_ID' => Auth::user()->id,
+                    'USUARIO_id' => Auth::user()->id,
                     'MATERIAL_ID' => $material->MATERIAL_ID,
                     'MOVIMIENTO_TITULAR' => (Auth::user()->USUARIO_NOMBRES.' '.Auth::user()->USUARIO_APELLIDOS),
                     'MOVIMIENTO_OBJETO' => 'MATERIAL: ' . $material->MATERIAL_NOMBRE,

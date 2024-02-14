@@ -225,7 +225,7 @@ class SolicitudEquiposController extends Controller
         {
             // Crear la revisión de la solicitud
             RevisionSolicitud::create([
-                'USUARIO_ID' => Auth::user()->id,
+                'USUARIO_id' => Auth::user()->id,
                 'SOLICITUD_ID' => $solicitud->SOLICITUD_ID,
                 'REVISION_SOLICITUD_OBSERVACION' => $request->input('REVISION_SOLICITUD_OBSERVACION'),
             ]);
