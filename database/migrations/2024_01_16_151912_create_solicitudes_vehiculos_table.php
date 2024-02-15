@@ -35,13 +35,13 @@ return new class extends Migration
 
 
             //*Llaves foráneas*/
+            $table->foreign('CONDUCTOR_id')->references('id')->on('users');
             $table->foreign('USUARIO_id')->references('id')->on('users');
             $table->foreign('VEHICULO_ID')->references('VEHICULO_ID')->on('vehiculos');
             $table->foreign('TIPO_VEHICULO_ID')->references('TIPO_VEHICULO_ID')->on('tipos_vehiculos');
             //$table->foreign('RENDICION_ID')->references('RENDICION_ID')->on('rendiciones');
             $table->foreign('COMUNA_ID')->references('COMUNA_ID')->on('comunas');
             $table->foreign('ORDEN_TRABAJO_ID')->references('ORDEN_TRABAJO_ID')->on('ordenes_de_trabajo');
-            $table->foreign('CONDUCTOR_id')->references('id')->on('users');
             $table->timestamps();
 
             

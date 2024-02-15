@@ -10,6 +10,9 @@
 @stop
 
 @section('content')
+
+
+    <div class="container">
         <form action="{{ route('solicitudesvehiculos.store') }}" method="POST">
             @csrf
 
@@ -33,7 +36,7 @@
                 <div class="col-md-4">
                     <div class="mb-3">
                         <label for="SOLICITUD_ESTADO"><i class="fa-solid fa-right-to-bracket"></i> Estado de la Solicitud:</label>
-                        <input type="text" class="form-control" id="SOLICITUD_ESTADO" name="SOLICITUD_ESTADO" value="POR INGRESAR" readonly style="color: green; text-align: center;">
+                        <input type="text" class="form-control" id="SOLICITUD_ESTADO" name="SOLICITUD_ESTADO" value="POR INGRESAR" readonly style="color: #E22C2C; text-align: center;">
                     </div>
                     {{-- Leyenda --}}
                     <div class="mb-3">
@@ -88,10 +91,10 @@
                         @endif
                 </div>
                 <div class="col-md-6">
-                        <label for="OFICINA" class="form-label"><i class="fa-solid fa-map-location-dot"></i> Cargo:</label>
-                        <input type="text" id="OFICINA" class="form-control" name="OFICINA" value="{{ auth::user()->cargo->CARGO_NOMBRE }}" required readonly>
-                        @error('ID_REGION')
-                        <div class="error" style="color: #721c24">{{ $message }}</div>
+                        <label for="CARGO" class="form-label"><i class="fa-solid fa-id-card"></i> Cargo:</label>
+                        <input type="text" id="CARGO" class="form-control" name="CARGO" value="{{ auth::user()->cargo->CARGO_NOMBRE }}" required readonly>
+                        @error('CARGO')
+                        <div class="error" style="color: #E22C2C">{{ $message }}</div>
                         @enderror
                 </div>     
             </div>
@@ -130,7 +133,7 @@
             <h3>Vehículo</h3>            
             <div class="row mb-4">
                 <div class="col-md-4">
-                    <label for="TIPO_VEHICULO_ID" class="form-label"><i class="fa-solid fa-car-side"></i> Tipo de Vehículo</label>
+                    <label for="TIPO_VEHICULO_ID" class="form-label"><i class="fa-solid fa-car-side"></i> Tipo de Vehículo:</label>
                     <select name="TIPO_VEHICULO_ID" id="TIPO_VEHICULO_ID" class="form-control" required>
                         <option style="text-align: center;" value="">-- Seleccione un tipo de vehiculo --</option>
                         @foreach ($tiposVehiculos as $tipoVehiculo)
@@ -146,17 +149,17 @@
                 <div class="col-md-2">
                 </div>
                 <div class="col-md-3">
-                    <label for="fechaHoraInicioSolicitada"> Salida del estacionamiento:</label>
+                    <label for="fechaHoraInicioSolicitada"><i class="fa-solid fa-compass"></i> Salida del estacionamiento:</label>
                     <input type="text" class="form-control @error('SOLICITUD_VEHICULO_FECHA_HORA_INICIO_SOLICITADA') is-invalid @enderror" id="fechaHoraInicioSolicitada" name="SOLICITUD_VEHICULO_FECHA_HORA_INICIO_SOLICITADA" required placeholder="-- Seleccione la fecha y hora --" style="background-color: #fff; color: #000; text-align: center;"> 
                     @error('SOLICITUD_VEHICULO_FECHA_HORA_INICIO_SOLICITADA')
-                    <div class="error" style="color: #721c24">{{ $message }}</div>
+                    <div class="error" style="color: #E22C2C">{{ $message }}</div>
                     @enderror
                 </div>
                 <div class="col-md-3">
-                    <label for="fechaHoraTerminoSolicitada"> Reingreso al estacionaiento</label>
+                    <label for="fechaHoraTerminoSolicitada"><i class="fa-solid fa-compass"></i> Reingreso al estacionaiento:</label>
                     <input type="text" class="form-control @error('SOLICITUD_VEHICULO_FECHA_HORA_TERMINO_SOLICITADA') is-invalid @enderror" id="fechaHoraTerminoSolicitada" name="SOLICITUD_VEHICULO_FECHA_HORA_TERMINO_SOLICITADA" required placeholder="-- Seleccione la fecha y hora --" style="background-color: #fff; color: #000; text-align: center;">
                     @error('SOLICITUD_VEHICULO_FECHA_HORA_TERMINO_SOLICITADA')
-                        <div class="error" style="color: #721c24">{{ $message }}</div>
+                        <div class="error" style="color: #E22C2C">{{ $message }}</div>
                     @enderror
                 </div>
             </div>
@@ -174,11 +177,11 @@
             </div>
             <div class="col">
                 <div class="row">
-                    <button id="agregarPasajeroBtn" class="btn" style="background-color: #1aa16b; color: #fff;">
+                    <button id="agregarPasajeroBtn" class="btn" style="background-color: #00B050; color: #fff;">
                         <i class="fas fa-plus"></i> Agregar Pasajero
                     </button>
                             
-                    <button id="eliminarPasajeroBtn" class="btn" style="background-color: #dc3545; color: #fff;">
+                    <button id="eliminarPasajeroBtn" class="btn" style="background-color: #E22C2C; color: #fff;">
                         <i class="fas fa-minus"></i> Eliminar Pasajero
                     </button>
                 </div>
@@ -212,7 +215,7 @@
             <div class="row">
                 <div class="col-md-4">
                     <div class="form-group">
-                        <label for="SOLICITUD_VEHICULO_REGION">Región de Destino</label>
+                        <label for="SOLICITUD_VEHICULO_REGION"><i class="fa-solid fa-map-location-dot"></i> Región de Destino:</label>
                         <select name="SOLICITUD_VEHICULO_REGION" id="SOLICITUD_VEHICULO_REGION" class="form-control" required>
                             <option value="">-- Seleccione la región de destino --</option>
                             @foreach ($regiones as $region)
@@ -223,7 +226,7 @@
                 </div>
                 <div class="col-md-4">
                     <div class="form-group">
-                        <label for="SOLICITUD_VEHICULO_COMUNA">Comuna de Destino</label>
+                        <label for="SOLICITUD_VEHICULO_COMUNA"><i class="fa-solid fa-map-location-dot"></i> Comuna de Destino:</label>
                         <select name="SOLICITUD_VEHICULO_COMUNA" id="SOLICITUD_VEHICULO_COMUNA" class="form-control" required>
                             <option value="">-- Seleccione la comuna de destino --</option>
                             <!-- Las opciones de las comunas se cargarán dinámicamente aquí -->
@@ -233,7 +236,7 @@
                 <div class="col-md-4">
                     <div class="form-group">
                         <div id="jefeQueAutoriza">
-                            <label for="SOLICITUD_VEHICULO_JEFE_QUE_AUTORIZA">Jefe que autoriza</label>
+                            <label for="SOLICITUD_VEHICULO_JEFE_QUE_AUTORIZA"><i class="fa-solid fa-user-check"></i> Jefe que autoriza:</label>
                             <select name="SOLICITUD_VEHICULO_JEFE_QUE_AUTORIZA" id="SOLICITUD_VEHICULO_JEFE_QUE_AUTORIZA" class="form-control" required>
                                 <option value="">-- Seleccione el jefe que autoriza --</option>
                                 @foreach ($jefesQueAutorizan as $jefe)
@@ -244,8 +247,12 @@
                     </div>
                 </div>
             </div>
-            <br>
-        <button type="submit" class="btn agregar"><i class="fa-solid fa-plus"></i> Crear Solicitud</button>
+            <br><br><br><br>
+        <button type="submit" class="btn btn-primary">Crear Solicitud</button>
+
+    </div>
+     
+
 @stop
 
 @section('css')
@@ -353,10 +360,8 @@
         let horaActual = fechaActual.getHours(); // Hora actual
         let minutoActual = fechaActual.getMinutes(); // Minuto actual
 
-
         // **Fecha mínima permitida (día actual)**
         let fechaMinimaPermitida = new Date(añoActual, mesActual, diaActual, horaActual, minutoActual);
-
 
         // **Fecha máxima permitida**
         let fechaMaximaPermitida;
@@ -385,7 +390,15 @@
                     // Habilitar el input de término una vez que se ha seleccionado la hora de inicio
                     inputfechaHoraTerminoSolicitada.disabled = false;
                     // Actualizar minDate para el input de término
-                    inputfechaHoraTerminoSolicitada._flatpickr.set("minDate", selectedDates[0]);
+                    let fechaHoraInicioSeleccionada = selectedDates[0];
+                    let horaInicioSeleccionada = fechaHoraInicioSeleccionada.getHours();
+                    let minutoInicioSeleccionado = fechaHoraInicioSeleccionada.getMinutes();
+
+                    let fechaMinimaTermino = new Date(fechaHoraInicioSeleccionada);
+                    fechaMinimaTermino.setHours(horaInicioSeleccionada);
+                    fechaMinimaTermino.setMinutes(minutoInicioSeleccionado);
+
+                    inputfechaHoraTerminoSolicitada._flatpickr.set("minDate", fechaMinimaTermino);
                 }
             }
         });
@@ -396,7 +409,14 @@
             dateFormat: "Y-m-d H:i",
             minDate: fechaMinimaPermitida, // Se establece inicialmente, luego se actualizará
             maxDate: fechaMaximaPermitida,
-            locale: "es" // Establecer el idioma en español
+            locale: "es", // Establecer el idioma en español
+            onClose: function(selectedDates, dateStr, instance) {
+                let fechaHoraTerminoSeleccionada = selectedDates[0];
+                if (fechaHoraTerminoSeleccionada < inputfechaHoraInicioSolicitada._flatpickr.latestSelectedDateObj) {
+                    alert("La fecha y hora seleccionada es anterior a la hora de inicio.");
+                    inputfechaHoraTerminoSolicitada._flatpickr.setDate(null); // Limpiar la selección
+                }
+            }
         });
 
         // Deshabilitar el input de término al cargar la página y establecer su valor como vacío
@@ -405,6 +425,7 @@
         inputfechaHoraTerminoSolicitada.value = null;
     });
 </script>
+
 
 
 
@@ -489,6 +510,22 @@
                 prevVehiculoId = tipoVehiculoIdSeleccionado;
             });
 
+
+            // Función para verificar si el pasajero está seleccionado en otra fila
+            function pasajeroSeleccionadoEnOtraFila(selectedPasajeroId, filaActual) {
+                let pasajeroRepetido = false;
+                for (let i = 1; i <= contadorFilas; i++) {
+                    if (i !== filaActual) {
+                        let pasajeroValue = document.getElementById('pasajero_' + i).value;
+                        if (pasajeroValue === selectedPasajeroId) {
+                            pasajeroRepetido = true;
+                            break;
+                        }
+                    }
+                }
+                return pasajeroRepetido;
+            }
+
             // Evento de clic en el botón para agregar pasajero
             document.getElementById('agregarPasajeroBtn').addEventListener('click', function() {
                 let todosSelectoresConValor = true;
@@ -496,22 +533,24 @@
                     let oficinaValue = document.getElementById('oficina_' + i).value;
                     let dependenciaValue = document.getElementById('dependencia_' + i).value;
                     let pasajeroValue = document.getElementById('pasajero_' + i).value;
-                   // Verificar campos del conductor (primera fila)
-                    if (i === 1) {
-                        //let horaInicioValue = document.getElementById('SOLICITUD_VEHICULO_HORA_INICIO_CONDUCCION').value;
-                        //let horaTerminoValue = document.getElementById('SOLICITUD_VEHICULO_HORA_TERMINO_CONDUCCION').value;
-                        let motivoValue = document.getElementById('SOLICITUD_VEHICULO_MOTIVO').value; // Cambiado el ID aquí
-                        //let viaticoValue = document.getElementById('SOLICITUD_VEHICULO_VIATICO').value;
 
-                        if (motivoValue === '') {
-                            todosSelectoresConValor = false;
-                            alert('Por favor, especifique la labor a realizar.');
-                            break;
-                        } else if (oficinaValue === '' || dependenciaValue === '' || pasajeroValue === '') {
-                            todosSelectoresConValor = false;
-                            alert('Por favor, complete todos los campos requeridos para el Pasajero N°' + (i) + '.');
-                            break;
-                        }
+                    let motivoValue = document.getElementById('SOLICITUD_VEHICULO_MOTIVO').value;
+                    if (motivoValue === '') {
+                        todosSelectoresConValor = false;
+                        alert('Por favor, especifique la labor a realizar.');
+                        break;
+                    } else if (oficinaValue === '' || dependenciaValue === '' || pasajeroValue === '') {
+                        todosSelectoresConValor = false;
+                        alert('Por favor, complete todos los campos requeridos para el Pasajero N°' + (i) + '.');
+                        break;
+                    }
+
+
+                    // Verificar si el pasajero ya está seleccionado en otra fila
+                    if (pasajeroSeleccionadoEnOtraFila(pasajeroValue, i)) {
+                        todosSelectoresConValor = false;
+                        alert('Este funcionario ya fue seleccionado como pasajero en otra fila. Por favor, elija otra persona.');
+                        break;
                     }
                 }
 
@@ -534,18 +573,30 @@
 
             // Evento de clic en el botón para eliminar pasajero
             document.getElementById('eliminarPasajeroBtn').addEventListener('click', function() {
-                    eliminarPasajero();
+                eliminarPasajero();
             });
 
-
-            // Función para eliminar la información del conductor
-             // Escuchador de eventos para el botón "Eliminar pasajero"
-            $('#eliminarPasajeroBtn').click(function() {
+            // Función para eliminar pasajero
+            function eliminarPasajero() {
                 if (contadorFilas > 1) {
-                    $('#fila_' + contadorFilas).remove();
+                    // Obtener el número de la última fila
+                    let ultimaFila = contadorFilas;
+                    // Obtener el ID del pasajero que se eliminará
+                    let pasajeroEliminadoId = document.getElementById('pasajero_' + ultimaFila).value;
+                    // Eliminar la fila del DOM
+                    $('#fila_' + ultimaFila).remove();
                     contadorFilas--;
+
+                    // Liberar al pasajero eliminado
+                    if (pasajeroEliminadoId !== '') {
+                        pasajerosSeleccionados.delete(pasajeroEliminadoId);
+                        // Habilitar la opción del pasajero eliminado en otros selectores de pasajeros
+                        document.querySelectorAll('.pasajero_').forEach(function(select) {
+                            select.querySelector('option[value="' + pasajeroEliminadoId + '"]').disabled = false;
+                        });
+                    }
                 } else {
-                                        // Restablecer los selectores a sus opciones predeterminadas
+                    // Restablecer los selectores a sus opciones predeterminadas
                     $('#oficina_1').val('');
                     $('#dependencia_1').val('').prop('disabled', true);
                     $('#pasajero_1').val('').prop('disabled', true);
@@ -556,9 +607,8 @@
                 if (contadorFilas < capacidadMaxima) {
                     document.getElementById('agregarPasajeroBtn').style.display = 'block';
                 }
-
-            });
-
+            }
+           
 
             // Función para agregar una fila de pasajero al registro
             function agregarFila(numeroFila) {
@@ -571,7 +621,7 @@
                     <h5>Pasajero N°${numeroFila}</h5>
                     <div class="form-row">
                         <div class="form-group col-md-4">
-                            <label for="oficina_${numeroFila}">Oficina</label>
+                            <label for="oficina_${numeroFila}"><i class="fa-solid fa-building"></i> Oficina:</label>
                             <select id="oficina_${numeroFila}" class="form-control oficina" data-row="${numeroFila}" required>
                                 <option style="text-align: center;" value="">-- Seleccione una opción --</option>
                                 @foreach($oficinas as $oficina)
@@ -580,7 +630,7 @@
                             </select>
                         </div>
                         <div class="form-group col-md-4">
-                            <label for="dependencia_${numeroFila}">Ubicación o Departamento</label>
+                            <label for="dependencia_${numeroFila}"><i class="fa-solid fa-building-user"></i> Ubicación o Departamento:</label>
                             <select id="dependencia_${numeroFila}" class="form-control dependencia" data-row="${numeroFila}" disabled required>
                                 <option style="text-align: center;" value="">-- Seleccione una opción --</option>
                                 <optgroup label="Ubicaciones">
@@ -596,7 +646,7 @@
                             </select>
                         </div>
                         <div class="form-group col-md-4">
-                            <label for="pasajero_${numeroFila}">Funcionario</label>
+                            <label for="pasajero_${numeroFila}"><i class="fa-solid fa-user-plus"></i> Funcionario:</label>
                             <select id="pasajero_${numeroFila}" class="form-control pasajero" name="PASAJERO_${numeroFila}" data-row="${numeroFila}" disabled required>
                                 <option style="text-align: center;" value="">-- Seleccione al pasajero N°${numeroFila} --</option>
                                 <optgroup label="Funcionarios Asociados">
@@ -668,17 +718,25 @@
                     }
                 });
 
+
                 document.getElementById('pasajero_' + numeroFila).addEventListener('change', function() {
                     let selectedPasajeroId = this.value;
 
-                    if (pasajerosSeleccionados.has(selectedPasajeroId)) {
-                        alert('Este funcionario ya fue seleccionado como pasajero. Por favor, elija otra persona.');
+                    // Permitir la selección del pasajero nuevamente si lo cambias por otro
+                    if (selectedPasajeroId !== '') {
+                        pasajerosSeleccionados.delete(selectedPasajeroId);
+                    }
+
+                    // Verificar si el pasajero ya fue seleccionado en otra fila
+                    if (pasajeroSeleccionadoEnOtraFila(selectedPasajeroId, numeroFila)) {
+                        alert('Este funcionario ya fue seleccionado como pasajero en otra fila. Por favor, elija otra persona.');
                         this.value = '';
                         return;
                     }
 
                     pasajerosSeleccionados.add(selectedPasajeroId);
 
+                    // Deshabilitar la opción del pasajero seleccionado en otras filas
                     document.querySelectorAll('.pasajero_').forEach(function(select) {
                         if (select.id !== 'pasajero_' + numeroFila) {
                             select.querySelector('option[value="' + selectedPasajeroId + '"]').disabled = true;

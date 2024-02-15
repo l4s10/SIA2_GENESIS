@@ -64,6 +64,9 @@ class SolicitudVehicular extends Model
 
     public function comunaDestino()
     {
-        return $this->belongsTo(Comuna::class, 'SOLICITUD_VEHICULO_COMUNA_DESTINO', 'COMUNA_ID');
+        return $this->belongsTo(Comuna::class, 'COMUNA_ID', 'COMUNA_ID');
     }
 }
+
+
+
