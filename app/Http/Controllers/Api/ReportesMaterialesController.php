@@ -203,7 +203,7 @@ class ReportesMaterialesController extends Controller
 
             $rankingEstados = SolicitudMaterial::query()
                 ->join('solicitudes', 'solicitudes_materiales.SOLICITUD_ID', '=', 'solicitudes.SOLICITUD_ID')
-                ->join('users', 'solicitudes.USUARIO_id', '=', 'users.id') // Asegúrate de unirte a la tabla de usuarios para acceder a OFICINA_ID
+                ->join('users', 'solicitudes.USUARIO_id', '=', 'users.id') // Obtenemos el ID del usuario que hizo la solicitud para filtrar por oficina
                 ->where('users.OFICINA_ID', '=', $oficinaId) // Filtrar por OFICINA_ID
                 ->select('solicitudes.SOLICITUD_ESTADO', DB::raw('COUNT(DISTINCT solicitudes.SOLICITUD_ID) as total_solicitudes'))
                 ->when($fechaInicio && $fechaFin, function ($query) use ($fechaInicio, $fechaFin) {

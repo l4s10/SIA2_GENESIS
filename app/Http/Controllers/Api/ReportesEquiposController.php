@@ -189,7 +189,7 @@ class ReportesEquiposController extends Controller
 
             $rankingEstados = SolicitudEquipos::query()
                 ->join('solicitudes', 'solicitudes_equipos.SOLICITUD_ID', '=', 'solicitudes.SOLICITUD_ID')
-                ->join('users', 'solicitudes.USUARIO_id', '=', 'users.id') // Asegúrate de unirte a la tabla de usuarios para acceder a OFICINA_ID
+                ->join('users', 'solicitudes.USUARIO_id', '=', 'users.id') // Obtenemos a los usuarios que hicieron las solicitudes para filtrar por OFICINA_ID
                 ->where('users.OFICINA_ID', '=', $oficinaId) // Filtrar por OFICINA_ID
                 ->select('solicitudes.SOLICITUD_ESTADO', DB::raw('COUNT(DISTINCT solicitudes.SOLICITUD_ID) as total_solicitudes'))
                 ->when($fechaInicio && $fechaFin, function ($query) use ($fechaInicio, $fechaFin) {
