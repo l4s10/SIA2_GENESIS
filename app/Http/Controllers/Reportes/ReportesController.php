@@ -7,6 +7,9 @@ use Illuminate\Http\Request;
 
 class ReportesController extends Controller
 {
+    /**
+     * CONTROLADOR PARA EL MANEJO DE LAS VISTAS DE LOS REPORTES.
+    */
     public function Home(){
         return view('sia2.reportes.home');
     }
@@ -17,5 +20,9 @@ class ReportesController extends Controller
 
     public function Equipos(){
         return view('sia2.reportes.equipos');
+    }
+
+    public function Salas(){
+        return view('sia2.reportes.salas');
     }
 }
