@@ -78,26 +78,31 @@ class ReportesEquiposController extends Controller
             // Opcionalmente recibidos desde el request
             $fechaInicio = $request->input('fecha_inicio');
             $fechaFin = $request->input('fecha_fin');
+            $oficinaId = Auth::user()->OFICINA_ID; // Obtener el ID de la oficina del usuario autenticado
 
             $rankingGestionadores = SolicitudEquipos::query()
                 ->join('solicitudes', 'solicitudes_equipos.SOLICITUD_ID', '=', 'solicitudes.SOLICITUD_ID')
                 ->join('revisiones_solicitudes', 'solicitudes.SOLICITUD_ID', '=', 'revisiones_solicitudes.SOLICITUD_ID')
-                ->join('users', 'revisiones_solicitudes.USUARIO_ID', '=', 'users.id')
-                ->select('users.id', DB::raw('CONCAT(users.USUARIO_NOMBRES, " ", users.USUARIO_APELLIDOS) as nombre_completo'), DB::raw('count(*) as total_gestiones'))
+                ->join('users as solicitantes', 'solicitudes.USUARIO_id', '=', 'solicitantes.id') // Usuario que hizo la solicitud
+                ->join('users as revisores', 'revisiones_solicitudes.USUARIO_id', '=', 'revisores.id') // Usuario que revisó la solicitud
+                ->where('solicitantes.OFICINA_ID', $oficinaId) // Filtrar por la oficina del usuario autenticado
+                ->where('revisores.OFICINA_ID', $oficinaId) // Asegurar que el revisor también pertenezca a la misma oficina
+                ->select('revisores.id', DB::raw('CONCAT(revisores.USUARIO_NOMBRES, " ", revisores.USUARIO_APELLIDOS) as nombre_completo'), DB::raw('COUNT(*) as total_gestiones'))
                 ->when($fechaInicio && $fechaFin, function ($query) use ($fechaInicio, $fechaFin) {
-                    // Se tiene una columna de tipo timestamp en 'revisiones_solicitudes' para la fecha de la revisión
-                    // la cual es 'created_at', si mas adelante se llegase a cambiar. Favor actualizar el nombre de la columna aqui debajo.
                     return $query->whereBetween('revisiones_solicitudes.created_at', [$fechaInicio, $fechaFin]);
                 })
-                ->groupBy('users.id', 'users.USUARIO_NOMBRES', 'users.USUARIO_APELLIDOS')
+                ->groupBy('revisores.id', 'revisores.USUARIO_NOMBRES', 'revisores.USUARIO_APELLIDOS')
                 ->orderBy('total_gestiones', 'DESC')
                 ->get();
 
             return [
                 'ranking' => $rankingGestionadores
             ];
-        } catch (Exception $e) {
-            throw new Exception('Error al obtener el ranking de gestionadores: ' . $e->getMessage());
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Error al obtener el ranking de gestionadores: ' . $e->getMessage()
+            ], 500);
         }
     }
 

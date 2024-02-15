@@ -45,7 +45,7 @@ class SolicitudEquiposController extends Controller
             return view('sia2.solicitudes.equipos.create', compact('tiposEquipos', 'cartItems'));
         }catch(Exception $e){
             // Manejar excepciones si es necesario
-            return redirect()->route('solicitudes.index')->with('error', 'Error al cargar los tipos de equipo.');
+            return redirect()->back()->with('error', 'EError al cargar los tipos de equipo.');
         }
     }
 
@@ -102,7 +102,7 @@ class SolicitudEquiposController extends Controller
             return redirect()->route('solicitudes.equipos.index')->with('success', 'Solicitud creada exitosamente');
         }catch(Exception $e){
             // Manejar excepciones si es necesario
-            return redirect()->route('solicitudes.index')->with('error', 'Error al cargar los tipos de equipo.');
+            return redirect()->back()->with('error', 'Error al enviar la solicitud.'. $e->getMessage());
         }
     }
 
