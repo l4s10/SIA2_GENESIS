@@ -1,13 +1,15 @@
 <?php
 
 namespace App\Http\Controllers\Api;
-
+// Importacion de clases y demas
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use App\Models\SolicitudMaterial;
 use Illuminate\Support\Facades\DB;
-use Exception;
 use Illuminate\Support\Facades\Auth;
+// Importamos modelos
+use App\Models\Solicitud;
+use App\Models\SolicitudMaterial;
+use App\Models\RevisionSolicitud;
 
 class ReportesMaterialesController extends Controller
 {
@@ -37,7 +39,7 @@ class ReportesMaterialesController extends Controller
                     'grafico3' => $rankingEstados
                 ]
             ]);
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             return response()->json([
                 'status' => 'error',
                 'message' => 'Error al obtener los datos de los gráficos: ' . $e->getMessage()
@@ -70,7 +72,7 @@ class ReportesMaterialesController extends Controller
                     'grafico3' => $rankingEstados
                 ]
             ]);
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             return response()->json([
                 'status' => 'error',
                 'message' => 'Error al filtrar los reportes: ' . $e->getMessage()
@@ -84,22 +86,32 @@ class ReportesMaterialesController extends Controller
     public function Grafico1(Request $request)
     {
         try {
-            // Opcionalmente recibidos desde el request
             $fechaInicio = $request->input('fecha_inicio');
             $fechaFin = $request->input('fecha_fin');
             $oficinaId = Auth::user()->OFICINA_ID; // Obtener el ID de la oficina del usuario autenticado
 
-            $rankingGestionadores = SolicitudMaterial::query()
+            // Obtenemos los SOLICITUD_ID de las solicitudes de materiales únicas que pertenecen a la oficina del usuario autenticado en base a fechas si se proporcionan.
+            $solicitudesUnicas = SolicitudMaterial::query()
                 ->join('solicitudes', 'solicitudes_materiales.SOLICITUD_ID', '=', 'solicitudes.SOLICITUD_ID')
-                ->join('revisiones_solicitudes', 'solicitudes.SOLICITUD_ID', '=', 'revisiones_solicitudes.SOLICITUD_ID')
-                ->join('users as solicitantes', 'solicitudes.USUARIO_id', '=', 'solicitantes.id') // Usuario que hizo la solicitud
-                ->join('users as revisores', 'revisiones_solicitudes.USUARIO_id', '=', 'revisores.id') // Usuario que revisó la solicitud
-                ->where('solicitantes.OFICINA_ID', $oficinaId) // Filtrar por la oficina del usuario autenticado
-                ->where('revisores.OFICINA_ID', $oficinaId) // Asegurar que el revisor también pertenezca a la misma oficina
-                ->select('revisores.id', DB::raw('CONCAT(revisores.USUARIO_NOMBRES, " ", revisores.USUARIO_APELLIDOS) as nombre_completo'), DB::raw('COUNT(*) as total_gestiones'))
+                ->join('users as solicitantes', 'solicitudes.USUARIO_id', '=', 'solicitantes.id')
+                ->where('solicitantes.OFICINA_ID', $oficinaId)
                 ->when($fechaInicio && $fechaFin, function ($query) use ($fechaInicio, $fechaFin) {
+                    return $query->whereBetween('solicitudes.created_at', [$fechaInicio, $fechaFin]);
+                })
+                ->select('solicitudes.SOLICITUD_ID')
+                ->distinct()
+                ->pluck('SOLICITUD_ID');
+
+            // Luego, contamos las revisiones hechas a esas solicitudes únicas por cada revisor, asegurándonos de que las revisiones también caigan dentro del rango de fechas y pertenecen a la misma oficina.
+            $rankingGestionadores = RevisionSolicitud::query()
+                ->join('users as revisores', 'revisiones_solicitudes.USUARIO_ID', '=', 'revisores.id')
+                ->whereIn('revisiones_solicitudes.SOLICITUD_ID', $solicitudesUnicas)
+                ->where('revisores.OFICINA_ID', $oficinaId)
+                ->when($fechaInicio && $fechaFin, function ($query) use ($fechaInicio, $fechaFin) {
+                    // Aplicar el filtro de fechas a las revisiones
                     return $query->whereBetween('revisiones_solicitudes.created_at', [$fechaInicio, $fechaFin]);
                 })
+                ->select('revisores.id', DB::raw('CONCAT(revisores.USUARIO_NOMBRES, " ", revisores.USUARIO_APELLIDOS) as nombre_completo'), DB::raw('COUNT(revisiones_solicitudes.SOLICITUD_ID) as total_gestiones'))
                 ->groupBy('revisores.id', 'revisores.USUARIO_NOMBRES', 'revisores.USUARIO_APELLIDOS')
                 ->orderBy('total_gestiones', 'DESC')
                 ->get();
@@ -129,37 +141,41 @@ class ReportesMaterialesController extends Controller
             $fechaFin = $request->input('fecha_fin');
             $oficinaId = Auth::user()->OFICINA_ID; // Obtener el ID de la oficina del usuario autenticado
 
-            // Subconsulta para departamentos
-            $departamentosQuery = SolicitudMaterial::query()
-                ->join('solicitudes', 'solicitudes_materiales.SOLICITUD_ID', '=', 'solicitudes.SOLICITUD_ID')
-                ->join('users', 'solicitudes.USUARIO_id', '=', 'users.id')
-                ->join('departamentos', 'users.DEPARTAMENTO_ID', '=', 'departamentos.DEPARTAMENTO_ID')
-                ->where('users.OFICINA_ID', '=', $oficinaId)
-                ->select('departamentos.DEPARTAMENTO_NOMBRE as entidad', DB::raw('COUNT(*) as total_solicitudes'))
-                ->whereNotNull('users.DEPARTAMENTO_ID')
-                ->groupBy('departamentos.DEPARTAMENTO_NOMBRE');
+            // Obtener los IDs de solicitudes únicos que cumplen con los criterios de fecha y oficina
+            $solicitudesUnicas = SolicitudMaterial::query()
+            ->join('solicitudes', 'solicitudes_materiales.SOLICITUD_ID', '=', 'solicitudes.SOLICITUD_ID')
+            ->join('users as solicitantes', 'solicitudes.USUARIO_id', '=', 'solicitantes.id')
+            ->where('solicitantes.OFICINA_ID', $oficinaId)
+            ->when($fechaInicio && $fechaFin, function ($query) use ($fechaInicio, $fechaFin) {
+                return $query->whereBetween('solicitudes.created_at', [$fechaInicio, $fechaFin]);
+            })
+            ->select('solicitudes.SOLICITUD_ID')
+            ->distinct()
+            ->pluck('SOLICITUD_ID');
 
-            // Subconsulta para ubicaciones
-            $ubicacionesQuery = SolicitudMaterial::query()
-                ->join('solicitudes', 'solicitudes_materiales.SOLICITUD_ID', '=', 'solicitudes.SOLICITUD_ID')
+
+            // Ahora, contamos las solicitudes únicas por departamento o ubicación
+            // Subconsulta para departamentos, aplicando el filtro de solicitudes únicas
+            $departamentosQuery = Solicitud::query()
+            ->join('users', 'solicitudes.USUARIO_id', '=', 'users.id')
+            ->join('departamentos', 'users.DEPARTAMENTO_ID', '=', 'departamentos.DEPARTAMENTO_ID')
+            ->whereIn('solicitudes.SOLICITUD_ID', $solicitudesUnicas)
+            ->select('departamentos.DEPARTAMENTO_NOMBRE as entidad', DB::raw('COUNT(*) as total_solicitudes'))
+            ->groupBy('departamentos.DEPARTAMENTO_NOMBRE');
+
+
+            // Subconsulta para ubicaciones, aplicando el filtro de solicitudes únicas
+            $ubicacionesQuery = Solicitud::query()
                 ->join('users', 'solicitudes.USUARIO_id', '=', 'users.id')
                 ->join('ubicaciones', 'users.UBICACION_ID', '=', 'ubicaciones.UBICACION_ID')
-                ->where('users.OFICINA_ID', '=', $oficinaId)
+                ->whereIn('solicitudes.SOLICITUD_ID', $solicitudesUnicas)
                 ->select('ubicaciones.UBICACION_NOMBRE as entidad', DB::raw('COUNT(*) as total_solicitudes'))
-                ->whereNotNull('users.UBICACION_ID')
                 ->groupBy('ubicaciones.UBICACION_NOMBRE');
 
-            // Combinar los resultados
-            $solicitudesPorEntidad = $departamentosQuery->union($ubicacionesQuery);
+            // Combinar los resultados de departamentos y ubicaciones
+            $solicitudesPorEntidad = $departamentosQuery->unionAll($ubicacionesQuery)->get();
 
-            // Aplicar filtro de fechas si están presentes
-            if ($fechaInicio && $fechaFin) {
-                $solicitudesPorEntidad = $solicitudesPorEntidad->whereBetween('solicitudes.created_at', [$fechaInicio, $fechaFin]);
-            }
-
-            // Obtener los resultados
-            $solicitudesPorEntidad = $solicitudesPorEntidad->get();
-
+            // Devolver la data
             return [
                 'solicitudesPorEntidad' => $solicitudesPorEntidad
             ];
@@ -177,7 +193,6 @@ class ReportesMaterialesController extends Controller
     *   Despues accedemos al campo "SOLICITUD_ESTADO" de la tabla "solicitudes" para obtener el estado de cada solicitud.
     * luego agrupamos los estados y devolvemos la cantidad que hay en cada uno
     */
-
     public function Grafico3(Request $request)
     {
         try {
@@ -190,7 +205,7 @@ class ReportesMaterialesController extends Controller
                 ->join('solicitudes', 'solicitudes_materiales.SOLICITUD_ID', '=', 'solicitudes.SOLICITUD_ID')
                 ->join('users', 'solicitudes.USUARIO_id', '=', 'users.id') // Asegúrate de unirte a la tabla de usuarios para acceder a OFICINA_ID
                 ->where('users.OFICINA_ID', '=', $oficinaId) // Filtrar por OFICINA_ID
-                ->select('solicitudes.SOLICITUD_ESTADO', DB::raw('count(*) as total_solicitudes'))
+                ->select('solicitudes.SOLICITUD_ESTADO', DB::raw('COUNT(DISTINCT solicitudes.SOLICITUD_ID) as total_solicitudes'))
                 ->when($fechaInicio && $fechaFin, function ($query) use ($fechaInicio, $fechaFin) {
                     return $query->whereBetween('solicitudes.created_at', [$fechaInicio, $fechaFin]);
                 })
@@ -201,7 +216,7 @@ class ReportesMaterialesController extends Controller
             return [
                 'rankingEstados' => $rankingEstados
             ];
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             return response()->json([
                 'status' => 'error',
                 'message' => 'Error al obtener el ranking de estados: ' . $e->getMessage()
