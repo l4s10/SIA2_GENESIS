@@ -443,7 +443,7 @@
                 reiniciarPasajerosSeleccionados();
 
                 if (vehiculoIdSeleccionado === '') {
-                    // Confirmar eliminación si se deselecciona el vehículo
+                    // Confirmar eliminación si se selecciona el vehículo ' '
                     let confirmacion = confirm('¿Está seguro de eliminar el vehículo solicitado y el registro de pasajeros asociados?');
                     if (!confirmacion) {
                         this.value = prevVehiculoId;
@@ -473,6 +473,7 @@
                     return vehiculo.VEHICULO_ID == vehiculoIdSeleccionado;
                 });
 
+                console.log(vehiculosJSON);
                 let pasajeros = document.getElementById('pasajeros');
                 pasajeros.innerHTML = '';
 
@@ -566,6 +567,7 @@
                 document.getElementById('pasajero1').value = '';
                 document.getElementById('pasajero1').disabled = true;
                 reiniciarPasajerosSeleccionados();
+                alert('Conductor eliminado del registro, por favor ingrese uno nuevamente.');
             }
 
             // Función para eliminar un pasajero

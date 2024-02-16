@@ -101,6 +101,7 @@ class SolicitudVehiculosCttController extends Controller
                 $query->where('OFICINA_ID', $oficinaSesion);
             })->get();
             dd($conductores);*/
+            dd($vehiculos);
         return view('sia2.solicitudes.vehiculosctt.create', compact('vehiculos','oficinas','ubicaciones','departamentos','regiones', 'comunas', 'users', 'jefesQueAutorizan'/*, 'conductores'*/));
         } catch (Exception $e) {
             // Manejar excepciones si es necesario

@@ -14,12 +14,10 @@ class SolicitudVehicular extends Model
     protected $fillable = [
         'USUARIO_id',
         'VEHICULO_ID',
-        'TIPO_VEHICULO_ID',
         //'RENDICION_ID',
         'COMUNA_ID',
         'ORDEN_TRABAJO_ID',
         'CONDUCTOR_id',
-        'SOLICITUD_VEHICULO_TIPO',
         'SOLICITUD_VEHICULO_MOTIVO',
         'SOLICITUD_VEHICULO_ESTADO',
         'SOLICITUD_VEHICULO_FECHA_HORA_INICIO_SOLICITADA',
@@ -47,10 +45,6 @@ class SolicitudVehicular extends Model
         return $this->belongsTo(User::class, 'CONDUCTOR_id', 'id');
     }
 
-    public function tipoVehiculo()
-    {
-        return $this->belongsTo(TipoVehiculo::class, 'TIPO_VEHICULO_ID', 'TIPO_VEHICULO_ID');
-    }
 
     public function vehiculo()
     {
