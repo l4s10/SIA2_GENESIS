@@ -475,9 +475,10 @@ return [
         ],
         ['header' => 'GESTIONAR ACTIVOS'],
         [
-            'text' => 'Inventario',
-            'route'  => 'inventarios.index',
-            'icon' => 'fas fa-fw fa-solid fa-paste',
+            'text'  =>  'Inventario',
+            'route' =>  'inventarios.index',
+            'can'   =>  'ver_activos', // Se visualiza a traves de permisos
+            'icon'  =>  'fas fa-fw fa-solid fa-paste',
         ],
         [
             'text' => 'Reportes',
