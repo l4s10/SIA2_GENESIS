@@ -23,7 +23,7 @@ Route::prefix('solicitudes')->group(function () {
     //** Mostrar solicitud */
     Route::get('/materiales/{solicitudesmaterial}', [SolicitudMaterialesController::class, 'show'])
         ->name('solicitudes.materiales.show')
-        ->middleware('can:ver_solicitud');
+        ->middleware('can:ver_solicitudes');
 
     //** Editar solicitud */
     Route::get('/materiales/{solicitudesmaterial}/edit', [SolicitudMaterialesController::class, 'edit'])
