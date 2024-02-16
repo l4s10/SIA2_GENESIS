@@ -22,7 +22,7 @@ class RolesAndPermissionsSeeder extends Seeder
             'FUNCIONARIO' => Role::create(['name' => 'FUNCIONARIO']),
         ];
 
-        // Definir permisos
+        // Definir permisos (SOLICITUDES)
         $permisos = [
             'crear_solicitud',
             'ver_solicitudes', // Permiso único para ver el detalle y la lista de solicitudes
@@ -31,15 +31,43 @@ class RolesAndPermissionsSeeder extends Seeder
             'eliminar_solicitud',
         ];
 
+        // Definir permisos (ACTIVOS - INVENTARIO)
+        $permisos = array_merge($permisos, [
+            'crear_activo',
+            'ver_activos',
+            'editar_activo',
+            'actualizar_activo',
+            'eliminar_activo',
+        ]);
+
+        // Definir permisos (PANEL DE CONTROL)
+        $permisos = array_merge($permisos, [
+            'ver_panel_control',
+            'editar_panel_control',
+            'actualizar_panel_control',
+        ]);
+
         // Crear permisos
         foreach ($permisos as $permiso) {
             Permission::create(['name' => $permiso]);
         }
 
-        // Asignación de permisos simplificada
+        // Asignación de permisos (ADMINISTRADOR)
+        $roles['ADMINISTRADOR']->givePermissionTo(Permission::all());
+
+        // Asignación de permisos (SOLICITUDES)
         $roles['FUNCIONARIO']->givePermissionTo(['crear_solicitud', 'ver_solicitudes']);
         $roles['SERVICIOS']->givePermissionTo(['crear_solicitud', 'ver_solicitudes', 'editar_solicitud', 'actualizar_solicitud']);
         $roles['INFORMATICA']->givePermissionTo(['crear_solicitud', 'ver_solicitudes', 'editar_solicitud', 'actualizar_solicitud']);
-        $roles['ADMINISTRADOR']->givePermissionTo(Permission::all());
+
+        // Asignación de permisos (ACTIVOS - INVENTARIO)
+        $roles['FUNCIONARIO']->givePermissionTo(['crear_activo', 'ver_activos']);
+        $roles['SERVICIOS']->givePermissionTo(['crear_activo', 'ver_activos', 'editar_activo', 'actualizar_activo']);
+        $roles['INFORMATICA']->givePermissionTo(['crear_activo', 'ver_activos', 'editar_activo', 'actualizar_activo']);
+
+        // Asignación de permisos (PANEL DE CONTROL)
+        $roles['FUNCIONARIO']->givePermissionTo(['ver_panel_control']);
+        $roles['SERVICIOS']->givePermissionTo(['ver_panel_control', 'editar_panel_control', 'actualizar_panel_control']);
+        $roles['INFORMATICA']->givePermissionTo(['ver_panel_control', 'editar_panel_control', 'actualizar_panel_control']);
     }
 }
