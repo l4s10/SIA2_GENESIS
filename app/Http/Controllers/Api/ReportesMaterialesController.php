@@ -80,8 +80,23 @@ class ReportesMaterialesController extends Controller
         }
     }
 
-    /*
-    *   Grafico materiales 1: RANKING DE GESTIONADORES DE SOLICITUDES DE MATERIALES
+    /**
+     *   Grafico materiales 1: RANKING DE GESTIONADORES DE SOLICITUDES DE MATERIALES
+     * Genera un ranking de gestores de solicitudes de materiales basado en la cantidad de solicitudes gestionadas.
+     * Este método filtra las solicitudes por fechas y oficina del usuario autenticado para asegurar relevancia.
+     *
+     * La consulta se construye de la siguiente manera:
+     * 1. Se unen las tablas 'solicitudes_materiales', 'solicitudes', y 'users' (como 'solicitantes') para obtener las solicitudes de materiales.
+     * 2. Se filtra por 'OFICINA_ID' para incluir solo las solicitudes de la oficina del usuario autenticado.
+     * 3. Se aplica un filtro de fecha, si se proporcionan, para limitar las solicitudes al rango de fechas especificado.
+     * 4. Se realiza una selección distinta de 'SOLICITUD_ID' para evitar duplicados y contar cada solicitud una sola vez.
+     * 5. Se unen las tablas 'revisiones_solicitudes' y 'users' (como 'revisores') para contar las revisiones hechas a las solicitudes filtradas.
+     * 6. Se asegura que las revisiones también pertenezcan a la misma oficina del usuario autenticado.
+     * 7. Se agrupa el resultado por 'revisores.id' para contar las gestiones únicas realizadas por cada gestor.
+     * 8. Se ordena el resultado por el total de gestiones en orden descendente para obtener el ranking.
+     *
+     * @param Request $request Contiene 'fecha_inicio', 'fecha_fin' y el ID de oficina del usuario autenticado.
+     * @return array|\Illuminate\Http\JsonResponse
     */
     public function Grafico1(Request $request)
     {
@@ -127,11 +142,18 @@ class ReportesMaterialesController extends Controller
         }
     }
 
-    /*
+    /**
     *   Grafico materiales 2: SOLICITUDES DE MATERIALES DE MATERIALES REQUERIDOS POR DEPARTAMENTO / UNIDAD
-    *   Viajamos a traves de la tabla "solicitudes_materiales" y obtenemos las "SOLCIITUD_ID"
-    *   Luego viajamos en la tabla "solicitudes" y obtenemos el "USUARIO_id" de cada solicitud de materiales a traves de la relacion "solicitante"
-    *   Luego viajamos en la tabla "users" y obtenemos el DEPARTAMENTO_ID o UNIDAD_ID de cada usuario a traves de la relacion "departamento" o "ubicacion"
+    * Obtiene el número de solicitudes de materiales por departamento o unidad, contando las solicitudes únicas.
+    * Filtra las solicitudes por oficina del usuario autenticado y, opcionalmente, por un rango de fechas.
+    *
+    * Realiza dos subconsultas:
+    * 1. Una para contar solicitudes por departamento.
+    * 2. Otra para contar solicitudes por unidad.
+    * Luego, combina los resultados de ambas subconsultas.
+    *
+    * @param Request $request La solicitud HTTP, que puede incluir 'fecha_inicio', 'fecha_fin'.
+    * @return \Illuminate\Http\JsonResponse Un objeto JSON que contiene las solicitudes por departamento y unidad.
     */
     public function Grafico2(Request $request)
     {
@@ -187,12 +209,20 @@ class ReportesMaterialesController extends Controller
         }
     }
 
-    /*
-    *   Grafico materiales 3: RANKING DE ESTADOS DE SOLICITUDES DE MATERIALES
-    *   Viajamos a traves de la tabla "solicitudes_materiales" y obtenemos las "SOLCIITUD_ID" para luego obtener las solicitudes filtradas.
-    *   Despues accedemos al campo "SOLICITUD_ESTADO" de la tabla "solicitudes" para obtener el estado de cada solicitud.
-    * luego agrupamos los estados y devolvemos la cantidad que hay en cada uno
-    */
+    /**
+     * Grafico 3: RANKING DE ESTADOS DE SOLICITUDES DE MATERIALES
+     * Genera un ranking de los estados de las solicitudes de materiales, mostrando la cantidad de solicitudes en cada estado.
+     * Filtra por la oficina del usuario autenticado y aplica un filtro de fechas si se proporcionan.
+     *
+     * La consulta:
+     * 1. Filtra las solicitudes de materiales por oficina y, opcionalmente, por fechas.
+     * 2. Agrupa las solicitudes por estado y cuenta el número de solicitudes en cada estado.
+     * 3. Ordena los resultados por la cantidad de solicitudes de forma descendente.
+     *
+     * @param Request $request La solicitud HTTP, que puede incluir 'fecha_inicio', 'fecha_fin'.
+     * @return \Illuminate\Http\JsonResponse Un objeto JSON que contiene el ranking de estados de solicitudes.
+     */
+
     public function Grafico3(Request $request)
     {
         try {
