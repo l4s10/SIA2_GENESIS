@@ -41,16 +41,6 @@ class LoginController extends Controller
         $this->middleware('guest')->except('logout');
     }
 
-    protected function authenticated(Request $request, $user)
-    {
-        $token = $user->createToken('API Token')->plainTextToken;
-
-        // Almacenar el token en la sesión del usuario
-        $request->session()->put('api_token', $token);
-
-        // No necesitas retornar nada aquí si estás redirigiendo al usuario a otra página después del login
-        // Laravel redirigirá al usuario a la página definida en redirectTo por defecto
-    }
 
     public function logout(Request $request)
     {
@@ -67,9 +57,6 @@ class LoginController extends Controller
 
         // Opcional: Invalidar la sesión del usuario para prevenir que el ID de sesión sea utilizado
         $request->session()->invalidate();
-
-        // Opcional: Regenerar el token de la sesión
-        // $request->session()->regenerateToken();
 
         // Redirigir al usuario a la página de inicio de sesión o donde prefieras
         return redirect('/login');
