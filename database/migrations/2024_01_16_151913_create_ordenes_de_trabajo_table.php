@@ -13,10 +13,13 @@ return new class extends Migration
     {
         Schema::create('ordenes_de_trabajo', function (Blueprint $table) {
             $table->id('ORDEN_TRABAJO_ID');
+            $table->unsignedBigInteger('SOLICITUD_VEHICULO_ID')->unique();
             $table->integer('ORDEN_TRABAJO_NUMERO')->unsigned()->unique();
             $table->time('ORDEN_TRABAJO_HORA_INICIO');
             $table->time('ORDEN_TRABAJO_HORA_TERMINO');
             $table->timestamps(); 
+
+            $table->foreign('SOLICITUD_VEHICULO_ID')->references('SOLICITUD_VEHICULO_ID')->on('solicitudes_vehiculos');
         });
     }
 

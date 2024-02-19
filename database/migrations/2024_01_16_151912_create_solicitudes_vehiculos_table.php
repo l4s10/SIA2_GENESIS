@@ -17,7 +17,6 @@ return new class extends Migration
             $table->unsignedBigInteger('USUARIO_id');
             $table->unsignedBigInteger('VEHICULO_ID');
             $table->unsignedBigInteger('COMUNA_ID');
-            $table->unsignedBigInteger('ORDEN_TRABAJO_ID')->nullable();
             $table->unsignedBigInteger('CONDUCTOR_id');
             //$table->unsignedBigInteger('RENDICION_ID')->nullable();
             $table->string('SOLICITUD_VEHICULO_MOTIVO', 255);
@@ -38,7 +37,6 @@ return new class extends Migration
             $table->foreign('VEHICULO_ID')->references('VEHICULO_ID')->on('vehiculos');
             //$table->foreign('RENDICION_ID')->references('RENDICION_ID')->on('rendiciones');
             $table->foreign('COMUNA_ID')->references('COMUNA_ID')->on('comunas');
-            $table->foreign('ORDEN_TRABAJO_ID')->references('ORDEN_TRABAJO_ID')->on('ordenes_de_trabajo');
             $table->timestamps();
 
             

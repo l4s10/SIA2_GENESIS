@@ -13,35 +13,49 @@
         <form action="{{ route('solicitudesvehiculos.update', $solicitud->SOLICITUD_VEHICULO_ID) }}" method="POST">
             @csrf
             @method('PUT')
-
+            @if ($errors->any())
+                <div class="alert alert-danger">
+                    <ul>
+                        @foreach ($errors->all() as $error)
+                            <li>{{ $error }}</li>
+                        @endforeach
+                    </ul>
+                </div>
+            @endif
 
             {{-- ENCABEZADO DE LA SOLICITUD: FECHA DE CREACIÓN, TIPO Y ESTADO DE LA SOLICITUD --}}
             <h3>Encabezado</h3>
             <div class="row">
                 <div class="col-md-4">
                     <div class="mb-3">
-                        <label for="fecha_solicitud"><i class="fa-regular fa-calendar-days"></i> Fecha de Solicitud:</label>
+                        <label for="fecha_solicitud"><i class="fa-regular fa-calendar-days"></i> Fecha de solicitud:</label>
                         <input type="text" class="form-control" id="fecha_solicitud" name="fecha_solicitud" value="{{ $fechaCreacionFormateada }}" disabled required style="text-align: center;">
                     </div>
                 </div>
 
                 <div class="col-md-4">
                     <div class="mb-3">
-                        <label for="tipo_solicitud"><i class="fa-solid fa-clipboard-question"></i> Tipo de Solicitud:</label>
-                        <input type="text" class="form-control" id="tipo_solicitud" name="tipo_solicitud" value="GENERAL" disabled required style="text-align: center;">
+                        <label for="OFICINA_ID"><i class="fa-solid fa-street-view"></i> Dirección regional:</label>
+                        <input type="text" class="form-control" id="OFICINA_ID" name="OFICINA_ID" value= "{{ Auth::user()->oficina->OFICINA_NOMBRE }}" disabled required style="text-align: center;">
                     </div>
                 </div>
-
                 
 
-                <div class="col-md-4">
+                <div class="col-md-2">
                     <div class="mb-3">
-                        <label for="SOLICITUD_ESTADO"><i class="fa-solid fa-right-from-bracket"></i> Estado de la Solicitud:</label>
+                        <label for="SOLICITUD_ESTADO"><i class="fa-solid fa-right-from-bracket"></i> Estado:</label>
                         <input type="text" class="form-control" id="SOLICITUD_ESTADO" name="SOLICITUD_ESTADO" value="{{ $solicitud->SOLICITUD_VEHICULO_ESTADO }}" readonly required style="text-align: center; color: #e6500a;">
                     </div>
                     <!-- Leyenda -->
                     <div class="mb-3">
-                        <small>La solicitud <strong>ha</strong> sido ingresada</small>
+                        <small>La solicitud <strong>no</strong> ha sido aprobada</small>
+                    </div>
+                </div>
+
+                <div class="col-md-2">
+                    <div class="mb-3">
+                        <label for="SOLICITUD_VEHICULO_FOLIO"><i class="fa-solid fa-arrow-up-9-1"></i> Folio:</label>
+                        <input type="text" class="form-control" id="SOLICITUD_VEHICULO_FOLIO" name="SOLICITUD_VEHICULO_FOLIO" value="{{ $solicitud->SOLICITUD_VEHICULO_ID }}" readonly required style="text-align: center;">
                     </div>
                 </div>
             </div>
@@ -53,7 +67,7 @@
             <div class="form-group mb-4">
                 <div class="row mb-4">
                     <div class="col-md-6">
-                            <label for="USUARIO_NOMBRES" class="form-label"><i class="fa-solid fa-user"></i> Nombres y Apellidos:</label>
+                            <label for="USUARIO_NOMBRES" class="form-label"><i class="fa-solid fa-user"></i> Nombres y apellidos:</label>
                             <input type="text" id="USUARIO_NOMBRES" name="USUARIO_NOMBRES" class="form-control" value="{{ $solicitud->user->USUARIO_NOMBRES }} {{ $solicitud->user->USUARIO_APELLIDOS }}" readonly required>
                     </div>
 
@@ -68,10 +82,12 @@
                     </div>
                 </div>
 
+                <div id="retorno" class="form-group mb-4" style="visibility: hidden;">
+                </div>
 
                 <div class="row mb-4">
                     <div class="col-md-6">
-                        <label for="DEPARTAMENTO_O_UBICACION" class="form-label"><i class="fa-solid fa-building-user"></i> Ubicación o Departamento:</label>
+                        <label for="DEPARTAMENTO_O_UBICACION" class="form-label"><i class="fa-solid fa-building-user"></i> Ubicación o departamento:</label>
                         <input type="text" id="DEPARTAMENTO_O_UBICACION" name="DEPARTAMENTO_O_UBICACION" class="form-control" value="{{ isset($solicitud->user->departamento) ? $solicitud->user->departamento->DEPARTAMENTO_NOMBRE : $solicitud->user->ubicacion->UBICACION_NOMBRE }}" readonly required>
 
                     </div>
@@ -82,97 +98,23 @@
                             <input type="text" id="CARGO" class="form-control" name="CARGO" value="{{ $solicitud->user->cargo->CARGO_NOMBRE }}" required readonly>
                         </div>
                     </div>
-                </div>
-
-
-                <div class="form-group" id="motivoSolicitud">
-                    <label for="SOLICITUD_VEHICULO_MOTIVO"><i class="fa-solid fa-file-pen"></i> Labor a realizar:</label>
-                    <textarea id="SOLICITUD_VEHICULO_MOTIVO" name="SOLICITUD_VEHICULO_MOTIVO" rows="5" class="form-control" placeholder="Indique la labor a realizar (MÁX 255 CARACTERES)" maxlength="255" required readonly>{{ $solicitud->SOLICITUD_VEHICULO_MOTIVO }}</textarea>
-                </div>
+                </div>         
                 <br>
-                <div class="row mb-4">
-                    <div class="col-md-4">
-                        <label for="SOLICITUD_VEHICULO_REGION"><i class="fa-solid fa-map-location-dot"></i> Región de Destino:</label>
-                        <input type="text" class="form-control" value="{{ $solicitud->comunaDestino->region->REGION_NOMBRE }}" readonly>
-                    </div>
-            
-                    <div class="col-md-4">
-                        <label for="SOLICITUD_VEHICULO_COMUNA"><i class="fa-solid fa-map-location-dot"></i> Comuna de Destino:</label>
-                        <input type="text" class="form-control" value="{{ $solicitud->comunaDestino->COMUNA_NOMBRE }}" readonly>
-                    </div>
-                    <div class="col-md-4">
-                        <div id="jefeQueAutoriza">
-                            <label for="SOLICITUD_VEHICULO_JEFE_QUE_AUTORIZA"><i class="fa-solid fa-user-check"></i> Jefe que autoriza:</label>
-                            <input type="text" class="form-control" value="{{ $cargoJefeQueAutoriza->CARGO_NOMBRE }}" readonly>
-                        </div>
-                    </div>
-                </div>
-
-
-
-                {{-- VEHICULO, FECHAS Y HORAS DE EGRESO E INGRESO AL ESTACIONAMIENTO --}}
-            <br>
-                <div class="row mb-4">
-                    <div class="col-md-4">
-                        <label for="TIPO_VEHICULO_ID" class="form-label"><i class="fa-solid fa-car-side"></i> Tipo de Vehículo:</label>
-                        <input type="text" class="form-control" style="text-align: center;" value="Tipo: {{ $solicitud->tipoVehiculo->TIPO_VEHICULO_NOMBRE }} - Capacidad: {{ $solicitud->tipoVehiculo->TIPO_VEHICULO_CAPACIDAD-1 }}" readonly>
-                    </div>
-                    <div class="col-md-2">
-                    </div>
-                    <div class="col-md-3">
-                        <label for="fechaHoraInicioSolicitada"><i class="fa-solid fa-compass"></i> Salida del estacionamiento:</label>
-                        <input type="text" class="form-control" style="text-align: center;" value="{{ $solicitud->SOLICITUD_VEHICULO_FECHA_HORA_INICIO_SOLICITADA }}" readonly>
-                    </div>
-                    <div class="col-md-3">
-                        <label for="fechaHoraTerminoSolicitada"><i class="fa-solid fa-compass"></i> Reingreso al estacionamiento:</label>
-                        <input type="text" class="form-control" style="text-align: center;" value="{{ $solicitud->SOLICITUD_VEHICULO_FECHA_HORA_TERMINO_SOLICITADA }}" readonly>
-                    </div>
-                </div>
-
-                <div id="pasajeros" class="form-group mb-4" style="display: none;">
-                    @foreach($pasajeros as $index => $pasajero)
-                        <div class="pasajero-box border p-3 mb-3">
-                            <h5>Pasajero N°{{ $index + 1 }}</h5>
-                            <div class="form-row">
-                                <div class="form-group col-md-4">
-                                    <label for="oficina_{{ $index }}"><i class="fa-solid fa-building"></i> Oficina:</label>
-                                    <input type="text" id="oficina_{{ $index }}" class="form-control" value="{{ $pasajero->usuario->oficina->OFICINA_NOMBRE }}" readonly>
-                                </div>
-                                <div class="form-group col-md-4">
-                                    <label for="dependencia_{{ $index }}"><i class="fa-solid fa-building-user"></i> Ubicación o Departamento:</label>
-                                    <input type="text" id="dependencia_{{ $index }}" class="form-control" value="{{ $pasajero->usuario->ubicacion ? $pasajero->usuario->ubicacion->UBICACION_NOMBRE : $pasajero->usuario->departamento->DEPARTAMENTO_NOMBRE }}" readonly>
-                                </div>
-                                <div class="form-group col-md-4">
-                                    <label for="pasajero_{{ $index }}"><i class="fa-solid fa-user-plus"></i> Funcionario:</label>
-                                    <input type="text" id="pasajero_{{ $index }}" class="form-control" value="{{ $pasajero->usuario->USUARIO_NOMBRES }} {{ $pasajero->usuario->USUARIO_APELLIDOS }}" readonly>
-                                </div>
-                            </div>
-                        </div>
-                    @endforeach
-                </div>
             </div>
 
-            
-            <button id="botonPasajeros" type="button" class="btn" style="background-color: #00B050; color: #fff;">
-                <i class="fa-solid fa-user-plus"></i> Mostrar Pasajeros
-                </button>
 
-            <br>
-            <br>
-            <br>
-            <br>
-            <br>
 
-      
-            <h3>Asignación de Vehículo</h3>         
+
+
+            <h3>Vehículo, Conductor y Pasajeros</h3>         
 
             <div class="row mb-4">
-                <div class="col-md-4">
-                    <label for="VEHICULO_ID" class="form-label"><i class="fa-solid fa-car-side"></i> Vehículo:</label>
+                <div class="col-md-6">
+                    <label for="VEHICULO_ID" class="form-label"><i class="fa-solid fa-car-side"></i> Vehículo asignado:</label>
                     <select name="VEHICULO_ID" id="VEHICULO_ID" class="form-control" required>
                         <option style="text-align: center;" value="">-- Seleccione un vehiculo --</option>
                         @foreach ($vehiculos as $vehiculo)
-                            <option value="{{ $vehiculo->VEHICULO_ID }}" {{ $solicitud->VEHICULO_ID == $vehiculo->VEHICULO_ID ? 'selected' : '' }}>
+                            <option data-capacidad="{{ $vehiculo->tipoVehiculo->TIPO_VEHICULO_CAPACIDAD }}" value="{{ $vehiculo->VEHICULO_ID }}" {{ $solicitud->VEHICULO_ID == $vehiculo->VEHICULO_ID ? 'selected' : '' }}>
                                 Marca: {{ $vehiculo->VEHICULO_MARCA }} - Patente: {{ $vehiculo->VEHICULO_PATENTE }} - Tipo: {{ $vehiculo->tipoVehiculo->TIPO_VEHICULO_NOMBRE }} - Capacidad: {{ $vehiculo->tipoVehiculo->TIPO_VEHICULO_CAPACIDAD }}
                             </option>
                         @endforeach
@@ -181,10 +123,21 @@
                         <div class="alert alert-danger mt-2">{{ $message }}</div>
                     @enderror
                 </div>
-                <div class="col-md-2">
+                <div class="col-md-3">
+                    <label for="fechaHoraInicioSolicitada"><i class="fa-solid fa-compass"></i> Fecha y hora de salida solicitada:</label>
+                    <input type="text" class="form-control" style="text-align: center;" value="{{ $solicitud->SOLICITUD_VEHICULO_FECHA_HORA_INICIO_SOLICITADA }}" readonly>
                 </div>
                 <div class="col-md-3">
-                    <label for="fechaHoraInicioAsignada"><i class="fa-solid fa-compass"></i> Salida del estacionamiento:</label>
+                    <label for="fechaHoraTerminoSolicitada"><i class="fa-solid fa-compass"></i> Fecha y hora de regreso solicitada:</label>
+                    <input type="text" class="form-control" style="text-align: center;" value="{{ $solicitud->SOLICITUD_VEHICULO_FECHA_HORA_TERMINO_SOLICITADA }}" readonly>
+                </div>
+            </div>
+
+            <div class="row mb-4">
+                <div class="col-md-6">
+                </div>
+                <div class="col-md-3">
+                    <label for="fechaHoraInicioAsignada"><i class="fa-solid fa-compass"></i> Fecha y hora de salida asignada:</label>
                     <input type="text" class="form-control @error('SOLICITUD_VEHICULO_FECHA_HORA_INICIO_ASIGNADA') is-invalid @enderror" id="fechaHoraInicioAsignada" name="SOLICITUD_VEHICULO_FECHA_HORA_INICIO_ASIGNADA" required placeholder="-- Seleccione la fecha y hora --" style="background-color: #fff; color: #000; text-align: center;" value="{{ $solicitud->SOLICITUD_VEHICULO_FECHA_HORA_INICIO_ASIGNADA }}">
                     @error('SOLICITUD_VEHICULO_FECHA_HORA_INICIO_ASIGNADA')
                         <div class="error" style="color: #E22C2C">{{ $message }}</div>
@@ -192,67 +145,64 @@
                 </div>
                 
                 <div class="col-md-3">
-                    <label for="fechaHoraTerminoAsignada"><i class="fa-solid fa-compass"></i> Reingreso al estacionamiento:</label>
+                    <label for="fechaHoraTerminoAsignada"><i class="fa-solid fa-compass"></i> Fecha y hora de regreso asignada:</label>
                     <input type="text" class="form-control @error('SOLICITUD_VEHICULO_FECHA_HORA_TERMINO_ASIGNADA') is-invalid @enderror" id="fechaHoraTerminoAsignada" name="SOLICITUD_VEHICULO_FECHA_HORA_TERMINO_ASIGNADA" required placeholder="-- Seleccione la fecha y hora --" style="background-color: #fff; color: #000; text-align: center;" value="{{$solicitud->SOLICITUD_VEHICULO_FECHA_HORA_TERMINO_ASIGNADA ?? ''  }}">
                     @error('SOLICITUD_VEHICULO_FECHA_HORA_TERMINO_ASIGNADA')
                         <div class="error" style="color: #E22C2C">{{ $message }}</div>
                     @enderror
                 </div>
-                
-
-                
             </div>
 
-
-
-            
-
-
-
-
-
             <div class="pasajero-box border p-3 mb-3">
-                <h3>Asignación de Conductor</h3>
+                <h5>Conductor</h5>
                 <div class="form-row">
                     <div class="form-group col-md-4">
-                        <label for="oficina">Oficina</label>
+                        <label for="oficina"><i class="fa-solid fa-street-view"></i> Dirección regional:</label>
                         <select id="oficina" class="form-control oficina" required>
                             <option style="text-align: center;" value="">-- Seleccione una opción --</option>
                             @foreach($oficinas as $oficina)
-                                <option value="{{ $oficina->OFICINA_ID }}">{{ $oficina->OFICINA_NOMBRE }}</option>
+                                <option value="{{ $oficina->OFICINA_ID }}" 
+                                    {{ (isset($solicitud->conductor) && $solicitud->conductor->OFICINA_ID == $oficina->OFICINA_ID) ? 'selected' : '' }}>
+                                    {{ $oficina->OFICINA_NOMBRE }}
+                                </option>
                             @endforeach
                         </select>
                     </div>
                     <div class="form-group col-md-4">
-                        <label for="dependencia">Ubicación o Departamento</label>
-                        <select id="dependencia" class="form-control dependencia" disabled required>
+                        <label for="dependencia"><i class="fa-solid fa-building-user"></i> Ubicación o departamento:</label>
+                        <select id="dependencia" class="form-control dependencia" required>
                             <option style="text-align: center;" value="">-- Seleccione una opción --</option>
                             <optgroup label="Ubicaciones">
                                 @foreach($ubicaciones as $ubicacion)
-                                    <option value="{{ $ubicacion->UBICACION_ID }}" data-office-id="{{ $ubicacion->OFICINA_ID }}">{{ $ubicacion->UBICACION_NOMBRE }}</option>
+                                    <option value="{{ $ubicacion->UBICACION_ID }}" 
+                                        {{ (isset($solicitud->conductor) && $solicitud->conductor->UBICACION_ID == $ubicacion->UBICACION_ID) ? 'selected' : '' }}>
+                                        {{ $ubicacion->UBICACION_NOMBRE }}
+                                    </option>
                                 @endforeach
                             </optgroup>
                             <optgroup label="Departamentos">
                                 @foreach($departamentos as $departamento)
-                                <option value="{{ $departamento->DEPARTAMENTO_ID }}" data-office-id="{{ $departamento->DEPARTAMENTO_ID }}">{{ $departamento->DEPARTAMENTO_NOMBRE }}</option>
+                                    <option value="{{ $departamento->DEPARTAMENTO_ID }}" 
+                                        {{ (isset($solicitud->conductor) && $solicitud->conductor->DEPARTAMENTO_ID == $departamento->DEPARTAMENTO_ID) ? 'selected' : '' }}>
+                                        {{ $departamento->DEPARTAMENTO_NOMBRE }}
+                                    </option>
                                 @endforeach
                             </optgroup>
                         </select>
                     </div>
                     <div class="form-group col-md-4">
-                        <label for="conductor"><i class="fa-solid fa-user-plus"></i> Conductor:</label>
-                        <select id="conductor" class="form-control conductor" name="CONDUCTOR_id"  disabled required>
+                        <label for="conductor"><i class="fa-solid fa-person-circle-check"></i> Conductor:</label>
+                        <select id="conductor" class="form-control conductor" name="CONDUCTOR_id"  required>
                             <option style="text-align: center;" value="">-- Seleccione al conductor --</option>
-                            <optgroup label="Conductores">
+                            <optgroup label="Conductores Asociados">
                                 @foreach($conductores as $conductor)
-                                    <option value="{{ $conductor->id }}"  data-ubicacion-id="{{ $conductor->UBICACION_ID }}" data-departamento-id="{{ $conductor->DEPARTAMENTO_ID }}" >{{ $conductor->USUARIO_NOMBRES }} {{ $conductor->USUARIO_APELLIDOS }}</option>
+                                    <option value="{{ $conductor->id }}"  
+                                        {{ (isset($solicitud) && $solicitud->CONDUCTOR_id == $conductor->id) ? 'selected' : '' }}>
+                                        {{ $conductor->USUARIO_NOMBRES }} {{ $conductor->USUARIO_APELLIDOS }}
+                                    </option>
                                 @endforeach
                             </optgroup>
-                            <optgroup label="Funcionarios Asociados">
-                                @foreach($users as $user)
-                                    <option value="{{ $user->id }}" data-ubicacion-id="{{ $user->UBICACION_ID }}" data-departamento-id="{{ $user->DEPARTAMENTO_ID }}" >{{ $user->USUARIO_NOMBRES }} {{ $user->USUARIO_APELLIDOS }}</option>
-                                @endforeach
-                            </optgroup>
+                            
                         </select>
                     </div>
                     <div class="form-group col-md-4">
@@ -263,12 +213,16 @@
                             <option value="NO" {{ (isset($solicitud) && $solicitud->SOLICITUD_VEHICULO_VIATICO == 'NO') ? 'selected' : '' }}>NO</option>
                         </select>
                     </div>
+
                     <div class="form-group col-md-4">
-                        <label for="SOLICITUD_VEHICULO_HORA_INICIO_CONDUCCION"><i class="fa-solid fa-compass"></i> Hora de Inicio de Conducción:</label>
+                        <label for="SOLICITUD_VEHICULO_HORA_INICIO_CONDUCCION"><i class="fa-solid fa-clock"></i> Hora de inicio de conducción:</label>
                         <input type="time" class="form-control" id="SOLICITUD_VEHICULO_HORA_INICIO_CONDUCCION" name="SOLICITUD_VEHICULO_HORA_INICIO_CONDUCCION" required placeholder="-- Seleccione la hora de inicio --" style="background-color: #fff; color: #000; text-align: center;" value="{{ isset($solicitud) ? $solicitud->SOLICITUD_VEHICULO_HORA_INICIO_CONDUCCION : '' }}">
+                        @error('SOLICITUD_VEHICULO_HORA_INICIO_CONDUCCION')
+                            <div class="error" style="color: #E22C2C">{{ $message }}</div>
+                        @enderror
                     </div>
                     <div class="form-group col-md-4">
-                        <label for="SOLICITUD_VEHICULO_HORA_TERMINO_CONDUCCION"><i class="fa-solid fa-compass"></i> Hora de Término de Conducción:</label>
+                        <label for="SOLICITUD_VEHICULO_HORA_TERMINO_CONDUCCION"><i class="fa-solid fa-clock"></i> Hora de término de conducción:</label>
                         <input type="time" class="form-control" id="SOLICITUD_VEHICULO_HORA_TERMINO_CONDUCCION" name="SOLICITUD_VEHICULO_HORA_TERMINO_CONDUCCION" required placeholder="-- Seleccione la hora de término --" style="background-color: #fff; color: #000; text-align: center;" value="{{ isset($solicitud) ? $solicitud->SOLICITUD_VEHICULO_HORA_TERMINO_CONDUCCION : '' }}" >
                         @error('SOLICITUD_VEHICULO_HORA_TERMINO_CONDUCCION')
                             <div class="error" style="color: #E22C2C">{{ $message }}</div>
@@ -277,16 +231,131 @@
                 </div>
             </div>
 
+
+
+            
+            <div id="pasajeros" class="form-group mb-4" style="display: none;">
+                @foreach($pasajeros as $index => $pasajero)
+                    <div class="pasajeros-box border p-3 mb-3">
+                        <h5>Pasajero N°{{ $index + 1 }}</h5>
+                        <div class="form-row">
+                            <div class="form-group col-md-4">
+                                <label for="oficina_{{ $index }}"><i class="fa-solid fa-street-view"></i> Dirección regional:</label>
+                                <select id="oficina_{{ $index }}" class="form-control" name="oficina_{{ $index }}" required>
+                                    @foreach($oficinas as $oficina)
+                                        <option value="{{ $oficina->OFICINA_ID }}" {{ $pasajero->usuario->oficina->OFICINA_ID == $oficina->OFICINA_ID ? 'selected' : '' }}>{{ $oficina->OFICINA_NOMBRE }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                            <div class="form-group col-md-4">
+                                <label for="dependencia_{{ $index }}"><i class="fa-solid fa-building-user"></i> Ubicación o departamento:</label>
+                                <select id="dependencia_{{ $index }}" class="form-control" name="dependencia_{{ $index }}" required>
+                                    @foreach($ubicaciones as $ubicacion)
+                                        <option value="{{ $ubicacion->UBICACION_ID }}" {{ $pasajero->usuario->ubicacion && $pasajero->usuario->ubicacion->UBICACION_ID == $ubicacion->UBICACION_ID ? 'selected' : '' }}>{{ $ubicacion->UBICACION_NOMBRE }}</option>
+                                    @endforeach
+                                    @foreach($departamentos as $departamento)
+                                        <option value="{{ $departamento->DEPARTAMENTO_ID }}" {{ $pasajero->usuario->departamento && $pasajero->usuario->departamento->DEPARTAMENTO_ID == $departamento->DEPARTAMENTO_ID ? 'selected' : '' }}>{{ $departamento->DEPARTAMENTO_NOMBRE }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                            <div class="form-group col-md-4">
+                                <label for="pasajero_{{ $index }}"><i class="fa-solid fa-person-circle-check"></i> Funcionario:</label>
+                                <select id="pasajero_{{ $index }}" class="form-control" name="pasajero_{{ $index }}" required>
+                                    @foreach($users as $user)
+                                        <option value="{{ $user->id }}" {{ $pasajero->usuario->id == $user->id ? 'selected' : '' }}>{{ $user->USUARIO_NOMBRES }} {{ $user->USUARIO_APELLIDOS }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                @endforeach
+            </div>
             
 
+            <div class="row mb-4">
+                <div class="col-md-6">
+                    <button id="botonPasajeros" type="button" class="btn" style="background-color: #9DA6B2; color: #fff;">
+                        <i class="fa-solid fa-user-plus"></i> Mostrar Pasajeros
+                    </button>
+                </div>
+                <div class="col-md-6 d-flex align-items-center justify-content-end">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <button id="botonAgregarPasajero" type="button" class="btn btn-block" style="background-color: #00B050; color: #fff; width: 200px;">
+                                <i class="fa-solid fa-user-plus"></i> Agregar Pasajero
+                            </button>
+                        </div>
+                        <div class="col-md-6">
+                            <button id="botonEliminarPasajero" type="button" class="btn btn-warning" style="background-color: #E22C2C; color: #fff; width: 200px;">
+                                <i class="fa-solid fa-user-minus"></i> Eliminar Pasajero
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+           
 
 
+             {{-- DATOS DE SALIDA --}}
+             <br>
+             <br>         
+             <br>
+             <h3>Salida</h3>      
+             <div class="row mb-4">
+                 <div class="col-md-4">
+                     <label for="SOLICITUD_VEHICULO_REGION"><i class="fa-solid fa-map-location-dot"></i> Región de destino:</label>
+                     <input type="text" class="form-control" value="{{ $solicitud->comunaDestino->region->REGION_NOMBRE }}" readonly>
+                 </div>
+         
+                 <div class="col-md-4">
+                     <label for="SOLICITUD_VEHICULO_COMUNA"><i class="fa-solid fa-map-location-dot"></i> Comuna de destino:</label>
+                     <input type="text" class="form-control" value="{{ $solicitud->comunaDestino->COMUNA_NOMBRE }}" readonly>
+                 </div>
+                 <div class="col-md-4">
+                     <div id="jefeQueAutoriza">
+                         <label for="SOLICITUD_VEHICULO_JEFE_QUE_AUTORIZA"><i class="fa-solid fa-user-check"></i> Jefe que autoriza:</label>
+                         <input type="text" class="form-control" value="{{ $cargoJefeQueAutoriza->CARGO_NOMBRE }}" readonly>
+                     </div>
+                 </div>
+             </div>
+
+            <div class="form-group" id="motivoSolicitud">
+                <label for="SOLICITUD_VEHICULO_MOTIVO"><i class="fa-solid fa-file-pen"></i> Labor a realizar:</label>
+                <textarea id="SOLICITUD_VEHICULO_MOTIVO" name="SOLICITUD_VEHICULO_MOTIVO" rows="5" class="form-control" placeholder="Indique la labor a realizar (MÁX 255 CARACTERES)" maxlength="255" required readonly>{{ $solicitud->SOLICITUD_VEHICULO_MOTIVO }}</textarea>
+            </div>
 
 
-           {{-- DATOS DE SALIDA --}}
-            <br>           
-            <br>
-            <h3>Salida</h3>      
+<!-- DIV CONTENEDOR DE LOS CAMPOS DE ORDEN DE TRABAJO -->
+<div id="ordenTrabajoInputs" style="display: block;">
+    <br>
+    <h3>Orden de Trabajo</h3>
+    <div class="row mb-4">
+        <div class="form-group col-md-4">
+            <label for="TRABAJA_NUMERO_ORDEN_TRABAJO"><i class="fa-solid fa-arrow-up-9-1"></i> Número de la Orden de Trabajo:</label>
+            <input type="number" class="form-control" id="TRABAJA_NUMERO_ORDEN_TRABAJO" name="TRABAJA_NUMERO_ORDEN_TRABAJO" placeholder="-- Ingrese el número de orden --" disabled required min="0" max="999999" value="{{ isset($solicitud->ordenTrabajo->ORDEN_TRABAJO_NUMERO) ? $solicitud->ordenTrabajo->ORDEN_TRABAJO_NUMERO : '' }}">
+            <div class="invalid-feedback" id="numeroOrdenTrabajoError"></div>
+        </div>
+        <div class="form-group col-md-2"></div>
+        <div class="form-group col-md-3">
+            <label for="TRABAJA_HORA_INICIO_ORDEN_TRABAJO"><i class="fa-solid fa-clock"></i> Inicio orden de trabajo:</label>
+            <input type="time" class="form-control" id="TRABAJA_HORA_INICIO_ORDEN_TRABAJO" name="TRABAJA_HORA_INICIO_ORDEN_TRABAJO" disabled required placeholder="-- Seleccione la hora de inicio --" style="background-color: #fff; color: #000; text-align: center;" value="{{ isset($solicitud->ordenTrabajo->ORDEN_TRABAJO_HORA_INICIO) ? $solicitud->ordenTrabajo->ORDEN_TRABAJO_HORA_INICIO : '' }}">
+            <div class="invalid-feedback" id="inicioOrdenTrabajoError"></div>
+        </div>
+        <div class="form-group col-md-3">
+            <label for="TRABAJA_HORA_TERMINO_ORDEN_TRABAJO"><i class="fa-solid fa-clock"></i> Fin orden de trabajo:</label>
+            <input type="time" class="form-control" id="TRABAJA_HORA_TERMINO_ORDEN_TRABAJO" name="TRABAJA_HORA_TERMINO_ORDEN_TRABAJO" disabled required placeholder="-- Seleccione la hora de término--" style="background-color: #fff; color: #000; text-align: center;" value="{{ isset($solicitud->ordenTrabajo->ORDEN_TRABAJO_HORA_TERMINO) ? $solicitud->ordenTrabajo->ORDEN_TRABAJO_HORA_TERMINO : '' }}">
+            <div class="invalid-feedback" id="terminoOrdenTrabajoError"></div>
+        </div>
+    </div>
+</div>
+
+            <div class="form-group" id="motivoSolicitud">
+                <label for="REVISION_SOLICITUD_OBSERVACION"><i class="fa-solid fa-file-pen"></i> Observaciones revisión:</label>
+                <textarea id="REVISION_SOLICITUD_OBSERVACION" name="REVISION_SOLICITUD_OBSERVACION" rows="5" class="form-control" placeholder="Inserte aquí sus comentarios o describa los ajustes realizados en la solicitud (Max 255 caracteres)." maxlength="255" required ></textarea>
+            </div>
+
+
+          
             
             <br><br><br><br>
             <button type="submit" class="btn btn-success" name="guardar">Guardar Cambios</button>
@@ -515,104 +584,552 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 </script>
 
+        
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Obtener el contenedor de los campos de orden de trabajo
+        var ordenTrabajoInputs = document.getElementById('ordenTrabajoInputs');
+        
+        // Obtener los elementos de hora y nro de orden de trabajo
+        var horaInicioSelector = document.getElementById("TRABAJA_HORA_INICIO_ORDEN_TRABAJO");
+        var horaTerminoSelector = document.getElementById("TRABAJA_HORA_TERMINO_ORDEN_TRABAJO");
+        var numeroOrdenTrabajo = document.getElementById('TRABAJA_NUMERO_ORDEN_TRABAJO');
+
+
+
+        // Verificar si la solicitud tiene una orden de trabajo asociada
+        @if(isset($solicitud->ordenTrabajo))
+            // Mostrar los campos de orden de trabajo si la solicitud tiene una orden de trabajo
+            ordenTrabajoInputs.style.display = 'block';
+            numeroOrdenTrabajo.disabled = false;
+            horaInicioSelector.disabled = false;
+            horaTerminoSelector.disabled = false;
+
+        @else
+            // Ocultar los campos de orden de trabajo si la solicitud no tiene una orden de trabajo
+            ordenTrabajoInputs.style.display = 'none';
+            numeroOrdenTrabajo.disabled = true;
+            horaInicioSelector.disabled = true;
+            horaTerminoSelector.disabled = true;
+        @endif
+
+        // Función para configurar un flatpickr con la misma configuración
+        function configurarFlatpickr(selector, minTimeConfig, onCloseCallback) {
+            return flatpickr(selector, {
+                enableTime: true,
+                noCalendar: true,
+                dateFormat: "H:i",
+                minTime: minTimeConfig,
+                onClose: onCloseCallback
+            });
+        }
+
+
+        // Configurar flatpickr para el selector de hora de inicio
+        var pickerHoraInicio = configurarFlatpickr(horaInicioSelector, undefined, function(selectedDates, dateStr, instance) {
+            // Habilitar el selector de hora de término cuando se selecciona una hora de inicio
+            pickerHoraTermino.set("minTime", dateStr);
+            horaTerminoSelector.disabled = false;
+        });
+
+        // Configurar flatpickr para el selector de hora de término
+        var pickerHoraTermino = configurarFlatpickr(horaTerminoSelector, horaInicioSelector.value, function(selectedDates, dateStr, instance) {
+            // Validar que la hora de término sea igual o posterior a la hora de inicio
+            if (dateStr < pickerHoraInicio.selectedDates[0]) {
+                alert("La hora de término debe ser igual o posterior a la hora de inicio.");
+                horaTerminoSelector.value = "";
+            }
+        });
+    });
+</script>
+
 
 <script>
     document.addEventListener('DOMContentLoaded', function() {
         var oficinas = {!! json_encode($oficinas) !!};
         var ubicaciones = {!! json_encode($ubicaciones) !!};
         var departamentos = {!! json_encode($departamentos) !!};
-        var conductores = {!! json_encode($users) !!};
-        var conductoresConPoliza = {!! json_encode($conductores) !!};
+        var users = {!! json_encode($users) !!};
+
+        // Obtener la capacidad máxima del vehículo para validar agregado de pasajeros
+        var capacidadMaxima = {!! $solicitud->vehiculo->tipoVehiculo->TIPO_VEHICULO_CAPACIDAD !!}-1;
+        var contadorPasajeros = 0;
+
+        var pasajerosExistente = document.getElementsByClassName('pasajeros-box').length;
+        contadorPasajeros = pasajerosExistente;
+
+
+
+
+        // Propuesta para eliminación de pasajeros hasta la cantidad solicitada
+        // Obtener la capacidad máxima del vehículo para validar agregado de pasajeros
+        /*var capacidadMaxima = {!! $solicitud->vehiculo->tipoVehiculo->TIPO_VEHICULO_CAPACIDAD !!};
+        var contadorPasajeros = 0;
+
+        // Contar la cantidad de pasajeros existentes al cargar la página
+        var pasajerosExistente = document.getElementsByClassName('pasajeros-box').length;
+        contadorPasajeros = pasajerosExistente;*/
+
+
+        configurarSelectores();
+        configurarSelectoresPasajero();
+
+
+        // Función para configurar los selectores de oficina
+        function configurarSelectores() {
+            var pasajerosBoxes = document.querySelectorAll('.pasajeros-box');
+
+            pasajerosBoxes.forEach(function(box, index) {
+                var oficinaSelect = box.querySelector('select[id="oficina_' + index + '"]');
+                var dependenciaSelect = box.querySelector('select[id="dependencia_' + index + '"]');
+                var pasajeroSelect = box.querySelector('select[id="pasajero_' + index + '"]');
+
+                if (oficinaSelect && dependenciaSelect && pasajeroSelect) {
+                    var selectedOficinaId = oficinaSelect.value;
+                    var selectedDependenciaId = dependenciaSelect.value;
+                    var pasajeroId = pasajeroSelect.value;
+
+                    // Limpiar selectores
+                    dependenciaSelect.innerHTML = '<option style="text-align: center;" value="">-- Seleccione una dependencia --</option>';
+                    pasajeroSelect.innerHTML = '<option style="text-align: center;" value="">-- Seleccione un pasajero --</option>';
+
+                    // Configurar selectores de oficina
+                    oficinas.forEach(function(oficina) {
+                        var option = document.createElement('option');
+                        option.value = oficina.OFICINA_ID;
+                        option.textContent = oficina.OFICINA_NOMBRE;
+                        if (oficina.OFICINA_ID == selectedOficinaId) {
+                            option.selected = true;
+                        }
+                        oficinaSelect.appendChild(option);
+                    });
+
+                    // Configurar selectores de dependencia
+                    var optgroupUbicaciones = document.createElement('optgroup');
+                    optgroupUbicaciones.label = 'Ubicaciones';
+
+                    var optgroupDepartamentos = document.createElement('optgroup');
+                    optgroupDepartamentos.label = 'Departamentos';
+
+                    ubicaciones.forEach(function(ubicacion) {
+                        if (ubicacion.OFICINA_ID == selectedOficinaId) {
+                            var option = document.createElement('option');
+                            option.value = ubicacion.UBICACION_ID;
+                            option.textContent = ubicacion.UBICACION_NOMBRE;
+                            if (ubicacion.UBICACION_ID == selectedDependenciaId) {
+                                option.selected = true;
+                            }
+                            optgroupUbicaciones.appendChild(option);
+                        }
+                    });
+
+                    departamentos.forEach(function(departamento) {
+                        if (departamento.OFICINA_ID == selectedOficinaId) {
+                            var option = document.createElement('option');
+                            option.value = departamento.DEPARTAMENTO_ID;
+                            option.textContent = departamento.DEPARTAMENTO_NOMBRE;
+                            if (departamento.DEPARTAMENTO_ID == selectedDependenciaId) {
+                                option.selected = true;
+                            }
+                            optgroupDepartamentos.appendChild(option);
+                        }
+                    });
+
+                    dependenciaSelect.appendChild(optgroupUbicaciones);
+                    dependenciaSelect.appendChild(optgroupDepartamentos);
+
+                    // Configurar selectores de pasajero
+                    var optgroupUsuarios = document.createElement('optgroup');
+                    optgroupUsuarios.label = 'Funcionarios Asociados';
+
+                    users.forEach(function(user) {
+                        if (user.UBICACION_ID == selectedDependenciaId || user.DEPARTAMENTO_ID == selectedDependenciaId) {
+                            var option = document.createElement('option');
+                            option.value = user.id;
+                            option.textContent = user.USUARIO_NOMBRES + ' ' + user.USUARIO_APELLIDOS;
+                            if (user.id == pasajeroId) {
+                                option.selected = true;
+                            }
+                            optgroupUsuarios.appendChild(option);
+                        }
+                    });
+
+                    pasajeroSelect.appendChild(optgroupUsuarios);
+
+                    // Habilitar/deshabilitar selectores según selecciones
+                    dependenciaSelect.disabled = selectedOficinaId === '';
+                    pasajeroSelect.disabled = selectedDependenciaId === '';
+                }
+            });
+        }
+
+       
+
+        function configurarSelectoresPasajero() {
+            // Aquí colocamos toda la lógica de configuración de selectores para el ingreso de datos
+            // Puedes copiar y pegar la lógica que has definido para la configuración estándar
+            // Eventos change a los selectores de oficina
+            var oficinaSelects = document.querySelectorAll('.pasajeros-box select[id^="oficina_"]');
+            var dependenciaSelects = document.querySelectorAll('.pasajeros-box select[id^="dependencia_"]');
+            var pasajeroSelects = document.querySelectorAll('.pasajeros-box select[id^="pasajero_"]');
+
+            
+            oficinaSelects.forEach(function(oficinaSelect) {
+                oficinaSelect.addEventListener('change', function() {
+                    var parentBox = this.closest('.pasajeros-box');
+                    var dependenciaSelect = parentBox.querySelector('select[id^="dependencia_"]');
+                    var pasajeroSelect = parentBox.querySelector('select[id^="pasajero_"]');
+                    var selectedOficinaId = this.value;
+
+                    // Limpiar selectores dependientes
+                    dependenciaSelect.innerHTML = '<option style="text-align: center;" value="">-- Seleccione una dependencia --</option>';
+                    pasajeroSelect.innerHTML = '<option style="text-align: center;" value="">-- Seleccione un pasajero --</option>';
+
+                    
+                    // OptGroups
+                    var optgroupUbicaciones = document.createElement('optgroup');
+                    optgroupUbicaciones.label = 'Ubicaciones';
+
+                    var optgroupDepartamentos = document.createElement('optgroup');
+                    optgroupDepartamentos.label = 'Departamentos';
+
+                    // Configurar selectores de dependencia
+                    ubicaciones.forEach(function(ubicacion) {
+                        if (ubicacion.OFICINA_ID == selectedOficinaId) {
+                            var option = document.createElement('option');
+                            option.value = ubicacion.UBICACION_ID;
+                            option.textContent = ubicacion.UBICACION_NOMBRE;
+                            optgroupUbicaciones.appendChild(option);
+                        }
+                    });
+
+                    departamentos.forEach(function(departamento) {
+                        if (departamento.OFICINA_ID == selectedOficinaId) {
+                            var option = document.createElement('option');
+                            option.value = departamento.DEPARTAMENTO_ID;
+                            option.textContent = departamento.DEPARTAMENTO_NOMBRE;
+                            optgroupDepartamentos.appendChild(option);
+                        }
+                    });
+
+                    // Agregar los grupos de opciones al selector de dependencia
+                    dependenciaSelect.appendChild(optgroupUbicaciones);
+                    dependenciaSelect.appendChild(optgroupDepartamentos);
+
+                    // Habilitar/deshabilitar selectores dependientes
+                    dependenciaSelect.disabled = selectedOficinaId === '';
+                    pasajeroSelect.disabled = true;
+
+                });
+            });
+
+            // Eventos change a los selectores de dependencia
+            dependenciaSelects.forEach(function(dependenciaSelect) {
+                dependenciaSelect.addEventListener('change', function() {
+                    var parentBox = this.closest('.pasajeros-box');
+                    var pasajeroSelect = parentBox.querySelector('select[id^="pasajero_"]');
+                    var selectedDependenciaId = this.value;
+
+                    // Limpiar selector de pasajero
+                    pasajeroSelect.innerHTML = '<option style="text-align: center;" value="">-- Seleccione un pasajero --</option>';
+
+                    // Configurar selectores de pasajero
+                    var optgroupUsuarios = document.createElement('optgroup');
+                    optgroupUsuarios.label = 'Funcionarios Asociados';
+
+                    users.forEach(function(user) {
+                        if (user.UBICACION_ID == selectedDependenciaId || user.DEPARTAMENTO_ID == selectedDependenciaId) {
+                            var option = document.createElement('option');
+                            option.value = user.id;
+                            option.textContent = user.USUARIO_NOMBRES + ' ' + user.USUARIO_APELLIDOS;
+                            optgroupUsuarios.appendChild(option);
+                        }
+                    });
+
+                    pasajeroSelect.appendChild(optgroupUsuarios);
+                    // Habilitar/deshabilitar selector de pasajero
+                    pasajeroSelect.disabled = selectedDependenciaId === '';
+
+                });
+            });
+
+            // Eventos change a los selectores de pasajero
+            pasajeroSelects.forEach(function(pasajeroSelect, index) {
+                pasajeroSelect.addEventListener('change', function() {
+                    var selectedUserId = this.value;
+                    var indice = index;
+
+                    // Verificar duplicados en otros selectores de pasajero
+                    var esDuplicado = false;
+                    var contador = 0;
+                    pasajeroSelects.forEach(function(otraSeleccion, otroIndice) {
+                        contador ++;
+                        if (otroIndice !== indice && otraSeleccion.value === selectedUserId) {
+                            esDuplicado = true;
+                            alert('El funcionario seleccionado ya figura como "Pasajero N° '+(contador)+'". Por favor, seleccione otra persona.');
+                            return;
+                        }
+                    });
+
+                    // Verificar si el pasajero seleccionado es igual al conductor
+                    var conductorId = document.getElementById('conductor').value; // Obtener el valor del conductor
+                    if (selectedUserId === conductorId) {
+                        esDuplicado = true;
+                        alert('El funcionario seleccionado ya figura como conductor. Por favor, seleccione otra persona.');
+                    }
+
+                    // Si hay un duplicado, establecer el valor del selector actual en blanco
+                    if (esDuplicado) {
+                        this.value = '';
+                    }
+                });
+            });
+        }
+
+
+        // Restringir el límite de pasajeros al agregar un nuevo pasajero
+        var botonAgregarPasajero = document.getElementById('botonAgregarPasajero');
+        botonAgregarPasajero.addEventListener('click', function() {
+
+            var pasajerosContainer = document.getElementById('pasajeros');
+
+            // Verificar si todos los campos de las filas anteriores están llenos
+            var pasajeroBoxes = pasajerosContainer.querySelectorAll('.pasajeros-box');
+            var camposIncompletos = false;
+            var contador = 1;
+            
+            pasajeroBoxes.forEach(function(pasajeroBox) {
+                var camposPasajero = pasajeroBox.querySelectorAll('.form-control');
+                var camposLlenos = true; // Suponemos que los campos están llenos en esta fila
+
+                camposPasajero.forEach(function(campo) {
+                    if (campo.value === '') {
+                        camposLlenos = false;
+                        return; // Salir del bucle si se encuentra un campo incompleto
+                    }
+                });
+
+                if (!camposLlenos) {
+                    camposIncompletos = true;
+                    alert('Por favor, complete todos los campos del "Pasajero N°'+contador+'" antes de agregar uno nuevo.');
+                    return; // Detener la ejecución si hay campos incompletos
+                } else {
+                    contador++;
+                }
+            });
+
+            if (camposIncompletos) {
+                return; // Detener la ejecución si hay campos incompletos
+            }
+
+            
+
+            if (contadorPasajeros < capacidadMaxima) {
+                var newIndex = pasajerosContainer.getElementsByClassName('pasajeros-box').length + 1;
+                var newPasajeroBox = document.createElement('div');
+                newPasajeroBox.className = 'pasajeros-box border p-3 mb-3';
+                newPasajeroBox.innerHTML = `
+                <h5>Pasajero N°${newIndex}</h5>
+                    <div class="form-row">
+                        <div class="form-group col-md-4">
+                            <label for="oficina_${newIndex}"><i class="fa-solid fa-street-view"></i> Dirección regional:</label>
+                            <select id="oficina_${newIndex}" class="form-control" name="oficina_${newIndex}" required>
+                                <option style="text-align: center;" selected value="">-- Seleccione una dirección regional --</option>
+                                @foreach($oficinas as $oficina)
+                                    <option value="{{ $oficina->OFICINA_ID }}">{{ $oficina->OFICINA_NOMBRE }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                        <div class="form-group col-md-4">
+                            <label for="dependencia_${newIndex}"><i class="fa-solid fa-building-user"></i> Ubicación o departamento:</label>
+                            <select id="dependencia_${newIndex}" class="form-control" name="dependencia_${newIndex}" required disabled>
+                                <option style="text-align: center;" selected value="">-- Seleccione una dependencia --</option>
+                                <optgroup label="Ubicaciones">
+                                    @foreach($ubicaciones as $ubicacion)
+                                        <option value="{{ $ubicacion->UBICACION_ID }}">{{ $ubicacion->UBICACION_NOMBRE }}</option>
+                                    @endforeach
+                                </optgroup>
+                                <optgroup label="Departamentos">
+                                    @foreach($departamentos as $departamento)
+                                        <option value="{{ $departamento->DEPARTAMENTO_ID }}">{{ $departamento->DEPARTAMENTO_NOMBRE }}</option>
+                                    @endforeach
+                                </optgroup>
+                            </select>
+                        </div>
+                        <div class="form-group col-md-4">
+                            <label for="pasajero_${newIndex}"><i class="fa-solid fa-person-circle-check"></i> Funcionario:</label>
+                            <select id="pasajero_${newIndex}" class="form-control" name="pasajero_${newIndex}" required disabled>
+                                <option style="text-align: center;" selected value="">-- Seleccione un pasajero --</option>
+                                <optgroup label="Funcionario Asociado">
+                                    @foreach($users as $user)
+                                        <option value="{{ $user->id }}">{{ $user->USUARIO_NOMBRES }} {{ $user->USUARIO_APELLIDOS }}</option>
+                                    @endforeach
+                                </optgroup>
+                            </select>
+                        </div>
+                    </div>`;
+                pasajerosContainer.appendChild(newPasajeroBox);
+                configurarSelectoresPasajero();
+                contadorPasajeros++;
+
+                
+                actualizarBotonAgregar();
+                actualizarBotonEliminar();
+            } else {
+                alert('Se ha alcanzado la capacidad máxima de pasajeros para este tipo de vehículo.');
+            }
+
+            // Desplazar la página hacia abajo para mostrar el último pasajero agregado
+            var ultimoPasajeroAgregado = document.querySelector('.pasajeros-box:last-child');
+            ultimoPasajeroAgregado.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        });
+
+        // Propuesta para eliminar todos los pasajeros 
+        // Evento click al botón "Eliminar Pasajero"
+        var botonEliminarPasajero = document.getElementById('botonEliminarPasajero');
+        botonEliminarPasajero.addEventListener('click', function() {
+            var pasajerosContainer = document.getElementById('pasajeros');
+            var pasajerosBoxes = pasajerosContainer.getElementsByClassName('pasajeros-box');
+            if (pasajerosBoxes.length > 0) {
+                var lastPasajeroBox = pasajerosBoxes[pasajerosBoxes.length - 1];
+                lastPasajeroBox.remove();
+                contadorPasajeros--;
+                actualizarBotonAgregar();
+                actualizarBotonEliminar();
+            }
+            // Desplazar la página hacia arriba para mostrar el botón "Agregar Pasajero"
+            var botonAgregarPasajero = document.getElementById('botonAgregarPasajero');
+            botonAgregarPasajero.scrollIntoView({ behavior: 'smooth', block: 'end' });
+        });
+        
+        console.log("CONTADOR PASJERROS: ",contadorPasajeros);
+        /* Propuesta para eliminar pasajeros evitando los solicitados
+        
+        var botonEliminarPasajero = document.getElementById('botonEliminarPasajero');
+        botonEliminarPasajero.addEventListener('click', function() {
+            var pasajerosContainer = document.getElementById('pasajeros');
+            var pasajerosBoxes = pasajerosContainer.getElementsByClassName('pasajeros-box');
+            if (pasajerosBoxes.length > pasajerosExistente) {
+                var lastPasajeroBox = pasajerosBoxes[pasajerosBoxes.length - 1];
+                lastPasajeroBox.remove();
+                contadorPasajeros--;
+            }
+        });*/
+        // Función para actualizar el estado del botón de agregar
+        function actualizarBotonAgregar() {
+            var botonAgregarPasajero = document.getElementById('botonAgregarPasajero');
+            var pasajerosContainer = document.getElementById('pasajeros');
+            var totalPasajeros = pasajerosContainer.getElementsByClassName('pasajeros-box').length;
+            if (totalPasajeros <= capacidadMaxima) {
+                botonAgregarPasajero.style.display = 'block'; // Ocultar el botón si se alcanza el límite
+            } 
+        }
+
+        // Función para actualizar el estado del botón de eliminar
+        function actualizarBotonEliminar() {
+            var botonEliminarPasajero = document.getElementById('botonEliminarPasajero');
+            var pasajerosContainer = document.getElementById('pasajeros');
+            if (pasajerosContainer.getElementsByClassName('pasajeros-box').length > 0) {
+                botonEliminarPasajero.style.display = 'block'; // Mostrar el botón si hay pasajeros para eliminar
+            } else {
+                botonEliminarPasajero.style.display = 'none'; // Ocultar el botón si no hay pasajeros
+            }
+        }
+    });
+</script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        var oficinas = {!! json_encode($oficinas) !!};
+        var ubicaciones = {!! json_encode($ubicaciones) !!};
+        var departamentos = {!! json_encode($departamentos) !!};
+        var conductores = {!! json_encode($conductores) !!};
 
         var oficinaSelects = document.querySelectorAll('.oficina');
         var dependenciaSelects = document.querySelectorAll('.dependencia');
         var conductorSelects = document.querySelectorAll('.conductor');
 
-        // Lógica para llenar los selectores con la información del conductor si está disponible
-        conductorSelects.forEach(function(conductorSelect) {
-            var conductorId = {!! json_encode($solicitud->conductor->id ?? '') !!};
-            var ubicacionId = {!! json_encode($solicitud->conductor->UBICACION_ID ?? '') !!};
-            var departamentoId = {!! json_encode($solicitud->conductor->DEPARTAMENTO_ID ?? '') !!};
-            var oficinaId = {!! json_encode($solicitud->conductor->OFICINA_ID ?? '') !!};
+        
+        // Lógica para conductor recuperado
+        function fillSelectors(selectedOficinaId, selectedDependenciaId, selectedConductorId) {
+            // Llenar select de oficinas
+            oficinaSelects.forEach(function(oficinaSelect) {
+                oficinas.forEach(function(oficina) {
+                    var option = document.createElement('option');
+                    option.value = oficina.OFICINA_ID;
+                    option.textContent = oficina.OFICINA_NOMBRE;
+                    if (oficina.OFICINA_ID === selectedOficinaId) {
+                        option.selected = true;
+                    }
+                    oficinaSelect.appendChild(option);
+                });
+            });
 
-            
-            var parentBox = conductorSelect.closest('.pasajero-box');
-            var dependenciaSelect = parentBox.querySelector('.dependencia');
-            var oficinaSelect = parentBox.querySelector('.oficina');
+            // Llenar select de dependencias (ubicaciones y departamentos)
+            dependenciaSelects.forEach(function(dependenciaSelect) {
+                dependenciaSelect.innerHTML = '<option style="text-align: center;"  value="">-- Seleccione una dependencia --</option>';
 
+                var optgroupUbicaciones = document.createElement('optgroup');
+                optgroupUbicaciones.label = 'Ubicaciones';
 
-            if (conductorId !== '') {
-                conductorSelect.disabled = false;
-                conductorSelect.value = conductorId;
-                console.log("Conductor $solicitud->conductor->id: ", conductorSelect);
-            }
+                var optgroupDepartamentos = document.createElement('optgroup');
+                optgroupDepartamentos.label = 'Departamentos';
 
-            if (ubicacionId !== '') {
-                dependenciaSelect.disabled = false;
-                dependenciaSelect.value = ubicacionId;
-                console.log("Dependencia ubicacion $solicitud->conductor->UBICACION_ID: ", dependenciaSelect);
-            } else if (departamentoId !== '') {
-                dependenciaSelect.disabled = false;
-                dependenciaSelect.value = departamentoId;
-                console.log("Dependencia departamento $solicitud->conductor->DEPARTAMENTO_ID: ", dependenciaSelect);
-            }
+                ubicaciones.forEach(function(ubicacion) {
+                    if (ubicacion.OFICINA_ID == selectedOficinaId) {
+                        var option = document.createElement('option');
+                        option.value = ubicacion.UBICACION_ID;
+                        option.textContent = ubicacion.UBICACION_NOMBRE;
+                        if (ubicacion.UBICACION_ID === selectedDependenciaId) {
+                            option.selected = true;
+                        }
+                        optgroupUbicaciones.appendChild(option);
+                    }
+                });
 
-            if (oficinaId !== '') {
-                oficinaSelect.value = oficinaId;
-                console.log("Conductor $solicitud->conductor->OFICINA_ID: ", oficinaSelect);
-            }
+                departamentos.forEach(function(departamento) {
+                    if (departamento.OFICINA_ID == selectedOficinaId) {
+                        var option = document.createElement('option');
+                        option.value = departamento.DEPARTAMENTO_ID;
+                        option.textContent = departamento.DEPARTAMENTO_NOMBRE;
+                        if (departamento.DEPARTAMENTO_ID === selectedDependenciaId) {
+                            option.selected = true;
+                        }
+                        optgroupDepartamentos.appendChild(option);
+                    }
+                });
 
-            // Después de asignar valores, llamar a la función de filtrado correspondiente
-            filterDependenciaOptions(oficinaSelect, dependenciaSelect, conductorSelect);
-        });
+                dependenciaSelect.appendChild(optgroupUbicaciones);
+                dependenciaSelect.appendChild(optgroupDepartamentos);
+            });
 
-        function filterDependenciaOptions(oficinaSelect, dependenciaSelect, conductorSelect) {
-    var selectedOficinaId = oficinaSelect.value;
+            // Llenar select de conductores
+            conductorSelects.forEach(function(conductorSelect) {
+                conductorSelect.innerHTML = '<option style="text-align: center;" value="">-- Seleccione un conductor --</option>';
 
-    // Limpiar opciones anteriores
-    dependenciaSelect.innerHTML = '';
-    conductorSelect.innerHTML = '<option value="">-- Seleccione al conductor --</option>';
-
-    // Agregar optgroup para ubicaciones
-    var optgroupUbicaciones = document.createElement('optgroup');
-    optgroupUbicaciones.label = 'Ubicaciones';
-
-    // Agregar optgroup para departamentos
-    var optgroupDepartamentos = document.createElement('optgroup');
-    optgroupDepartamentos.label = 'Departamentos';
-
-    // Filtrar y agregar opciones de ubicaciones y departamentos según la oficina seleccionada
-    ubicaciones.forEach(function(ubicacion) {
-        if (ubicacion.OFICINA_ID == selectedOficinaId) {
-            var option = document.createElement('option');
-            option.value = ubicacion.UBICACION_ID;
-            option.textContent = ubicacion.UBICACION_NOMBRE;
-            optgroupUbicaciones.appendChild(option);
+                conductores.forEach(function(conductor) {
+                    if ((conductor.UBICACION_ID == selectedDependenciaId) || (conductor.DEPARTAMENTO_ID == selectedDependenciaId)) {
+                        var option = document.createElement('option');
+                        option.value = conductor.id;
+                        option.textContent = conductor.USUARIO_NOMBRES + ' ' + conductor.USUARIO_APELLIDOS;
+                        if (conductor.id === selectedConductorId) {
+                            option.selected = true;
+                        }
+                        conductorSelect.appendChild(option);
+                    }
+                });
+            });
         }
-    });
 
-    departamentos.forEach(function(departamento) {
-        if (departamento.OFICINA_ID == selectedOficinaId) {
-            var option = document.createElement('option');
-            option.value = departamento.DEPARTAMENTO_ID;
-            option.textContent = departamento.DEPARTAMENTO_NOMBRE;
-            optgroupDepartamentos.appendChild(option);
+        // Llenar los selectores con los datos de la solicitud si existen
+        var solicitudConductor = {!! isset($solicitud->conductor) ? json_encode($solicitud->conductor) : 'null' !!};
+        if (solicitudConductor) {
+            fillSelectors(solicitudConductor.OFICINA_ID, solicitudConductor.UBICACION_ID || solicitudConductor.DEPARTAMENTO_ID, solicitudConductor.id);
+        } else {
+            // Llenar los selectores con valores por defecto
+            fillSelectors('', '', '');
         }
-    });
 
-    // Agregar optgroups al select dependencia
-    dependenciaSelect.appendChild(optgroupUbicaciones);
-    dependenciaSelect.appendChild(optgroupDepartamentos);
-
-    if (selectedOficinaId === '') {
-        dependenciaSelect.disabled = true;
-        conductorSelect.disabled = true;
-    } else {
-        dependenciaSelect.disabled = false;
-        conductorSelect.disabled = true;
-    }
-}
-
+        // Eventos change a los selectores de oficina
         oficinaSelects.forEach(function(oficinaSelect) {
             oficinaSelect.addEventListener('change', function() {
                 var selectedOficinaId = this.value;
@@ -620,19 +1137,15 @@ document.addEventListener('DOMContentLoaded', function () {
                 var dependenciaSelect = parentBox.querySelector('.dependencia');
                 var conductorSelect = parentBox.querySelector('.conductor');
 
-                // Limpiar opciones anteriores
-                dependenciaSelect.innerHTML = '<option value="">   -- Seleccione una opción --</option>';
-                conductorSelect.innerHTML= '<option value="">   -- Seleccione un conductor --</option>';
+                dependenciaSelect.innerHTML = '<option style="text-align: center;" value="">-- Seleccione una dependencia --</option>';
+                conductorSelect.innerHTML= '<option style="text-align: center;" value="">-- Seleccione un conductor --</option>';
 
-                // Agregar optgroup para ubicaciones
                 var optgroupUbicaciones = document.createElement('optgroup');
                 optgroupUbicaciones.label = 'Ubicaciones';
 
-                // Agregar optgroup para departamentos
                 var optgroupDepartamentos = document.createElement('optgroup');
                 optgroupDepartamentos.label = 'Departamentos';
 
-                // Filtrar y agregar opciones de ubicaciones y departamentos según la oficina seleccionada
                 ubicaciones.forEach(function(ubicacion) {
                     if (ubicacion.OFICINA_ID == selectedOficinaId) {
                         var option = document.createElement('option');
@@ -651,7 +1164,6 @@ document.addEventListener('DOMContentLoaded', function () {
                     }
                 });
 
-                // Agregar optgroups al select dependencia
                 dependenciaSelect.appendChild(optgroupUbicaciones);
                 dependenciaSelect.appendChild(optgroupDepartamentos);
 
@@ -664,24 +1176,19 @@ document.addEventListener('DOMContentLoaded', function () {
                 }
             });
         });
+
+        // Eventos change a los selectores de dependencia
         dependenciaSelects.forEach(function(dependenciaSelect) {
             dependenciaSelect.addEventListener('change', function() {
                 var selectedDependenciaId = this.value;
                 var parentBox = this.closest('.pasajero-box');
                 var conductorSelect = parentBox.querySelector('.conductor');
 
-                // Limpiar opciones anteriores
-                conductorSelect.innerHTML = '<option value="">-- Seleccione al conductor --</option>';
+                conductorSelect.innerHTML = '<option style="text-align: center;" value="">-- Seleccione al conductor --</option>';
 
-                // Agregar optgroup para conductores sin poliza (cualquier funcionario asociado a ubicacion o departamento)
                 var optgroupConductoresAsociados = document.createElement('optgroup');
-                optgroupConductoresAsociados.label = 'Funcionarios Asociados';
+                optgroupConductoresAsociados.label = 'Conductores Asociados';
 
-                // Agregar optgroup para conductores con póliza en la dirección regional
-                var optgroupConductoresPoliza = document.createElement('optgroup');
-                optgroupConductoresPoliza.label = 'Conductores con Póliza';
-
-                // Filtrar y agregar opciones de conductores según la dependencia seleccionada
                 conductores.forEach(function(conductor) {
                     if ((conductor.UBICACION_ID == selectedDependenciaId) || (conductor.DEPARTAMENTO_ID == selectedDependenciaId)) {
                         var option = document.createElement('option');
@@ -691,18 +1198,6 @@ document.addEventListener('DOMContentLoaded', function () {
                     }
                 });
 
-                // Agregar conductores con póliza al optgroup correspondiente
-                conductoresConPoliza.forEach(function(conductorConPoliza) {
-                    if ((conductorConPoliza.UBICACION_ID == selectedDependenciaId) || (conductorConPoliza.DEPARTAMENTO_ID == selectedDependenciaId)) {
-                        var option = document.createElement('option');
-                        option.value = conductorConPoliza.id;
-                        option.textContent = conductorConPoliza.USUARIO_NOMBRES + ' ' + conductorConPoliza.USUARIO_APELLIDOS;
-                        optgroupConductoresPoliza.appendChild(option);
-                    }
-                });
-
-                // Agregar optgroups al select de conductores
-                conductorSelect.appendChild(optgroupConductoresPoliza);
                 conductorSelect.appendChild(optgroupConductoresAsociados);
 
                 if (selectedDependenciaId === '') {
@@ -710,6 +1205,39 @@ document.addEventListener('DOMContentLoaded', function () {
                 } else {
                     conductorSelect.disabled = false;
                 }
+            });
+        });
+
+        // Eventos change a los selectores de conductores
+        conductorSelects.forEach(function(conductorSelect) {
+            conductorSelect.addEventListener('change', function() {
+                var selectedConductorId = this.value;
+
+                // Obtener todos los contenedores de filas de pasajeros
+                var pasajeroRows = document.querySelectorAll('.pasajeros-box');
+                
+                // Inicializar el contador de pasajeros
+                var contador = 1;
+
+                pasajeroRows.forEach(function(row) {
+                    // Obtener el último selector de pasajeros dentro de esta fila
+                    var ultimoPasajeroSelect = row.querySelector('.form-control:last-child');
+
+                    // Verificar si el pasajero actual coincide con el conductor seleccionado
+                    if (ultimoPasajeroSelect && ultimoPasajeroSelect.value === selectedConductorId) {
+                        // Mostrar una alerta si el conductor seleccionado ya está asignado como pasajero en otro lugar
+                        alert('El conductor seleccionado ya figura como "Pasajero N° ' + contador + '". Por favor, seleccione a otra persona.');
+                        
+                        // Limpiar la selección del conductor
+                        conductorSelect.value = '';
+                        
+                        // Detener la iteración del forEach
+                        return;
+                    }
+
+                    // Incrementar el contador de pasajeros
+                    contador++;
+                });
             });
         });
     });
@@ -721,16 +1249,23 @@ document.addEventListener('DOMContentLoaded', function () {
         // Obtener referencia al botón y al div de los pasajeros
         const botonPasajeros = document.getElementById('botonPasajeros');
         const pasajerosDiv = document.getElementById('pasajeros');
-        const laborDiv = document.getElementById('motivoSolicitud')
+        const divOculto = document.getElementById('retorno');
+        const botonAgregarPasajero = document.getElementById('botonAgregarPasajero');
+        const botonEliminarPasajero = document.getElementById('botonEliminarPasajero');
+        let capacidadMaxima = obtenerCapacidadMaxima(); // Obtener la capacidad máxima permitida
+
+        // Ocultar los botones de agregar y eliminar pasajeros inicialmente
+        botonAgregarPasajero.style.display = 'none';
+        botonEliminarPasajero.style.display = 'none';
 
         botonPasajeros.addEventListener('click', function() {
             console.log("Botón clickeado");
             if (pasajerosDiv.style.display === 'none') {
                 console.log("Mostrando pasajeros");
                 pasajerosDiv.style.display = 'block'; // Mostrar el div de los pasajeros    
-                botonPasajeros.style.backgroundColor = '#E22C2C'; // Cambiar el color a rojo
                 botonPasajeros.innerHTML = '<i class="fa-solid fa-user-minus"></i> Ocultar Pasajeros'; // Cambiar texto
-
+                
+                verificarVisibilidadBotones(); // Verificar visibilidad de botones
                 // Desplazar la página hasta la sección de pasajeros
                 window.scrollTo({
                     top: pasajerosDiv.offsetTop,
@@ -739,16 +1274,52 @@ document.addEventListener('DOMContentLoaded', function () {
             } else {
                 console.log("Ocultando pasajeros");
                 pasajerosDiv.style.display = 'none'; // Ocultar el div de los pasajeros
-                botonPasajeros.style.backgroundColor = '#00B050'; // Cambiar el color a verde
                 botonPasajeros.innerHTML = '<i class="fa-solid fa-user-plus"></i> Mostrar Pasajeros'; // Cambiar texto
-
+                botonAgregarPasajero.style.display = 'none';
+                botonEliminarPasajero.style.display = 'none';
                 // Desplazar la página hasta la sección de Solicitante
                 window.scrollTo({
-                    top: laborDiv.offsetTop,
+                    top: divOculto.offsetTop,
                     behavior: "smooth" // Desplazamiento suave
                 });
             }
         });
+
+        // Función para obtener la capacidad máxima del vehículo seleccionado
+        function obtenerCapacidadMaxima() {
+            // Obtener el elemento select del vehículo
+            const selectVehiculo = document.getElementById('VEHICULO_ID');
+
+            // Obtener la opción seleccionada
+            const opcionSeleccionada = selectVehiculo.options[selectVehiculo.selectedIndex];
+
+            // Obtener la capacidad máxima del atributo de datos personalizado (data-capacidad)
+            const capacidadMaxima = opcionSeleccionada.getAttribute('data-capacidad');
+
+            // Retornar la capacidad máxima como un número entero
+            return parseInt(capacidadMaxima);
+        }
+
+        // Función para verificar la visibilidad de los botones de agregar y eliminar pasajeros
+        function verificarVisibilidadBotones() {
+            const pasajeroBoxes = pasajerosDiv.querySelectorAll('.pasajeros-box');
+            const cantidadPasajeros = pasajeroBoxes.length;
+            console.log(cantidadPasajeros);
+            console.log(capacidadMaxima);
+
+            // Mostrar u ocultar los botones de acuerdo a la cantidad de pasajeros y la capacidad máxima
+            if (( cantidadPasajeros >= 0 ) && ( cantidadPasajeros < (capacidadMaxima-1) )) {
+                console.log("HOLA");
+                botonAgregarPasajero.style.display = 'block';
+            } 
+            
+            if((cantidadPasajeros <= (capacidadMaxima-1)) && (cantidadPasajeros > 0)) {
+                botonEliminarPasajero.style.display ='block';
+            } else {
+                botonEliminarPasajero.style.display ='none';
+            }
+        
+        }
     });
 </script>
 @stop

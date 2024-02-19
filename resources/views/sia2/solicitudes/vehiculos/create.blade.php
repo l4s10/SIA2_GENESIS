@@ -257,7 +257,7 @@
     <link rel="stylesheet" href="/css/admin_custom.css">
     <style>
         .error-message {
-            color: #721c24;
+            color: #E22C2C;
             background-color: #f8d7da;
             border: 1px solid #f5c6cb;
             padding: 8px 15px;
@@ -811,34 +811,44 @@
                 nuevaFila.innerHTML = contenidoHTML;
                 pasajeros.appendChild(nuevaFila);
 
-               // Configurar Flatpickr para el campo de hora de inicio de conducción
-                let horaInicioConduccion = document.getElementById(`SOLICITUD_VEHICULO_HORA_INICIO_CONDUCCION`);
-                let horaTerminoConduccion = document.getElementById(`SOLICITUD_VEHICULO_HORA_TERMINO_CONDUCCION`);
+                // Inicializar flatpickr después de que los elementos hayan sido insertados
+                flatpickr("#SOLICITUD_VEHICULO_HORA_INICIO_CONDUCCION", {
+                    enableTime: true,
+                    noCalendar: true,
+                    dateFormat: "H:i",
+                });
 
-                flatpickr(horaInicioConduccion, {
+                // Inicializar flatpickr después de que los elementos hayan sido insertados
+                flatpickr("#SOLICITUD_VEHICULO_HORA_TERMINO_CONDUCCION", {
+                    enableTime: true,
+                    noCalendar: true,
+                    dateFormat: "H:i",
+                });
+
+                var horaTerminoSelector = document.getElementById("SOLICITUD_VEHICULO_HORA_TERMINO_CONDUCCION");
+
+                function configurarHoraTermino(horaInicio) {
+                    flatpickr(horaTerminoSelector, {
+                        enableTime: true,
+                        noCalendar: true,
+                        dateFormat: "H:i",
+                        minTime: horaInicio,
+                    });
+                }
+
+                flatpickr("#SOLICITUD_VEHICULO_HORA_INICIO_CONDUCCION", {
                     enableTime: true,
                     noCalendar: true,
                     dateFormat: "H:i",
                     onChange: function(selectedDates, dateStr, instance) {
-                        horaTerminoConduccion._flatpickr.clear(); // Limpiar la selección anterior
-                        horaTerminoConduccion._flatpickr.set("minTime", dateStr); // Establecer la hora mínima
-                        horaTerminoConduccion.disabled = false; // Habilitar el input de hora de término
+                        var horaInicio = dateStr;
+                        configurarHoraTermino(horaInicio);
+                        document.getElementById("SOLICITUD_VEHICULO_HORA_TERMINO_CONDUCCION").disabled = false;
                     }
                 });
 
-                flatpickr(horaTerminoConduccion, {
-                    enableTime: true,
-                    noCalendar: true,
-                    dateFormat: "H:i",
-                    placeholder: "-- Seleccione la hora --", // Establecer el marcador de posición
-                });
+                document.getElementById("SOLICITUD_VEHICULO_HORA_TERMINO_CONDUCCION").disabled = false;
 
-                // Deshabilitar el input de hora de término inicialmente
-                horaTerminoConduccion.disabled = true;
-
-                // Limpiar los valores iniciales
-                horaInicioConduccion.value = "";
-                horaTerminoConduccion.value = "";
 
                 if (contadorFilas < capacidadMaxima) {
                     document.getElementById('agregarPasajeroBtn').style.display = 'block';

@@ -16,7 +16,6 @@ class SolicitudVehicular extends Model
         'VEHICULO_ID',
         //'RENDICION_ID',
         'COMUNA_ID',
-        'ORDEN_TRABAJO_ID',
         'CONDUCTOR_id',
         'SOLICITUD_VEHICULO_MOTIVO',
         'SOLICITUD_VEHICULO_ESTADO',
@@ -51,9 +50,10 @@ class SolicitudVehicular extends Model
         return $this->belongsTo(Vehiculo::class, 'VEHICULO_ID', 'VEHICULO_ID');
     }
     
+    // Relación con la orden de trabajo (0:1)
     public function ordenTrabajo()
     {
-        return $this->hasOne(OrdenDeTrabajo::class, 'ORDEN_TRABAJO_ID', 'ORDEN_TRABAJO_ID');
+        return $this->hasOne(OrdenDeTrabajo::class, 'SOLICITUD_VEHICULO_ID', 'SOLICITUD_VEHICULO_ID');
     }
 
     public function comunaDestino()
