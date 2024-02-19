@@ -75,6 +75,11 @@ class SolicitudFormulariosController extends Controller
                 'string' => 'El campo :attribute debe ser una cadena de caracteres.'
             ]);
 
+            // Validar que la instancia del carrito no esté vacía
+            if (Cart::instance('carrito_formularios')->count() === 0) {
+                return redirect()->back()->with('error', 'El carrito de formularios está vacío.');
+            }
+
             // Si la validación falla, redirecciona al formulario con los errores y el input antiguo
             if ($validator->fails()) {
                 return redirect()->back()->withErrors($validator)->withInput();
