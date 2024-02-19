@@ -129,12 +129,12 @@
     </script>
 
 
-    @if(session('api_token'))
+    {{-- @if(session('api_token'))
     <script>
         localStorage.setItem('api_token', '{{ session('api_token') }}');
         console.log('API Token stored:', localStorage.getItem('api_token'));
     </script>
-    @endif
+    @endif --}}
 
     {{-- Importar el archivo JS para el gráfico 1 --}}
     <script src="{{ asset('js/grafico1.js') }}"></script>
