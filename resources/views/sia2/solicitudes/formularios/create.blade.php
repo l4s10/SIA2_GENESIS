@@ -83,6 +83,7 @@
                                 <i class="fa-solid fa-trash"></i> Eliminar
                             </button>
                         </form>
+                    </td>
                 </tr>
             @endforeach
         </tbody>
@@ -128,8 +129,9 @@
                 </div>
             </div>
         </div>
-        <br>
-        <button type="submit" class="btn agregar"><i class="fa-solid fa-plus"></i> Crear Solicitud</button>
+        {{-- Botones de envio y volver --}}
+        <a href="{{ route('solicitudes.formularios.index') }}" class="btn btn-danger mt-4"><i class="fa-solid fa-arrow-rotate-left"></i> Volver</a>
+        <button type="submit" class="btn agregar mt-4"><i class="fa-solid fa-plus"></i> Crear Solicitud</button>
     </form>
 @stop
 
@@ -158,9 +160,9 @@
 @stop
 
 @section('js')
-    <script>
-        // Aquí puedes agregar cualquier script JS que necesites
-    </script>
+    {{-- Llamar a componente configuracion fechas SOLICITADAS --}}
+    <script src="{{ asset('js/Components/fechasSolicitadas.js') }}"></script>
+    {{-- Componentes dataTables --}}
     <script>
         $(document).ready(function () {
             $('#formularios').DataTable({

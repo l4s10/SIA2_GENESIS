@@ -53,7 +53,7 @@
         {{-- Motivo de la solicitud --}}
         <div class="form-group {{ $errors->has('SOLICITUD_MOTIVO') ? 'has-error' : '' }}">
             <label for="SOLICITUD_MOTIVO"><i class="fa-solid fa-pen-to-square"></i> Motivo de la Solicitud</label>
-            <input type="text" class="form-control" id="SOLICITUD_MOTIVO" name="SOLICITUD_MOTIVO" required>
+            <textarea class="form-control" id="SOLICITUD_MOTIVO" name="SOLICITUD_MOTIVO" required></textarea>
             @error('SOLICITUD_MOTIVO')
                 <span class="text-danger">{{ $message }}</span>
             @enderror
@@ -65,24 +65,32 @@
             <input type="text" class="form-control" id="SOLICITUD_ESTADO" name="SOLICITUD_ESTADO" value="🟠INGRESADO" readonly>
         </div>
 
-        {{-- Fecha inicio solicitada --}}
-        <div class="form-group {{ $errors->has('SOLICITUD_FECHA_HORA_INICIO_SOLICITADA') ? 'has-error' : '' }}">
-            <label for="SOLICITUD_FECHA_HORA_INICIO_SOLICITADA"><i class="fa-solid fa-calendar-days"></i> Fecha y Hora de Inicio Solicitada</label>
-            <input type="datetime-local" class="form-control" id="SOLICITUD_FECHA_HORA_INICIO_SOLICITADA" name="SOLICITUD_FECHA_HORA_INICIO_SOLICITADA" required>
-            @error('SOLICITUD_FECHA_HORA_INICIO_SOLICITADA')
-                <span class="text-danger">{{ $message }}</span>
-            @enderror
-        </div>
+        {{-- row para fechas --}}
+        <div class="row">
+            <div class="col-md-6">
+                {{-- Fecha inicio solicitada --}}
+                <div class="form-group {{ $errors->has('SOLICITUD_FECHA_HORA_INICIO_SOLICITADA') ? 'has-error' : '' }}">
+                    <label for="SOLICITUD_FECHA_HORA_INICIO_SOLICITADA"><i class="fa-solid fa-calendar-days"></i> Fecha y Hora de Inicio Solicitada</label>
+                    <input type="datetime-local" class="form-control" id="SOLICITUD_FECHA_HORA_INICIO_SOLICITADA" name="SOLICITUD_FECHA_HORA_INICIO_SOLICITADA" required>
+                    @error('SOLICITUD_FECHA_HORA_INICIO_SOLICITADA')
+                        <span class="text-danger">{{ $message }}</span>
+                    @enderror
+                </div>
+            </div>
 
-        {{-- Fecha termino solicitud --}}
-        <div class="form-group {{ $errors->has('SOLICITUD_FECHA_HORA_TERMINO_SOLICITADA') ? 'has-error' : '' }}">
-            <label for="SOLICITUD_FECHA_HORA_TERMINO_SOLICITADA"><i class="fa-solid fa-calendar-xmark"></i> Fecha y Hora de Término Solicitada</label>
-            <input type="datetime-local" class="form-control" id="SOLICITUD_FECHA_HORA_TERMINO_SOLICITADA" name="SOLICITUD_FECHA_HORA_TERMINO_SOLICITADA" required>
-            @error('SOLICITUD_FECHA_HORA_TERMINO_SOLICITADA')
-                <span class="text-danger">{{ $message }}</span>
-            @enderror
+            <div class="col-md-6">
+                {{-- Fecha termino solicitud --}}
+                <div class="form-group {{ $errors->has('SOLICITUD_FECHA_HORA_TERMINO_SOLICITADA') ? 'has-error' : '' }}">
+                    <label for="SOLICITUD_FECHA_HORA_TERMINO_SOLICITADA"><i class="fa-solid fa-calendar-xmark"></i> Fecha y Hora de Término Solicitada</label>
+                    <input type="datetime-local" class="form-control" id="SOLICITUD_FECHA_HORA_TERMINO_SOLICITADA" name="SOLICITUD_FECHA_HORA_TERMINO_SOLICITADA" required>
+                    @error('SOLICITUD_FECHA_HORA_TERMINO_SOLICITADA')
+                        <span class="text-danger">{{ $message }}</span>
+                    @enderror
+                </div>
+            </div>
         </div>
-
+        {{-- Boton para enviar y volver --}}
+        <a href="{{ route('solicitudes.bodegas.index') }}" class="btn btn-danger"><i class="fa-solid fa-reply"></i> Volver</a>
         <button type="submit" class="btn agregar"><i class="fa-solid fa-plus"></i> Crear Solicitud</button>
     </form>
 @stop
@@ -112,5 +120,6 @@
 @stop
 
 @section('js')
-
+    {{-- Llamar a componente configuracion fechas SOLICITADAS --}}
+    <script src="{{ asset('js/Components/fechasSolicitadas.js') }}"></script>
 @stop

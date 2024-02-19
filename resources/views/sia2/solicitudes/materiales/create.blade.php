@@ -92,45 +92,45 @@
         {{-- Formulario de Solicitud --}}
         <form action="{{ route('solicitudes.materiales.store') }}" method="POST">
             @csrf
+            {{-- Motivo de la Solicitud --}}
+            <div class="form-group {{ $errors->has('SOLICITUD_MOTIVO') ? 'has-error' : '' }}">
+                <label for="SOLICITUD_MOTIVO"><i class="fa-solid fa-pen-to-square"></i> Motivo de la Solicitud</label>
+                <input type="text" class="form-control" id="SOLICITUD_MOTIVO" name="SOLICITUD_MOTIVO" required>
+                @error('SOLICITUD_MOTIVO')
+                    <span class="text-danger">{{ $message }}</span>
+                @enderror
+            </div>
 
-        {{-- Motivo de la Solicitud --}}
-        <div class="form-group {{ $errors->has('SOLICITUD_MOTIVO') ? 'has-error' : '' }}">
-            <label for="SOLICITUD_MOTIVO"><i class="fa-solid fa-pen-to-square"></i> Motivo de la Solicitud</label>
-            <input type="text" class="form-control" id="SOLICITUD_MOTIVO" name="SOLICITUD_MOTIVO" required>
-            @error('SOLICITUD_MOTIVO')
-                <span class="text-danger">{{ $message }}</span>
-            @enderror
-        </div>
-
-        {{-- Estado de la Solicitud (Sin contenedor de error ya que es un campo de solo lectura) --}}
-        <div class="form-group">
-            <label for="SOLICITUD_ESTADO"><i class="fa-solid fa-file-circle-check"></i> Estado de la Solicitud</label>
-            <input type="text" class="form-control" id="SOLICITUD_ESTADO" name="SOLICITUD_ESTADO" value="🟠INGRESADO" readonly>
-        </div>
-        <div class="row">
-            <div class="col-md-6">
-                {{-- Fecha y Hora de Inicio Solicitada --}}
-                <div class="form-group {{ $errors->has('SOLICITUD_FECHA_HORA_INICIO_SOLICITADA') ? 'has-error' : '' }}">
-                    <label for="SOLICITUD_FECHA_HORA_INICIO_SOLICITADA"><i class="fa-solid fa-calendar-days"></i> Fecha y Hora de Inicio Solicitada</label>
-                    <input type="datetime-local" class="form-control" id="SOLICITUD_FECHA_HORA_INICIO_SOLICITADA" name="SOLICITUD_FECHA_HORA_INICIO_SOLICITADA" required>
-                    @error('SOLICITUD_FECHA_HORA_INICIO_SOLICITADA')
-                        <span class="text-danger">{{ $message }}</span>
-                    @enderror
+            {{-- Estado de la Solicitud (Sin contenedor de error ya que es un campo de solo lectura) --}}
+            <div class="form-group">
+                <label for="SOLICITUD_ESTADO"><i class="fa-solid fa-file-circle-check"></i> Estado de la Solicitud</label>
+                <input type="text" class="form-control" id="SOLICITUD_ESTADO" name="SOLICITUD_ESTADO" value="🟠INGRESADO" readonly>
+            </div>
+            <div class="row">
+                <div class="col-md-6">
+                    {{-- Fecha y Hora de Inicio Solicitada --}}
+                    <div class="form-group {{ $errors->has('SOLICITUD_FECHA_HORA_INICIO_SOLICITADA') ? 'has-error' : '' }}">
+                        <label for="SOLICITUD_FECHA_HORA_INICIO_SOLICITADA"><i class="fa-solid fa-calendar-days"></i> Fecha y Hora de Inicio Solicitada</label>
+                        <input type="datetime-local" class="form-control" id="SOLICITUD_FECHA_HORA_INICIO_SOLICITADA" name="SOLICITUD_FECHA_HORA_INICIO_SOLICITADA" required>
+                        @error('SOLICITUD_FECHA_HORA_INICIO_SOLICITADA')
+                            <span class="text-danger">{{ $message }}</span>
+                        @enderror
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    {{-- Fecha y Hora de Término Solicitada --}}
+                    <div class="form-group {{ $errors->has('SOLICITUD_FECHA_HORA_TERMINO_SOLICITADA') ? 'has-error' : '' }}">
+                        <label for="SOLICITUD_FECHA_HORA_TERMINO_SOLICITADA"><i class="fa-solid fa-calendar-xmark"></i> Fecha y Hora de Término Solicitada</label>
+                        <input type="datetime-local" class="form-control" id="SOLICITUD_FECHA_HORA_TERMINO_SOLICITADA" name="SOLICITUD_FECHA_HORA_TERMINO_SOLICITADA" required>
+                        @error('SOLICITUD_FECHA_HORA_TERMINO_SOLICITADA')
+                            <span class="text-danger">{{ $message }}</span>
+                        @enderror
+                    </div>
                 </div>
             </div>
-            <div class="col-md-6">
-                {{-- Fecha y Hora de Término Solicitada --}}
-                <div class="form-group {{ $errors->has('SOLICITUD_FECHA_HORA_TERMINO_SOLICITADA') ? 'has-error' : '' }}">
-                    <label for="SOLICITUD_FECHA_HORA_TERMINO_SOLICITADA"><i class="fa-solid fa-calendar-xmark"></i> Fecha y Hora de Término Solicitada</label>
-                    <input type="datetime-local" class="form-control" id="SOLICITUD_FECHA_HORA_TERMINO_SOLICITADA" name="SOLICITUD_FECHA_HORA_TERMINO_SOLICITADA" required>
-                    @error('SOLICITUD_FECHA_HORA_TERMINO_SOLICITADA')
-                        <span class="text-danger">{{ $message }}</span>
-                    @enderror
-                </div>
-            </div>
-        </div>
-        <br>
-        <button type="submit" class="btn agregar"><i class="fa-solid fa-plus"></i> Crear Solicitud</button>
+            {{-- Botón para Crear Solicitud y volver --}}
+            <a href="{{ route('solicitudes.materiales.index') }}" class="btn btn-secondary mt-4"><i class="fa-solid fa-arrow-left"></i> Volver</a>
+            <button type="submit" class="btn agregar mt-4"><i class="fa-solid fa-plus"></i> Crear Solicitud</button>
         </form>
     </div>
 @stop
@@ -160,6 +160,10 @@
 @stop
 
 @section('js')
+    {{-- Llamar a componente configuracion fechas SOLICITADAS --}}
+    <script src="{{ asset('js/Components/fechasSolicitadas.js') }}"></script>
+
+    {{-- Llamar a componente DataTables --}}
     <script>
         $(document).ready(function () {
             $('#materiales').DataTable({

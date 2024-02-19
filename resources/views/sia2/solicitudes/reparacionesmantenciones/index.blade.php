@@ -90,7 +90,7 @@
             background-color: #1aa16b;
             color: #fff;
         }
-        
+
         /*Colores de los estados*/
         .estado-ingresado {
         color: #000000;
@@ -131,6 +131,7 @@
                 "language": {
                     "url": "https://cdn.datatables.net/plug-ins/1.11.3/i18n/es_es.json"
                 },
+                "order": [[ 2, "desc" ]],
             });
         });
     </script>

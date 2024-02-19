@@ -157,6 +157,9 @@
 @stop
 
 @section('js')
+    {{-- Llamar a componente fechas solicitadas --}}
+    <script src="{{ asset('js/Components/fechasSolicitadas.js') }}"></script>
+    {{-- Llamar a componente de DataTables --}}
     <script>
         $(document).ready(function () {
             $('#equipos').DataTable({
