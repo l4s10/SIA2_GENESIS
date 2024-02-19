@@ -96,8 +96,10 @@ document.addEventListener('DOMContentLoaded', function() {
         method: 'GET',
         headers: {
             'Accept': 'application/json',
-            'Authorization': 'Bearer ' + localStorage.getItem('api_token')
-        }
+            'Content-Type': 'application/json',
+            // 'Authorization': 'Bearer ' + localStorage.getItem('api_token'),
+            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+        },
     })
         .then(response => response.json())
         .then(data => {
@@ -126,8 +128,10 @@ document.addEventListener('DOMContentLoaded', function() {
             method: 'POST',
             headers: {
                 'Accept': 'application/json',
-                'Authorization': 'Bearer ' + localStorage.getItem('api_token'),
                 'Content-Type': 'application/json',
+                'Authorization': 'Bearer ' + localStorage.getItem('api_token'),
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+
             },
             body: JSON.stringify({
                 fecha_inicio: fechaInicio,
