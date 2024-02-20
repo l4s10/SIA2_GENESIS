@@ -14,8 +14,8 @@ use PhpOffice\PhpSpreadsheet\IOFactory;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 use Carbon\Carbon; 
-use Dompdf\Dompdf;
 
+use Dompdf\Dompdf;
 
 use Exception;
 
@@ -536,87 +536,167 @@ class SolicitudVehiculosController extends Controller
         }
     }
 
+
+
     public function descargarPlantilla(Request $request, $id)
+{
+    try {
+        // Ruta al archivo HTML en tu almacenamiento
+        $htmlFilePath = storage_path('pdf/Hoja de salida.htm');
+
+        // Leer el contenido HTML del archivo
+        $htmlContent = file_get_contents($htmlFilePath);
+
+        // Crear una instancia de Dompdf
+        $pdf = new Dompdf();
+
+        // Cargar el contenido HTML en Dompdf
+        $pdf->loadHtml($htmlContent);
+
+        // (Opcional) Configurar opciones de Dompdf, como tamaño de papel, orientación, etc.
+        $pdf->setPaper('A4', 'portrait');
+
+        // Renderizar el PDF
+        $pdf->render();
+
+        // Guardar el PDF en una ubicación temporal
+        $tempPdfFilePath = storage_path('app/public/nombre_del_archivo.pdf');
+        file_put_contents($tempPdfFilePath, $pdf->output());
+
+        // Descargar el archivo PDF con los cambios realizados
+        return response()->download($tempPdfFilePath, 'nombre_del_archivo.pdf')->deleteFileAfterSend(true);
+
+    } catch (Exception $e) {
+        // Manejar errores si ocurre algún problema
+        return redirect()->back()->with('error', 'Error al descargar la plantilla de PDF.');
+    }
+}
+   /*     public function descargarPlantilla(Request $request, $id)
     {
         try {
             // Cargar la plantilla Excel existente
             $plantillaFilePath = storage_path('excel/Hoja de salida.xlsx');
             $spreadsheet = IOFactory::load($plantillaFilePath);
+
             // Obtener la solicitud actual
             $solicitud = SolicitudVehicular::findOrFail($id);
-            // Obtener orden de trabajo en caso de que exista:
+
+            // Obtener datos del conductor
+            $polizaConductor = Poliza::where('USUARIO_id', $solicitud->conductor->id)->firstOrFail();
+            if( $polizaConductor ) {
+                $fechaVencimientoLicencia = Carbon::parse($polizaConductor->POLIZA_FECHA_VENCIMIENTO_LICENCIA)->format('d/m/y');
+            }
+
+            // Obtener orden de trabajo en caso de que exista
+            $ordenDeTrabajo = null;
             if ($solicitud->ordenTrabajo) {
                 $ordenDeTrabajo = $solicitud->ordenTrabajo;
-            }    
+            }
+
+            // Obtener cargo del jefe que autoriza
+            $jefeQueAutoriza = Cargo::findOrFail($solicitud->SOLICITUD_VEHICULO_JEFE_QUE_AUTORIZA);
+
+            // Obtener los pasajeros asociados a la solicitud
+            $pasajeros = $solicitud->pasajeros;
+            // Definir el rango de celdas para los pasajeros en la columna C y filas 15 a 22
+            $inicioFilaPasajeros = 15;
+            $finFilaPasajeros = 22;
+
+
+            // Registro de celdas en excel
+
+            // Fusionar los arreglos de datos de la orden de trabajo y la solicitud estándar
+            $datos = array_merge(
+                $ordenDeTrabajo ? [
+                    ['H9', $ordenDeTrabajo->ORDEN_TRABAJO_NUMERO],
+                    ['J9', strtoupper(Carbon::parse($ordenDeTrabajo->ORDEN_TRABAJO_HORA_INICIO)->format('H:i'))],
+                    ['J10', strtoupper(Carbon::parse($ordenDeTrabajo->ORDEN_TRABAJO_HORA_TERMINO)->format('H:i'))],
+                ] : [],
+                [
+                    // Fecha de creación solicitud
+                    ['E4', strtoupper(Carbon::parse($solicitud->created_at)->locale('es_ES')->isoFormat('dddd'))],
+                    ['F4', $solicitud->created_at->format('j')],
+                    ['G4', strtoupper(Carbon::parse($solicitud->created_at)->locale('es_ES')->isoFormat('MMMM'))],
+                    ['H4', $solicitud->created_at->format('Y')],
+
+
+                    // Datos del solicitante
+                    ['C7', $solicitud->user->USUARIO_NOMBRES.' '.$solicitud->user->USUARIO_APELLIDOS],
+                    ['C8', $solicitud->user->oficina->OFICINA_NOMBRE],
+                    ['C9', $solicitud->user->ubicacion ? $solicitud->user->ubicacion->UBICACION_NOMBRE : $solicitud->user->departamento->DEPARTAMENTO_NOMBRE],
+                    ['C10', $solicitud->user->cargo->CARGO_NOMBRE],
+                    ['H7', strtoupper($solicitud->comunaDestino->COMUNA_NOMBRE)],
+                    ['H8', $solicitud->SOLICITUD_VEHICULO_MOTIVO],
+
+                    // Fecha y hora de inicio asignada
+                    ['C11', strtoupper(Carbon::parse($solicitud->SOLICITUD_VEHICULO_FECHA_HORA_INICIO_ASIGNADA)->isoFormat('dddd'))],
+                    ['D11', Carbon::parse($solicitud->SOLICITUD_VEHICULO_FECHA_HORA_INICIO_ASIGNADA)->format('j')],
+                    ['E11', strtoupper(Carbon::parse($solicitud->SOLICITUD_VEHICULO_FECHA_HORA_INICIO_ASIGNADA)->isoFormat('MMMM'))],
+                    ['F11', Carbon::parse($solicitud->SOLICITUD_VEHICULO_FECHA_HORA_INICIO_ASIGNADA)->format('Y')],
+                    ['H11', strtoupper(Carbon::parse($solicitud->SOLICITUD_VEHICULO_FECHA_HORA_INICIO_ASIGNADA)->format('H:i'))],
+
+                    // Fecha y hora de término asignada
+                    ['C12', strtoupper(Carbon::parse($solicitud->SOLICITUD_VEHICULO_FECHA_HORA_TERMINO_ASIGNADA)->isoFormat('dddd'))],
+                    ['D12', Carbon::parse($solicitud->SOLICITUD_VEHICULO_FECHA_HORA_TERMINO_ASIGNADA)->format('j')],
+                    ['E12', strtoupper(Carbon::parse($solicitud->SOLICITUD_VEHICULO_FECHA_HORA_TERMINO_ASIGNADA)->isoFormat('MMMM'))],
+                    ['F12', Carbon::parse($solicitud->SOLICITUD_VEHICULO_FECHA_HORA_TERMINO_ASIGNADA)->format('Y')],
+                    ['H12', strtoupper(Carbon::parse($solicitud->SOLICITUD_VEHICULO_FECHA_HORA_INICIO_ASIGNADA)->format('H:i'))],
+
+
+                    // HORAS INICIO Y TERMINO CONDUCCIÓN, Y VIÁTICO
+                    ['J11', strtoupper(Carbon::parse($solicitud->SOLICITUD_VEHICULO_HORA_INICIO_CONDUCCION)->format('H:i'))],
+                    ['J12', strtoupper(Carbon::parse($solicitud->SOLICITUD_VEHICULO_HORA_TERMINO_CONDUCCION)->format('H:i'))],
+                    ['H10', strtoupper($solicitud->SOLICITUD_VEHICULO_VIATICO)],
 
 
 
 
-            // Definir los datos a llenar en las celdas
-            $datos = [
-                // Fecha de creación solicitud
-                ['D5', strtoupper(Carbon::parse($solicitud->created_at)->locale('es_ES')->isoFormat('dddd'))],
-                ['E5', $solicitud->created_at->format('j')],
-                ['F5', strtoupper(Carbon::parse($solicitud->created_at)->locale('es_ES')->isoFormat('MMMM'))],
-                ['G5', $solicitud->created_at->format('Y')],
+                    // OBTENER PASAJEROS E IMPLEMENTAR LLENADO DE EXCEL PARA ELLOS.
 
-                ['C7', $solicitud->user->USUARIO_NOMBRES.' '.$solicitud->user->USUARIO_APELLIDOS],
-                ['H7', $solicitud->user->cargo->CARGO_NOMBRE],
-                ['C8', $solicitud->user->ubicacion ? $solicitud->user->ubicacion->UBICACION_NOMBRE : $solicitud->user->departamento->DEPARTAMENTO_NOMBRE],
-                ['H8', $solicitud->user->oficina->OFICINA_NOMBRE],
-
+                    // FALTA INCORPORAR POLIZA PARA CONDUCTOR
+                    ['B26', strtoupper('Conductor: ' . $solicitud->conductor->USUARIO_NOMBRES . ' ' . $solicitud->conductor->USUARIO_APELLIDOS . ' | Venc Licencia: ' . $fechaVencimientoLicencia . ' | N° Póliza: ' . $polizaConductor->POLIZA_NUMERO)],
+                    // JEFE QUE AUTORIZA
+                    ['H26', strtoupper($jefeQueAutoriza->CARGO_NOMBRE)],
+                    
+                    // PATENTE
+                    ['G31', strtoupper($solicitud->vehiculo->VEHICULO_PATENTE)],
+                    // TIPO VEHICULO
+                    ['I31', strtoupper($solicitud->vehiculo->tipoVehiculo->TIPO_VEHICULO_NOMBRE)],
 
 
-                ['C9', $solicitud->SOLICITUD_VEHICULO_MOTIVO],
-                ['C10', strtoupper($solicitud->comunaDestino->COMUNA_NOMBRE)],
+
+                    // FOLIO
+                    ['J3', $solicitud->SOLICITUD_VEHICULO_ID],
 
 
-                // Fecha y hora de inicio solicitada
-                ['C11', strtoupper(Carbon::parse($solicitud->SOLICITUD_VEHICULO_FECHA_HORA_INICIO_SOLICITADA)->isoFormat('dddd'))],
-                ['D11', Carbon::parse($solicitud->SOLICITUD_VEHICULO_FECHA_HORA_INICIO_SOLICITADA)->format('j')],
-                ['E11', strtoupper(Carbon::parse($solicitud->SOLICITUD_VEHICULO_FECHA_HORA_INICIO_SOLICITADA)->isoFormat('MMMM'))],
-                ['F11', Carbon::parse($solicitud->SOLICITUD_VEHICULO_FECHA_HORA_INICIO_SOLICITADA)->format('Y')],
-                ['H11', strtoupper(Carbon::parse($solicitud->SOLICITUD_VEHICULO_FECHA_HORA_INICIO_SOLICITADA)->format('H:i'))],
-
-                // Fecha y hora de término solicitada
-                ['C12', strtoupper(Carbon::parse($solicitud->SOLICITUD_VEHICULO_FECHA_HORA_TERMINO_SOLICITADA)->isoFormat('dddd'))],
-                ['D12', Carbon::parse($solicitud->SOLICITUD_VEHICULO_FECHA_HORA_TERMINO_SOLICITADA)->format('j')],
-                ['E12', strtoupper(Carbon::parse($solicitud->SOLICITUD_VEHICULO_FECHA_HORA_TERMINO_SOLICITADA)->isoFormat('MMMM'))],
-                ['F12', Carbon::parse($solicitud->SOLICITUD_VEHICULO_FECHA_HORA_TERMINO_SOLICITADA)->format('Y')],
-                ['H12', strtoupper(Carbon::parse($solicitud->SOLICITUD_VEHICULO_FECHA_HORA_INICIO_SOLICITADA)->format('H:i'))],
-
-
-                // HORAS INICIO Y TERMINO CONDUCCIÓN
-                ['H13', strtoupper(Carbon::parse($solicitud->SOLICITUD_VEHICULO_HORA_INICIO_CONDUCCION)->format('H:i'))],
-                ['H14', strtoupper(Carbon::parse($solicitud->SOLICITUD_VEHICULO_HORA_TERMINO_CONDUCCION)->format('H:i'))],
-                ['J14', strtoupper($solicitud->SOLICITUD_VEHICULO_VIATICO)],
-
-
-                /*// ORDEN DE TRABAJO
-                ['J11', $ordenDeTrabajo->ORDEN_TRABAJO_NUMERO],
-                ['J12', strtoupper(Carbon::parse($ordenDeTrabajo->ORDEN_TRABAJO_HORA_INICIO)->format('H:i'))],
-                ['J13', strtoupper(Carbon::parse($ordenDeTrabajo->ORDEN_TRABAJO_HORA_TERMINO)->format('H:i'))],*/
-
-
-                // OBTENER PASAJEROS E IMPLEMENTAR LLENADO DE EXCEL PARA ELLOS.
-
-                // FALTA INCORPORAR POLIZA PARA CONDUCTOR
-                ['B28', strtoupper($solicitud->conductor->USUARIO_NOMBRES .' '. $solicitud->conductor->USUARIO_APELLIDOS)],
-                // JEFE QUE AUTORIZA
-                ['G28', strtoupper($solicitud->SOLICITUD_VEHICULO_JEFE_QUE_AUTORIZA)],
+                    // FIRMA DE CONDUCTOR ASIGNADO
+                    ['D24', 'FIRMA DE PRUEBA - 12345678890'],
+                    ['H24', 'FIRMA DE PRUEBA JEFE QUE AUTORIZA - 12345678890'],
+                    ['D30', 'FIRMA DE PRUEBA JEFE DEPTO DE ADMINISTRACIÓN - 12345678890'],
+                ]
+            );
+            // Iterar sobre los pasajeros y asignar sus datos a las celdas correspondientes
+            foreach ($pasajeros as $index => $pasajero) {
+                // Calcular la fila para cada pasajero
+                $filaPasajero = $inicioFilaPasajeros + $index;
                 
-                // PATENTE
-                ['G33', strtoupper($solicitud->vehiculo->VEHICULO_PATENTE)],
-                // TIPO VEHICULO
-                ['I33', strtoupper($solicitud->vehiculo->tipoVehiculo->TIPO_VEHICULO_NOMBRE)],
+                // Asignar el nombre del pasajero a la celda correspondiente en la columna C y la fila calculada
+                $spreadsheet->getActiveSheet()->setCellValue('C' . $filaPasajero, $pasajero->usuario->USUARIO_NOMBRES . ' ' . $pasajero->usuario->USUARIO_APELLIDOS);
+                
+                // Agregar la dirección regional del pasajero
+                $spreadsheet->getActiveSheet()->setCellValue('G' . $filaPasajero, $pasajero->usuario->oficina->OFICINA_NOMBRE);
 
+                // Agregar la dependencia del pasajero
+                $spreadsheet->getActiveSheet()->setCellValue('I' . $filaPasajero, $pasajero->usuario->ubicacion ? $pasajero->usuario->ubicacion->UBICACION_NOMBRE : $pasajero->usuario->departamento->DEPARTAMENTO_NOMBRE);
+            }
 
+            // Limpiar las celdas sobrantes si hay menos de 8 pasajeros
+            for ($i = $inicioFilaPasajeros + count($pasajeros); $i <= $finFilaPasajeros; $i++) {
+                $spreadsheet->getActiveSheet()->setCellValue('C' . $i, '');
+                $spreadsheet->getActiveSheet()->setCellValue('G' . $i, '');
+                $spreadsheet->getActiveSheet()->setCellValue('I' . $i, '');
+            }
 
-                // FOLIO
-                ['J3', $solicitud->SOLICITUD_VEHICULO_ID]
-
-
-            ];
 
             // Iterar sobre los datos y asignarlos a las celdas correspondientes
             foreach ($datos as $dato) {
@@ -630,7 +710,6 @@ class SolicitudVehiculosController extends Controller
             $writer = new Xlsx($spreadsheet);
             $tempFilePath = storage_path('app/public/Hoja de salida.xlsx');
             $writer->save($tempFilePath);
-            $this->exportToPdf($request, $id);
 
             // Descargar el archivo con los cambios realizados
             return response()->download($tempFilePath, 'Hoja de salida.xlsx')->deleteFileAfterSend(false);
@@ -640,9 +719,10 @@ class SolicitudVehiculosController extends Controller
             return redirect()->back()->with('error', 'Error al descargar la plantilla de Excel.');
         }
     }
+*/
 
     
-    public function exportToPdf(Request $request, $id)
+    /*public function exportToPdf(Request $request, $id)
     {
         try {
             // Ruta del archivo Excel generado
@@ -689,7 +769,7 @@ class SolicitudVehiculosController extends Controller
             return redirect()->back()->with('error', 'Error al exportar el archivo a PDF');
         }
     }
-    
+    */
 
 
 
