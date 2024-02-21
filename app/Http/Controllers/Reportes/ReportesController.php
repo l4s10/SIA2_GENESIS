@@ -25,4 +25,8 @@ class ReportesController extends Controller
     public function Salas(){
         return view('sia2.reportes.salas');
     }
+
+    public function Bodegas(){
+        return view('sia2.reportes.bodegas');
+    }
 }

@@ -23,8 +23,7 @@ class ReportesSalasController extends Controller
     public function getGraficos()
     {
         try {
-            // Asumiendo que las funciones de gráfico pueden manejar una llamada sin parámetros de fecha
-            // y devolver todos los datos relevantes en ese caso
+            // Cargar los datos de los gráficos
             $rankingGestionadores = $this->Grafico1(new Request());
             $solicitudesPorUbicacionDepto = $this->Grafico2(new Request());
             $rankingEstados = $this->Grafico3(new Request());
@@ -105,7 +104,7 @@ class ReportesSalasController extends Controller
             $fechaFin = $request->input('fecha_fin');
             $oficinaId = Auth::user()->OFICINA_ID; // Obtener el ID de la oficina del usuario autenticado
 
-            // Obtenemos los SOLICITUD_ID de las solicitudes de materiales únicas que pertenecen a la oficina del usuario autenticado en base a fechas si se proporcionan.
+            // Obtenemos los SOLICITUD_ID de las solicitudes de salas únicas que pertenecen a la oficina del usuario autenticado en base a fechas si se proporcionan.
             $solicitudesUnicas = SolicitudSala::query()
                 ->join('solicitudes', 'solicitudes_salas.SOLICITUD_ID', '=', 'solicitudes.SOLICITUD_ID')
                 ->join('users as solicitantes', 'solicitudes.USUARIO_id', '=', 'solicitantes.id')
