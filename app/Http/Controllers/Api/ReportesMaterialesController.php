@@ -333,6 +333,7 @@ class ReportesMaterialesController extends Controller
                 })
                 ->select(DB::raw('AVG(DATEDIFF(revisiones_solicitudes.created_at, solicitudes.created_at)) as promedio_creacion_atencion'))
                 ->first();
+            
             // Promedio atencion desde revision a aprobado/rechazado
             // Filtrar solicitudes materiales en estado "APROBADO" o "RECHAZADO"
             // Comparar fechas: fecha de creacion de la ULTIMA revisiones_solicitudes con la fecha de aprobacion/rechazo de la solicitud persé

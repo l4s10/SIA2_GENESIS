@@ -28,13 +28,16 @@ class ReportesBodegasController extends Controller
             $grafico2 = $this->Grafico2(new Request());
             $grafico3 = $this->Grafico3(new Request());
 
+            $grafico5 = $this->Grafico5(new Request());
+
             // Devolver los resultados en un solo JSON
             return response()->json([
                 'status' => 'success',
                 'data' => [
                     'grafico1' => $grafico1,
                     'grafico2' => $grafico2,
-                    'grafico3' => $grafico3
+                    'grafico3' => $grafico3,
+                    'grafico5' => $grafico5
                 ]
             ]);
         } catch (\Exception $e) {
@@ -65,13 +68,16 @@ class ReportesBodegasController extends Controller
             $grafico2 = $this->Grafico2($request);
             $grafico3 = $this->Grafico3($request);
 
+            $grafico5 = $this->Grafico5($request);
+
             // Devolver los resultados en un solo JSON
             return response()->json([
                 'status' => 'success',
                 'data' => [
                     'grafico1' => $grafico1,
                     'grafico2' => $grafico2,
-                    'grafico3' => $grafico3
+                    'grafico3' => $grafico3,
+                    'grafico5' => $grafico5
                 ]
             ]);
         }catch(\Exception $e){
@@ -240,6 +246,85 @@ class ReportesBodegasController extends Controller
             return response()->json([
                 'status' => 'error',
                 'message' => 'Error al obtener el ranking de estados: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
+    /**
+    *   Grafico 5: PROMEDIO DE ATENCION (CREADO-EN REVISION, EN REVISION- APROBADO/RECHAZADO, APROBADO/RECHAZADO-ENTREGADO)
+    *   Este método calcula el tiempo promedio que toma cada estado de la solicitud de materiales.
+    * Para "creado-en revision": filtrar solicitudes de materiales por oficina y fechas, si se especifican. Y comparar la fecha de creación con la fecha de la primera revisión.
+    * Para "en revision-aprobado/rechazado": filtrar solicitudes de materiales por oficina y fechas, si se especifican. Y comparar la fecha de la primera revisión con la fecha de aprobación/rechazo.
+    * Para "aprobado/rechazado-entregado": filtrar solicitudes de materiales por oficina y fechas, si se especifican en estado "FINALIZADO". Y comparar la fecha de modificacion de solicitud con la fecha de aprobacion/rechazo.
+    * Modelos: SolicitudMaterial, RevisionSolicitud, Solicitud
+    * @param Request $request La solicitud HTTP, que puede incluir 'fecha_inicio', 'fecha_fin'.
+    */
+    public function Grafico5(Request $request)
+    {
+        try{
+            // Obtener datos de la request y el ID de la oficina del usuario autenticado
+            $fechaInicio = $request->input('fecha_inicio');
+            $fechaFin = $request->input('fecha_fin');
+            $oficinaId = Auth::user()->OFICINA_ID;
+
+            $promedioAtencion = SolicitudBodega::query()
+                ->join('solicitudes', 'solicitudes_bodegas.SOLICITUD_ID', '=', 'solicitudes.SOLICITUD_ID')
+                ->join('revisiones_solicitudes', 'solicitudes.SOLICITUD_ID', '=', 'revisiones_solicitudes.SOLICITUD_ID')
+                ->join('users', 'solicitudes.USUARIO_id', '=', 'users.id')
+                ->where('users.OFICINA_ID', $oficinaId)
+                ->when($fechaInicio && $fechaFin, function ($query) use ($fechaInicio, $fechaFin) {
+                    return $query->whereBetween('solicitudes.created_at', [$fechaInicio, $fechaFin]);
+                })
+                ->select(DB::raw('AVG(DATEDIFF(revisiones_solicitudes.created_at, solicitudes.created_at)) as promedio_creacion_atencion'))
+                ->first();
+
+            // Promedio atencion desde revision a aprobado/rechazado
+            // Filtrar solicitudes materiales en estado "APROBADO" o "RECHAZADO"
+            // Comparar fechas: fecha de creacion de la ULTIMA revisiones_solicitudes con la fecha de aprobacion/rechazo de la solicitud persé
+            $promedioRevisionAprobacion = SolicitudBodega::query()
+                ->join('solicitudes', 'solicitudes_bodegas.SOLICITUD_ID', '=', 'solicitudes.SOLICITUD_ID')
+                ->join('revisiones_solicitudes', function ($join) {
+                    $join->on('solicitudes.SOLICITUD_ID', '=', 'revisiones_solicitudes.SOLICITUD_ID')
+                        ->where('revisiones_solicitudes.created_at', function ($subquery) {
+                            $subquery->select(DB::raw('MAX(created_at)'))
+                                ->from('revisiones_solicitudes')
+                                ->whereColumn('revisiones_solicitudes.SOLICITUD_ID', '=', 'solicitudes.SOLICITUD_ID');
+                        });
+                })
+                ->join('users', 'solicitudes.USUARIO_id', '=', 'users.id')
+                ->where('users.OFICINA_ID', $oficinaId)
+                ->where('solicitudes.SOLICITUD_ESTADO', 'APROBADO')
+                ->orWhere('solicitudes.SOLICITUD_ESTADO', 'RECHAZADO')
+                ->when($fechaInicio && $fechaFin, function ($query) use ($fechaInicio, $fechaFin) {
+                    return $query->whereBetween('solicitudes.created_at', [$fechaInicio, $fechaFin]);
+                })
+                ->select(DB::raw('AVG(DATEDIFF(revisiones_solicitudes.created_at, solicitudes.created_at)) as promedio_revision_aprobacion'))
+                ->first();
+
+             // Promedio atencion desde a"APROBADO"/"RECHAZADO" a "TERMINADO"
+            // Filtrar solicitudes materiales en estado "TERMINADO"
+            // Comparar fechas: La fecha de SOLICITUD_FECHA_HORA_INICIO_ASIGNADA de la solicitud. Con la fecha de modificacion de la solicitud "updated_at".
+            $promedioAprobacionEntregado = SolicitudBodega::query()
+                ->join('solicitudes', 'solicitudes_bodegas.SOLICITUD_ID', '=', 'solicitudes.SOLICITUD_ID')
+                ->join('users', 'solicitudes.USUARIO_id', '=', 'users.id')
+                ->where('users.OFICINA_ID', $oficinaId)
+                ->where('solicitudes.SOLICITUD_ESTADO', 'TERMINADO')
+                ->when($fechaInicio && $fechaFin, function ($query) use ($fechaInicio, $fechaFin) {
+                    return $query->whereBetween('solicitudes.created_at', [$fechaInicio, $fechaFin]);
+                })
+                ->select(DB::raw('AVG(DATEDIFF(solicitudes.updated_at, solicitudes.SOLICITUD_FECHA_HORA_INICIO_ASIGNADA)) as promedio_aprobacion_entregado'))
+                ->first();
+
+            return [
+                'promedioAtencion' => $promedioAtencion,
+                'promedioRevisionAprobacion' => $promedioRevisionAprobacion,
+                'promedioAprobacionEntregado' => $promedioAprobacionEntregado
+            ];
+
+        }catch(\Exception $e){
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Error al obtener el promedio de atención: ' . $e->getMessage()
             ], 500);
         }
     }
