@@ -1,9 +1,9 @@
 @extends('adminlte::page')
 
-@section('title', 'Solicitudes de vehículos')
+@section('title', 'Solicitudes de vehículos por aprobar')
 
 @section('content_header')
-    <h1>Listado de solicitudes de vehículos</h1>
+    <h1>Listado de solicitudes de vehículos por rendir</h1>
 @stop
 
 @section('content')
@@ -52,7 +52,7 @@
                         <td>
                             <div class="d-flex justify-content-center">
                                 {{--<a href="{{ route('solicitudesvehiculos.show', $solicitud->SOLICITUD_VEHICULO_ID) }}" class="btn btn-primary"><i class="fa-solid fa-eye"></i></a>--}}
-                                <a href="{{ route('solicitudesvehiculos.edit', $solicitud->SOLICITUD_VEHICULO_ID) }}" class="btn btn-secondary ml-2"><i class="fa-solid fa-pencil"></i></a>
+                                <a href="{{ route('solicitudesvehiculos.edit', ['solicitudesvehiculo' => $solicitud->SOLICITUD_VEHICULO_ID, 'source' => 'indexPorRendir']) }}" class="btn btn-secondary ml-2"><i class="fa-solid fa-pencil"></i></a>
 
                                 {{--<form action="{{ route('solicitud_vehiculos.destroy', $solicitud->SOLICITUD_VEHICULO_ID) }}" method="POST">--}}
                                     @csrf

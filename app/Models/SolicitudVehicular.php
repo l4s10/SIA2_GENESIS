@@ -14,7 +14,6 @@ class SolicitudVehicular extends Model
     protected $fillable = [
         'USUARIO_id',
         'VEHICULO_ID',
-        //'RENDICION_ID',
         'COMUNA_ID',
         'CONDUCTOR_id',
         'SOLICITUD_VEHICULO_MOTIVO',
@@ -28,6 +27,14 @@ class SolicitudVehicular extends Model
         'SOLICITUD_VEHICULO_JEFE_QUE_AUTORIZA',
         'SOLICITUD_VEHICULO_VIATICO',
     ];
+
+    protected $dates = [
+        'SOLICITUD_VEHICULO_FECHA_HORA_INICIO_SOLICITADA',
+        'SOLICITUD_VEHICULO_FECHA_HORA_INICIO_ASIGNADA',
+        'SOLICITUD_VEHICULO_FECHA_HORA_TERMINO_SOLICITADA',
+        'SOLICITUD_VEHICULO_FECHA_HORA_TERMINO_ASIGNADA',
+    ];
+
 
     public function pasajeros()
     {
@@ -60,6 +67,8 @@ class SolicitudVehicular extends Model
     {
         return $this->belongsTo(Comuna::class, 'COMUNA_ID', 'COMUNA_ID');
     }
+
+
 }
 
 

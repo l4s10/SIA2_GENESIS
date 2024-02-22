@@ -138,19 +138,19 @@
                 </div>
                 <div class="col-md-3">
                     <label for="fechaHoraInicioAsignada"><i class="fa-solid fa-compass"></i> Fecha y hora de salida asignada:</label>
-                    <input type="text" class="form-control @error('SOLICITUD_VEHICULO_FECHA_HORA_INICIO_ASIGNADA') is-invalid @enderror" id="fechaHoraInicioAsignada" name="SOLICITUD_VEHICULO_FECHA_HORA_INICIO_ASIGNADA" required placeholder="-- Seleccione la fecha y hora --" style="background-color: #fff; color: #000; text-align: center;" value="{{ $solicitud->SOLICITUD_VEHICULO_FECHA_HORA_INICIO_ASIGNADA }}">
+                    <input type="text" class="form-control @error('SOLICITUD_VEHICULO_FECHA_HORA_INICIO_ASIGNADA') is-invalid @enderror" id="fechaHoraInicioAsignada" name="SOLICITUD_VEHICULO_FECHA_HORA_INICIO_ASIGNADA" required placeholder="-- Seleccione la fecha y hora --" style="background-color: #fff; color: #000; text-align: center; border: 2px solid #00B050;" value="{{ $solicitud->SOLICITUD_VEHICULO_FECHA_HORA_INICIO_ASIGNADA }}">
                     @error('SOLICITUD_VEHICULO_FECHA_HORA_INICIO_ASIGNADA')
-                        <div class="error" style="color: #E22C2C">{{ $message }}</div>
+                        <div class="alert alert-danger mt-2">{{ $message }}</div>
                     @enderror
                 </div>
                 
                 <div class="col-md-3">
                     <label for="fechaHoraTerminoAsignada"><i class="fa-solid fa-compass"></i> Fecha y hora de regreso asignada:</label>
-                    <input type="text" class="form-control @error('SOLICITUD_VEHICULO_FECHA_HORA_TERMINO_ASIGNADA') is-invalid @enderror" id="fechaHoraTerminoAsignada" name="SOLICITUD_VEHICULO_FECHA_HORA_TERMINO_ASIGNADA" required placeholder="-- Seleccione la fecha y hora --" style="background-color: #fff; color: #000; text-align: center;" value="{{$solicitud->SOLICITUD_VEHICULO_FECHA_HORA_TERMINO_ASIGNADA ?? ''  }}">
+                    <input type="text" class="form-control @error('SOLICITUD_VEHICULO_FECHA_HORA_TERMINO_ASIGNADA') is-invalid @enderror" id="fechaHoraTerminoAsignada" name="SOLICITUD_VEHICULO_FECHA_HORA_TERMINO_ASIGNADA" required placeholder="-- Seleccione la fecha y hora --" style="background-color: #fff; color: #000; text-align: center; border: 2px solid #00B050;" value="{{$solicitud->SOLICITUD_VEHICULO_FECHA_HORA_TERMINO_ASIGNADA ?? ''  }}">
                     @error('SOLICITUD_VEHICULO_FECHA_HORA_TERMINO_ASIGNADA')
-                        <div class="error" style="color: #E22C2C">{{ $message }}</div>
+                        <div class="alert alert-danger mt-2">{{ $message }}</div>
                     @enderror
-                </div>
+                </div>                
             </div>
 
             <div class="pasajero-box border p-3 mb-3">
@@ -218,14 +218,14 @@
                         <label for="SOLICITUD_VEHICULO_HORA_INICIO_CONDUCCION"><i class="fa-solid fa-clock"></i> Hora de inicio de conducción:</label>
                         <input type="time" class="form-control" id="SOLICITUD_VEHICULO_HORA_INICIO_CONDUCCION" name="SOLICITUD_VEHICULO_HORA_INICIO_CONDUCCION" required placeholder="-- Seleccione la hora de inicio --" style="background-color: #fff; color: #000; text-align: center;" value="{{ isset($solicitud) ? $solicitud->SOLICITUD_VEHICULO_HORA_INICIO_CONDUCCION : '' }}">
                         @error('SOLICITUD_VEHICULO_HORA_INICIO_CONDUCCION')
-                            <div class="error" style="color: #E22C2C">{{ $message }}</div>
+                            <div class="alert alert-danger mt-2">{{ $message }}</div>
                         @enderror
                     </div>
                     <div class="form-group col-md-4">
                         <label for="SOLICITUD_VEHICULO_HORA_TERMINO_CONDUCCION"><i class="fa-solid fa-clock"></i> Hora de término de conducción:</label>
                         <input type="time" class="form-control" id="SOLICITUD_VEHICULO_HORA_TERMINO_CONDUCCION" name="SOLICITUD_VEHICULO_HORA_TERMINO_CONDUCCION" required placeholder="-- Seleccione la hora de término --" style="background-color: #fff; color: #000; text-align: center;" value="{{ isset($solicitud) ? $solicitud->SOLICITUD_VEHICULO_HORA_TERMINO_CONDUCCION : '' }}" >
                         @error('SOLICITUD_VEHICULO_HORA_TERMINO_CONDUCCION')
-                            <div class="error" style="color: #E22C2C">{{ $message }}</div>
+                            <div class="alert alert-danger mt-2">{{ $message }}</div>
                         @enderror
                     </div>
                 </div>
@@ -325,43 +325,47 @@
             </div>
 
 
-<!-- DIV CONTENEDOR DE LOS CAMPOS DE ORDEN DE TRABAJO -->
-<div id="ordenTrabajoInputs" style="display: block;">
-    <br>
-    <h3>Orden de Trabajo</h3>
-    <div class="row mb-4">
-        <div class="form-group col-md-4">
-            <label for="TRABAJA_NUMERO_ORDEN_TRABAJO"><i class="fa-solid fa-arrow-up-9-1"></i> Número de la Orden de Trabajo:</label>
-            <input type="number" class="form-control" id="TRABAJA_NUMERO_ORDEN_TRABAJO" name="TRABAJA_NUMERO_ORDEN_TRABAJO" placeholder="-- Ingrese el número de orden --" disabled required min="0" max="999999" value="{{ isset($solicitud->ordenTrabajo->ORDEN_TRABAJO_NUMERO) ? $solicitud->ordenTrabajo->ORDEN_TRABAJO_NUMERO : '' }}">
-            <div class="invalid-feedback" id="numeroOrdenTrabajoError"></div>
-        </div>
-        <div class="form-group col-md-2"></div>
-        <div class="form-group col-md-3">
-            <label for="TRABAJA_HORA_INICIO_ORDEN_TRABAJO"><i class="fa-solid fa-clock"></i> Inicio orden de trabajo:</label>
-            <input type="time" class="form-control" id="TRABAJA_HORA_INICIO_ORDEN_TRABAJO" name="TRABAJA_HORA_INICIO_ORDEN_TRABAJO" disabled required placeholder="-- Seleccione la hora de inicio --" style="background-color: #fff; color: #000; text-align: center;" value="{{ isset($solicitud->ordenTrabajo->ORDEN_TRABAJO_HORA_INICIO) ? $solicitud->ordenTrabajo->ORDEN_TRABAJO_HORA_INICIO : '' }}">
-            <div class="invalid-feedback" id="inicioOrdenTrabajoError"></div>
-        </div>
-        <div class="form-group col-md-3">
-            <label for="TRABAJA_HORA_TERMINO_ORDEN_TRABAJO"><i class="fa-solid fa-clock"></i> Fin orden de trabajo:</label>
-            <input type="time" class="form-control" id="TRABAJA_HORA_TERMINO_ORDEN_TRABAJO" name="TRABAJA_HORA_TERMINO_ORDEN_TRABAJO" disabled required placeholder="-- Seleccione la hora de término--" style="background-color: #fff; color: #000; text-align: center;" value="{{ isset($solicitud->ordenTrabajo->ORDEN_TRABAJO_HORA_TERMINO) ? $solicitud->ordenTrabajo->ORDEN_TRABAJO_HORA_TERMINO : '' }}">
-            <div class="invalid-feedback" id="terminoOrdenTrabajoError"></div>
-        </div>
-    </div>
-</div>
+            <!-- DIV CONTENEDOR DE LOS CAMPOS DE ORDEN DE TRABAJO -->
+            <div id="ordenTrabajoInputs" style="display: block;">
+                <br>
+                <h3>Orden de Trabajo</h3>
+                <div class="row mb-4">
+                    <div class="form-group col-md-4">
+                        <label for="TRABAJA_NUMERO_ORDEN_TRABAJO"><i class="fa-solid fa-arrow-up-9-1"></i> Número de la Orden de Trabajo:</label>
+                        <input type="number" class="form-control" id="TRABAJA_NUMERO_ORDEN_TRABAJO" name="TRABAJA_NUMERO_ORDEN_TRABAJO" placeholder="-- Ingrese el número de orden --" style=" text-align: center;" disabled required min="0" max="999999" value="{{ isset($solicitud->ordenTrabajo->ORDEN_TRABAJO_NUMERO) ? $solicitud->ordenTrabajo->ORDEN_TRABAJO_NUMERO : '' }}">
+                        <div class="invalid-feedback" id="numeroOrdenTrabajoError"></div>
+                    </div>
+                    <div class="form-group col-md-2"></div>
+                    <div class="form-group col-md-3">
+                        <label for="TRABAJA_HORA_INICIO_ORDEN_TRABAJO"><i class="fa-solid fa-clock"></i> Inicio orden de trabajo:</label>
+                        <input type="time" class="form-control" id="TRABAJA_HORA_INICIO_ORDEN_TRABAJO" name="TRABAJA_HORA_INICIO_ORDEN_TRABAJO" disabled required placeholder="-- Seleccione la hora de inicio --" style="background-color: #fff; color: #000; text-align: center;" value="{{ isset($solicitud->ordenTrabajo->ORDEN_TRABAJO_HORA_INICIO) ? $solicitud->ordenTrabajo->ORDEN_TRABAJO_HORA_INICIO : '' }}">
+                        <div class="invalid-feedback" id="inicioOrdenTrabajoError"></div>
+                    </div>
+                    <div class="form-group col-md-3">
+                        <label for="TRABAJA_HORA_TERMINO_ORDEN_TRABAJO"><i class="fa-solid fa-clock"></i> Fin orden de trabajo:</label>
+                        <input type="time" class="form-control" id="TRABAJA_HORA_TERMINO_ORDEN_TRABAJO" name="TRABAJA_HORA_TERMINO_ORDEN_TRABAJO" disabled required placeholder="-- Seleccione la hora de término--" style="background-color: #fff; color: #000; text-align: center;" value="{{ isset($solicitud->ordenTrabajo->ORDEN_TRABAJO_HORA_TERMINO) ? $solicitud->ordenTrabajo->ORDEN_TRABAJO_HORA_TERMINO : '' }}">
+                        <div class="invalid-feedback" id="terminoOrdenTrabajoError"></div>
+                    </div>
+                </div>
+            </div>
 
             <div class="form-group" id="motivoSolicitud">
                 <label for="REVISION_SOLICITUD_OBSERVACION"><i class="fa-solid fa-file-pen"></i> Observaciones revisión:</label>
-                <textarea id="REVISION_SOLICITUD_OBSERVACION" name="REVISION_SOLICITUD_OBSERVACION" rows="5" class="form-control" placeholder="Inserte aquí sus comentarios o describa los ajustes realizados en la solicitud (Max 255 caracteres)." maxlength="255" required ></textarea>
+                <textarea id="REVISION_SOLICITUD_OBSERVACION" name="REVISION_SOLICITUD_OBSERVACION" rows="5" class="form-control" style="border: 2px solid #00B050;" placeholder="Inserte aquí sus comentarios o describa los ajustes realizados en la solicitud (Max 255 caracteres)." maxlength="255" required ></textarea>
             </div>
 
 
           
             
             <br><br><br><br>
-            <button type="submit" class="btn btn-success" name="guardar">Guardar Cambios</button>
-            <button type="submit" class="btn btn-success" name="autorizar">Autorizar</button>
-            <a href="{{ route('solicitudesvehiculos.exportar') }}" class="btn btn-primary">Descargar Excel</a>
-            <a href="{{ route('descargar.plantilla', ['id' => $solicitud->SOLICITUD_VEHICULO_ID]) }}">Descargar Plantilla Excel</a>
+            <button type="submit" class="btn btn-success" name="guardarRevision">Guardar esta revisión</button>
+            <button type="submit" class="btn btn-success" name="finalizarRevisiones">Finalizar revisiones</button>
+            @if (Auth::check() && isset($solicitud->user) && isset($solicitud->SOLICITUD_VEHICULO_JEFE_QUE_AUTORIZA))
+                @if ((Auth::user()->cargo->CARGO_NOMBRE == "JEFE DE DEPARTAMENTO DE ADMINISTRACION" || Auth::user()->cargo->CARGO_NOMBRE == $solicitud->SOLICITUD_VEHICULO_JEFE_QUE_AUTORIZA) && Auth::user()->oficina->OFICINA_ID == $solicitud->user->OFICINA_ID)
+                    <button type="submit" class="btn btn-success" name="autorizar">Autorizar</button>
+                @endif
+            @endif
+
 
 
 
@@ -371,6 +375,7 @@
 
 @section('js')
 <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+
 <script>
 
 document.addEventListener('DOMContentLoaded', function () {
@@ -413,7 +418,7 @@ document.addEventListener('DOMContentLoaded', function () {
         // Configurar Flatpickrs para caso de que todavía no se haya asignado fecha y hora para la $solicitud
         flatpickr(inputfechaHoraInicioAsignada, {
             enableTime: true,
-            dateFormat: "Y-m-d H:i",
+            dateFormat: "d-m-Y H:i",
             minDate: fechaMinimaPermitida,
             maxDate: fechaMaximaPermitida,
             //defaultDate: fechaMinimaPermitida,
@@ -441,7 +446,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
         flatpickr(inputfechaHoraTerminoAsignada, {
             enableTime: true,
-            dateFormat: "Y-m-d H:i",
+            dateFormat: "d-m-Y H:i",
             minDate: fechaMinimaPermitida, // Se establece inicialmente, luego se actualizará
             maxDate: fechaMaximaPermitida,
             locale: "es", // Establecer el idioma en español
@@ -459,7 +464,7 @@ document.addEventListener('DOMContentLoaded', function () {
     function configurarFlatpickrs(fechaInicio, fechaTermino) {
         flatpickr(inputfechaHoraInicioAsignada, {
             enableTime: true,
-            dateFormat: "Y-m-d H:i",
+            dateFormat: "d-m-Y H:i",
             minDate: fechaMinimaPermitida,
             maxDate: fechaMaximaPermitida,
             defaultDate: fechaMinimaPermitida,
@@ -487,7 +492,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
         flatpickr(inputfechaHoraTerminoAsignada, {
             enableTime: true,
-            dateFormat: "Y-m-d H:i",
+            dateFormat: "d-m-Y H:i",
             minDate: fechaMinimaPermitida, // Se establece inicialmente, luego se actualizará
             maxDate: fechaMaximaPermitida,
             defaultDate: fechaTermino,
@@ -511,12 +516,13 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     function formatDate(date) {
-        let year = date.getFullYear();
-        let month = (date.getMonth() + 1).toString().padStart(2, '0');
-        let day = date.getDate().toString().padStart(2, '0');
-        let hours = date.getHours().toString().padStart(2, '0');
-        let minutes = date.getMinutes().toString().padStart(2, '0');
-        return `${year}-${month}-${day} ${hours}:${minutes}`;
+            let year = date.getFullYear().toString().padStart(2, '0');
+    let month = (date.getMonth() + 1).toString().padStart(2, '0');
+    let day = date.getDate().toString().padStart(2, '0');
+    let hours = date.getHours().toString().padStart(2, '0');
+    let minutes = date.getMinutes().toString().padStart(2, '0');
+    let formattedDate = `${day}-${month}-${year} ${hours}:${minutes}`;
+    return formattedDate;
     }
 });
 </script>
