@@ -355,17 +355,28 @@
             </div>
 
 
-          
+            <br><br><br>
             
-            <br><br><br><br>
-            <button type="submit" class="btn btn-success" name="guardarRevision">Guardar esta revisión</button>
-            <button type="submit" class="btn btn-success" name="finalizarRevisiones">Finalizar revisiones</button>
-            @if (Auth::check() && isset($solicitud->user) && isset($solicitud->SOLICITUD_VEHICULO_JEFE_QUE_AUTORIZA))
-                @if ((Auth::user()->cargo->CARGO_NOMBRE == "JEFE DE DEPARTAMENTO DE ADMINISTRACION" || Auth::user()->cargo->CARGO_NOMBRE == $solicitud->SOLICITUD_VEHICULO_JEFE_QUE_AUTORIZA) && Auth::user()->oficina->OFICINA_ID == $solicitud->user->OFICINA_ID)
-                    <button type="submit" class="btn btn-success" name="autorizar">Autorizar</button>
-                @endif
-            @endif
 
+
+            <div class="row">
+                <div class="col-md-6">
+                    <!-- Botón Cancelar -->
+                    <button type="button" class="btn" onclick="window.history.back();" style="background-color: #E22C2C; color: white;"><i class="fa-solid fa-angles-left"></i> Cancelar</button>
+                </div>
+                <div class="col-md-6 text-end">
+                    <!-- Botones verdes -->
+                    <button type="submit" class="btn" name="finalizarRevisiones" style="background-color: #00B050; color: white; position: absolute; right: 0; bottom: 0;"><i class="fa-solid fa-clipboard-check"></i> Terminar revisiones</button>
+                </div>
+                <div class="col-md-6">
+                </div>
+                <div class="col-md-6">
+                    <button type="submit" class="btn" name="guardarRevision" style="background-color: #00B050; color: white;"><i class="fa-solid fa-floppy-disk"></i> Guardar esta revisión</button>
+                </div>
+            </div>
+
+          
+            <br>
 
 
 
