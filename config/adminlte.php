@@ -333,17 +333,18 @@ return [
                     'route'  => 'solicitudesvehiculos.create',
                 ],
                 [
-                    'text' => 'Solicitar - CTT',
-                    'route'  => 'solicitudesvehiculosctt.create',
-                ],
-                [
-                    'text' => 'Mis solicitudes',
+                    'text' => 'Ver solicitudes',
                     'route'  => 'solicitudesvehiculos.index',
                 ],
                 [
-                    'text' => 'Mis solicitudes - CTT',
-                    'route'  => 'solicitudesvehiculosctt.index',
+                    'text' => 'Aprobar solicitudes',
+                    'route'  => 'solicitudesvehiculos.indexPorAprobar',
                 ],
+                [
+                    'text' => 'Rendir solicitudes',
+                    'route'  => 'solicitudesvehiculos.indexPorRendir',
+                ],
+
             ],
         ],[
             'text'        => 'Materiales',
