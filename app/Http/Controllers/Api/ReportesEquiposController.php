@@ -321,8 +321,47 @@ class ReportesEquiposController extends Controller
                 ->select(DB::raw('AVG(DATEDIFF(revisiones_solicitudes.created_at, solicitudes.created_at)) as promedio_atencion'))
                 ->first();
 
+            // Promedio atencion desde revision a aprobado/rechazado
+            // Filtrar solicitudes materiales en estado "APROBADO" o "RECHAZADO"
+            // Comparar fechas: fecha de creacion de la ULTIMA revisiones_solicitudes con la fecha de aprobacion/rechazo de la solicitud persé
+            $promedioRevisionAprobacion = SolicitudEquipos::query()
+                ->join('solicitudes', 'solicitudes_equipos.SOLICITUD_ID', '=', 'solicitudes.SOLICITUD_ID')
+                ->join('revisiones_solicitudes', function ($join) {
+                    $join->on('solicitudes.SOLICITUD_ID', '=', 'revisiones_solicitudes.SOLICITUD_ID')
+                        ->where('revisiones_solicitudes.created_at', function ($subquery) {
+                            $subquery->select(DB::raw('MAX(created_at)'))
+                                ->from('revisiones_solicitudes')
+                                ->whereColumn('revisiones_solicitudes.SOLICITUD_ID', '=', 'solicitudes.SOLICITUD_ID');
+                        });
+                })
+                ->join('users', 'solicitudes.USUARIO_id', '=', 'users.id')
+                ->where('users.OFICINA_ID', $oficinaId)
+                ->where('solicitudes.SOLICITUD_ESTADO', 'APROBADO')
+                ->orWhere('solicitudes.SOLICITUD_ESTADO', 'RECHAZADO')
+                ->when($fechaInicio && $fechaFin, function ($query) use ($fechaInicio, $fechaFin) {
+                    return $query->whereBetween('solicitudes.created_at', [$fechaInicio, $fechaFin]);
+                })
+                ->select(DB::raw('AVG(DATEDIFF(revisiones_solicitudes.created_at, solicitudes.created_at)) as promedio_revision_aprobacion'))
+                ->first();
+
+            // Promedio atencion desde a"APROBADO"/"RECHAZADO" a "TERMINADO"
+            // Filtrar solicitudes materiales en estado "TERMINADO"
+            // Comparar fechas: La fecha de SOLICITUD_FECHA_HORA_INICIO_ASIGNADA de la solicitud. Con la fecha de modificacion de la solicitud "updated_at".
+            $promedioAprobacionEntrega = SolicitudEquipos::query()
+                ->join('solicitudes', 'solicitudes_equipos.SOLICITUD_ID', '=', 'solicitudes.SOLICITUD_ID')
+                ->join('users', 'solicitudes.USUARIO_id', '=', 'users.id')
+                ->where('users.OFICINA_ID', $oficinaId)
+                ->where('solicitudes.SOLICITUD_ESTADO', 'TERMINADO')
+                ->when($fechaInicio && $fechaFin, function ($query) use ($fechaInicio, $fechaFin) {
+                    return $query->whereBetween('solicitudes.created_at', [$fechaInicio, $fechaFin]);
+                })
+                ->select(DB::raw('AVG(DATEDIFF(solicitudes.updated_at, solicitudes.SOLICITUD_FECHA_HORA_INICIO_ASIGNADA)) as promedio_aprobacion_entrega'))
+                ->first();
+
             return [
-                'promedioAtencion' => $promedioAtencion
+                'promedioAtencion' => $promedioAtencion,
+                'promedioRevisionAprobacion' => $promedioRevisionAprobacion,
+                'promedioAprobacionEntrega' => $promedioAprobacionEntrega
             ];
         } catch (\Exception $e) {
             return response()->json([

@@ -29,6 +29,8 @@ class ReportesMaterialesController extends Controller
             $rankingGestionadores = $this->Grafico1(new Request());
             $solicitudesPorUbicacionDepto = $this->Grafico2(new Request());
             $rankingEstados = $this->Grafico3(new Request());
+            $rankingTiposMateriales = $this->Grafico4(new Request());
+            $promedioAtencion = $this->Grafico5(new Request());
 
             // Construye la respuesta con todos los datos de los gráficos para la carga inicial
             return response()->json([
@@ -36,7 +38,9 @@ class ReportesMaterialesController extends Controller
                 'data' => [
                     'grafico1' => $rankingGestionadores,
                     'grafico2' => $solicitudesPorUbicacionDepto,
-                    'grafico3' => $rankingEstados
+                    'grafico3' => $rankingEstados,
+                    'grafico4' => $rankingTiposMateriales,
+                    'grafico5' => $promedioAtencion
                 ]
             ]);
         } catch (\Exception $e) {
@@ -253,5 +257,132 @@ class ReportesMaterialesController extends Controller
             ], 500);
         }
     }
+
+    /**
+     * Grafico Materiales 4: Ranking de tipos de materiales más solicitados.
+     * Este método calcula el número de solicitudes por tipo de equipo,
+     * filtrando por la oficina del usuario autenticado y aplicando un rango de fechas si se proporciona.
+     *
+     * La consulta se realiza en pasos:
+     * 1. Selecciona las solicitudes de materiales, filtrando por oficina y fechas, si se especifican.
+     * 2. Cuenta el número de solicitudes realizadas por cada material.
+     * 3. Agrupa los resultados por material y ordena de forma descendente por el total de solicitudes para obtener el ranking.
+     *
+     * @param Request $request La solicitud HTTP, que puede incluir 'fecha_inicio', 'fecha_fin'.
+     * @return \Illuminate\Http\JsonResponse Un objeto JSON que contiene el ranking de tipos de materiales más solicitados.
+     */
+    public function Grafico4(Request $request)
+    {
+        try{
+            // Obtener fechas del request y datos del usuario autenticado
+            $fechaInicio = $request->input('fecha_inicio');
+            $fechaFin = $request->input('fecha_fin');
+            $oficinaId = Auth::user()->OFICINA_ID;
+
+            // Consulta para obtener el ranking de materiales más solicitados.
+            // Se seleccionan los materiales de las solicitudes de materiales, filtrando por oficina y fechas, si se especifican.
+            // Luego, se cuentan las solicitudes por cada material y se agrupan los resultados por material.
+            $rankingTiposMateriales = SolicitudMaterial::query()
+                ->join('materiales', 'solicitudes_materiales.MATERIAL_ID', '=', 'materiales.MATERIAL_ID')
+                ->join('solicitudes', 'solicitudes_materiales.SOLICITUD_ID', '=', 'solicitudes.SOLICITUD_ID')
+                ->join('users', 'solicitudes.USUARIO_id', '=', 'users.id')
+                ->where('users.OFICINA_ID', $oficinaId)
+                ->select('materiales.MATERIAL_NOMBRE', DB::raw('COUNT(DISTINCT solicitudes.SOLICITUD_ID) as total_solicitudes'))
+                ->when($fechaInicio && $fechaFin, function ($query) use ($fechaInicio, $fechaFin) {
+                    return $query->whereBetween('solicitudes.created_at', [$fechaInicio, $fechaFin]);
+                })
+                ->groupBy('materiales.MATERIAL_NOMBRE')
+                ->orderBy('total_solicitudes', 'DESC')
+                ->get();
+
+            // Devolver los datos en JSON
+            return [
+                'rankingTiposMateriales' => $rankingTiposMateriales
+            ];
+        }catch(\Exception $e){
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Error al obtener el ranking de tipos de materiales: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
+    /**
+    *   Grafico 5: PROMEDIO DE ATENCION (CREADO-EN REVISION, EN REVISION- APROBADO/RECHAZADO, APROBADO/RECHAZADO-ENTREGADO)
+    *   Este método calcula el tiempo promedio que toma cada estado de la solicitud de materiales.
+    * Para "creado-en revision": filtrar solicitudes de materiales por oficina y fechas, si se especifican. Y comparar la fecha de creación con la fecha de la primera revisión.
+    * Para "en revision-aprobado/rechazado": filtrar solicitudes de materiales por oficina y fechas, si se especifican. Y comparar la fecha de la primera revisión con la fecha de aprobación/rechazo.
+    * Para "aprobado/rechazado-entregado": filtrar solicitudes de materiales por oficina y fechas, si se especifican en estado "FINALIZADO". Y comparar la fecha de modificacion de solicitud con la fecha de aprobacion/rechazo.
+    * Modelos: SolicitudMaterial, RevisionSolicitud, Solicitud
+    * @param Request $request La solicitud HTTP, que puede incluir 'fecha_inicio', 'fecha_fin'.
+    */
+    public function Grafico5(Request $request)
+    {
+        try {
+            $fechaInicio = $request->input('fecha_inicio');
+            $fechaFin = $request->input('fecha_fin');
+            $oficinaId = Auth::user()->OFICINA_ID; // Obtener el ID de la oficina del usuario autenticado
+            // Realiza la consulta a la base de datos
+            $promedioAtencion = SolicitudMaterial::query()
+                ->join('solicitudes', 'solicitudes_materiales.SOLICITUD_ID', '=', 'solicitudes.SOLICITUD_ID')
+                ->join('revisiones_solicitudes', 'solicitudes.SOLICITUD_ID', '=', 'revisiones_solicitudes.SOLICITUD_ID')
+                ->join('users', 'solicitudes.USUARIO_id', '=', 'users.id')
+                ->where('users.OFICINA_ID', $oficinaId)
+                ->when($fechaInicio && $fechaFin, function ($query) use ($fechaInicio, $fechaFin) {
+                    return $query->whereBetween('solicitudes.created_at', [$fechaInicio, $fechaFin]);
+                })
+                ->select(DB::raw('AVG(DATEDIFF(revisiones_solicitudes.created_at, solicitudes.created_at)) as promedio_creacion_atencion'))
+                ->first();
+            // Promedio atencion desde revision a aprobado/rechazado
+            // Filtrar solicitudes materiales en estado "APROBADO" o "RECHAZADO"
+            // Comparar fechas: fecha de creacion de la ULTIMA revisiones_solicitudes con la fecha de aprobacion/rechazo de la solicitud persé
+            $promedioRevisionAprobacion = SolicitudMaterial::query()
+                ->join('solicitudes', 'solicitudes_materiales.SOLICITUD_ID', '=', 'solicitudes.SOLICITUD_ID')
+                ->join('revisiones_solicitudes', function ($join) {
+                    $join->on('solicitudes.SOLICITUD_ID', '=', 'revisiones_solicitudes.SOLICITUD_ID')
+                        ->where('revisiones_solicitudes.created_at', function ($subquery) {
+                            $subquery->select(DB::raw('MAX(created_at)'))
+                                ->from('revisiones_solicitudes')
+                                ->whereColumn('revisiones_solicitudes.SOLICITUD_ID', '=', 'solicitudes.SOLICITUD_ID');
+                        });
+                })
+                ->join('users', 'solicitudes.USUARIO_id', '=', 'users.id')
+                ->where('users.OFICINA_ID', $oficinaId)
+                ->where('solicitudes.SOLICITUD_ESTADO', 'APROBADO')
+                ->orWhere('solicitudes.SOLICITUD_ESTADO', 'RECHAZADO')
+                ->when($fechaInicio && $fechaFin, function ($query) use ($fechaInicio, $fechaFin) {
+                    return $query->whereBetween('solicitudes.created_at', [$fechaInicio, $fechaFin]);
+                })
+                ->select(DB::raw('AVG(DATEDIFF(revisiones_solicitudes.created_at, solicitudes.created_at)) as promedio_revision_aprobacion'))
+                ->first();
+
+            // Promedio atencion desde a"APROBADO"/"RECHAZADO" a "TERMINADO"
+            // Filtrar solicitudes materiales en estado "TERMINADO"
+            // Comparar fechas: La fecha de SOLICITUD_FECHA_HORA_INICIO_ASIGNADA de la solicitud. Con la fecha de modificacion de la solicitud "updated_at".
+            $promedioAprobacionEntrega = SolicitudMaterial::query()
+                ->join('solicitudes', 'solicitudes_materiales.SOLICITUD_ID', '=', 'solicitudes.SOLICITUD_ID')
+                ->join('users', 'solicitudes.USUARIO_id', '=', 'users.id')
+                ->where('users.OFICINA_ID', $oficinaId)
+                ->where('solicitudes.SOLICITUD_ESTADO', 'TERMINADO')
+                ->when($fechaInicio && $fechaFin, function ($query) use ($fechaInicio, $fechaFin) {
+                    return $query->whereBetween('solicitudes.created_at', [$fechaInicio, $fechaFin]);
+                })
+                ->select(DB::raw('AVG(DATEDIFF(solicitudes.SOLICITUD_FECHA_HORA_INICIO_ASIGNADA, solicitudes.updated_at)) as promedio_aprobacion_entrega'))
+                ->first();
+
+            // Devolver datos
+            return [
+                'promedioAtencion' => $promedioAtencion,
+                'promedioRevisionAprobacion' => $promedioRevisionAprobacion,
+                'promedioAprobacionEntrega' => $promedioAprobacionEntrega
+            ];
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Error al obtener el promedio de atención de solicitudes: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
 
 }
