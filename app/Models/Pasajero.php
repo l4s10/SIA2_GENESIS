@@ -11,6 +11,10 @@ class Pasajero extends Model
     public $incrementing = false;
     public $timestamps = true;
 
+    protected $fillable = [
+        'USUARIO_id',
+        // otros atributos aquí
+    ];
     // Relación con el modelo User
     public function usuario()
     {
