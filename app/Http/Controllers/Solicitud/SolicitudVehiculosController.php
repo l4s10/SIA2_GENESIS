@@ -375,21 +375,21 @@ class SolicitudVehiculosController extends Controller
             //dd($cargoJefeQueAutoriza);
 
             // Consulta SQL para obtener vehículos asociados a la oficina del usuario en sesión y también al usuario que realizó la solicitud (para maximizar la seguridad del módulo).
-            $vehiculos = Vehiculo::select('VEHICULOS.*')
-            ->leftJoin('UBICACIONES', 'VEHICULOS.UBICACION_ID', '=', 'UBICACIONES.UBICACION_ID')
-            ->leftJoin('DEPARTAMENTOS', 'VEHICULOS.DEPARTAMENTO_ID', '=', 'DEPARTAMENTOS.DEPARTAMENTO_ID')
+            $vehiculos = Vehiculo::select('vehiculos.*')
+            ->leftJoin('ubicaciones', 'vehiculos.UBICACION_ID', '=', 'ubicaciones.UBICACION_ID')
+            ->leftJoin('departamentos', 'vehiculos.DEPARTAMENTO_ID', '=', 'departamentos.DEPARTAMENTO_ID')
             ->where(function($query) use ($oficinaIdUsuario, $solicitud) {
-                $query->where('UBICACIONES.OFICINA_ID', $oficinaIdUsuario)
-                    ->whereNull('VEHICULOS.DEPARTAMENTO_ID');
+                $query->where('ubicaciones.OFICINA_ID', $oficinaIdUsuario)
+                    ->whereNull('vehiculos.DEPARTAMENTO_ID');
             })
             ->orWhere(function($query) use ($oficinaIdUsuario, $solicitud) {
-                $query->where('DEPARTAMENTOS.OFICINA_ID', $oficinaIdUsuario)
-                    ->whereNull('VEHICULOS.UBICACION_ID');
+                $query->where('departamentos.OFICINA_ID', $oficinaIdUsuario)
+                    ->whereNull('vehiculos.UBICACION_ID');
             })
             ->where(function($query) use ($solicitud) {
                 $query->where(function($query) use ($solicitud) {
-                    $query->where('UBICACIONES.OFICINA_ID', $solicitud->user->OFICINA_ID)
-                        ->orWhere('DEPARTAMENTOS.OFICINA_ID', $solicitud->user->OFICINA_ID);
+                    $query->where('ubicaciones.OFICINA_ID', $solicitud->user->OFICINA_ID)
+                        ->orWhere('departamentos.OFICINA_ID', $solicitud->user->OFICINA_ID);
                 });
             })
             ->get();
