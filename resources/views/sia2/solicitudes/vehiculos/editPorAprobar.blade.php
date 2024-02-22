@@ -335,13 +335,28 @@
                 </div>
             </div>
 
-           
+            <br><br>
+            <div class="row">
+                <div class="col-md-6">
+                    <!-- Botón Cancelar -->
+                    <button type="button" class="btn" onclick="window.history.back();" style="background-color: #E22C2C; color: white;"><i class="fa-solid fa-angles-left"></i> Cancelar</button>
+                </div>
+                <div class="col-md-4">
+                    <!-- Botón Cancelar -->
+                </div>
 
+                <div class="col-md-2 text-end">
+                    <!-- Botón Rendir Solicitud -->
+                    <input type="hidden" name="botonAutorizar">
+                    <button type="button" class="btn btn-success" onclick="autorizarFormulario()" id="botonAutorizar">Autorizar</button>
+        
+                </div>
+            </div>
           
             
-            <br><br><br>
+            {{--<br><br><br>
             <input type="hidden" name="botonAutorizar">
-            <button type="button" class="btn btn-success" onclick="autorizarFormulario()" id="botonAutorizar">Autorizar</button>
+            <button type="button" class="btn btn-success" onclick="autorizarFormulario()" id="botonAutorizar">Autorizar</button>--}}
 
         </form>
     </div>

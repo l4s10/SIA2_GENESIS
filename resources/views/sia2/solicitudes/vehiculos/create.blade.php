@@ -244,10 +244,23 @@
                 </div>
             </div>
 
-            
-            <br><br><br><br>
-        <button type="submit" class="btn btn-primary">Crear Solicitud</button>
+            <br><br><br>
+            <div class="row">
+                <div class="col-md-6">
+                    <!-- Botón Cancelar -->
+                    <button type="button" class="btn" onclick="window.history.back();" style="background-color: #E22C2C; color: white;"><i class="fa-solid fa-angles-left"></i> Cancelar</button>
+                </div>
+                <div class="col-md-4">
+                    <!-- Botón Cancelar -->
+                </div>
 
+                <div class="col-md-2 text-end">
+                    <button type="submit"   class="btn"  style="background-color: #00B050; color: white;" ><i class="fa-solid fa-clipboard-check"></i> Crear Solicitud</button>
+        
+                </div>
+            </div>
+            <br>
+       
     </div>
      
 
