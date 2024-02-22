@@ -353,7 +353,7 @@ class ReportesMaterialesController extends Controller
                 ->when($fechaInicio && $fechaFin, function ($query) use ($fechaInicio, $fechaFin) {
                     return $query->whereBetween('solicitudes.created_at', [$fechaInicio, $fechaFin]);
                 })
-                ->select(DB::raw('AVG(DATEDIFF(revisiones_solicitudes.created_at, solicitudes.created_at)) as promedio_revision_aprobacion'))
+                ->select(DB::raw('AVG(DATEDIFF(solicitudes.SOLICITUD_FECHA_HORA_INICIO_ASIGNADA, revisiones_solicitudes.created_at)) as promedio_revision_aprobacion'))
                 ->first();
 
             // Promedio atencion desde a"APROBADO"/"RECHAZADO" a "TERMINADO"
@@ -367,7 +367,7 @@ class ReportesMaterialesController extends Controller
                 ->when($fechaInicio && $fechaFin, function ($query) use ($fechaInicio, $fechaFin) {
                     return $query->whereBetween('solicitudes.created_at', [$fechaInicio, $fechaFin]);
                 })
-                ->select(DB::raw('AVG(DATEDIFF(solicitudes.SOLICITUD_FECHA_HORA_INICIO_ASIGNADA, solicitudes.updated_at)) as promedio_aprobacion_entrega'))
+                ->select(DB::raw('AVG(DATEDIFF(solicitudes.updated_at, solicitudes.SOLICITUD_FECHA_HORA_INICIO_ASIGNADA)) as promedio_aprobacion_entrega'))
                 ->first();
 
             // Devolver datos

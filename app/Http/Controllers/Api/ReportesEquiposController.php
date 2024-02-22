@@ -322,7 +322,7 @@ class ReportesEquiposController extends Controller
                 ->first();
 
             // Promedio atencion desde revision a aprobado/rechazado
-            // Filtrar solicitudes materiales en estado "APROBADO" o "RECHAZADO"
+            // Filtrar solicitudes de equipos en estado "APROBADO" o "RECHAZADO"
             // Comparar fechas: fecha de creacion de la ULTIMA revisiones_solicitudes con la fecha de aprobacion/rechazo de la solicitud persé
             $promedioRevisionAprobacion = SolicitudEquipos::query()
                 ->join('solicitudes', 'solicitudes_equipos.SOLICITUD_ID', '=', 'solicitudes.SOLICITUD_ID')
@@ -341,7 +341,7 @@ class ReportesEquiposController extends Controller
                 ->when($fechaInicio && $fechaFin, function ($query) use ($fechaInicio, $fechaFin) {
                     return $query->whereBetween('solicitudes.created_at', [$fechaInicio, $fechaFin]);
                 })
-                ->select(DB::raw('AVG(DATEDIFF(revisiones_solicitudes.created_at, solicitudes.created_at)) as promedio_revision_aprobacion'))
+                ->select(DB::raw('AVG(DATEDIFF(solicitudes.SOLICITUD_FECHA_HORA_INICIO_ASIGNADA, revisiones_solicitudes.created_at)) as promedio_revision_aprobacion'))
                 ->first();
 
             // Promedio atencion desde a"APROBADO"/"RECHAZADO" a "TERMINADO"
