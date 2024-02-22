@@ -7,6 +7,7 @@ use App\Http\Controllers\Api\ReportesMaterialesController;
 use App\Http\Controllers\Api\ReportesEquiposController;
 use App\Http\Controllers\Api\ReportesSalasController;
 use App\Http\Controllers\Api\ReportesBodegasController;
+use App\Http\Controllers\Api\ReportesReparacionesController;
 
 /*
 |--------------------------------------------------------------------------
@@ -44,3 +45,6 @@ Route::middleware('auth:sanctum')->get('/reportes/salas/get-graficos', [Reportes
 Route::middleware('auth:sanctum')->get('/reportes/bodegas/get-graficos', [ReportesBodegasController::class, 'getGraficos']);
 
 Route::middleware('auth:sanctum')->post('/reportes/bodegas/filtrar-general', [ReportesBodegasController::class, 'filtrarGeneral']);
+
+// Rutas para la API de reparaciones
+Route::middleware('auth:sanctum')->get('/reportes/reparaciones/get-graficos', [ReportesReparacionesController::class, 'getGraficos']);

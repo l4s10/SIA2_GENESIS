@@ -10,4 +10,5 @@ Route::prefix('reportes')->group(function () {
     Route::get('/equipos', [ReportesController::class, 'Equipos'])->name('reportes.equipos.index');
     Route::get('/salas', [ReportesController::class, 'Salas'])->name('reportes.salas.index');
     Route::get('/bodegas', [ReportesController::class, 'Bodegas'])->name('reportes.bodegas.index');
+    Route::get('/reparaciones', [ReportesController::class, 'Reparaciones'])->name('reportes.reparaciones.index');
 });
