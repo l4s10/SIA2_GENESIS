@@ -14,12 +14,9 @@ class SolicitudVehicular extends Model
     protected $fillable = [
         'USUARIO_id',
         'VEHICULO_ID',
-        'TIPO_VEHICULO_ID',
         //'RENDICION_ID',
         'COMUNA_ID',
-        'ORDEN_TRABAJO_ID',
         'CONDUCTOR_id',
-        'SOLICITUD_VEHICULO_TIPO',
         'SOLICITUD_VEHICULO_MOTIVO',
         'SOLICITUD_VEHICULO_ESTADO',
         'SOLICITUD_VEHICULO_FECHA_HORA_INICIO_SOLICITADA',
@@ -47,23 +44,23 @@ class SolicitudVehicular extends Model
         return $this->belongsTo(User::class, 'CONDUCTOR_id', 'id');
     }
 
-    public function tipoVehiculo()
-    {
-        return $this->belongsTo(TipoVehiculo::class, 'TIPO_VEHICULO_ID', 'TIPO_VEHICULO_ID');
-    }
 
     public function vehiculo()
     {
         return $this->belongsTo(Vehiculo::class, 'VEHICULO_ID', 'VEHICULO_ID');
     }
     
+    // Relación con la orden de trabajo (0:1)
     public function ordenTrabajo()
     {
-        return $this->hasOne(OrdenDeTrabajo::class, 'ORDEN_TRABAJO_ID', 'ORDEN_TRABAJO_ID');
+        return $this->hasOne(OrdenDeTrabajo::class, 'SOLICITUD_VEHICULO_ID', 'SOLICITUD_VEHICULO_ID');
     }
 
     public function comunaDestino()
     {
-        return $this->belongsTo(Comuna::class, 'SOLICITUD_VEHICULO_COMUNA_DESTINO', 'COMUNA_ID');
+        return $this->belongsTo(Comuna::class, 'COMUNA_ID', 'COMUNA_ID');
     }
 }
+
+
+

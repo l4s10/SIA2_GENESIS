@@ -17,7 +17,6 @@ Route::group(['middleware' => 'auth'], function (){
     require __DIR__.'/Solicitudes/SolMaterialesRoutes.php';
     require __DIR__.'/Solicitudes/SolFormulariosRoutes.php';
     require __DIR__.'/Solicitudes/SolEquiposRoutes.php';
-    require __DIR__.'/Solicitudes/SolVehiculosCttRoutes.php';
     require __DIR__.'/Solicitudes/SolVehiculosRoutes.php';
     require __DIR__.'/Solicitudes/SolSalasRoutes.php';
     require __DIR__.'/Solicitudes/SolBodegasRoutes.php';
