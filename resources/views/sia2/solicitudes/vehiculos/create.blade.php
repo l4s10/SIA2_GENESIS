@@ -227,7 +227,7 @@
                 <div class="row mb-4">
                     <div class="form-group col-md-4">
                         <label for="TRABAJA_NUMERO_ORDEN_TRABAJO"><i class="fa-solid fa-arrow-up-9-1"></i> Número de la Orden de Trabajo:</label>
-                        <input type="number" class="form-control" id="TRABAJA_NUMERO_ORDEN_TRABAJO" name="TRABAJA_NUMERO_ORDEN_TRABAJO" placeholder="-- Ingrese el número de orden --" required min="0" max="999999" value="">
+                        <input type="number" class="form-control" id="TRABAJA_NUMERO_ORDEN_TRABAJO" name="TRABAJA_NUMERO_ORDEN_TRABAJO" placeholder="-- Ingrese el número de orden --"  style="text-align: center;" required min="0" max="999999" value="">
                         <div class="invalid-feedback" id="numeroOrdenTrabajoError"></div>
                     </div>
                     <div class="form-group col-md-2"></div>

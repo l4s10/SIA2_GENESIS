@@ -333,8 +333,16 @@ return [
                     'route'  => 'solicitudesvehiculos.create',
                 ],
                 [
-                    'text' => 'Mis solicitudes',
+                    'text' => 'Ver solicitudes',
                     'route'  => 'solicitudesvehiculos.index',
+                ],
+                [
+                    'text' => 'Aprobar solicitudes',
+                    'route'  => 'solicitudesvehiculos.indexPorAprobar',
+                ],
+                [
+                    'text' => 'Rendir solicitudes',
+                    'route'  => 'solicitudesvehiculos.indexPorRendir',
                 ],
 
             ],
