@@ -857,7 +857,7 @@
                 }
 
 
-                document.getElementById('oficina_' + numeroFila).addEventListener('change', function() {
+              document.getElementById('oficina_' + numeroFila).addEventListener('change', function() {
                     let selectedOfficeId = this.value;
                     let $dependenciaSelect = document.getElementById('dependencia_' + numeroFila);
                     let $pasajeroSelect = document.getElementById('pasajero_' + numeroFila);
