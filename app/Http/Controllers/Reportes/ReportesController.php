@@ -37,4 +37,8 @@ class ReportesController extends Controller
     public function Sistema(){
         return view('sia2.reportes.sistema');
     }
+
+    public function Vehiculos(){
+        return view('sia2.reportes.vehiculos');
+    }
 }
