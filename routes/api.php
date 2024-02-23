@@ -48,3 +48,5 @@ Route::middleware('auth:sanctum')->post('/reportes/bodegas/filtrar-general', [Re
 
 // Rutas para la API de reparaciones
 Route::middleware('auth:sanctum')->get('/reportes/reparaciones/get-graficos', [ReportesReparacionesController::class, 'getGraficos']);
+
+Route::middleware('auth:sanctum')->post('/reportes/reparaciones/filtrar-general', [ReportesReparacionesController::class, 'filtrarGeneral']);
