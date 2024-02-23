@@ -33,7 +33,7 @@ class ReportesVehiculosController extends Controller
                     'grafico1' => $grafico1,
                     'grafico2' => $grafico2,
                     'grafico3' => $grafico3,
-                    'grafico4' => $grafico4
+                    'grafico4' => $grafico4,
                 ],
             ], 200);
         }catch(\Exception $e){
@@ -242,8 +242,5 @@ class ReportesVehiculosController extends Controller
             ], 500);
         }
     }
-
-
-
 
 }
