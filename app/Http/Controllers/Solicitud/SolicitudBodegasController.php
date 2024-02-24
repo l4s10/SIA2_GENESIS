@@ -156,7 +156,7 @@ class SolicitudBodegasController extends Controller
             // Validar los datos del formulario de edición de la solicitud
             $validator = Validator::make($request->all(),[
                 // PARA ASIGNACION
-                'SOLICITUD_ESTADO' => 'required|string|max:255|in:INGRESADO,EN REVISION,APROBADO,RECHAZADO,TERMINADO',
+                // 'SOLICITUD_ESTADO' => 'required|string|max:255|in:INGRESADO,EN REVISION,APROBADO,RECHAZADO,TERMINADO',
                 'SOLICITUD_FECHA_HORA_INICIO_ASIGNADA' => 'required|date',
                 'SOLICITUD_FECHA_HORA_TERMINO_ASIGNADA' => 'required|date|after:SOLICITUD_FECHA_HORA_INICIO_ASIGNADA',
                 'REVISION_SOLICITUD_OBSERVACION' => 'required|string|max:255',
@@ -178,9 +178,31 @@ class SolicitudBodegasController extends Controller
             // Buscar la solicitud por ID
             $solicitud = Solicitud::has('bodegas')->findOrFail($id);
 
+            // Determinar la acción basada en el botón presionado
+            switch ($request->input('action')) {
+                case 'guardar':
+                    // Lógica para guardar cambios
+                    $solicitud->update(['SOLICITUD_ESTADO' => 'EN REVISION']);
+                break;
+
+                case 'finalizar_revision':
+                    // Lógica para finalizar la revisión
+                    $solicitud->update(['SOLICITUD_ESTADO' => 'AUTORIZADO']);
+                break;
+
+                case 'rechazar':
+                    // Lógica para rechazar la solicitud
+                    $solicitud->update(['SOLICITUD_ESTADO' => 'RECHAZADO']);
+                break;
+
+                // default:
+                    // Lógica por defecto o para casos no contemplados
+                    // break;
+            }
+
             // Actualizar la solicitud
             $solicitud->update([
-                'SOLICITUD_ESTADO' => $request->input('SOLICITUD_ESTADO'),
+                // 'SOLICITUD_ESTADO' => $request->input('SOLICITUD_ESTADO'),
                 'SOLICITUD_FECHA_HORA_INICIO_ASIGNADA' => $request->input('SOLICITUD_FECHA_HORA_INICIO_ASIGNADA'),
                 'SOLICITUD_FECHA_HORA_TERMINO_ASIGNADA' => $request->input('SOLICITUD_FECHA_HORA_TERMINO_ASIGNADA'),
             ]);

@@ -146,7 +146,7 @@ class SolicitudReparacionesController extends Controller
         try{
             // Validar los datos del formulario de solicitud de reparaciones.
             $validator = Validator::make($request->all(),[
-                'SOLICITUD_REPARACION_ESTADO' => 'required|string|max:20',
+                // 'SOLICITUD_REPARACION_ESTADO' => 'required|string|max:20',
                 'SOLICITUD_REPARACION_FECHA_HORA_INICIO' => 'nullable|date',
                 'SOLICITUD_REPARACION_FECHA_HORA_TERMINO' => 'nullable|date|after_or_equal:SOLICITUD_REPARACION_FECHA_HORA_INICIO',
                 'REVISION_SOLICITUD_OBSERVACION' => 'required|string|max:255',
@@ -167,9 +167,31 @@ class SolicitudReparacionesController extends Controller
             // Buscar la solicitud por ID
             $solicitud = SolicitudReparacion::findOrFail($id);
 
+            // Determinar la acción basada en el botón presionado
+            switch ($request->input('action')) {
+                case 'guardar':
+                    // Lógica para guardar cambios
+                    $solicitud->update(['SOLICITUD_REPARACION_ESTADO' => 'EN REVISION']);
+                break;
+
+                case 'finalizar_revision':
+                    // Lógica para finalizar la revisión
+                    $solicitud->update(['SOLICITUD_REPARACION_ESTADO' => 'AUTORIZADO']);
+                break;
+
+                case 'rechazar':
+                    // Lógica para rechazar la solicitud
+                    $solicitud->update(['SOLICITUD_REPARACION_ESTADO' => 'RECHAZADO']);
+                break;
+
+                // default:
+                    // Lógica por defecto o para casos no contemplados
+                    // break;
+            }
+
             // Actualizar la solicitud
             $solicitud->update([
-                'SOLICITUD_REPARACION_ESTADO' => $request->input('SOLICITUD_REPARACION_ESTADO'),
+                // 'SOLICITUD_REPARACION_ESTADO' => $request->input('SOLICITUD_REPARACION_ESTADO'),
                 'SOLICITUD_REPARACION_FECHA_HORA_INICIO' => $request->input('SOLICITUD_REPARACION_FECHA_HORA_INICIO'),
                 'SOLICITUD_REPARACION_FECHA_HORA_TERMINO' => $request->input('SOLICITUD_REPARACION_FECHA_HORA_TERMINO'),
             ]);

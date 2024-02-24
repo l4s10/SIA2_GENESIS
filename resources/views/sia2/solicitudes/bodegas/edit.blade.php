@@ -181,63 +181,69 @@
         @endif
     </div>
 
-    {{-- Formulario de revision --}}
-    <form action="{{ route('solicitudes.bodegas.update', $solicitud->SOLICITUD_ID) }}" method="POST">
-        @csrf
-        @method('PUT')
+    {{-- Formulario de revision de bodegas (OCULTAR DEPENDIENDO DE ESTADO) --}}
+    @if(in_array($solicitud->SOLICITUD_ESTADO, ['INGRESADO', 'EN REVISION']))
+        {{-- Formulario de revision --}}
+        <h2>Revisar solicitud</h2>
+        <form action="{{ route('solicitudes.bodegas.update', $solicitud->SOLICITUD_ID) }}" method="POST">
+            @csrf
+            @method('PUT')
 
-        {{-- Estado de la solicitud --}}
-        <div class="form-group">
-            <label for="SOLICITUD_ESTADO"><i class="fa-solid fa-file-circle-check"></i> Estado de la solicitud</label>
-            <select class="form-control" id="SOLICITUD_ESTADO" name="SOLICITUD_ESTADO">
-                <option value="INGRESADO" {{ old('SOLICITUD_ESTADO', $solicitud->SOLICITUD_ESTADO) == 'INGRESADO' ? 'selected' : '' }}>🟠 INGRESADO</option>
-                <option value="EN REVISION" {{ old('SOLICITUD_ESTADO', $solicitud->SOLICITUD_ESTADO) == 'EN REVISION' ? 'selected' : '' }}>🟡 EN REVISION</option>
-                <option value="APROBADO" {{ old('SOLICITUD_ESTADO', $solicitud->SOLICITUD_ESTADO) == 'APROBADO' ? 'selected' : '' }}>🟢 APROBADO</option>
-                <option value="RECHAZADO" {{ old('SOLICITUD_ESTADO', $solicitud->SOLICITUD_ESTADO) == 'RECHAZADO' ? 'selected' : '' }}>🔴 RECHAZADO</option>
-                <option value="TERMINADO" {{ old('SOLICITUD_ESTADO', $solicitud->SOLICITUD_ESTADO) == 'TERMINADO' ? 'selected' : '' }}>⚫ TERMINADO</option>
-            </select>
-            @error('SOLICITUD_ESTADO')
-                <div class="alert alert-danger">{{ $message }}</div>
-            @enderror
-        </div>
+            {{-- Estado de la solicitud --}}
+            <div class="form-group">
+                <label for="SOLICITUD_ESTADO"><i class="fa-solid fa-file-circle-check"></i> Estado de la solicitud</label>
+                <select class="form-control" id="SOLICITUD_ESTADO" name="SOLICITUD_ESTADO">
+                    <option value="INGRESADO" {{ old('SOLICITUD_ESTADO', $solicitud->SOLICITUD_ESTADO) == 'INGRESADO' ? 'selected' : '' }}>🟠 INGRESADO</option>
+                    <option value="EN REVISION" {{ old('SOLICITUD_ESTADO', $solicitud->SOLICITUD_ESTADO) == 'EN REVISION' ? 'selected' : '' }}>🟡 EN REVISION</option>
+                    <option value="APROBADO" {{ old('SOLICITUD_ESTADO', $solicitud->SOLICITUD_ESTADO) == 'APROBADO' ? 'selected' : '' }}>🟢 APROBADO</option>
+                    <option value="RECHAZADO" {{ old('SOLICITUD_ESTADO', $solicitud->SOLICITUD_ESTADO) == 'RECHAZADO' ? 'selected' : '' }}>🔴 RECHAZADO</option>
+                    <option value="TERMINADO" {{ old('SOLICITUD_ESTADO', $solicitud->SOLICITUD_ESTADO) == 'TERMINADO' ? 'selected' : '' }}>⚫ TERMINADO</option>
+                </select>
+                @error('SOLICITUD_ESTADO')
+                    <div class="alert alert-danger">{{ $message }}</div>
+                @enderror
+            </div>
 
-        {{-- Fechas autorizadas --}}
-        <div class="row">
-            <div class="col-md-6">
-                {{-- Fecha y hora de inicio autorizada --}}
-                <div class="form-group">
-                    <label for="SOLICITUD_FECHA_HORA_INICIO_ASIGNADA"><i class="fa-solid fa-calendar-days"></i> Fecha y hora de inicio autorizada</label>
-                    <input type="datetime-local" class="form-control" id="SOLICITUD_FECHA_HORA_INICIO_ASIGNADA" name="SOLICITUD_FECHA_HORA_INICIO_ASIGNADA" value="{{ old('SOLICITUD_FECHA_HORA_INICIO_ASIGNADA', $solicitud->SOLICITUD_FECHA_HORA_INICIO_ASIGNADA) }}">
-                    @error('SOLICITUD_FECHA_HORA_INICIO_ASIGNADA')
-                        <div class="alert alert-danger">{{ $message }}</div>
-                    @enderror
+            {{-- Fechas autorizadas --}}
+            <div class="row">
+                <div class="col-md-6">
+                    {{-- Fecha y hora de inicio autorizada --}}
+                    <div class="form-group">
+                        <label for="SOLICITUD_FECHA_HORA_INICIO_ASIGNADA"><i class="fa-solid fa-calendar-days"></i> Fecha y hora de inicio autorizada</label>
+                        <input type="datetime-local" class="form-control" id="SOLICITUD_FECHA_HORA_INICIO_ASIGNADA" name="SOLICITUD_FECHA_HORA_INICIO_ASIGNADA" value="{{ old('SOLICITUD_FECHA_HORA_INICIO_ASIGNADA', $solicitud->SOLICITUD_FECHA_HORA_INICIO_ASIGNADA) }}">
+                        @error('SOLICITUD_FECHA_HORA_INICIO_ASIGNADA')
+                            <div class="alert alert-danger">{{ $message }}</div>
+                        @enderror
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    {{-- Fecha y hora de término autorizada --}}
+                    <div class="form-group">
+                        <label for="SOLICITUD_FECHA_HORA_TERMINO_ASIGNADA"><i class="fa-solid fa-calendar-xmark"></i> Fecha y hora de término autorizada</label>
+                        <input type="datetime-local" class="form-control" id="SOLICITUD_FECHA_HORA_TERMINO_ASIGNADA" name="SOLICITUD_FECHA_HORA_TERMINO_ASIGNADA" value="{{ old('SOLICITUD_FECHA_HORA_TERMINO_ASIGNADA', $solicitud->SOLICITUD_FECHA_HORA_TERMINO_ASIGNADA) }}">
+                        @error('SOLICITUD_FECHA_HORA_TERMINO_ASIGNADA')
+                            <div class="alert alert-danger">{{ $message }}</div>
+                        @enderror
+                    </div>
                 </div>
             </div>
-            <div class="col-md-6">
-                {{-- Fecha y hora de término autorizada --}}
-                <div class="form-group">
-                    <label for="SOLICITUD_FECHA_HORA_TERMINO_ASIGNADA"><i class="fa-solid fa-calendar-xmark"></i> Fecha y hora de término autorizada</label>
-                    <input type="datetime-local" class="form-control" id="SOLICITUD_FECHA_HORA_TERMINO_ASIGNADA" name="SOLICITUD_FECHA_HORA_TERMINO_ASIGNADA" value="{{ old('SOLICITUD_FECHA_HORA_TERMINO_ASIGNADA', $solicitud->SOLICITUD_FECHA_HORA_TERMINO_ASIGNADA) }}">
-                    @error('SOLICITUD_FECHA_HORA_TERMINO_ASIGNADA')
-                        <div class="alert alert-danger">{{ $message }}</div>
-                    @enderror
-                </div>
+
+            {{-- Observaciones de la solicitud --}}
+            <div class="form-group">
+                <label for="REVISION_SOLICITUD_OBSERVACION"><i class="fa-solid fa-eye"></i> Observaciones</label>
+                <textarea class="form-control" id="REVISION_SOLICITUD_OBSERVACION" name="REVISION_SOLICITUD_OBSERVACION" rows="3">{{ old('REVISION_SOLICITUD_OBSERVACION', $solicitud->REVISION_SOLICITUD_OBSERVACION) }}</textarea>
+                @error('REVISION_SOLICITUD_OBSERVACION')
+                    <div class="alert alert-danger">{{ $message }}</div>
+                @enderror
             </div>
-        </div>
 
-        {{-- Observaciones de la solicitud --}}
-        <div class="form-group">
-            <label for="REVISION_SOLICITUD_OBSERVACION"><i class="fa-solid fa-eye"></i> Observaciones</label>
-            <textarea class="form-control" id="REVISION_SOLICITUD_OBSERVACION" name="REVISION_SOLICITUD_OBSERVACION" rows="3">{{ old('REVISION_SOLICITUD_OBSERVACION', $solicitud->REVISION_SOLICITUD_OBSERVACION) }}</textarea>
-            @error('REVISION_SOLICITUD_OBSERVACION')
-                <div class="alert alert-danger">{{ $message }}</div>
-            @enderror
-        </div>
-
-        {{-- Boton de volver y guardar cambios --}}
+            {{-- Boton de volver y guardar cambios --}}
+            <a href="{{ route('solicitudes.bodegas.index') }}" class="btn btn-secondary"><i class="fa-solid fa-hand-point-left"></i> Volver</a>
+            <button type="submit" class="btn agregar"><i class="fa-solid fa-plus"></i> Guardar cambios</button>
+        </form>
+    @else
         <a href="{{ route('solicitudes.bodegas.index') }}" class="btn btn-secondary"><i class="fa-solid fa-hand-point-left"></i> Volver</a>
-        <button type="submit" class="btn agregar"><i class="fa-solid fa-plus"></i> Guardar cambios</button>
-    </form>
+    @endif
 
 @stop
 
