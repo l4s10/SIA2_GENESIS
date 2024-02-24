@@ -29,4 +29,16 @@ class ReportesController extends Controller
     public function Bodegas(){
         return view('sia2.reportes.bodegas');
     }
+
+    public function Reparaciones(){
+        return view('sia2.reportes.reparaciones');
+    }
+
+    public function Sistema(){
+        return view('sia2.reportes.sistema');
+    }
+
+    public function Vehiculos(){
+        return view('sia2.reportes.vehiculos');
+    }
 }
