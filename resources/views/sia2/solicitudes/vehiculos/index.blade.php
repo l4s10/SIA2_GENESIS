@@ -38,55 +38,121 @@
             <thead class="tablacolor">
                 <tr>
                     <th scope="col">Solicitante</th>
+                    <th scope="col">Rut</th>
+                    <th scope="col">Dependencia</th>
+                    <th scope="col">Email</th>
                     <th scope="col">Estado</th>
-                    <th scope="col">Fecha de solicitud</th>
+                    <th scope="col">Fecha de Ingreso</th>
                     <th>Acciones</th>
+                    <th>Exportables</th>
                 </tr>
             </thead>
             <tbody>
                 @foreach ($solicitudes as $solicitud)
                     <tr>
-                        <td>{{ $solicitud->user->USUARIO_NOMBRES }} {{ $solicitud->user->USUARIO_APELLIDOS }}</td>
-                        <td>{{ $solicitud->SOLICITUD_VEHICULO_ESTADO }}</td>
-                        <td>{{ $solicitud->created_at }}</td>
                         <td>
                             <div class="d-flex justify-content-center">
-                                {{--<a href="{{ route('solicitudesvehiculos.show', $solicitud->SOLICITUD_VEHICULO_ID) }}" class="btn btn-primary"><i class="fa-solid fa-eye"></i></a>--}}
-                                <a href="{{ route('solicitudesvehiculos.edit', $solicitud->SOLICITUD_VEHICULO_ID) }}" class="btn btn-secondary ml-2"><i class="fa-solid fa-pencil"></i></a>
-
-                                {{--<form action="{{ route('solicitud_vehiculos.destroy', $solicitud->SOLICITUD_VEHICULO_ID) }}" method="POST">--}}
-                                    @csrf
-                                    @method('DELETE')
-                                    <button type="submit" class="btn btn-danger ml-2"><i class="fa-solid fa-trash"></i></button>
-                                    <a href="{{ route('descargar.plantilla', $solicitud->SOLICITUD_VEHICULO_ID) }}" class="btn btn-success ml-2" id="descargar-pdf-btn"><i class="fa-solid fa-file-pdf"></i></a>
-
-                                    
-                                </form>
+                                {{ $solicitud->user->USUARIO_NOMBRES }} {{ $solicitud->user->USUARIO_APELLIDOS }}
                             </div>
                         </td>
+                        <td>
+                            <div class="d-flex justify-content-center">
+                                {{ $solicitud->user->USUARIO_RUT }}
+                            </div>
+                        </td>                        
+                        <td>
+                            <div class="d-flex justify-content-center">
+                                {{ $solicitud->user->ubicacion ? $solicitud->user->ubicacion->UBICACION_NOMBRE : $solicitud->user->departamento->DEPARTAMENTO_NOMBRE}}
+                            </div>
+                        </td>
+                        <td> 
+                            <div class="d-flex justify-content-center">
+                                {{ $solicitud->user->email}}
+                            </div>
+                        </td>
+                        <td>
+                            <div class="d-flex justify-content-center">
+                                @if ($solicitud->SOLICITUD_VEHICULO_ESTADO == 'INGRESADO')
+                                    <span style="color: #e6500a;">🟠 <span style="color: black; font-weight: bold;">INGRESADO</span></span>
+                                @elseif ($solicitud->SOLICITUD_VEHICULO_ESTADO == 'EN REVISIÓN')
+                                    <span style="color: #0000ff;">🔵 <span style="color: black; font-weight: bold;">EN REVISIÓN</span></span>
+                                @elseif ($solicitud->SOLICITUD_VEHICULO_ESTADO == 'POR APROBAR')
+                                    <span style="color: #ffff00;">🟡 <span style="color: black; font-weight: bold;">POR APROBAR</span></span>
+                                @elseif ($solicitud->SOLICITUD_VEHICULO_ESTADO == 'POR AUTORIZAR')
+                                    <span style="color: #00ff00;">🟢 <span style="color: black; font-weight: bold;">POR AUTORIZAR</span></span>
+                                @elseif ($solicitud->SOLICITUD_VEHICULO_ESTADO == 'POR RENDIR')
+                                    <span style="color: #ffffff;">⚪ <span style="color: black; font-weight: bold;">POR RENDIR</span></span>
+                                @elseif ($solicitud->SOLICITUD_VEHICULO_ESTADO == 'RECHAZADO')
+                                    <span style="color: #ff0000;">🔴 <span style="color: black; font-weight: bold;">RECHAZADO</span></span>
+                                @elseif ($solicitud->SOLICITUD_VEHICULO_ESTADO == 'TERMINADO')
+                                    <span style="color: #000000;">⚫ <span style="color: black; font-weight: bold;">TERMINADO</span></span>
+                                @endif
+                            </div>
+                        </td>
+                        <td>
+                            <div class="d-flex justify-content-center">
+                                {{ $solicitud->formatted_created_at }}
+                            </div>
+                        </td>
+                        <td>
+                                @if ($solicitud->SOLICITUD_VEHICULO_ESTADO == 'INGRESADO' || $solicitud->SOLICITUD_VEHICULO_ESTADO == 'EN REVISIÓN')
+                                    <div class="d-flex justify-content-between">
+                                        <a href="{{ route('solicitudesvehiculos.edit', $solicitud->SOLICITUD_VEHICULO_ID) }}" class="btn btn-secondary"><i class="fa-solid fa-pencil"></i></a>
+
+                                    <a href="{{ route('solicitudesvehiculos.timeline', $solicitud->SOLICITUD_VEHICULO_ID) }}" class="btn btn-primary"><i class="fa-solid fa-eye"></i></a>
+
+                                    <button type="submit" class="btn btn-danger"><i class="fa-solid fa-trash"></i></button>
+                                </div>
+                                @else
+                                <div class="d-flex justify-content-end">
+                                    <a href="{{ route('solicitudesvehiculos.timeline', $solicitud->SOLICITUD_VEHICULO_ID) }}" class="btn btn-primary"><i class="fa-solid fa-eye"></i></a>
+                                    {{--<form action="{{ route('solicitud_vehiculos.destroy', $solicitud->SOLICITUD_VEHICULO_ID) }}" method="POST">
+                                        @csrf
+                                        @method('DELETE')--}}
+                                        <button type="submit" class="btn btn-danger ml-2"><i class="fa-solid fa-trash"></i></button> {{--
+                                    </form>--}}
+                                </div>
+                                    @endif
+                                    
+                        </td>
+                        <td>
+                            <div class="d-flex justify-content-center">
+                                <a href="{{ route('descargar.plantilla', $solicitud->SOLICITUD_VEHICULO_ID) }}" class="btn btn-success ml-2" id="descargar-pdf-btn"><i class="fa-solid fa-file-pdf"></i></a>
+                            </div>
+                        </td>
+       
                     </tr>
                 @endforeach
             </tbody>
         </table>
+
     </div>
 @stop
 
+
 @section('css')
-<style>/* Estilos personalizados si es necesario */
-        .tablacolor {
-            background-color: #0064a0; /* Color de fondo personalizado */
-            color: #fff; /* Color de texto personalizado */
-        }
-        .agregar{
-            background-color: #e6500a;
-            color: #fff;
-        }
-        .botoneditar{
-            background-color: #1aa16b;
-            color: #fff;
-        }
-    </style>
+
+<style>
+    /* Estilos personalizados si es necesario */
+    .tablacolor {
+        background-color: #0064a0; /* Color de fondo personalizado */
+        color: #fff; /* Color de texto personalizado */
+    }
+    .agregar {
+        background-color: #e6500a;
+        color: #fff;
+    }
+    .botoneditar {
+        background-color: #1aa16b;
+        color: #fff;
+    }
+</style>
+
+
+
+    
 @stop
+
 
 @section('js')
     <script src="https://code.jquery.com/jquery-3.5.1.js"></script>
@@ -99,7 +165,7 @@
             $('#solicitudes').DataTable({
                 "lengthMenu": [[5, 10, 50, -1], [5, 10, 50, "Todos"]],
                 "columnDefs": [
-                    { "orderable": false, "targets": 3 }
+                    { "orderable": false, "targets": 7 }
                 ],
                 "language": {
                     "url": "//cdn.datatables.net/plug-ins/1.11.3/i18n/es_es.json"
@@ -110,8 +176,6 @@
                 event.preventDefault(); // Prevenir el comportamiento predeterminado del enlace
 
                 var pdfUrl = $(this).attr('href'); // Obtener la URL del PDF
-
-
 
                 // Iniciar la descarga del PDF en paralelo con el primer mensaje
                 var downloadPromise = new Promise((resolve, reject) => {
@@ -144,7 +208,5 @@
             });
         });
     </script>
-
-   
 @stop
 

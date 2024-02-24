@@ -11,6 +11,8 @@ use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Maatwebsite\Excel\Facades\Excel;
+use Illuminate\Support\Facades\Hash; // Importa la clase Hash
+
 
 use PhpOffice\PhpSpreadsheet\IOFactory;
 use PhpOffice\PhpSpreadsheet\Writer\Pdf\Dompdf;
@@ -38,6 +40,7 @@ use App\Models\Rendicion;
 
 class SolicitudVehiculosController extends Controller
 {
+    
     /**
      * Display a listing of the resource.
      */
@@ -47,14 +50,18 @@ class SolicitudVehiculosController extends Controller
         try {
             // Obtener la oficina del usuario actual
             $oficinaIdUsuario = Auth::user()->OFICINA_ID;
-
+    
             // Obtener las solicitudes vehiculares realizadas por usuarios de la oficina correspondiente
             $solicitudes = SolicitudVehicular::whereHas('user', function ($query) use ($oficinaIdUsuario) {
                 $query->where('OFICINA_ID', $oficinaIdUsuario);
             })->get();
-
-
-
+    
+            // Formatear las fechas created_at en DD:MM:AA
+            foreach ($solicitudes as $solicitud) {
+                $solicitud->formatted_created_at = Carbon::parse($solicitud->created_at)->format('d-m-y H:i');
+            }
+            
+    
             // Retornar la vista con las solicitudes
             return view('sia2.solicitudes.vehiculos.index', compact('solicitudes'));
         } catch (Exception $e) {
@@ -95,6 +102,10 @@ class SolicitudVehiculosController extends Controller
                     ->get();
             }
     
+            // Formatear las fechas created_at en DD:MM:AA
+            foreach ($solicitudes as $solicitud) {
+                $solicitud->formatted_created_at = Carbon::parse($solicitud->created_at)->format('d-m-y H:i');
+            }
             // Retornar la vista con las solicitudes
             return view('sia2.solicitudes.vehiculos.indexPorAprobar', compact('solicitudes'));
         } catch (Exception $e) {
@@ -122,6 +133,12 @@ class SolicitudVehiculosController extends Controller
                 })
                 ->get();
     
+            
+            // Formatear las fechas created_at en DD:MM:AA
+            foreach ($solicitudes as $solicitud) {
+                $solicitud->formatted_created_at = Carbon::parse($solicitud->created_at)->format('d-m-y H:i');
+            }
+            
             // Retornar la vista con las solicitudes
             return view('sia2.solicitudes.vehiculos.indexPorRendir', compact('solicitudes'));
         } catch (Exception $e) {
@@ -183,6 +200,7 @@ class SolicitudVehiculosController extends Controller
         //dd($request);
         // Intentar guardar la solicitud en la base de datos
         try {
+            //if ( $request->)
             // Validar los datos de entrada
             $validatorRules = [
                 'VEHICULO_ID' => 'required|exists:vehiculos,VEHICULO_ID',
@@ -198,10 +216,10 @@ class SolicitudVehiculosController extends Controller
             ];
 
             // Validar si los datos están presentes en la solicitud
-            if ($request->has('TRABAJA_NUMERO_ORDEN_TRABAJO') && $request->has('TRABAJA_HORA_INICIO_ORDEN_TRABAJO') && $request->has('TRABAJA_HORA_TERMINO_ORDEN_TRABAJO')) {
+            if ($request->has('TRABAJA_NUMERO_ORDEN_TRABAJO') || $request->has('TRABAJA_HORA_INICIO_ORDEN_TRABAJO') || $request->has('TRABAJA_HORA_TERMINO_ORDEN_TRABAJO')) {
                 // Realizar la validación de los datos recibidos
                 $validatorRules = array_merge($validatorRules, [
-                    'TRABAJA_NUMERO_ORDEN_TRABAJO' => 'required|integer|min:0|max:999999',
+                    'TRABAJA_NUMERO_ORDEN_TRABAJO' => 'required|integer|min:0|max:999999|unique:ordenes_de_trabajo,ORDEN_TRABAJO_NUMERO',
                     'TRABAJA_HORA_INICIO_ORDEN_TRABAJO' => 'required|date_format:H:i',
                     'TRABAJA_HORA_TERMINO_ORDEN_TRABAJO' => 'required|date_format:H:i|after_or_equal:TRABAJA_HORA_INICIO_ORDEN_TRABAJO',
                 ]);
@@ -235,6 +253,7 @@ class SolicitudVehiculosController extends Controller
                 'TRABAJA_NUMERO_ORDEN_TRABAJO.integer' => 'El número de orden de trabajo debe ser un número entero.',
                 'TRABAJA_NUMERO_ORDEN_TRABAJO.min' => 'El número de orden de trabajo debe ser mínimo 0.',
                 'TRABAJA_NUMERO_ORDEN_TRABAJO.max' => 'El número de orden de trabajo debe ser máximo 999999.',
+                'TRABAJA_NUMERO_ORDEN_TRABAJO.unique' => 'El número de orden de trabajo fue registrado previamente.',
                 'TRABAJA_HORA_INICIO_ORDEN_TRABAJO.required' => 'La hora de inicio de la orden de trabajo es obligatoria.',
                 'TRABAJA_HORA_INICIO_ORDEN_TRABAJO.date_format' => 'El formato de la hora de inicio de la orden de trabajo no es válido.',
                 'TRABAJA_HORA_TERMINO_ORDEN_TRABAJO.required' => 'La hora de término de la orden de trabajo es obligatoria.',
@@ -316,20 +335,17 @@ class SolicitudVehiculosController extends Controller
 
     /**
      * Display the specified resource.
-     */
-   /* public function show(string $id)
+     */   
+    public function timeline($id)
     {
         try {
-            // Recuperar la solicitud con sus materiales asociados
-            $solicitud = Solicitud::has('materiales')->findOrFail($id);
-            // Retornar la vista con la solicitud
-            return view('sia2.solicitudes.materiales.show', compact('solicitud'));
+            $solicitud = SolicitudVehicular::findOrFail($id);
+            $revisiones = RevisionSolicitud::where('SOLICITUD_VEHICULO_ID', $id)->get();
+            return view('sia2.solicitudes.vehiculos.show', compact('solicitud', 'revisiones'));
         } catch (Exception $e) {
-            // Manejar excepciones si la solicitud no se encuentra o hay algún error manejable
-            return redirect()->route('solicitudesmateriales.index')->with('error', 'Error al mostrar la solicitud.');
+            return redirect()->back()->with('error', 'Error al cargar la línea de tiempo de la solicitud.');
         }
     }
-
     /**
      * Show the form for editing the specified resource.
      */
@@ -418,7 +434,11 @@ class SolicitudVehiculosController extends Controller
                 dd("SE PRODUJO ERROR MODELO 1");
 
                 return redirect()->route('solicitudesvehiculos.indexPorAprobar')->with('error', 'Ocurrió un error inesperado.');
-            } else {
+            } else if ($source === 'indexPorRendir') { 
+            
+                return redirect()->route('solicitudesvehiculos.indexPorRendir')->with('error', 'Ocurrió un error inesperado.');
+
+            }else {
                 // Manejar excepción de modelo no encontrado
                 dd("SE PRODUJO ERROR MODELO 2");
 
@@ -429,8 +449,10 @@ class SolicitudVehiculosController extends Controller
             // Determinar la vista a retornar
             if ($source === 'indexPorAprobar') {
                 // Manejar excepciones si es necesario
-                return redirect()->route('solicitudesvehiculos.indexPorAprobar')->with('error', 'Error al cargar la solicitud de vehículo para aprobar. ');
-            } else {
+                return redirect()->route('solicitudesvehiculos.indexPorAprobar')->with('error', 'Error al cargar la solicitud de vehículo por aprobar o autorizar. ');
+            } else if ($source === 'indexPorRendir') {  
+                return redirect()->route('solicitudesvehiculos.indexPorRendir')->with('error', 'Error al cargar la solicitud de vehículo por rendir. ');
+             }else {
                 // Manejar excepciones si es necesario
                 return redirect()->route('solicitudesvehiculos.index')->with('error', 'Error al cargar la solicitud de vehículo para editar. ');
             }  
@@ -450,266 +472,286 @@ class SolicitudVehiculosController extends Controller
             // Encontrar la solicitud por su ID
             $solicitud = SolicitudVehicular::findOrFail($id);
             
-            // Validación de datos
-            $validatorRules = [
-                'VEHICULO_ID' => 'required|exists:vehiculos,VEHICULO_ID',
-                'CONDUCTOR_id' => 'required|exists:users,id',
-                'SOLICITUD_VEHICULO_VIATICO' => 'required|string|max:4',
-                'SOLICITUD_VEHICULO_FECHA_HORA_INICIO_ASIGNADA' => 'required|date',
-                'SOLICITUD_VEHICULO_FECHA_HORA_TERMINO_ASIGNADA' => 'required|date|after_or_equal:SOLICITUD_VEHICULO_FECHA_HORA_INICIO_ASIGNADA',
-                'SOLICITUD_VEHICULO_HORA_INICIO_CONDUCCION' => 'required|date_format:H:i',
-                'SOLICITUD_VEHICULO_HORA_TERMINO_CONDUCCION' => 'required|date_format:H:i|after_or_equal:SOLICITUD_VEHICULO_HORA_INICIO_CONDUCCION',
-            ];
-            
-            // Validar si los datos están presentes en la solicitud
-            if ($request->has('TRABAJA_NUMERO_ORDEN_TRABAJO') && $request->has('TRABAJA_HORA_INICIO_ORDEN_TRABAJO') && $request->has('TRABAJA_HORA_TERMINO_ORDEN_TRABAJO')) {
-                // Realizar la validación de los datos recibidos
-                $validatorRules = array_merge($validatorRules, [
-                    'TRABAJA_NUMERO_ORDEN_TRABAJO' => 'required|integer|min:0|max:999999',
-                    'TRABAJA_HORA_INICIO_ORDEN_TRABAJO' => 'required|date_format:H:i',
-                    'TRABAJA_HORA_TERMINO_ORDEN_TRABAJO' => 'required|date_format:H:i|after_or_equal:TRABAJA_HORA_INICIO_ORDEN_TRABAJO',
-                ]);
-            }
-
-            if (($request->has('guardarRevision')) || ($request->has('finalizarRevisiones'))) {
-                $validatorRules = array_merge($validatorRules, [
-                    'REVISION_SOLICITUD_OBSERVACION' => 'required|string|max:255'
-                ]);
-            }
-
-            if  ($request->has('botonRendir'))  {
-                $validatorRules = array_merge($validatorRules, [
-                    'RENDICION_NUMERO_BITACORA' => 'required|integer|unique:rendiciones',
-                    'RENDICION_FECHA_HORA_LLEGADA' => 'required|date',
-                    'RENDICION_KILOMETRAJE_INICIO' => 'required|integer|min:1|max:999999',
-                    'RENDICION_KILOMETRAJE_TERMINO' => 'required|integer|min:1|max:999999|gt:RENDICION_KILOMETRAJE_INICIO',
-                    'RENDICION_NIVEL_ESTANQUE' => 'required|string|max:15',
-                    'RENDICION_ABASTECIMIENTO' => 'required|string|max:4',
-                    'RENDICION_TOTAL_HORAS' => 'required|integer|min:1|max:999999',
-                    'RENDICION_OBSERVACIONES' => 'nullable|string|max:255',
-                ]);
-            }
-
-
-
-            $validator = Validator::make($request->all(), $validatorRules, [
-                'VEHICULO_ID.required' => 'El campo Vehículo es obligatorio.',
-                'VEHICULO_ID.exists' => 'El vehículo seleccionado no es válido.',
-                'CONDUCTOR_id.required' => 'El campo Conductor es obligatorio.',
-                'CONDUCTOR_id.exists' => 'El conductor seleccionado no es válido.',
-                'SOLICITUD_VEHICULO_VIATICO.required' => 'El campo Viático es obligatorio.',
-                'SOLICITUD_VEHICULO_VIATICO.string' => 'El campo Viático debe ser una cadena de caracteres.',
-                'SOLICITUD_VEHICULO_VIATICO.max' => 'El campo Viático no puede tener más de :max caracteres.',
-                'SOLICITUD_VEHICULO_FECHA_HORA_INICIO_ASIGNADA.required' => 'La fecha y hora de salida asignada es obligatorio.',
-                'SOLICITUD_VEHICULO_FECHA_HORA_TERMINO_ASIGNADA.required' => 'La fecha y hora de regreso asignada es obligatorio.',
-                'SOLICITUD_VEHICULO_FECHA_HORA_TERMINO_ASIGNADA.after_or_equal' => 'La fecha y hora de regreso asignada debe ser posterior a la fecha y hora de inicio asignada.',
-                'SOLICITUD_VEHICULO_HORA_INICIO_CONDUCCION.required' => 'El campo Hora de inicio de conducción es obligatorio.',
-                'SOLICITUD_VEHICULO_HORA_TERMINO_CONDUCCION.required' => 'El campo Hora de término de conducción es obligatorio.',
-                'SOLICITUD_VEHICULO_HORA_TERMINO_CONDUCCION.after_or_equal' => 'La hora de término de conducción debe ser posterior a la hora de inicio de conducción.',
-
-                'REVISION_SOLICITUD_OBSERVACION.required' => 'El campo Observaciones revisión es obligatorio.',
-                'REVISION_SOLICITUD_OBSERVACION.string' => 'El campo Observaciones revisión debe ser una cadena de caracteres.',
-                'REVISION_SOLICITUD_OBSERVACION.max' => 'El campo Observaciones revisión no puede tener más de :max caracteres.',
-                'TRABAJA_NUMERO_ORDEN_TRABAJO.required' => 'El número de orden de trabajo es obligatorio.',
-
-                'TRABAJA_NUMERO_ORDEN_TRABAJO.integer' => 'El número de orden de trabajo debe ser un número entero.',
-                'TRABAJA_NUMERO_ORDEN_TRABAJO.min' => 'El número de orden de trabajo debe ser mínimo 0.',
-                'TRABAJA_NUMERO_ORDEN_TRABAJO.max' => 'El número de orden de trabajo debe ser máximo 999999.',
-                'TRABAJA_HORA_INICIO_ORDEN_TRABAJO.required' => 'La hora de inicio de la orden de trabajo es obligatoria.',
-                'TRABAJA_HORA_INICIO_ORDEN_TRABAJO.date_format' => 'El formato de la hora de inicio de la orden de trabajo no es válido.',
-                'TRABAJA_HORA_TERMINO_ORDEN_TRABAJO.required' => 'La hora de término de la orden de trabajo es obligatoria.',
-                'TRABAJA_HORA_TERMINO_ORDEN_TRABAJO.date_format' => 'El formato de la hora de término de la orden de trabajo no es válido.',
-                'TRABAJA_HORA_TERMINO_ORDEN_TRABAJO.after_or_equal' => 'La hora de término de la orden de trabajo debe ser posterior a la hora de inicio de la orden de trabajo.',
-
-                'RENDICION_NUMERO_BITACORA.required' => 'El número de bitácora es requerido.',
-                'RENDICION_NUMERO_BITACORA.integer' => 'El número de bitácora debe ser un número entero.',
-                'RENDICION_NUMERO_BITACORA.unique' => 'El número de bitácora ya ha sido registrado.',
-                'RENDICION_FECHA_HORA_LLEGADA.required' => 'La fecha y hora de llegada son requeridas.',
-                'RENDICION_FECHA_HORA_LLEGADA.date' => 'La fecha y hora de llegada deben ser una fecha válida.',
-                'RENDICION_KILOMETRAJE_INICIO.required' => 'El kilometraje de inicio es requerido.',
-                'RENDICION_KILOMETRAJE_INICIO.integer' => 'El kilometraje de inicio debe ser un número entero.',
-                'RENDICION_KILOMETRAJE_INICIO.min' => 'El kilometraje de inicio debe ser mayor que cero.',
-                'RENDICION_KILOMETRAJE_INICIO.max' => 'El kilometraje de inicio no debe ser mayor a :max.',
-                'RENDICION_KILOMETRAJE_TERMINO.required' => 'El kilometraje de término es requerido.',
-                'RENDICION_KILOMETRAJE_TERMINO.integer' => 'El kilometraje de término debe ser un número entero.',
-                'RENDICION_KILOMETRAJE_TERMINO.min' => 'El kilometraje de término debe ser mayor que cero.',
-                'RENDICION_KILOMETRAJE_TERMINO.max' => 'El kilometraje de término no debe ser mayor a :max.',
-                'RENDICION_KILOMETRAJE_TERMINO.gt' => 'El kilometraje de término debe ser mayor que el kilometraje de inicio.',
-                'RENDICION_NIVEL_ESTANQUE.required' => 'El nivel de estanque es requerido.',
-                'RENDICION_NIVEL_ESTANQUE.string' => 'El nivel de estanque debe ser una cadena de caracteres.',
-                'RENDICION_NIVEL_ESTANQUE.max' => 'El nivel de estanque no debe exceder los :max caracteres.',
-                'RENDICION_ABASTECIMIENTO.required' => 'El abastecimiento es requerido.',
-                'RENDICION_ABASTECIMIENTO.string' => 'El abastecimiento debe ser una cadena de caracteres.',
-                'RENDICION_ABASTECIMIENTO.max' => 'El abastecimiento no debe exceder los :max caracteres.',
-                'RENDICION_TOTAL_HORAS.required' => 'El total de horas es requerido.',
-                'RENDICION_TOTAL_HORAS.integer' => 'El total de horas debe ser un número entero.',
-                'RENDICION_TOTAL_HORAS.min' => 'El total de horas debe ser mayor que cero.',
-                'RENDICION_TOTAL_HORAS.max' => 'El total de horas no debe ser mayor a :max.',
-                'RENDICION_OBSERVACIONES.string' => 'Las observaciones deben ser una cadena de caracteres.',
-                'RENDICION_OBSERVACIONES.max' => 'Las observaciones no deben exceder los :max caracteres.'
-            ]);
-
-            // Verificar si los datos de la orden de trabajo están presentes en la solicitud
-            if ($request->has('TRABAJA_NUMERO_ORDEN_TRABAJO') && $request->has('TRABAJA_HORA_INICIO_ORDEN_TRABAJO') && $request->has('TRABAJA_HORA_TERMINO_ORDEN_TRABAJO')) {
-                // Buscar la orden de trabajo asociada a la solicitud, si existe
-                $ordenDeTrabajo = OrdenDeTrabajo::where('SOLICITUD_VEHICULO_ID', $solicitud->SOLICITUD_VEHICULO_ID)->first();
+            if (  $request->has('rechazarSolicitud')) {
+                $solicitud->SOLICITUD_VEHICULO_ESTADO = ('RECHAZADO');
+                $solicitud->save();
+                return redirect()->route('solicitudesvehiculos.index')->with('success', 'Solicitud rechazada correctamente.');
+            } else {
                 
-                if ($ordenDeTrabajo) {
-                    // Si la orden de trabajo existe, actualiza sus campos
-                    $ordenDeTrabajo->ORDEN_TRABAJO_NUMERO = $request->input('TRABAJA_NUMERO_ORDEN_TRABAJO');
-                    $ordenDeTrabajo->ORDEN_TRABAJO_HORA_INICIO = $request->input('TRABAJA_HORA_INICIO_ORDEN_TRABAJO');
-                    $ordenDeTrabajo->ORDEN_TRABAJO_HORA_TERMINO = $request->input('TRABAJA_HORA_TERMINO_ORDEN_TRABAJO');
-                    $ordenDeTrabajo->save();
-                } /*else {
-                    // Si la orden de trabajo no existe, puedo crear una nueva (EN CASO DE QUE LO PIDAN) al revisar la solicitud.
-                    $ordenDeTrabajo = new OrdenDeTrabajo();
-                    $ordenDeTrabajo->SOLICITUD_VEHICULO_ID = $solicitud->SOLICITUD_VEHICULO_ID;
-                    $ordenDeTrabajo->ORDEN_TRABAJO_NUMERO = $request->input('TRABAJA_NUMERO_ORDEN_TRABAJO');
-                    $ordenDeTrabajo->ORDEN_TRABAJO_HORA_INICIO = $request->input('TRABAJA_HORA_INICIO_ORDEN_TRABAJO');
-                    $ordenDeTrabajo->ORDEN_TRABAJO_HORA_TERMINO = $request->input('TRABAJA_HORA_TERMINO_ORDEN_TRABAJO');
-                    $ordenDeTrabajo->save();
-                }*/
-            }
-
-
-            //dd($request);
-            // Manejo de errores de validación
-            if ($validator->fails()) {
-
-                //dd($validator);
-                return redirect()->back()->withErrors($validator)->withInput();
-            }
-    
-            // Actualizar los campos de la solicitud con los datos asociados a la revisión
-            $solicitud->VEHICULO_ID = $request->input('VEHICULO_ID');
-            $solicitud->CONDUCTOR_id = $request->input('CONDUCTOR_id');
-            $solicitud->SOLICITUD_VEHICULO_FECHA_HORA_INICIO_ASIGNADA = date('Y-m-d H:i:s', strtotime($request->input('SOLICITUD_VEHICULO_FECHA_HORA_INICIO_ASIGNADA')));
-            $solicitud->SOLICITUD_VEHICULO_FECHA_HORA_TERMINO_ASIGNADA = date('Y-m-d H:i:s', strtotime($request->input('SOLICITUD_VEHICULO_FECHA_HORA_TERMINO_ASIGNADA')));
-            $solicitud->SOLICITUD_VEHICULO_VIATICO = strtoupper($request->input('SOLICITUD_VEHICULO_VIATICO'));
-            $solicitud->SOLICITUD_VEHICULO_HORA_INICIO_CONDUCCION = $request->input('SOLICITUD_VEHICULO_HORA_INICIO_CONDUCCION');
-            $solicitud->SOLICITUD_VEHICULO_HORA_TERMINO_CONDUCCION = $request->input('SOLICITUD_VEHICULO_HORA_TERMINO_CONDUCCION');
-            // Guardar los cambios en la base de datos
-
-            $solicitud->save();
-
-            /*// Verificar si se envió el botón de autorizar
-            if ($request->has('autorizar')) {
-                // Registrar la autorización de la solicitud
-                $autorizacion = new Autorizacion();
-                $autorizacion->USUARIO_id =  Auth::user()->id;
-                $autorizacion->SOLICITUD_VEHICULO_ID = $solicitud->SOLICITUD_VEHICULO_ID;     
-                $solicitud->SOLICITUD_VEHICULO_ESTADO = 'POR RENDIR'; 
-
-                $autorizacion->save();          
-            }*/
-
-            // Verificar si se envió el botón de autorizar
-            if ($request->has('botonAutorizar')) {
-                if ((Auth::user()->cargo->CARGO_ID == $solicitud->SOLICITUD_VEHICULO_JEFE_QUE_AUTORIZA) && (Auth::user()->cargo->CARGO_NOMBRE !== 'JEFE DE DEPARTAMENTO DE ADMINISTRACION') ) {
-                    // Si es el 'JEFE QUE AUTORIZA'
-                    $existeAutorizacion = Autorizacion::where('SOLICITUD_VEHICULO_ID', $solicitud->SOLICITUD_VEHICULO_ID)
-                        ->where('USUARIO_id', Auth::user()->id)
-                        ->exists();
             
-                    if ($existeAutorizacion) {
-                        return redirect()->back()->with('error', 'La solicitud ya registra una autorización con su firma.');
-                    } else {
-                        // Registrar la autorización de la solicitud
-                        $autorizacion = new Autorizacion();
-                        $autorizacion->USUARIO_id = Auth::user()->id;
-                        $autorizacion->SOLICITUD_VEHICULO_ID = $solicitud->SOLICITUD_VEHICULO_ID;
-                        $autorizacion->save();
-                        // Cambiar el estado de la solicitud
-                        $solicitud->SOLICITUD_VEHICULO_ESTADO = 'POR AUTORIZAR';
-                        dump("AUTORICE 1");
-                    }
-                } else {
-                    dump("AUTORICE 2");
 
-                    // Si es el 'JEFE DE DEPARTAMENTO DE ADMINISTRACION'
+           
+                // Validación de datos
+                $validatorRules = [
+                    'VEHICULO_ID' => 'required|exists:vehiculos,VEHICULO_ID',
+                    'CONDUCTOR_id' => 'required|exists:users,id',
+                    'SOLICITUD_VEHICULO_VIATICO' => 'required|string|max:4',
+                    'SOLICITUD_VEHICULO_FECHA_HORA_INICIO_ASIGNADA' => 'required|date',
+                    'SOLICITUD_VEHICULO_FECHA_HORA_TERMINO_ASIGNADA' => 'required|date|after_or_equal:SOLICITUD_VEHICULO_FECHA_HORA_INICIO_ASIGNADA',
+                    'SOLICITUD_VEHICULO_HORA_INICIO_CONDUCCION' => 'required|date_format:H:i',
+                    'SOLICITUD_VEHICULO_HORA_TERMINO_CONDUCCION' => 'required|date_format:H:i|after_or_equal:SOLICITUD_VEHICULO_HORA_INICIO_CONDUCCION',
+                ];
+                
+                // Validar si los datos están presentes en la solicitud
+                if ($request->has('TRABAJA_NUMERO_ORDEN_TRABAJO') || $request->has('TRABAJA_HORA_INICIO_ORDEN_TRABAJO') || $request->has('TRABAJA_HORA_TERMINO_ORDEN_TRABAJO')) {
+                    // Realizar la validación de los datos recibidos
+                    $validatorRules = array_merge($validatorRules, [
+                        'TRABAJA_NUMERO_ORDEN_TRABAJO' => 'required|integer|min:0|max:999999',
+                        'TRABAJA_HORA_INICIO_ORDEN_TRABAJO' => 'required|date_format:H:i:s',
+                        'TRABAJA_HORA_TERMINO_ORDEN_TRABAJO' => 'required|date_format:H:i:s|after_or_equal:TRABAJA_HORA_INICIO_ORDEN_TRABAJO',
+                    ]);
+                }
+
+                if (($request->input('accionGuardar') == 1) || ($request->input('accionTerminar') == 1)) {
+                    $validatorRules = array_merge($validatorRules, [
+                        'REVISION_SOLICITUD_OBSERVACION' => 'required|string|max:255'
+                    ]);
+                }
+
+                if  ($request->has('botonRendir'))  {
+                    $validatorRules = array_merge($validatorRules, [
+                        'RENDICION_NUMERO_BITACORA' => 'required|integer|unique:rendiciones',
+                        'RENDICION_FECHA_HORA_LLEGADA' => 'required|date',
+                        'RENDICION_KILOMETRAJE_INICIO' => 'required|integer|min:1|max:999999',
+                        'RENDICION_KILOMETRAJE_TERMINO' => 'required|integer|min:1|max:999999|gt:RENDICION_KILOMETRAJE_INICIO',
+                        'RENDICION_NIVEL_ESTANQUE' => 'required|string|max:15',
+                        'RENDICION_ABASTECIMIENTO' => 'required|string|max:4',
+                        'RENDICION_TOTAL_HORAS' => 'required|integer|min:1|max:999999',
+                        'RENDICION_OBSERVACIONES' => 'nullable|string|max:255',
+                    ]);
+                }
+
+
+
+                $validator = Validator::make($request->all(), $validatorRules, [
+                    'VEHICULO_ID.required' => 'El campo Vehículo es obligatorio.',
+                    'VEHICULO_ID.exists' => 'El vehículo seleccionado no es válido.',
+                    'CONDUCTOR_id.required' => 'El campo Conductor es obligatorio.',
+                    'CONDUCTOR_id.exists' => 'El conductor seleccionado no es válido.',
+                    'SOLICITUD_VEHICULO_VIATICO.required' => 'El campo Viático es obligatorio.',
+                    'SOLICITUD_VEHICULO_VIATICO.string' => 'El campo Viático debe ser una cadena de caracteres.',
+                    'SOLICITUD_VEHICULO_VIATICO.max' => 'El campo Viático no puede tener más de :max caracteres.',
+                    'SOLICITUD_VEHICULO_FECHA_HORA_INICIO_ASIGNADA.required' => 'La fecha y hora de salida asignada es obligatorio.',
+                    'SOLICITUD_VEHICULO_FECHA_HORA_TERMINO_ASIGNADA.required' => 'La fecha y hora de regreso asignada es obligatorio.',
+                    'SOLICITUD_VEHICULO_FECHA_HORA_TERMINO_ASIGNADA.after_or_equal' => 'La fecha y hora de regreso asignada debe ser posterior a la fecha y hora de inicio asignada.',
+                    'SOLICITUD_VEHICULO_HORA_INICIO_CONDUCCION.required' => 'El campo Hora de inicio de conducción es obligatorio.',
+                    'SOLICITUD_VEHICULO_HORA_TERMINO_CONDUCCION.required' => 'El campo Hora de término de conducción es obligatorio.',
+                    'SOLICITUD_VEHICULO_HORA_TERMINO_CONDUCCION.after_or_equal' => 'La hora de término de conducción debe ser posterior a la hora de inicio de conducción.',
+
+                    'REVISION_SOLICITUD_OBSERVACION.required' => 'El campo Observaciones revisión es obligatorio.',
+                    'REVISION_SOLICITUD_OBSERVACION.string' => 'El campo Observaciones revisión debe ser una cadena de caracteres.',
+                    'REVISION_SOLICITUD_OBSERVACION.max' => 'El campo Observaciones revisión no puede tener más de :max caracteres.',
+                    'TRABAJA_NUMERO_ORDEN_TRABAJO.required' => 'El número de orden de trabajo es obligatorio.',
+
+                    'TRABAJA_NUMERO_ORDEN_TRABAJO.integer' => 'El número de orden de trabajo debe ser un número entero.',
+                    'TRABAJA_NUMERO_ORDEN_TRABAJO.min' => 'El número de orden de trabajo debe ser mínimo 0.',
+                    'TRABAJA_NUMERO_ORDEN_TRABAJO.max' => 'El número de orden de trabajo debe ser máximo 999999.',
+                    'TRABAJA_HORA_INICIO_ORDEN_TRABAJO.required' => 'La hora de inicio de la orden de trabajo es obligatoria.',
+                    'TRABAJA_HORA_INICIO_ORDEN_TRABAJO.date_format' => 'El formato de la hora de inicio de la orden de trabajo no es válido.',
+                    'TRABAJA_HORA_TERMINO_ORDEN_TRABAJO.required' => 'La hora de término de la orden de trabajo es obligatoria.',
+                    'TRABAJA_HORA_TERMINO_ORDEN_TRABAJO.date_format' => 'El formato de la hora de término de la orden de trabajo no es válido.',
+                    'TRABAJA_HORA_TERMINO_ORDEN_TRABAJO.after_or_equal' => 'La hora de término de la orden de trabajo debe ser posterior a la hora de inicio de la orden de trabajo.',
+
+                    'RENDICION_NUMERO_BITACORA.required' => 'El número de bitácora es requerido.',
+                    'RENDICION_NUMERO_BITACORA.integer' => 'El número de bitácora debe ser un número entero.',
+                    'RENDICION_NUMERO_BITACORA.unique' => 'El número de bitácora ya ha sido registrado.',
+                    'RENDICION_FECHA_HORA_LLEGADA.required' => 'La fecha y hora de llegada son requeridas.',
+                    'RENDICION_FECHA_HORA_LLEGADA.date' => 'La fecha y hora de llegada deben ser una fecha válida.',
+                    'RENDICION_KILOMETRAJE_INICIO.required' => 'El kilometraje de inicio es requerido.',
+                    'RENDICION_KILOMETRAJE_INICIO.integer' => 'El kilometraje de inicio debe ser un número entero.',
+                    'RENDICION_KILOMETRAJE_INICIO.min' => 'El kilometraje de inicio debe ser mayor que cero.',
+                    'RENDICION_KILOMETRAJE_INICIO.max' => 'El kilometraje de inicio no debe ser mayor a :max.',
+                    'RENDICION_KILOMETRAJE_TERMINO.required' => 'El kilometraje de término es requerido.',
+                    'RENDICION_KILOMETRAJE_TERMINO.integer' => 'El kilometraje de término debe ser un número entero.',
+                    'RENDICION_KILOMETRAJE_TERMINO.min' => 'El kilometraje de término debe ser mayor que cero.',
+                    'RENDICION_KILOMETRAJE_TERMINO.max' => 'El kilometraje de término no debe ser mayor a :max.',
+                    'RENDICION_KILOMETRAJE_TERMINO.gt' => 'El kilometraje de término debe ser mayor que el kilometraje de inicio.',
+                    'RENDICION_NIVEL_ESTANQUE.required' => 'El nivel de estanque es requerido.',
+                    'RENDICION_NIVEL_ESTANQUE.string' => 'El nivel de estanque debe ser una cadena de caracteres.',
+                    'RENDICION_NIVEL_ESTANQUE.max' => 'El nivel de estanque no debe exceder los :max caracteres.',
+                    'RENDICION_ABASTECIMIENTO.required' => 'El abastecimiento es requerido.',
+                    'RENDICION_ABASTECIMIENTO.string' => 'El abastecimiento debe ser una cadena de caracteres.',
+                    'RENDICION_ABASTECIMIENTO.max' => 'El abastecimiento no debe exceder los :max caracteres.',
+                    'RENDICION_TOTAL_HORAS.required' => 'El total de horas es requerido.',
+                    'RENDICION_TOTAL_HORAS.integer' => 'El total de horas debe ser un número entero.',
+                    'RENDICION_TOTAL_HORAS.min' => 'El total de horas debe ser mayor que cero.',
+                    'RENDICION_TOTAL_HORAS.max' => 'El total de horas no debe ser mayor a :max.',
+                    'RENDICION_OBSERVACIONES.string' => 'Las observaciones deben ser una cadena de caracteres.',
+                    'RENDICION_OBSERVACIONES.max' => 'Las observaciones no deben exceder los :max caracteres.'
+                ]);
+
+                // Verificar si los datos de la orden de trabajo están presentes en la solicitud
+                if ($request->has('TRABAJA_NUMERO_ORDEN_TRABAJO') && $request->has('TRABAJA_HORA_INICIO_ORDEN_TRABAJO') && $request->has('TRABAJA_HORA_TERMINO_ORDEN_TRABAJO')) {
+                    // Buscar la orden de trabajo asociada a la solicitud, si existe
+                    $ordenDeTrabajo = OrdenDeTrabajo::where('SOLICITUD_VEHICULO_ID', $solicitud->SOLICITUD_VEHICULO_ID)->first();
+                    
+                    if ($ordenDeTrabajo) {
+                        // Si la orden de trabajo existe, actualiza sus campos
+                        $ordenDeTrabajo->ORDEN_TRABAJO_NUMERO = $request->input('TRABAJA_NUMERO_ORDEN_TRABAJO');
+                        $ordenDeTrabajo->ORDEN_TRABAJO_HORA_INICIO = $request->input('TRABAJA_HORA_INICIO_ORDEN_TRABAJO');
+                        $ordenDeTrabajo->ORDEN_TRABAJO_HORA_TERMINO = $request->input('TRABAJA_HORA_TERMINO_ORDEN_TRABAJO');
+                        $ordenDeTrabajo->save();
+                    } /*else {
+                        // Si la orden de trabajo no existe, puedo crear una nueva (EN CASO DE QUE LO PIDAN) al revisar la solicitud.
+                        $ordenDeTrabajo = new OrdenDeTrabajo();
+                        $ordenDeTrabajo->SOLICITUD_VEHICULO_ID = $solicitud->SOLICITUD_VEHICULO_ID;
+                        $ordenDeTrabajo->ORDEN_TRABAJO_NUMERO = $request->input('TRABAJA_NUMERO_ORDEN_TRABAJO');
+                        $ordenDeTrabajo->ORDEN_TRABAJO_HORA_INICIO = $request->input('TRABAJA_HORA_INICIO_ORDEN_TRABAJO');
+                        $ordenDeTrabajo->ORDEN_TRABAJO_HORA_TERMINO = $request->input('TRABAJA_HORA_TERMINO_ORDEN_TRABAJO');
+                        $ordenDeTrabajo->save();
+                    }*/
+                }
+
+
+                //dd($request);
+                // Manejo de errores de validación
+                if ($validator->fails()) {
+
+                    //dd($validator);
+                    return redirect()->back()->withErrors($validator)->withInput();
+                }
+        
+                // Actualizar los campos de la solicitud con los datos asociados a la revisión
+                $solicitud->VEHICULO_ID = $request->input('VEHICULO_ID');
+                $solicitud->CONDUCTOR_id = $request->input('CONDUCTOR_id');
+                $solicitud->SOLICITUD_VEHICULO_FECHA_HORA_INICIO_ASIGNADA = date('Y-m-d H:i:s', strtotime($request->input('SOLICITUD_VEHICULO_FECHA_HORA_INICIO_ASIGNADA')));
+                $solicitud->SOLICITUD_VEHICULO_FECHA_HORA_TERMINO_ASIGNADA = date('Y-m-d H:i:s', strtotime($request->input('SOLICITUD_VEHICULO_FECHA_HORA_TERMINO_ASIGNADA')));
+                $solicitud->SOLICITUD_VEHICULO_VIATICO = strtoupper($request->input('SOLICITUD_VEHICULO_VIATICO'));
+                $solicitud->SOLICITUD_VEHICULO_HORA_INICIO_CONDUCCION = $request->input('SOLICITUD_VEHICULO_HORA_INICIO_CONDUCCION');
+                $solicitud->SOLICITUD_VEHICULO_HORA_TERMINO_CONDUCCION = $request->input('SOLICITUD_VEHICULO_HORA_TERMINO_CONDUCCION');
+                // Guardar los cambios en la base de datos
+
+                $solicitud->save();
+
+                /*// Verificar si se envió el botón de autorizar
+                if ($request->has('autorizar')) {
+                    // Registrar la autorización de la solicitud
                     $autorizacion = new Autorizacion();
-                    $autorizacion->USUARIO_id = Auth::user()->id;
-                    $autorizacion->SOLICITUD_VEHICULO_ID = $solicitud->SOLICITUD_VEHICULO_ID;
-                    $autorizacion->save();
+                    $autorizacion->USUARIO_id =  Auth::user()->id;
+                    $autorizacion->SOLICITUD_VEHICULO_ID = $solicitud->SOLICITUD_VEHICULO_ID;     
+                    $solicitud->SOLICITUD_VEHICULO_ESTADO = 'POR RENDIR'; 
 
-                    // Cambiar el estado de la solicitud
-                    $solicitud->SOLICITUD_VEHICULO_ESTADO = 'POR RENDIR';
+                    $autorizacion->save();          
+                }*/
 
-                    // Contar las autorizaciones existentes para la solicitud
-                    $cantidadAutorizaciones = Autorizacion::where('SOLICITUD_VEHICULO_ID', $solicitud->SOLICITUD_VEHICULO_ID)->count();
+                // Verificar si se envió el botón de autorizar
+                if ($request->has('botonAutorizar')) {
+                    //dd("OLA, ENTRE AL HAS AUTORIZAR");
+                    if ((Auth::user()->cargo->CARGO_ID == $solicitud->SOLICITUD_VEHICULO_JEFE_QUE_AUTORIZA) && (Auth::user()->cargo->CARGO_NOMBRE !== 'JEFE DE DEPARTAMENTO DE ADMINISTRACION') ) {
+                        // Si es el 'JEFE QUE AUTORIZA'
+                        $existeAutorizacion = Autorizacion::where('SOLICITUD_VEHICULO_ID', $solicitud->SOLICITUD_VEHICULO_ID)
+                            ->where('USUARIO_id', Auth::user()->id)
+                            ->exists();
+                
+                        if ($existeAutorizacion) {
+                            return redirect()->back()->with('error', 'La solicitud ya registra una autorización con su firma.');
+                        } else {
+                            // Registrar la autorización de la solicitud
+                            $autorizacionJefe = new Autorizacion();
+                            $autorizacionJefe->USUARIO_id = Auth::user()->id;
+                            $autorizacionJefe->SOLICITUD_VEHICULO_ID = $solicitud->SOLICITUD_VEHICULO_ID;
+                            $autorizacionJefe->save();
+                            // Cambiar el estado de la solicitud
+                            $solicitud->SOLICITUD_VEHICULO_ESTADO = 'POR AUTORIZAR';
+                            dump("AUTORICE 1");
+                        }
+                    } else {
+                        dump("AUTORICE 2");
 
-                    // Verificar si sólo ha firmado el jefe, entonces asignar como jefe que autoriza
-                    if ($cantidadAutorizaciones == 1) {
-                        $solicitud->SOLICITUD_VEHICULO_JEFE_QUE_AUTORIZA = Auth::user()->cargo->CARGO_ID;
+                        // Si es el 'JEFE DE DEPARTAMENTO DE ADMINISTRACION'
+                        $autorizacionJefeDpto = new Autorizacion();
+                        $autorizacionJefeDpto->USUARIO_id = Auth::user()->id;
+                        $autorizacionJefeDpto->SOLICITUD_VEHICULO_ID = $solicitud->SOLICITUD_VEHICULO_ID;
+                        $autorizacionJefeDpto->save();
+
+                        
+                        // Cambiar el estado de la solicitud
+                        $solicitud->SOLICITUD_VEHICULO_ESTADO = 'POR RENDIR';
+
+                        // Contar las autorizaciones existentes para la solicitud
+                        $cantidadAutorizaciones = Autorizacion::where('SOLICITUD_VEHICULO_ID', $solicitud->SOLICITUD_VEHICULO_ID)->count();
+
+                        // Verificar si sólo ha firmado el jefe, entonces asignar como jefe que autoriza
+                        if ($cantidadAutorizaciones == 1) {
+                            $solicitud->SOLICITUD_VEHICULO_JEFE_QUE_AUTORIZA = Auth::user()->cargo->CARGO_ID;
+                        }
                     }
+                    $solicitud->save();
                 }
-                $solicitud->save();
-            }
 
-            /* OTRA OPCION
-                        // Verificar si se envió el botón de revisar
-            if (($request->has('guardarRevision'))|| ($request->has('finalizarRevisiones'))) {
-                if($request->has('finalizarRevisiones')) {
-                    $solicitud->SOLICITUD_VEHICULO_ESTADO = 'POR APROBAR'; 
-                } else {
+                /* OTRA OPCION
+                            // Verificar si se envió el botón de revisar
+                if (($request->has('guardarRevision'))|| ($request->has('finalizarRevisiones'))) {
+                    if($request->has('finalizarRevisiones')) {
+                        $solicitud->SOLICITUD_VEHICULO_ESTADO = 'POR APROBAR'; 
+                    } else {
+                        $solicitud->SOLICITUD_VEHICULO_ESTADO = 'EN REVISIÓN'; 
+
+                    }
+                    // Registrar la revisión de la solicitud
+                    $revision = new RevisionSolicitud();
+                    $revision->USUARIO_id = Auth::user()->id;
+                    $revision->SOLICITUD_VEHICULO_ID = $solicitud->SOLICITUD_VEHICULO_ID;
+                    $revision->REVISION_SOLICITUD_OBSERVACION = $request->input('REVISION_SOLICITUD_OBSERVACION');
+                    $revision->save();
+                }
+                $solicitud->save();  */
+
+                if ($request->has('botonRendir')) {
+                    $rendicion = new Rendicion();
+                    $rendicion->RENDICION_NUMERO_BITACORA = $request->input('RENDICION_NUMERO_BITACORA');
+                    $rendicion->RENDICION_FECHA_HORA_LLEGADA = date('Y-m-d H:i:s', strtotime($request->input('RENDICION_FECHA_HORA_LLEGADA')));
+                    $rendicion->RENDICION_KILOMETRAJE_INICIO = $request->input('RENDICION_KILOMETRAJE_INICIO');
+                    $rendicion->RENDICION_KILOMETRAJE_TERMINO = $request->input('RENDICION_KILOMETRAJE_TERMINO');
+                    $rendicion->RENDICION_NIVEL_ESTANQUE = $request->input('RENDICION_NIVEL_ESTANQUE');
+                    $rendicion->RENDICION_ABASTECIMIENTO = $request->input('RENDICION_ABASTECIMIENTO');
+                    $rendicion->RENDICION_TOTAL_HORAS = $request->input('RENDICION_TOTAL_HORAS');
+                    $rendicion->RENDICION_OBSERVACIONES = $request->input('RENDICION_OBSERVACIONES');
+                    $rendicion->USUARIO_id = Auth::user()->id;
+                    $rendicion->SOLICITUD_VEHICULO_ID = $solicitud->SOLICITUD_VEHICULO_ID;
+                    $rendicion->save();
+
+                    $solicitud->SOLICITUD_VEHICULO_ESTADO = 'TERMINADO';
+                    $solicitud->save();
+
+                }
+                
+                // Verificar si se envió el botón de revisar
+                if (($request->input('accionGuardar') == 1)) {
                     $solicitud->SOLICITUD_VEHICULO_ESTADO = 'EN REVISIÓN'; 
-
+                    // Registrar la revisión de la solicitud
+                    $revision = new RevisionSolicitud();
+                    $revision->USUARIO_id = Auth::user()->id;
+                    $revision->SOLICITUD_VEHICULO_ID = $solicitud->SOLICITUD_VEHICULO_ID;
+                    $revision->REVISION_SOLICITUD_OBSERVACION = $request->input('REVISION_SOLICITUD_OBSERVACION');
+                    $revision->save();
+                } else if (($request->input('accionTerminar') == 1)) {
+                    $solicitud->SOLICITUD_VEHICULO_ESTADO = 'POR APROBAR'; 
+                    // Registrar la revisión de la solicitud
+                    $revision = new RevisionSolicitud();
+                    $revision->USUARIO_id = Auth::user()->id;
+                    $revision->SOLICITUD_VEHICULO_ID = $solicitud->SOLICITUD_VEHICULO_ID;
+                    $revision->REVISION_SOLICITUD_OBSERVACION = $request->input('REVISION_SOLICITUD_OBSERVACION');
+                    $revision->save();
                 }
-                // Registrar la revisión de la solicitud
-                $revision = new RevisionSolicitud();
-                $revision->USUARIO_id = Auth::user()->id;
-                $revision->SOLICITUD_VEHICULO_ID = $solicitud->SOLICITUD_VEHICULO_ID;
-                $revision->REVISION_SOLICITUD_OBSERVACION = $request->input('REVISION_SOLICITUD_OBSERVACION');
-                $revision->save();
-            }
-            $solicitud->save();  */
-
-            if ($request->has('botonRendir')) {
-                $rendicion = new Rendicion();
-                $rendicion->RENDICION_NUMERO_BITACORA = $request->input('RENDICION_NUMERO_BITACORA');
-                $rendicion->RENDICION_FECHA_HORA_LLEGADA = date('Y-m-d H:i:s', strtotime($request->input('RENDICION_FECHA_HORA_LLEGADA')));
-                $rendicion->RENDICION_KILOMETRAJE_INICIO = $request->input('RENDICION_KILOMETRAJE_INICIO');
-                $rendicion->RENDICION_KILOMETRAJE_TERMINO = $request->input('RENDICION_KILOMETRAJE_TERMINO');
-                $rendicion->RENDICION_NIVEL_ESTANQUE = $request->input('RENDICION_NIVEL_ESTANQUE');
-                $rendicion->RENDICION_ABASTECIMIENTO = $request->input('RENDICION_ABASTECIMIENTO');
-                $rendicion->RENDICION_TOTAL_HORAS = $request->input('RENDICION_TOTAL_HORAS');
-                $rendicion->RENDICION_OBSERVACIONES = $request->input('RENDICION_OBSERVACIONES');
-                $rendicion->USUARIO_id = Auth::user()->id;
-                $rendicion->SOLICITUD_VEHICULO_ID = $solicitud->SOLICITUD_VEHICULO_ID;
-                $rendicion->save();
-
-                $solicitud->SOLICITUD_VEHICULO_ESTADO = 'TERMINADO';
                 $solicitud->save();
 
-            }
-            
-            // Verificar si se envió el botón de revisar
-            if ($request->has('guardarRevision')) {
-                $solicitud->SOLICITUD_VEHICULO_ESTADO = 'EN REVISIÓN'; 
-                // Registrar la revisión de la solicitud
-                $revision = new RevisionSolicitud();
-                $revision->USUARIO_id = Auth::user()->id;
-                $revision->SOLICITUD_VEHICULO_ID = $solicitud->SOLICITUD_VEHICULO_ID;
-                $revision->REVISION_SOLICITUD_OBSERVACION = $request->input('REVISION_SOLICITUD_OBSERVACION');
-                $revision->save();
-            } else if ($request->has('finalizarRevisiones')) {
-                $solicitud->SOLICITUD_VEHICULO_ESTADO = 'POR APROBAR'; 
-                // Registrar la revisión de la solicitud
-                $revision = new RevisionSolicitud();
-                $revision->USUARIO_id = Auth::user()->id;
-                $revision->SOLICITUD_VEHICULO_ID = $solicitud->SOLICITUD_VEHICULO_ID;
-                $revision->REVISION_SOLICITUD_OBSERVACION = $request->input('REVISION_SOLICITUD_OBSERVACION');
-                $revision->save();
-            }
-            $solicitud->save();
 
 
-
-            // Actualizar los pasajeros asociados a la solicitud
-            $this->actualizarPasajeros($solicitud, $request);
-            //dd($solicitud);
-            // Redirigir a la vista de edición con un mensaje de éxito
-            return redirect()->route('solicitudesvehiculos.index')->with('success', 'Solicitud actualizada correctamente.');
+                // Actualizar los pasajeros asociados a la solicitud
+                $this->actualizarPasajeros($solicitud, $request);
+                //dd($solicitud);
+                // Redirigir a la vista de edición con un mensaje de éxito
+                if (($request->input('accionGuardar') == 1)) {
+                    return redirect()->route('solicitudesvehiculos.index')->with('success', 'Revisión guardada correctamente');
+                } else if (($request->input('accionTerminar') == 1)) {
+                    return redirect()->route('solicitudesvehiculos.index')->with('success', 'Revisiones de solicitud finalizadas');
+                } else if ($request->has('botonAutorizar')) {
+                    return redirect()->route('solicitudesvehiculos.indexPorAprobar')->with('success', 'Solicitud firmada con éxito');
+                } else if ($request->has('botonRendir')) {
+                    return redirect()->route('solicitudesvehiculos.indexPorRendir')->with('success', 'Solicitud firmada con éxito');
+                }
+            } 
         } catch (ModelNotFoundException $e) {
             // Manejar excepción de modelo no encontrado
             return redirect()->route('solicitudesvehiculos.index')->with('error', 'Ocurrió un error inesperado.');
@@ -720,6 +762,10 @@ class SolicitudVehiculosController extends Controller
             return redirect()->route('solicitudesvehiculos.index')->with('error', 'Error al actualizar la solicitud de vehículo.');
         }
     }
+
+
+
+
     /**
      * Remove the specified resource from storage.
      */
@@ -819,20 +865,51 @@ class SolicitudVehiculosController extends Controller
 
             // Definir el rango de celdas para las firmas de autorización
             $rangoFirmas = [
-                'jefeAutoriza' => 'G23',
-                'jefeAdmin' => 'C28',
+                'jefeAutoriza' => 'H22',
+                'jefeAdmin' => 'D27',
             ];
 
             // Rendicion para recuperar firma
             $rendicion = Rendicion::where('SOLICITUD_VEHICULO_ID', $solicitud->SOLICITUD_VEHICULO_ID)->first();
+            $totalKmsRecorridos= 0;
             // Verificar si se encontró la rendición
             if ($rendicion) {
                 // Acceder a la firma del conductor desde la rendición
                 $firmaConductor = ( 'Firmado digitalmente por: ' . "\n" . $rendicion->user->USUARIO_NOMBRES.' '.$rendicion->user->USUARIO_APELLIDOS . "\n" . ' Rut: '.$rendicion->user->USUARIO_RUT . "\n" . 'Fecha: '. Carbon::parse($rendicion->created_at)->format('d-m-Y H:i') );
+
+                $spreadsheet->getActiveSheet()->setCellValue('C31', strtoupper(Carbon::parse($rendicion->RENDICION_FECHA_HORA_LLEGADA)->isoFormat('dddd')));
+                $spreadsheet->getActiveSheet()->setCellValue('D31', Carbon::parse($rendicion->RENDICION_FECHA_HORA_LLEGADA)->format('j'));
+                $spreadsheet->getActiveSheet()->setCellValue('E31', strtoupper(Carbon::parse($rendicion->RENDICION_FECHA_HORA_LLEGADA)->isoFormat('MMMM')));
+                $spreadsheet->getActiveSheet()->setCellValue('F31', Carbon::parse($rendicion->RENDICION_FECHA_HORA_LLEGADA)->format('Y'));
+                $spreadsheet->getActiveSheet()->setCellValue('C32', strtoupper(Carbon::parse($rendicion->RENDICION_FECHA_HORA_LLEGADA)->format('H:i')));
+                $spreadsheet->getActiveSheet()->setCellValue('C33', $rendicion->RENDICION_TOTAL_HORAS);
+                $spreadsheet->getActiveSheet()->setCellValue('C34', $rendicion->RENDICION_OBSERVACIONES);
+                $spreadsheet->getActiveSheet()->setCellValue('J31', $rendicion->RENDICION_NUMERO_BITACORA);
+                $spreadsheet->getActiveSheet()->setCellValue('J32', $rendicion->RENDICION_ABASTECIMIENTO);
+                $spreadsheet->getActiveSheet()->setCellValue('J33', $rendicion->RENDICION_NIVEL_ESTANQUE);
+                $spreadsheet->getActiveSheet()->setCellValue('H31', $rendicion->RENDICION_KILOMETRAJE_INICIO);
+                $spreadsheet->getActiveSheet()->setCellValue('H32', $rendicion->RENDICION_KILOMETRAJE_TERMINO);
+                $spreadsheet->getActiveSheet()->setCellValue('H33', $totalKmsRecorridos);
+
+                // DATOS DE RENDICION
+                /*['C32', strtoupper(Carbon::parse($rendicion->RENDICION_FECHA_HORA_LLEGADA)->isoFormat('dddd'))],
+                ['D32', Carbon::parse($rendicion->RENDICION_FECHA_HORA_LLEGADA)->format('j')],
+                ['E32', strtoupper(Carbon::parse($rendicion->RENDICION_FECHA_HORA_LLEGADA)->isoFormat('MMMM'))],
+                ['F32', Carbon::parse($rendicion->RENDICION_FECHA_HORA_LLEGADA)->format('Y')],
+                ['C33', strtoupper(Carbon::parse($rendicion->RENDICION_FECHA_HORA_LLEGADA)->format('H:i'))],
+                ['C34', $rendicion->RENDICION_TOTAL_HORAS],
+                ['C35', $rendicion->RENDICION_OBSERVACIONES],
+                ['J32', $rendicion->RENDICION_NUMERO_BITACORA ],
+                ['J33', $rendicion->RENDICION_ABASTECIMIENTO],
+                ['J34', $rendicion->RENDICION_NIVEL_ESTANQUE],
+                ['H32', $rendicion->RENDICION_KILOMETRAJE_INICIO],
+                ['H33', $rendicion->RENDICION_KILOMETRAJE_TERMINO],
+                ['H34', $totalKmsRecorridos]*/
+
             } else {
                 $firmaConductor = " ";
             }
-
+            //dd($rendicion);
 
             // Verificar si existe solo una autorización y la solicitud está en el estado adecuado
             if ($autorizaciones->count() === 1 && ($solicitud->SOLICITUD_VEHICULO_ESTADO === 'POR RENDIR' || $solicitud->SOLICITUD_VEHICULO_ESTADO === 'TERMINADO')) {
@@ -863,62 +940,62 @@ class SolicitudVehiculosController extends Controller
             // Fusionar los arreglos de datos de la orden de trabajo y la solicitud estándar
             $datos = array_merge(
                 $ordenDeTrabajo ? [
-                    ['G9', $ordenDeTrabajo->ORDEN_TRABAJO_NUMERO],
-                    ['I9', strtoupper(Carbon::parse($ordenDeTrabajo->ORDEN_TRABAJO_HORA_INICIO)->format('H:i'))],
-                    ['I10', strtoupper(Carbon::parse($ordenDeTrabajo->ORDEN_TRABAJO_HORA_TERMINO)->format('H:i'))],
+                    ['H9', $ordenDeTrabajo->ORDEN_TRABAJO_NUMERO],
+                    ['J9', strtoupper(Carbon::parse($ordenDeTrabajo->ORDEN_TRABAJO_HORA_INICIO)->format('H:i'))],
+                    ['J10', strtoupper(Carbon::parse($ordenDeTrabajo->ORDEN_TRABAJO_HORA_TERMINO)->format('H:i'))],
                 ] : [],
 
                 // Fecha y hora asignada
                 $solicitud->SOLICITUD_VEHICULO_FECHA_HORA_INICIO_ASIGNADA !== null ? [
-                    ['B11', strtoupper(Carbon::parse($solicitud->SOLICITUD_VEHICULO_FECHA_HORA_INICIO_ASIGNADA)->isoFormat('dddd'))],
-                    ['C11', Carbon::parse($solicitud->SOLICITUD_VEHICULO_FECHA_HORA_INICIO_ASIGNADA)->format('j')],
-                    ['D11', strtoupper(Carbon::parse($solicitud->SOLICITUD_VEHICULO_FECHA_HORA_INICIO_ASIGNADA)->isoFormat('MMMM'))],
-                    ['E11', Carbon::parse($solicitud->SOLICITUD_VEHICULO_FECHA_HORA_INICIO_ASIGNADA)->format('Y')],
-                    ['G11', strtoupper(Carbon::parse($solicitud->SOLICITUD_VEHICULO_FECHA_HORA_INICIO_ASIGNADA)->format('H:i'))],
+                    ['C11', strtoupper(Carbon::parse($solicitud->SOLICITUD_VEHICULO_FECHA_HORA_INICIO_ASIGNADA)->isoFormat('dddd'))],
+                    ['D11', Carbon::parse($solicitud->SOLICITUD_VEHICULO_FECHA_HORA_INICIO_ASIGNADA)->format('j')],
+                    ['E11', strtoupper(Carbon::parse($solicitud->SOLICITUD_VEHICULO_FECHA_HORA_INICIO_ASIGNADA)->isoFormat('MMMM'))],
+                    ['F11', Carbon::parse($solicitud->SOLICITUD_VEHICULO_FECHA_HORA_INICIO_ASIGNADA)->format('Y')],
+                    ['H11', strtoupper(Carbon::parse($solicitud->SOLICITUD_VEHICULO_FECHA_HORA_INICIO_ASIGNADA)->format('H:i'))],
                 ] : [
-                    ['B11', ' '], // Espacio en blanco si no está definido
-                    ['C11', ' '],
+                    ['C11', ' '], // Espacio en blanco si no está definido
                     ['D11', ' '],
                     ['E11', ' '],
-                    ['G11', ' '],
+                    ['F11', ' '],
+                    ['H11', ' '],
                 ],
 
                 $solicitud->SOLICITUD_VEHICULO_FECHA_HORA_TERMINO_ASIGNADA !== null ? [
-                    ['B12', strtoupper(Carbon::parse($solicitud->SOLICITUD_VEHICULO_FECHA_HORA_TERMINO_ASIGNADA)->isoFormat('dddd'))],
-                    ['C12', Carbon::parse($solicitud->SOLICITUD_VEHICULO_FECHA_HORA_TERMINO_ASIGNADA)->format('j')],
-                    ['D12', strtoupper(Carbon::parse($solicitud->SOLICITUD_VEHICULO_FECHA_HORA_TERMINO_ASIGNADA)->isoFormat('MMMM'))],
-                    ['E12', Carbon::parse($solicitud->SOLICITUD_VEHICULO_FECHA_HORA_TERMINO_ASIGNADA)->format('Y')],
-                    ['G12', strtoupper(Carbon::parse($solicitud->SOLICITUD_VEHICULO_FECHA_HORA_TERMINO_ASIGNADA)->format('H:i'))],
+                    ['C12', strtoupper(Carbon::parse($solicitud->SOLICITUD_VEHICULO_FECHA_HORA_TERMINO_ASIGNADA)->isoFormat('dddd'))],
+                    ['D12', Carbon::parse($solicitud->SOLICITUD_VEHICULO_FECHA_HORA_TERMINO_ASIGNADA)->format('j')],
+                    ['E12', strtoupper(Carbon::parse($solicitud->SOLICITUD_VEHICULO_FECHA_HORA_TERMINO_ASIGNADA)->isoFormat('MMMM'))],
+                    ['F12', Carbon::parse($solicitud->SOLICITUD_VEHICULO_FECHA_HORA_TERMINO_ASIGNADA)->format('Y')],
+                    ['H12', strtoupper(Carbon::parse($solicitud->SOLICITUD_VEHICULO_FECHA_HORA_TERMINO_ASIGNADA)->format('H:i'))],
                 ] : [
-                    ['B12', ' '], // Espacio en blanco si no está definido
-                    ['C12', ' '],
+                    ['C12', ' '], // Espacio en blanco si no está definido
                     ['D12', ' '],
                     ['E12', ' '],
-                    ['G12', ' '],
+                    ['F12', ' '],
+                    ['H12', ' '],
                 ],
                 [
                     // Fecha de creación solicitud
-                    ['D4', strtoupper(Carbon::parse($solicitud->created_at)->locale('es_ES')->isoFormat('dddd'))],
-                    ['E4', $solicitud->created_at->format('j')],
-                    ['F4', strtoupper(Carbon::parse($solicitud->created_at)->locale('es_ES')->isoFormat('MMMM'))],
-                    ['G4', $solicitud->created_at->format('Y')],
+                    ['E4', strtoupper(Carbon::parse($solicitud->created_at)->locale('es_ES')->isoFormat('dddd'))],
+                    ['F4', $solicitud->created_at->format('j')],
+                    ['G4', strtoupper(Carbon::parse($solicitud->created_at)->locale('es_ES')->isoFormat('MMMM'))],
+                    ['H4', $solicitud->created_at->format('Y')],
 
 
                     // Datos del solicitante
-                    ['B7', $solicitud->user->USUARIO_NOMBRES.' '.$solicitud->user->USUARIO_APELLIDOS],
-                    ['B8', $solicitud->user->oficina->OFICINA_NOMBRE],
-                    ['B9', $solicitud->user->ubicacion ? $solicitud->user->ubicacion->UBICACION_NOMBRE : $solicitud->user->departamento->DEPARTAMENTO_NOMBRE],
-                    ['B10', $solicitud->user->cargo->CARGO_NOMBRE],
-                    ['G7', strtoupper($solicitud->comunaDestino->COMUNA_NOMBRE)],
-                    ['G8', $solicitud->SOLICITUD_VEHICULO_MOTIVO],
+                    ['C7', $solicitud->user->USUARIO_NOMBRES.' '.$solicitud->user->USUARIO_APELLIDOS],
+                    ['C8', $solicitud->user->oficina->OFICINA_NOMBRE],
+                    ['C9', $solicitud->user->ubicacion ? $solicitud->user->ubicacion->UBICACION_NOMBRE : $solicitud->user->departamento->DEPARTAMENTO_NOMBRE],
+                    ['C10', $solicitud->user->cargo->CARGO_NOMBRE],
+                    ['H7', strtoupper($solicitud->comunaDestino->COMUNA_NOMBRE)],
+                    ['H8', $solicitud->SOLICITUD_VEHICULO_MOTIVO],
 
                     
 
 
                     // HORAS INICIO Y TERMINO CONDUCCIÓN, Y VIÁTICO
-                    ['I11', strtoupper(Carbon::parse($solicitud->SOLICITUD_VEHICULO_HORA_INICIO_CONDUCCION)->format('H:i'))],
-                    ['I12', strtoupper(Carbon::parse($solicitud->SOLICITUD_VEHICULO_HORA_TERMINO_CONDUCCION)->format('H:i'))],
-                    ['G10', strtoupper($solicitud->SOLICITUD_VEHICULO_VIATICO)],
+                    ['J11', strtoupper(Carbon::parse($solicitud->SOLICITUD_VEHICULO_HORA_INICIO_CONDUCCION)->format('H:i'))],
+                    ['J12', strtoupper(Carbon::parse($solicitud->SOLICITUD_VEHICULO_HORA_TERMINO_CONDUCCION)->format('H:i'))],
+                    ['H10', strtoupper($solicitud->SOLICITUD_VEHICULO_VIATICO)],
 
 
 
@@ -926,23 +1003,23 @@ class SolicitudVehiculosController extends Controller
                     // OBTENER PASAJEROS E IMPLEMENTAR LLENADO DE EXCEL PARA ELLOS.
 
                     // POLIZA PARA CONDUCTOR
-                    ['A25', strtoupper($solicitud->conductor->USUARIO_NOMBRES . ' ' . $solicitud->conductor->USUARIO_APELLIDOS . ' | Venc Licencia: ' . $fechaVencimientoLicencia . ' | N° Póliza: ' . $polizaConductor->POLIZA_NUMERO)],
+                    ['B24', strtoupper($solicitud->conductor->USUARIO_NOMBRES . ' ' . $solicitud->conductor->USUARIO_APELLIDOS . ' | Venc Licencia: ' . $fechaVencimientoLicencia . ' | N° Póliza: ' . $polizaConductor->POLIZA_NUMERO)],
                     // JEFE QUE AUTORIZA
-                    ['G25', strtoupper($jefeQueAutoriza)],
+                    ['H24', strtoupper($jefeQueAutoriza)],
                     
                     // PATENTE
-                    ['F29', strtoupper($solicitud->vehiculo->VEHICULO_PATENTE)],
+                    ['G28', strtoupper($solicitud->vehiculo->VEHICULO_PATENTE)],
                     // TIPO VEHICULO
-                    ['H29', strtoupper($solicitud->vehiculo->tipoVehiculo->TIPO_VEHICULO_NOMBRE)],
+                    ['I28', strtoupper($solicitud->vehiculo->tipoVehiculo->TIPO_VEHICULO_NOMBRE)],
 
 
 
                     // FOLIO
-                    ['I3', $solicitud->SOLICITUD_VEHICULO_ID],
+                    ['J3', $solicitud->SOLICITUD_VEHICULO_ID],
 
 
                     // FIRMA DE CONDUCTOR ASIGNADO
-                    ['C23', $firmaConductor],
+                    ['D22', $firmaConductor],
 
                 ]
             );
@@ -952,17 +1029,17 @@ class SolicitudVehiculosController extends Controller
                 $filaPasajero = $inicioFilaPasajeros + $index;
                 
                 // Asignar el nombre del pasajero a la celda correspondiente en la columna C y la fila calculada
-                $spreadsheet->getActiveSheet()->setCellValue('B' . $filaPasajero, $pasajero->usuario->USUARIO_NOMBRES . ' ' . $pasajero->usuario->USUARIO_APELLIDOS);
+                $spreadsheet->getActiveSheet()->setCellValue('C' . $filaPasajero, $pasajero->usuario->USUARIO_NOMBRES . ' ' . $pasajero->usuario->USUARIO_APELLIDOS);
                 
                 // Agregar la dirección regional del pasajero
-                $spreadsheet->getActiveSheet()->setCellValue('G' . $filaPasajero, $pasajero->usuario->ubicacion ? $pasajero->usuario->ubicacion->UBICACION_NOMBRE : $pasajero->usuario->departamento->DEPARTAMENTO_NOMBRE . ' | ' . ($pasajero->usuario->oficina ? $pasajero->usuario->oficina->OFICINA_NOMBRE : ''));
+                $spreadsheet->getActiveSheet()->setCellValue('H' . $filaPasajero, $pasajero->usuario->ubicacion ? $pasajero->usuario->ubicacion->UBICACION_NOMBRE : $pasajero->usuario->departamento->DEPARTAMENTO_NOMBRE . ' | ' . ($pasajero->usuario->oficina ? $pasajero->usuario->oficina->OFICINA_NOMBRE : ''));
 
             }
 
             // Limpiar las celdas sobrantes si hay menos de 8 pasajeros
             for ($i = $inicioFilaPasajeros + count($pasajeros); $i <= $finFilaPasajeros; $i++) {
-                $spreadsheet->getActiveSheet()->setCellValue('B' . $i, '');
-                $spreadsheet->getActiveSheet()->setCellValue('G' . $i, '');
+                $spreadsheet->getActiveSheet()->setCellValue('C' . $i, '');
+                $spreadsheet->getActiveSheet()->setCellValue('H' . $i, '');
             }
 
 
@@ -999,56 +1076,45 @@ class SolicitudVehiculosController extends Controller
         }
     }
 
-
-    
-    /*public function exportToPdf(Request $request, $id)
+    // Método para verificar la contraseña del usuario
+    public function verificarContrasena(Request $request)
     {
-        try {
-            // Ruta del archivo Excel generado
-            $excelFilePath = storage_path('app/public/Hoja_Test_Modificada.xlsx');
-            // Verificar la existencia del archivo Excel
-            if (!file_exists($excelFilePath)) {
-                throw new \Exception('El archivo Excel no existe en la ruta especificada.');
+        /*dd($request);
+        
+        $password = $request->input('password');
+
+        // Lógica para verificar la contraseña
+        if ($password === 'contraseña_correcta') {
+            return response()->json(['message' => 'Contraseña correcta'], 200);
+        } else {
+            return response()->json(['message' => 'Contraseña incorrecta'], 401);
+        }
+
+        if (!Hash::check(request('password'), Auth::user()->password)) {
+            return redirect()->back()->with('error', 'La contraseña proporcionada no es correcta');
+        } else {
+            return view('sia2.solicitudes.vehiculos.editPorAprobar')->with('success', 'Firma(s) realizada(s) con éxito');
+
+        }*/
+
+
+
+        // Verificar si el usuario está autenticado
+        if (Auth::check()) {
+            // Verificar la contraseña proporcionada por el usuario
+            if (Hash::check($request->password, Auth::user()->password)) {
+                $response = ['message' => 'Contraseña correcta'];
+                return response()->json($response, 200);
+            } else {
+                $response = ['message' => 'Contraseña incorrecta'];
+                return response()->json($response, 401);
             }
-    
-            // Nombre del archivo PDF de salida
-            $pdfFileName = 'Hoja_Test_Modificada.pdf';
-            
-            // Cargar el archivo Excel
-            $spreadsheet = IOFactory::load($excelFilePath);
-            
-            // Crear una instancia de Dompdf
-            $dompdf = new Dompdf();
-            
-            // Crear un escritor HTML para el archivo Excel
-            $writer = new \PhpOffice\PhpSpreadsheet\Writer\Html($spreadsheet);
-            $htmlContent = $writer->generateSheetData();
-    
-            // Verificar el contenido HTML generado
-            //dd($htmlContent);
-    
-            // Cargar el contenido HTML generado a partir del archivo Excel
-            $dompdf->loadHtml($htmlContent);
-            
-            // Renderizar el PDF
-            $dompdf->render();
-
-            // Obtener los datos binarios del PDF
-            $pdfOutput = $dompdf->output();
-
-            // Guardar el PDF en el almacenamiento
-            $pdfFilePath = storage_path('app/public/' . $pdfFileName);
-            file_put_contents($pdfFilePath, $pdfOutput);
-
-            // Descargar el archivo PDF
-            return response()->download($pdfFilePath, $pdfFileName)->deleteFileAfterSend(true);
-        } catch (\Exception $e) {
-            dd($e);
-            // Manejar errores si ocurre algún problema
-            return redirect()->back()->with('error', 'Error al exportar el archivo a PDF');
+        } else {
+            $response = ['message' => 'Usuario no autenticado'];
+            return response()->json($response, 400);
         }
     }
-    */
+
 
 
 

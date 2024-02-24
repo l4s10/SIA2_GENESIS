@@ -40,16 +40,17 @@
                     </div>
                 </div>
                 
-
                 <div class="col-md-2">
-                    <div class="mb-3">
-                        <label for="SOLICITUD_ESTADO"><i class="fa-solid fa-right-from-bracket"></i> Estado:</label>
-                        <input type="text" class="form-control" id="SOLICITUD_ESTADO" name="SOLICITUD_ESTADO" value="{{ $solicitud->SOLICITUD_VEHICULO_ESTADO }}" readonly required style="text-align: center; color: #e6500a;">
-                    </div>
-                    <!-- Leyenda -->
-                    <div class="mb-3">
-                        <small>La solicitud <strong>no</strong> ha sido aprobada</small>
-                    </div>
+                    @if ($solicitud->SOLICITUD_VEHICULO_ESTADO == 'POR RENDIR')
+                        <div class="mb-3">
+                            <label for="SOLICITUD_ESTADO"><i class="fa-solid fa-right-from-bracket"></i> Estado:</label>
+                            <input type="text" class="form-control" id="SOLICITUD_ESTADO" name="SOLICITUD_ESTADO" value="⚪ {{  $solicitud->SOLICITUD_VEHICULO_ESTADO }}" readonly required style=" text-align: center; color: black; font-weight: bold;">
+                        </div>
+                        <!-- Leyenda -->
+                        <div class="mb-3">
+                            <small>La solicitud <strong>no</strong> ha sido firmada.</small>
+                        </div>
+                    @endif
                 </div>
 
                 <div class="col-md-2">
@@ -275,10 +276,10 @@
                 
 
                 <div id="retornoDetalles" class="row mb-4">
-                    <div class="col-md-6">
-                        <button id="botonPasajeros" type="button" class="btn" style="background-color: #9DA6B2; color: #fff;">
+                    <div class="col-md-3">
+                        <button id="botonPasajeros" type="button" class="btn btn-custom" style="background-color: #1389EB; color: #fff;">
                             <i class="fa-solid fa-user-plus"></i> Mostrar Pasajeros
-                        </button>
+                        </button>                
                     </div>
                     
                 </div>
@@ -342,8 +343,8 @@
             <br>
 
             <div class="row mb-4">
-                <div class="col-md-6">
-                    <button id="botonDetalles" type="button" class="btn" style="background-color: #1389EB; color: #fff;">
+                <div class="col-md-3">
+                    <button id="botonDetalles" type="button" class="btn btn-custom" style="background-color: #1389EB; color: #fff;">
                         <i class="fa-solid fa-magnifying-glass-plus"></i> Mostrar Detalles
                     </button>
                 </div>
@@ -468,510 +469,968 @@
            
             <!-- Botón Cancelar -->
             <br><br>
-            <div class="row">
-                <div class="col-md-6">
-                    <!-- Botón Cancelar -->
-                    <button type="button" class="btn" onclick="window.history.back();" style="background-color: #E22C2C; color: white;"><i class="fa-solid fa-angles-left"></i> Cancelar</button>
-                </div>
-                <div class="col-md-4">
-                    <!-- Botón Cancelar -->
-                </div>
 
-                <div class="col-md-2 text-end">
-                    <!-- Botón Rendir Solicitud -->
-                    <input type="hidden" name="botonRendir">
-                    <button type="button" class="btn btn-success" name="botonRendicion" onclick="autorizarFormulario()" style="background-color: #00B050;" id="botonRendicion"><i class="fa-solid fa-clipboard-check"></i> Rendir Solicitud</button>
-        
+            <div class="row">
+                <div class="col-md-3">
+                    <!-- Botón Cancelar -->
+                    <button type="button" class="btn btn-custom" onclick="window.history.back();" style="background-color: #E22C2C; color: white;"><i class="fa-solid fa-angles-left"></i> Cancelar</button>
+                </div>
+                <div class="col-md-3">
+                   
+                </div>
+                <div class="col-md-6">
+                    <div class="row">
+                        <div class="col-md-6 text-end">
+                        </div>
+                        <div class="col-md-6">
+                            <!-- Botón Guardar esta Revisión -->
+                            <input type="hidden" name="botonRendir">
+                            <button type="button" class="btn btn-custom" onclick="validarFormulario()" id="botonRendicion" style="background-color: #00B050; color: white;" name="botonRendicion" ><i class="fa-solid fa-clipboard-check" style="margin-right: 5px;"></i> Rendir Solicitud</button>
+                        </div>
+                    </div>
                 </div>
             </div>
+
+
+
+
+
+            <!-- Modal de AdminLTE para ingresar contraseña -->
+            <div class="modal fade" id="passwordModal" tabindex="-1" role="dialog" aria-labelledby="passwordModalLabel" aria-hidden="true">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" style="text-align: center;" id="passwordModalLabel">Autenticación Para Firmar Autorización</h5>
+                            <button type="button" class="close" onclick="cerrarModal()" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="form-group">
+                                <label for="inputPassword">Contraseña:</label>
+                                <input type="password" class="form-control" id="inputPassword" placeholder="Ingrese su contraseña">
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" onclick="cerrarModal()" style="background-color: #E22C2C; color: white;"><i class="fa-solid fa-angles-left"></i> Cancelar</button>
+                            <button type="button" class="btn btn-primary" onclick="verificarContraseña()" style="background-color: #00B050; color: white;"><i class="fa-solid fa-signature"></i> Firmar</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
 
         </form>
     </div>
 @stop
 
+
+@section('css')
+    <style>
+        .btn-custom {
+            width: 100%; /* Puedes ajustar el ancho según tus necesidades */
+        }
+    </style>
+@stop
+
+
 @section('js')
-<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <!-- jQuery -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <!-- Bootstrap -->
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 
-
-<script>
-     document.addEventListener('DOMContentLoaded', function () {
-    // Obtener el botón y los detalles
-    const botonDetalles = document.getElementById('botonDetalles');
-    const detalles = document.getElementById('detalles');
-    const retornoDetalles = document.getElementById('retornoDetalles');
-
-    // Agregar un event listener al botón
-    botonDetalles.addEventListener('click', function() {
-        // Verificar si los detalles están visibles
-        if (detalles.style.display === 'none') {
-            // Si están ocultos, mostrarlos
-            detalles.style.display = 'block';
-            botonDetalles.innerHTML = '<i class="fa-solid fa-magnifying-glass-minus"></i> Ocultar Detalles';
-            // Desplazar la página hasta la sección de Solicitante
-            window.scrollTo({
-                top: retornoDetalles.offsetTop,
-                behavior: "smooth" // Desplazamiento suave
-            });
-        } else {
-            // Si están visibles, ocultarlos
-            detalles.style.display = 'none';
-            botonDetalles.innerHTML = '<i class="fa-solid fa-magnifying-glass-plus"></i> Mostrar Detalles';
-            // Desplazar la página hasta la sección de Solicitante
-            window.scrollTo({
-                top: divOculto.offsetTop,
-                behavior: "smooth" // Desplazamiento suave
-            });
-        }
-    });
-});
-</script>
-
-
-<script>
-    // Función para activar todos los campos del formulario al hacer clic en el botón "Rendir"
-    function autorizarFormulario() {
-        // Obtener todos los campos de la rendición
-        var camposRendicion = document.querySelectorAll('#formulario input[name^="RENDICION_"], #formulario select[name^="RENDICION_"], #formulario textarea[name^="RENDICION_"]');
-
-        // Verificar si todos los campos de la rendición tienen valor
-        var rendicionCompleta = Array.from(camposRendicion).every(function(campo) {
-            return campo.value.trim() !== ''; // Verifica que el valor del campo no esté vacío
-        });
-
-        if (rendicionCompleta) {
-            // Activar todos los campos del formulario
-            var camposFormulario = document.querySelectorAll('#formulario input, #formulario select, #formulario textarea, #pasajeros input, #pasajeros select, #pasajeros textarea');
-            camposFormulario.forEach(function (campo) {
-                campo.removeAttribute('disabled');
-            });
-
-            // Deshabilitar campos adicionales si es necesario
-            document.getElementById('TRABAJA_NUMERO_ORDEN_TRABAJO').setAttribute('disabled', 'disabled');
-            document.getElementById('TRABAJA_HORA_INICIO_ORDEN_TRABAJO').setAttribute('disabled', 'disabled');
-            document.getElementById('TRABAJA_HORA_TERMINO_ORDEN_TRABAJO').setAttribute('disabled', 'disabled');
-
-            // Deshabilitar el botón después de hacer clic para evitar múltiples envíos del formulario
-            document.getElementById('botonRendicion').setAttribute('disabled', 'disabled');
-            
-            // Envía el formulario
-            document.getElementById('formulario').submit();
-        } else {
-            // Si la rendición no está completa, no se envía el formulario
-            alert('Debe completar todos los campos de la rendición antes de enviar el formulario.');
-            return false; // Evita que el formulario se envíe si la rendición no está completa
-        }
-    }
-</script>
-
-
-<script>
-    document.addEventListener('DOMContentLoaded', function () {
-        let inputfechaHoraRendicion = document.getElementById('RENDICION_FECHA_HORA_LLEGADA');
-        // Obtener los valores de los kilometrajes de inicio y término
-        let inputKilometrajeInicio = document.getElementById('RENDICION_KILOMETRAJE_INICIO');
-        let inputKilometrajeTermino = document.getElementById('RENDICION_KILOMETRAJE_TERMINO');
-        let inputTotalHoras = document.getElementById('RENDICION_TOTAL_HORAS');
-        let inputNumeroBitacora = document.getElementById('RENDICION_NUMERO_BITACORA');
-
-
-
-        // Obtener la fecha y hora actual
-        let fechaActual = new Date();
-        
-        // Calcular la fecha mínima permitida (hace 15 días)
-        let fechaMinimaPermitida = new Date();
-        fechaMinimaPermitida.setDate(fechaActual.getDate() - 15);
-
-        // Configurar la fecha y hora máxima permitida como la fecha y hora actual
-        let fechaMaximaPermitida = fechaActual;
-
-        // Configurar Flatpickr
-        flatpickr(inputfechaHoraRendicion, {
-            enableTime: true,
-            dateFormat: "Y-m-d H:i",
-            minDate: fechaMinimaPermitida,
-            maxDate: fechaMaximaPermitida,
-            locale: "es",
-        });
-
-        // Verificar si la fecha está vacía y establecer el placeholder en consecuencia
-        if (inputfechaHoraRendicion.value.trim() === '') {
-            inputfechaHoraRendicion.setAttribute('placeholder', '-- Seleccione una fecha y hora --');
-        }
-
-        
-        // Validar los campos de kilometraje
-        inputKilometrajeInicio.addEventListener('change', function() {
-            if (inputKilometrajeInicio.value <= 0 || inputKilometrajeInicio.value > 999999) {
-                alert('El kilometraje de inicio debe ser mayor que 1 y menor o igual a 999999.');
-                inputKilometrajeInicio.value = ''; // Limpiar el campo
-            } else if (inputKilometrajeTermino.value !== '' && inputKilometrajeInicio.value >= inputKilometrajeTermino.value) {
-                alert('El kilometraje de inicio debe ser menor que el kilometraje de término.');
-                inputKilometrajeInicio.value = ''; // Limpiar el campo
-            }
-        });
-
-        inputKilometrajeTermino.addEventListener('change', function() {
-            if (inputKilometrajeTermino.value <= 0 || inputKilometrajeTermino.value > 999999) {
-                alert('El kilometraje de término debe ser mayor que 1 y menor o igual a 999999.');
-                inputKilometrajeTermino.value = ''; // Limpiar el campo
-            } else if (inputKilometrajeInicio.value !== '' && inputKilometrajeInicio.value >= inputKilometrajeTermino.value) {
-                alert('El kilometraje de término debe ser mayor que el kilometraje de inicio.');
-                inputKilometrajeTermino.value = ''; // Limpiar el campo
-            }
-        });
-
-        inputTotalHoras.addEventListener('change', function() {
-            if (inputTotalHoras.value <= 0 || inputTotalHoras.value > 300) {
-                alert('Ingrese una cantidad válida de horas de conducción. ');
-                inputTotalHoras.value = ''; // Limpiar el campo
-            } 
-        });
-
-        inputNumeroBitacora.addEventListener('change', function() {
-            if (inputNumeroBitacora.value <= 0 || inputNumeroBitacora.value > 999999) {
-                alert('Ingrese un número de bitácora válido. ');
-                inputNumeroBitacora.value = ''; // Limpiar el campo
-            } 
-        });
-    });
-</script>
-<script>
-
-    document.addEventListener('DOMContentLoaded', function () {
-        let inputfechaHoraInicioAsignada = document.getElementById('fechaHoraInicioAsignada');
-        let inputfechaHoraTerminoAsignada = document.getElementById('fechaHoraTerminoAsignada');
-        let fechaHoraInicioPrecargada = new Date('{{ $solicitud->SOLICITUD_VEHICULO_FECHA_HORA_INICIO_ASIGNADA }}');
-        let fechaHoraTerminoPrecargada = new Date('{{ $solicitud->SOLICITUD_VEHICULO_FECHA_HORA_TERMINO_ASIGNADA }}');
+    <script>
+        // Obtener el valor del token CSRF del meta tag
+        var csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
     
-       
-        let fechaActual = new Date(); // Fecha y hora actual
-        let añoActual = fechaActual.getFullYear(); // Año actual
-        let mesActual = fechaActual.getMonth(); // Mes actual
-        let diaActual = fechaActual.getDate(); // Día actual
-        let horaActual = fechaActual.getHours(); // Hora actual
-        let minutoActual = fechaActual.getMinutes(); // Minuto actual
-    
-        // **Fecha mínima permitida (día actual)**
-        let fechaMinimaPermitida = new Date(añoActual, mesActual, diaActual, horaActual, minutoActual);
-        // **Fecha máxima permitida**
-        let fechaMaximaPermitida;
-    
-        // Si estamos en diciembre, permitir hasta febrero del próximo año
-        if (mesActual === 11) {
-            fechaMaximaPermitida = new Date(añoActual + 1, 1, 28);
-        } else {
-            // Permitir hasta diciembre del año actual
-            fechaMaximaPermitida = new Date(añoActual, 11, 31);
+        // Función para abrir el modal de contraseña
+        function abrirModal() {
+            // Abrir el modal con contraseña limpia
+            $('#inputPassword').val('');
+            $('#passwordModal').modal('show');
         }
     
+        // Función para cerrar el modal
+        function cerrarModal() {
+            $('#passwordModal').modal('hide');
+        }
     
-        // Cargar los valores de fecha y hora asignada para $solicitud revisada 
-        if (!isNaN(fechaHoraInicioPrecargada) && !isNaN(fechaHoraTerminoPrecargada)) {
-            configurarFlatpickrs(fechaHoraInicioPrecargada, fechaHoraTerminoPrecargada);
-            inputfechaHoraInicioAsignada.value = formatDate(fechaHoraInicioPrecargada);
-            inputfechaHoraTerminoAsignada.value = formatDate(fechaHoraTerminoPrecargada);
-            inputfechaHoraInicioAsignada.disabled = true;
-            inputfechaHoraTerminoAsignada.disabled = true;
+        // Función para verificar la contraseña cuando se hace clic en el botón "Confirmar" del modal
+        function verificarContraseña() {
+            var inputPassword = document.getElementById('inputPassword').value;
     
+            // Realizar la solicitud AJAX al backend para verificar la contraseña
+            console.log(inputPassword);
     
-        } else {
-            inputfechaHoraInicioAsignada.placeholder = "-- Seleccione una fecha y hora --";
-            inputfechaHoraTerminoAsignada.placeholder = "-- Seleccione una fecha y hora --";
-            // Configurar Flatpickrs para caso de que todavía no se haya asignado fecha y hora para la $solicitud
-            flatpickr(inputfechaHoraInicioAsignada, {
-                enableTime: true,
-                dateFormat: "Y-m-d H:i",
-                minDate: fechaMinimaPermitida,
-                maxDate: fechaMaximaPermitida,
-                //defaultDate: fechaMinimaPermitida,
-                locale: "es", // Establecer el idioma en español
-                onChange: function(selectedDates, dateStr, instance) {
-                    if (selectedDates[0] < fechaMinimaPermitida) {
-                        alert("La fecha y hora seleccionada es menor a la hora mínima permitida");
-                        inputfechaHoraInicioAsignada.value = "";
+            var xhr = new XMLHttpRequest();
+            xhr.open('POST', '/verificar-contrasena', true);
+            xhr.setRequestHeader('Content-Type', 'application/json');
+            xhr.setRequestHeader('X-CSRF-TOKEN', csrfToken);
+    
+            xhr.onload = function() {
+                if (xhr.status === 200) {
+                    var response = JSON.parse(xhr.responseText);
+                    if (response.message === 'Contraseña correcta') {
+                        // Contraseña correcta, enviar el formulario
+                        document.getElementById('formulario').submit();
+                        // Cerrar el modal
+                        cerrarModal();
                     } else {
-                        // Habilitar el input de término una vez que se ha seleccionado la hora de inicio
-                        inputfechaHoraTerminoAsignada.disabled = false;
-                        // Actualizar minDate para el input de término
-                        let fechaHoraInicioSeleccionada = selectedDates[0];
-                        let horaInicioSeleccionada = fechaHoraInicioSeleccionada.getHours();
-                        let minutoInicioSeleccionado = fechaHoraInicioSeleccionada.getMinutes();
-    
-                        let fechaMinimaTermino = new Date(fechaHoraInicioSeleccionada);
-                        fechaMinimaTermino.setHours(horaInicioSeleccionada);
-                        fechaMinimaTermino.setMinutes(minutoInicioSeleccionado);
-    
-                        inputfechaHoraTerminoAsignada._flatpickr.set("minDate", fechaMinimaTermino);
+                        // Contraseña incorrecta, mostrar mensaje de error
+                        alert("La contraseña ingresada es incorrecta. Por favor, inténtelo de nuevo.");
+                        // Cerrar el modal
+                        cerrarModal();
                     }
+                } else {
+                    // Error en la solicitud AJAX, mostrar mensaje de error
+                    alert("Error al verificar la contraseña. Por favor, reingrese en el sistema.");
+                    // Cerrar el modal
+                    cerrarModal();
+                    // Habilitar el botón después de hacer clic para permitir envíos del formulario
+                    document.getElementById('botonRendicion').removeAttribute('disabled');
                 }
-            });
+            };
+            xhr.onerror = function() {
+                // Manejar errores de red
+                console.log('Error de red al verificar la contraseña.');
+                alert('Error de red al verificar la contraseña. Por favor, revise su conexión a internet.');
+                // Cerrar el modal en caso de error de red
+                cerrarModal();
+            };
     
-            flatpickr(inputfechaHoraTerminoAsignada, {
-                enableTime: true,
-                dateFormat: "Y-m-d H:i",
-                minDate: fechaMinimaPermitida, // Se establece inicialmente, luego se actualizará
-                maxDate: fechaMaximaPermitida,
-                locale: "es", // Establecer el idioma en español
-                onClose: function(selectedDates, dateStr, instance) {
-                    let fechaHoraTerminoSeleccionada = selectedDates[0];
-                    if (fechaHoraTerminoSeleccionada < inputfechaHoraInicioAsignada._flatpickr.latestSelectedDateObj) {
-                        alert("La fecha y hora seleccionada es anterior a la hora de inicio.");
-                        inputfechaHoraTerminoAsignada._flatpickr.setDate(null); // Limpiar la selección
-                    }
-                }
-            });
-    
+            xhr.send(JSON.stringify({ password: inputPassword }));
         }
     
-        function configurarFlatpickrs(fechaInicio, fechaTermino) {
-            flatpickr(inputfechaHoraInicioAsignada, {
-                enableTime: true,
-                dateFormat: "Y-m-d H:i",
-                minDate: fechaMinimaPermitida,
-                maxDate: fechaMaximaPermitida,
-                defaultDate: fechaMinimaPermitida,
-                locale: "es", // Establecer el idioma en español
-                onClose: function(selectedDates, dateStr, instance) {
-                    if (selectedDates[0] < fechaMinimaPermitida) {
-                        alert("La fecha y hora seleccionada es menor a la hora mínima permitida");
-                        inputfechaHoraInicioAsignada.value = "";
-                    } else {
-                        // Habilitar el input de término una vez que se ha seleccionado la hora de inicio
-                        inputfechaHoraTerminoAsignada.disabled = false;
-                        // Actualizar minDate para el input de término
-                        let fechaHoraInicioSeleccionada = selectedDates[0];
-                        let horaInicioSeleccionada = fechaHoraInicioSeleccionada.getHours();
-                        let minutoInicioSeleccionado = fechaHoraInicioSeleccionada.getMinutes();
+        // Función para validar los datos del formulario antes de abrir el modal de contraseña
+        function validarFormulario() {
+            // Obtener todos los campos de la rendición
+            var camposRendicion = document.querySelectorAll('#formulario input[name^="RENDICION_"], #formulario select[name^="RENDICION_"], #formulario textarea[name^="RENDICION_"]');
     
-                        let fechaMinimaTermino = new Date(fechaHoraInicioSeleccionada);
-                        fechaMinimaTermino.setHours(horaInicioSeleccionada);
-                        fechaMinimaTermino.setMinutes(minutoInicioSeleccionado);
-    
-                        inputfechaHoraTerminoAsignada._flatpickr.set("minDate", fechaMinimaTermino);
-                    }
-                }
+            // Verificar si todos los campos de la rendición tienen valor
+            var rendicionCompleta = Array.from(camposRendicion).every(function(campo) {
+                return campo.value.trim() !== ''; // Verifica que el valor del campo no esté vacío
             });
     
-            flatpickr(inputfechaHoraTerminoAsignada, {
-                enableTime: true,
-                dateFormat: "Y-m-d H:i",
-                minDate: fechaMinimaPermitida, // Se establece inicialmente, luego se actualizará
-                maxDate: fechaMaximaPermitida,
-                defaultDate: fechaTermino,
-                locale: "es", // Establecer el idioma en español
-                onClose: function(selectedDates, dateStr, instance) {
-                    let fechaHoraTerminoSeleccionada = selectedDates[0];
-                    if (fechaHoraTerminoSeleccionada < inputfechaHoraInicioAsignada._flatpickr.latestSelectedDateObj) {
-                        alert("La fecha y hora seleccionada es anterior a la hora de inicio.");
-                        inputfechaHoraTerminoAsignada._flatpickr.setDate(null); // Limpiar la selección
-                    }
-                }
-            });
+            if (rendicionCompleta) {
+                // Activar todos los campos del formulario
+                var camposFormulario = document.querySelectorAll('#formulario input, #formulario select, #formulario textarea, #pasajeros input, #pasajeros select, #pasajeros textarea');
+                camposFormulario.forEach(function(campo) {
+                    campo.removeAttribute('disabled');
+                });
     
-            // Deshabilitar el input de término al cargar la página y establecer su valor como vacío
-            inputfechaHoraTerminoAsignada.disabled = false;
-            inputfechaHoraInicioAsignada.value = null;
-            inputfechaHoraTerminoAsignada.value = fechaTermino;
-            //inputfechaHoraTerminoAsignada.dispatchEvent(new Event('change'));
+                // Deshabilitar campos adicionales si es necesario
+                document.getElementById('TRABAJA_NUMERO_ORDEN_TRABAJO').setAttribute('disabled', 'disabled');
+                document.getElementById('TRABAJA_HORA_INICIO_ORDEN_TRABAJO').setAttribute('disabled', 'disabled');
+                document.getElementById('TRABAJA_HORA_TERMINO_ORDEN_TRABAJO').setAttribute('disabled', 'disabled');
     
+                // Deshabilitar el botón después de hacer clic para evitar múltiples envíos del formulario
+                document.getElementById('botonRendicion').setAttribute('disabled', 'disabled');
+    
+                // Supongamos que aquí realizas la validación y decides abrir el modal si todo está bien
+                abrirModal();
+            } else {
+                // Si la rendición no está completa, no se envía el formulario
+                alert('Debe completar todos los campos de la rendición antes de enviar el formulario.');
+                return false; // Evita que el formulario se envíe si la rendición no está completa
+            }
             
         }
     
-        function formatDate(date) {
-            let year = date.getFullYear().toString().padStart(2, '0');
-            let month = (date.getMonth() + 1).toString().padStart(2, '0');
-            let day = date.getDate().toString().padStart(2, '0');
-            let hours = date.getHours().toString().padStart(2, '0');
-            let minutes = date.getMinutes().toString().padStart(2, '0');
-            let formattedDate = `${day}-${month}-${year} ${hours}:${minutes}`;
-            return formattedDate;
+
+    </script>
+   {{-- <script>
+        // Obtener el valor del token CSRF del meta tag
+        var csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+    
+        // Función para autorizar el formulario con verificación de contraseña
+        function abrirModal() {
+            // Abrir el modal con contraseña limpia
+            $('#inputPassword').val('');
+            $('#passwordModal').modal('show');
         }
+    
+        // Función para cerrar el modal
+        function cerrarModal() {
+            $('#passwordModal').modal('hide');
+        }
+    
+        // Función para activar todos los campos del formulario al hacer clic en el botón "Rendir"
+        function autorizarFormulario() {
+            // Obtener todos los campos de la rendición
+            var camposRendicion = document.querySelectorAll('#formulario input[name^="RENDICION_"], #formulario select[name^="RENDICION_"], #formulario textarea[name^="RENDICION_"]');
+    
+            // Verificar si todos los campos de la rendición tienen valor
+            var rendicionCompleta = Array.from(camposRendicion).every(function(campo) {
+                return campo.value.trim() !== ''; // Verifica que el valor del campo no esté vacío
+            });
+    
+            if (rendicionCompleta) {
+                // Activar todos los campos del formulario
+                var camposFormulario = document.querySelectorAll('#formulario input, #formulario select, #formulario textarea, #pasajeros input, #pasajeros select, #pasajeros textarea');
+                camposFormulario.forEach(function(campo) {
+                    campo.removeAttribute('disabled');
+                });
+    
+                // Deshabilitar campos adicionales si es necesario
+                document.getElementById('TRABAJA_NUMERO_ORDEN_TRABAJO').setAttribute('disabled', 'disabled');
+                document.getElementById('TRABAJA_HORA_INICIO_ORDEN_TRABAJO').setAttribute('disabled', 'disabled');
+                document.getElementById('TRABAJA_HORA_TERMINO_ORDEN_TRABAJO').setAttribute('disabled', 'disabled');
+    
+                // Deshabilitar el botón después de hacer clic para evitar múltiples envíos del formulario
+                document.getElementById('botonRendicion').setAttribute('disabled', 'disabled');
+    
+                // Envía el formulario
+                document.getElementById('formulario').submit();
+            } else {
+                // Si la rendición no está completa, no se envía el formulario
+                alert('Debe completar todos los campos de la rendición antes de enviar el formulario.');
+                return false; // Evita que el formulario se envíe si la rendición no está completa
+            }
+        }
+    
+        // Función para verificar la contraseña cuando se hace clic en el botón "Confirmar" del modal
+        function verificarContraseña() {
+            var inputPassword = document.getElementById('inputPassword').value;
+    
+            // Realizar la solicitud AJAX al backend para verificar la contraseña
+            console.log(inputPassword);
+    
+            var xhr = new XMLHttpRequest();
+            xhr.open('POST', '/verificar-contrasena', true);
+            xhr.setRequestHeader('Content-Type', 'application/json');
+            xhr.setRequestHeader('X-CSRF-TOKEN', csrfToken);
+    
+            xhr.onload = function() {
+                if (xhr.status === 200) {
+                    var response = JSON.parse(xhr.responseText);
+                    if (response.message === 'Contraseña correcta') {
+                        // Contraseña correcta
+                        // Llamar a la función para autorizar el formulario
+                        autorizarFormulario();
+                        // Cerrar el modal
+                        cerrarModal();
+                    }
+                } else if (xhr.status === 401) {
+                    // Contraseña incorrecta, mostrar mensaje de error
+                    alert("La contraseña ingresada es incorrecta. Por favor, inténtelo de nuevo.");
+                    // Cerrar el modal
+                    cerrarModal();
+                } else {
+                    // Error en la solicitud AJAX, mostrar mensaje de error
+                    alert("Error al verificar la contraseña. Por favor, reingrese en el sistema.");
+                    // Cerrar el modal
+                    cerrarModal();
+                }
+            };
+            xhr.onerror = function() {
+                // Manejar errores de red
+                console.log('Error de red al verificar la contraseña.');
+                alert('Error de red al verificar la contraseña. Por favor, revise su conexión a internet.');
+                // Cerrar el modal en caso de error de red
+                cerrarModal();
+            };
+    
+            xhr.send(JSON.stringify({ password: inputPassword }));
+        }
+    
+    </script>--}}
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+        // Obtener el botón y los detalles
+        const botonDetalles = document.getElementById('botonDetalles');
+        const detalles = document.getElementById('detalles');
+        const retornoDetalles = document.getElementById('retornoDetalles');
+
+        // Agregar un event listener al botón
+        botonDetalles.addEventListener('click', function() {
+            // Verificar si los detalles están visibles
+            if (detalles.style.display === 'none') {
+                // Si están ocultos, mostrarlos
+                detalles.style.display = 'block';
+                botonDetalles.innerHTML = '<i class="fa-solid fa-magnifying-glass-minus"></i> Ocultar Detalles';
+                // Desplazar la página hasta la sección de Solicitante
+                window.scrollTo({
+                    top: retornoDetalles.offsetTop,
+                    behavior: "smooth" // Desplazamiento suave
+                });
+            } else {
+                // Si están visibles, ocultarlos
+                detalles.style.display = 'none';
+                botonDetalles.innerHTML = '<i class="fa-solid fa-magnifying-glass-plus"></i> Mostrar Detalles';
+                // Desplazar la página hasta la sección de Solicitante
+                window.scrollTo({
+                    top: divOculto.offsetTop,
+                    behavior: "smooth" // Desplazamiento suave
+                });
+            }
+        });
     });
     </script>
+
+{{--
     <script>
-        document.addEventListener("DOMContentLoaded", function() {
-            // Obtener los elementos de los selectores de hora
-            var horaInicioSelector = document.getElementById("SOLICITUD_VEHICULO_HORA_INICIO_CONDUCCION");
-            var horaTerminoSelector = document.getElementById("SOLICITUD_VEHICULO_HORA_TERMINO_CONDUCCION");
+        // Función para activar todos los campos del formulario al hacer clic en el botón "Rendir"
+        function autorizarFormulario() {
+            // Obtener todos los campos de la rendición
+            var camposRendicion = document.querySelectorAll('#formulario input[name^="RENDICION_"], #formulario select[name^="RENDICION_"], #formulario textarea[name^="RENDICION_"]');
+
+            // Verificar si todos los campos de la rendición tienen valor
+            var rendicionCompleta = Array.from(camposRendicion).every(function(campo) {
+                return campo.value.trim() !== ''; // Verifica que el valor del campo no esté vacío
+            });
+
+            if (rendicionCompleta) {
+                // Activar todos los campos del formulario
+                var camposFormulario = document.querySelectorAll('#formulario input, #formulario select, #formulario textarea, #pasajeros input, #pasajeros select, #pasajeros textarea');
+                camposFormulario.forEach(function (campo) {
+                    campo.removeAttribute('disabled');
+                });
+
+                // Deshabilitar campos adicionales si es necesario
+                document.getElementById('TRABAJA_NUMERO_ORDEN_TRABAJO').setAttribute('disabled', 'disabled');
+                document.getElementById('TRABAJA_HORA_INICIO_ORDEN_TRABAJO').setAttribute('disabled', 'disabled');
+                document.getElementById('TRABAJA_HORA_TERMINO_ORDEN_TRABAJO').setAttribute('disabled', 'disabled');
+
+                // Deshabilitar el botón después de hacer clic para evitar múltiples envíos del formulario
+                document.getElementById('botonRendicion').setAttribute('disabled', 'disabled');
+                
+                // Envía el formulario
+                document.getElementById('formulario').submit();
+            } else {
+                // Si la rendición no está completa, no se envía el formulario
+                alert('Debe completar todos los campos de la rendición antes de enviar el formulario.');
+                return false; // Evita que el formulario se envíe si la rendición no está completa
+            }
+        }
+    </script>--}}
+
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            let inputfechaHoraRendicion = document.getElementById('RENDICION_FECHA_HORA_LLEGADA');
+            let inputKilometrajeInicio = document.getElementById('RENDICION_KILOMETRAJE_INICIO');
+            let inputKilometrajeTermino = document.getElementById('RENDICION_KILOMETRAJE_TERMINO');
+            let inputTotalHoras = document.getElementById('RENDICION_TOTAL_HORAS');
+            let inputNumeroBitacora = document.getElementById('RENDICION_NUMERO_BITACORA');
     
-            // Obtener los valores de hora asignada para $solicitud revisada 
-            var horaInicioPreCargada = new Date('{{ $solicitud->SOLICITUD_VEHICULO_HORA_INICIO_CONDUCCION }}');
-            var horaTerminoPreCargada = new Date('{{ $solicitud->SOLICITUD_VEHICULO_HORA_TERMINO_CONDUCCION }}');
+            let fechaActual = new Date();
+            let fechaMinimaPermitida = new Date();
+            fechaMinimaPermitida.setDate(fechaActual.getDate() - 15);
+            let fechaMaximaPermitida = fechaActual;
     
-            // Configurar flatpickr para el selector de hora de inicio
-            var pickerHoraInicio = flatpickr(horaInicioSelector, {
+            flatpickr(inputfechaHoraRendicion, {
                 enableTime: true,
-                noCalendar: true,
-                dateFormat: "H:i",
-                onClose: function(selectedDates, dateStr, instance) {
+                dateFormat: "Y-m-d H:i",
+                minDate: fechaMinimaPermitida,
+                maxDate: fechaMaximaPermitida,
+                locale: "es",
+            });
+    
+            if (inputfechaHoraRendicion.value.trim() === '') {
+                inputfechaHoraRendicion.setAttribute('placeholder', '-- Seleccione una fecha y hora --');
+            }
+    
+            inputKilometrajeInicio.addEventListener('change', function() {
+                let kilometrajeInicio = parseInt(inputKilometrajeInicio.value);
+                let kilometrajeTermino = parseInt(inputKilometrajeTermino.value);
+    
+    
+                console.log("km inicio: ", kilometrajeInicio);
+                console.log("km término: ", kilometrajeTermino);
+    
+                if (kilometrajeInicio <= 0 || kilometrajeInicio > 999999) {
+                    alert('El kilometraje de inicio debe ser mayor que 1 y menor o igual a 999999.');
+                    inputKilometrajeInicio.value = ''; // Limpiar el campo
+                } else if (kilometrajeTermino !== '' && kilometrajeInicio >= kilometrajeTermino) {
+                    alert('El kilometraje de inicio debe ser menor que el kilometraje de término.');
+                    inputKilometrajeInicio.value = ''; // Limpiar el campo
+                } 
+            });
+    
+            inputKilometrajeTermino.addEventListener('change', function() {
+                let kilometrajeInicio = parseInt(inputKilometrajeInicio.value);
+                let kilometrajeTermino = parseInt(inputKilometrajeTermino.value);
+    
+                
+    
+                console.log("km inicio: ", kilometrajeInicio);
+                console.log("km término: ", kilometrajeTermino);
+    
+                if (kilometrajeTermino <= 0 || kilometrajeTermino > 999999) {
+                    alert('El kilometraje de término debe ser mayor que 1 y menor o igual a 999999.');
+                    inputKilometrajeTermino.value = ''; // Limpiar el campo
+                } else if (kilometrajeInicio !== '' && kilometrajeInicio >= kilometrajeTermino) {
+                    alert('El kilometraje de término debe ser mayor que el kilometraje de inicio.');
+                    inputKilometrajeTermino.value = ''; // Limpiar el campo
+                } else if (isNaN(kilometrajeInicio)) {
+                    alert('Ingrese un valor para el kilometraje de inicio');
+                    inputKilometrajeInicio.value = ''; // Limpiar el campo
+                }
+            });
+    
+            inputTotalHoras.addEventListener('change', function() {
+                if (inputTotalHoras.value <= 0 || inputTotalHoras.value > 300) {
+                    alert('Ingrese una cantidad válida de horas de conducción. ');
+                    inputTotalHoras.value = ''; // Limpiar el campo
+                } 
+            });
+    
+            inputNumeroBitacora.addEventListener('change', function() {
+                if (inputNumeroBitacora.value <= 0 || inputNumeroBitacora.value > 999999) {
+                    alert('Ingrese un número de bitácora válido. ');
+                    inputNumeroBitacora.value = ''; // Limpiar el campo
+                } 
+            });
+        });
+    </script>
+    <script>
+
+        document.addEventListener('DOMContentLoaded', function () {
+            let inputfechaHoraInicioAsignada = document.getElementById('fechaHoraInicioAsignada');
+            let inputfechaHoraTerminoAsignada = document.getElementById('fechaHoraTerminoAsignada');
+            let fechaHoraInicioPrecargada = new Date('{{ $solicitud->SOLICITUD_VEHICULO_FECHA_HORA_INICIO_ASIGNADA }}');
+            let fechaHoraTerminoPrecargada = new Date('{{ $solicitud->SOLICITUD_VEHICULO_FECHA_HORA_TERMINO_ASIGNADA }}');
+        
+        
+            let fechaActual = new Date(); // Fecha y hora actual
+            let añoActual = fechaActual.getFullYear(); // Año actual
+            let mesActual = fechaActual.getMonth(); // Mes actual
+            let diaActual = fechaActual.getDate(); // Día actual
+            let horaActual = fechaActual.getHours(); // Hora actual
+            let minutoActual = fechaActual.getMinutes(); // Minuto actual
+        
+            // **Fecha mínima permitida (día actual)**
+            let fechaMinimaPermitida = new Date(añoActual, mesActual, diaActual, horaActual, minutoActual);
+            // **Fecha máxima permitida**
+            let fechaMaximaPermitida;
+        
+            // Si estamos en diciembre, permitir hasta febrero del próximo año
+            if (mesActual === 11) {
+                fechaMaximaPermitida = new Date(añoActual + 1, 1, 28);
+            } else {
+                // Permitir hasta diciembre del año actual
+                fechaMaximaPermitida = new Date(añoActual, 11, 31);
+            }
+        
+        
+            // Cargar los valores de fecha y hora asignada para $solicitud revisada 
+            if (!isNaN(fechaHoraInicioPrecargada) && !isNaN(fechaHoraTerminoPrecargada)) {
+                configurarFlatpickrs(fechaHoraInicioPrecargada, fechaHoraTerminoPrecargada);
+                inputfechaHoraInicioAsignada.value = formatDate(fechaHoraInicioPrecargada);
+                inputfechaHoraTerminoAsignada.value = formatDate(fechaHoraTerminoPrecargada);
+                inputfechaHoraInicioAsignada.disabled = true;
+                inputfechaHoraTerminoAsignada.disabled = true;
+        
+        
+            } else {
+                inputfechaHoraInicioAsignada.placeholder = "-- Seleccione una fecha y hora --";
+                inputfechaHoraTerminoAsignada.placeholder = "-- Seleccione una fecha y hora --";
+                // Configurar Flatpickrs para caso de que todavía no se haya asignado fecha y hora para la $solicitud
+                flatpickr(inputfechaHoraInicioAsignada, {
+                    enableTime: true,
+                    dateFormat: "Y-m-d H:i",
+                    minDate: fechaMinimaPermitida,
+                    maxDate: fechaMaximaPermitida,
+                    //defaultDate: fechaMinimaPermitida,
+                    locale: "es", // Establecer el idioma en español
+                    onChange: function(selectedDates, dateStr, instance) {
+                        if (selectedDates[0] < fechaMinimaPermitida) {
+                            alert("La fecha y hora seleccionada es menor a la hora mínima permitida");
+                            inputfechaHoraInicioAsignada.value = "";
+                        } else {
+                            // Habilitar el input de término una vez que se ha seleccionado la hora de inicio
+                            inputfechaHoraTerminoAsignada.disabled = false;
+                            // Actualizar minDate para el input de término
+                            let fechaHoraInicioSeleccionada = selectedDates[0];
+                            let horaInicioSeleccionada = fechaHoraInicioSeleccionada.getHours();
+                            let minutoInicioSeleccionado = fechaHoraInicioSeleccionada.getMinutes();
+        
+                            let fechaMinimaTermino = new Date(fechaHoraInicioSeleccionada);
+                            fechaMinimaTermino.setHours(horaInicioSeleccionada);
+                            fechaMinimaTermino.setMinutes(minutoInicioSeleccionado);
+        
+                            inputfechaHoraTerminoAsignada._flatpickr.set("minDate", fechaMinimaTermino);
+                        }
+                    }
+                });
+        
+                flatpickr(inputfechaHoraTerminoAsignada, {
+                    enableTime: true,
+                    dateFormat: "Y-m-d H:i",
+                    minDate: fechaMinimaPermitida, // Se establece inicialmente, luego se actualizará
+                    maxDate: fechaMaximaPermitida,
+                    locale: "es", // Establecer el idioma en español
+                    onClose: function(selectedDates, dateStr, instance) {
+                        let fechaHoraTerminoSeleccionada = selectedDates[0];
+                        if (fechaHoraTerminoSeleccionada < inputfechaHoraInicioAsignada._flatpickr.latestSelectedDateObj) {
+                            alert("La fecha y hora seleccionada es anterior a la hora de inicio.");
+                            inputfechaHoraTerminoAsignada._flatpickr.setDate(null); // Limpiar la selección
+                        }
+                    }
+                });
+        
+            }
+        
+            function configurarFlatpickrs(fechaInicio, fechaTermino) {
+                flatpickr(inputfechaHoraInicioAsignada, {
+                    enableTime: true,
+                    dateFormat: "Y-m-d H:i",
+                    minDate: fechaMinimaPermitida,
+                    maxDate: fechaMaximaPermitida,
+                    defaultDate: fechaMinimaPermitida,
+                    locale: "es", // Establecer el idioma en español
+                    onClose: function(selectedDates, dateStr, instance) {
+                        if (selectedDates[0] < fechaMinimaPermitida) {
+                            alert("La fecha y hora seleccionada es menor a la hora mínima permitida");
+                            inputfechaHoraInicioAsignada.value = "";
+                        } else {
+                            // Habilitar el input de término una vez que se ha seleccionado la hora de inicio
+                            inputfechaHoraTerminoAsignada.disabled = false;
+                            // Actualizar minDate para el input de término
+                            let fechaHoraInicioSeleccionada = selectedDates[0];
+                            let horaInicioSeleccionada = fechaHoraInicioSeleccionada.getHours();
+                            let minutoInicioSeleccionado = fechaHoraInicioSeleccionada.getMinutes();
+        
+                            let fechaMinimaTermino = new Date(fechaHoraInicioSeleccionada);
+                            fechaMinimaTermino.setHours(horaInicioSeleccionada);
+                            fechaMinimaTermino.setMinutes(minutoInicioSeleccionado);
+        
+                            inputfechaHoraTerminoAsignada._flatpickr.set("minDate", fechaMinimaTermino);
+                        }
+                    }
+                });
+        
+                flatpickr(inputfechaHoraTerminoAsignada, {
+                    enableTime: true,
+                    dateFormat: "Y-m-d H:i",
+                    minDate: fechaMinimaPermitida, // Se establece inicialmente, luego se actualizará
+                    maxDate: fechaMaximaPermitida,
+                    defaultDate: fechaTermino,
+                    locale: "es", // Establecer el idioma en español
+                    onClose: function(selectedDates, dateStr, instance) {
+                        let fechaHoraTerminoSeleccionada = selectedDates[0];
+                        if (fechaHoraTerminoSeleccionada < inputfechaHoraInicioAsignada._flatpickr.latestSelectedDateObj) {
+                            alert("La fecha y hora seleccionada es anterior a la hora de inicio.");
+                            inputfechaHoraTerminoAsignada._flatpickr.setDate(null); // Limpiar la selección
+                        }
+                    }
+                });
+        
+                // Deshabilitar el input de término al cargar la página y establecer su valor como vacío
+                inputfechaHoraTerminoAsignada.disabled = false;
+                inputfechaHoraInicioAsignada.value = null;
+                inputfechaHoraTerminoAsignada.value = fechaTermino;
+                //inputfechaHoraTerminoAsignada.dispatchEvent(new Event('change'));
+        
+                
+            }
+        
+            function formatDate(date) {
+                let year = date.getFullYear().toString().padStart(2, '0');
+                let month = (date.getMonth() + 1).toString().padStart(2, '0');
+                let day = date.getDate().toString().padStart(2, '0');
+                let hours = date.getHours().toString().padStart(2, '0');
+                let minutes = date.getMinutes().toString().padStart(2, '0');
+                let formattedDate = `${day}-${month}-${year} ${hours}:${minutes}`;
+                return formattedDate;
+            }
+        });
+        </script>
+        <script>
+            document.addEventListener("DOMContentLoaded", function() {
+                // Obtener los elementos de los selectores de hora
+                var horaInicioSelector = document.getElementById("SOLICITUD_VEHICULO_HORA_INICIO_CONDUCCION");
+                var horaTerminoSelector = document.getElementById("SOLICITUD_VEHICULO_HORA_TERMINO_CONDUCCION");
+        
+                // Obtener los valores de hora asignada para $solicitud revisada 
+                var horaInicioPreCargada = new Date('{{ $solicitud->SOLICITUD_VEHICULO_HORA_INICIO_CONDUCCION }}');
+                var horaTerminoPreCargada = new Date('{{ $solicitud->SOLICITUD_VEHICULO_HORA_TERMINO_CONDUCCION }}');
+        
+                // Configurar flatpickr para el selector de hora de inicio
+                var pickerHoraInicio = flatpickr(horaInicioSelector, {
+                    enableTime: true,
+                    noCalendar: true,
+                    dateFormat: "H:i",
+                    onClose: function(selectedDates, dateStr, instance) {
+                        // Habilitar el selector de hora de término cuando se selecciona una hora de inicio
+                        pickerHoraTermino.set("minTime", dateStr);
+                        horaTerminoSelector.disabled = false;
+                    }
+                });
+        
+                // Configurar flatpickr para el selector de hora de término
+                var pickerHoraTermino = flatpickr(horaTerminoSelector, {
+                    enableTime: true,
+                    noCalendar: true,
+                    dateFormat: "H:i",
+                    onClose: function(selectedDates, dateStr, instance) {
+                        // Validar que la hora de término sea igual o posterior a la hora de inicio
+                        if (dateStr < pickerHoraInicio.selectedDates[0]) {
+                            alert("La hora de término debe ser igual o posterior a la hora de inicio.");
+                            horaTerminoSelector.value = "";
+                        }
+                    }
+                });
+        
+                // Verificar si los datos existen en $solicitud y son válidos
+                if (horaInicioPreCargada instanceof Date && !isNaN(horaInicioPreCargada) &&
+                    horaTerminoPreCargada instanceof Date && !isNaN(horaTerminoPreCargada)) {
+        
+                    // Preconfigurar los selectores de hora con los valores de $solicitud
+                    horaInicioSelector.value = formatoHoraMinuto(horaInicioPreCargada);
+                    horaTerminoSelector.value = formatoHoraMinuto(horaTerminoPreCargada);
+        
+                    // Configurar minTime para el selector de hora de término
+                    pickerHoraTermino.set("minTime", formatoHoraMinuto(horaInicioPreCargada));
+                    // Habilitar el selector de hora de término
+                    horaTerminoSelector.disabled = false;
+                }
+        
+                // Inhabilitar el selector de hora de término inicialmente si no hay valores pre-cargados
+                if (!horaInicioPreCargada || !horaTerminoPreCargada) {
+                    horaTerminoSelector.disabled = true;
+                }
+            });
+        
+            // Función para formatear la hora en HH:MM
+            function formatoHoraMinuto(date) {
+                var horas = date.getHours();
+                var minutos = date.getMinutes();
+                return (horas < 10 ? '0' : '') + horas + ':' + (minutos < 10 ? '0' : '') + minutos;
+            }
+        </script>
+        
+                
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                // Obtener el contenedor de los campos de orden de trabajo
+                var ordenTrabajoInputs = document.getElementById('ordenTrabajoInputs');
+                
+                // Obtener los elementos de hora y nro de orden de trabajo
+                var horaInicioSelector = document.getElementById("TRABAJA_HORA_INICIO_ORDEN_TRABAJO");
+                var horaTerminoSelector = document.getElementById("TRABAJA_HORA_TERMINO_ORDEN_TRABAJO");
+                var numeroOrdenTrabajo = document.getElementById('TRABAJA_NUMERO_ORDEN_TRABAJO');
+        
+        
+        
+                // Verificar si la solicitud tiene una orden de trabajo asociada
+                @if(isset($solicitud->ordenTrabajo))
+                    // Mostrar los campos de orden de trabajo si la solicitud tiene una orden de trabajo
+                    ordenTrabajoInputs.style.display = 'block';
+                @else
+                    // Ocultar los campos de orden de trabajo si la solicitud no tiene una orden de trabajo
+                    ordenTrabajoInputs.style.display = 'none';
+                @endif
+        
+                numeroOrdenTrabajo.disabled = true;
+                horaInicioSelector.disabled = true;
+                horaTerminoSelector.disabled = true;
+        
+                // Función para configurar un flatpickr con la misma configuración
+                function configurarFlatpickr(selector, minTimeConfig, onCloseCallback) {
+                    return flatpickr(selector, {
+                        enableTime: true,
+                        noCalendar: true,
+                        dateFormat: "H:i",
+                        minTime: minTimeConfig,
+                        onClose: onCloseCallback
+                    });
+                }
+        
+        
+                // Configurar flatpickr para el selector de hora de inicio
+                var pickerHoraInicio = configurarFlatpickr(horaInicioSelector, undefined, function(selectedDates, dateStr, instance) {
                     // Habilitar el selector de hora de término cuando se selecciona una hora de inicio
                     pickerHoraTermino.set("minTime", dateStr);
                     horaTerminoSelector.disabled = false;
-                }
-            });
-    
-            // Configurar flatpickr para el selector de hora de término
-            var pickerHoraTermino = flatpickr(horaTerminoSelector, {
-                enableTime: true,
-                noCalendar: true,
-                dateFormat: "H:i",
-                onClose: function(selectedDates, dateStr, instance) {
+                });
+        
+                // Configurar flatpickr para el selector de hora de término
+                var pickerHoraTermino = configurarFlatpickr(horaTerminoSelector, horaInicioSelector.value, function(selectedDates, dateStr, instance) {
                     // Validar que la hora de término sea igual o posterior a la hora de inicio
                     if (dateStr < pickerHoraInicio.selectedDates[0]) {
                         alert("La hora de término debe ser igual o posterior a la hora de inicio.");
                         horaTerminoSelector.value = "";
                     }
-                }
-            });
-    
-            // Verificar si los datos existen en $solicitud y son válidos
-            if (horaInicioPreCargada instanceof Date && !isNaN(horaInicioPreCargada) &&
-                horaTerminoPreCargada instanceof Date && !isNaN(horaTerminoPreCargada)) {
-    
-                // Preconfigurar los selectores de hora con los valores de $solicitud
-                horaInicioSelector.value = formatoHoraMinuto(horaInicioPreCargada);
-                horaTerminoSelector.value = formatoHoraMinuto(horaTerminoPreCargada);
-    
-                // Configurar minTime para el selector de hora de término
-                pickerHoraTermino.set("minTime", formatoHoraMinuto(horaInicioPreCargada));
-                // Habilitar el selector de hora de término
-                horaTerminoSelector.disabled = false;
-            }
-    
-            // Inhabilitar el selector de hora de término inicialmente si no hay valores pre-cargados
-            if (!horaInicioPreCargada || !horaTerminoPreCargada) {
-                horaTerminoSelector.disabled = true;
-            }
-        });
-    
-        // Función para formatear la hora en HH:MM
-        function formatoHoraMinuto(date) {
-            var horas = date.getHours();
-            var minutos = date.getMinutes();
-            return (horas < 10 ? '0' : '') + horas + ':' + (minutos < 10 ? '0' : '') + minutos;
-        }
-    </script>
-    
-            
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            // Obtener el contenedor de los campos de orden de trabajo
-            var ordenTrabajoInputs = document.getElementById('ordenTrabajoInputs');
-            
-            // Obtener los elementos de hora y nro de orden de trabajo
-            var horaInicioSelector = document.getElementById("TRABAJA_HORA_INICIO_ORDEN_TRABAJO");
-            var horaTerminoSelector = document.getElementById("TRABAJA_HORA_TERMINO_ORDEN_TRABAJO");
-            var numeroOrdenTrabajo = document.getElementById('TRABAJA_NUMERO_ORDEN_TRABAJO');
-    
-    
-    
-            // Verificar si la solicitud tiene una orden de trabajo asociada
-            @if(isset($solicitud->ordenTrabajo))
-                // Mostrar los campos de orden de trabajo si la solicitud tiene una orden de trabajo
-                ordenTrabajoInputs.style.display = 'block';
-            @else
-                // Ocultar los campos de orden de trabajo si la solicitud no tiene una orden de trabajo
-                ordenTrabajoInputs.style.display = 'none';
-            @endif
-    
-            numeroOrdenTrabajo.disabled = true;
-            horaInicioSelector.disabled = true;
-            horaTerminoSelector.disabled = true;
-    
-            // Función para configurar un flatpickr con la misma configuración
-            function configurarFlatpickr(selector, minTimeConfig, onCloseCallback) {
-                return flatpickr(selector, {
-                    enableTime: true,
-                    noCalendar: true,
-                    dateFormat: "H:i",
-                    minTime: minTimeConfig,
-                    onClose: onCloseCallback
                 });
-            }
-    
-    
-            // Configurar flatpickr para el selector de hora de inicio
-            var pickerHoraInicio = configurarFlatpickr(horaInicioSelector, undefined, function(selectedDates, dateStr, instance) {
-                // Habilitar el selector de hora de término cuando se selecciona una hora de inicio
-                pickerHoraTermino.set("minTime", dateStr);
-                horaTerminoSelector.disabled = false;
             });
-    
-            // Configurar flatpickr para el selector de hora de término
-            var pickerHoraTermino = configurarFlatpickr(horaTerminoSelector, horaInicioSelector.value, function(selectedDates, dateStr, instance) {
-                // Validar que la hora de término sea igual o posterior a la hora de inicio
-                if (dateStr < pickerHoraInicio.selectedDates[0]) {
-                    alert("La hora de término debe ser igual o posterior a la hora de inicio.");
-                    horaTerminoSelector.value = "";
-                }
-            });
-        });
-    </script>
-    
-    
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            var oficinas = {!! json_encode($oficinas) !!};
-            var ubicaciones = {!! json_encode($ubicaciones) !!};
-            var departamentos = {!! json_encode($departamentos) !!};
-            var users = {!! json_encode($users) !!};
-    
-            // Obtener la capacidad máxima del vehículo para validar agregado de pasajeros
-            var capacidadMaxima = {!! $solicitud->vehiculo->tipoVehiculo->TIPO_VEHICULO_CAPACIDAD !!}-1;
-            var contadorPasajeros = 0;
-    
-            var pasajerosExistente = document.getElementsByClassName('pasajeros-box').length;
-            contadorPasajeros = pasajerosExistente;
-    
-    
-    
-    
-            // Propuesta para eliminación de pasajeros hasta la cantidad solicitada
-            // Obtener la capacidad máxima del vehículo para validar agregado de pasajeros
-            /*var capacidadMaxima = {!! $solicitud->vehiculo->tipoVehiculo->TIPO_VEHICULO_CAPACIDAD !!};
-            var contadorPasajeros = 0;
-    
-            // Contar la cantidad de pasajeros existentes al cargar la página
-            var pasajerosExistente = document.getElementsByClassName('pasajeros-box').length;
-            contadorPasajeros = pasajerosExistente;*/
-    
-    
-            configurarSelectoresPasajero();
-    
-    
-            
-           
-    
-            function configurarSelectoresPasajero() {
-                // Aquí colocamos toda la lógica de configuración de selectores para el ingreso de datos
-                // Puedes copiar y pegar la lógica que has definido para la configuración estándar
-                // Eventos change a los selectores de oficina
-                var oficinaSelects = document.querySelectorAll('.pasajeros-box select[id^="oficina_"]');
-                var dependenciaSelects = document.querySelectorAll('.pasajeros-box select[id^="dependencia_"]');
-                var pasajeroSelects = document.querySelectorAll('.pasajeros-box select[id^="pasajero_"]');
-    
+        </script>
+        
+        
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                var oficinas = {!! json_encode($oficinas) !!};
+                var ubicaciones = {!! json_encode($ubicaciones) !!};
+                var departamentos = {!! json_encode($departamentos) !!};
+                var users = {!! json_encode($users) !!};
+        
+                // Obtener la capacidad máxima del vehículo para validar agregado de pasajeros
+                var capacidadMaxima = {!! $solicitud->vehiculo->tipoVehiculo->TIPO_VEHICULO_CAPACIDAD !!}-1;
+                var contadorPasajeros = 0;
+        
+                var pasajerosExistente = document.getElementsByClassName('pasajeros-box').length;
+                contadorPasajeros = pasajerosExistente;
+        
+        
+        
+        
+                // Propuesta para eliminación de pasajeros hasta la cantidad solicitada
+                // Obtener la capacidad máxima del vehículo para validar agregado de pasajeros
+                /*var capacidadMaxima = {!! $solicitud->vehiculo->tipoVehiculo->TIPO_VEHICULO_CAPACIDAD !!};
+                var contadorPasajeros = 0;
+        
+                // Contar la cantidad de pasajeros existentes al cargar la página
+                var pasajerosExistente = document.getElementsByClassName('pasajeros-box').length;
+                contadorPasajeros = pasajerosExistente;*/
+        
+        
+                configurarSelectoresPasajero();
+        
+        
                 
-                oficinaSelects.forEach(function(oficinaSelect) {
-                    oficinaSelect.addEventListener('change', function() {
-                        var parentBox = this.closest('.pasajeros-box');
-                        var dependenciaSelect = parentBox.querySelector('select[id^="dependencia_"]');
-                        var pasajeroSelect = parentBox.querySelector('select[id^="pasajero_"]');
-                        var selectedOficinaId = this.value;
-    
-                        // Limpiar selectores dependientes
-                        dependenciaSelect.innerHTML = '<option style="text-align: center;" value="">-- Seleccione una dependencia --</option>';
-                        pasajeroSelect.innerHTML = '<option style="text-align: center;" value="">-- Seleccione un pasajero --</option>';
-    
-                        
-                        // OptGroups
+            
+        
+                function configurarSelectoresPasajero() {
+                    // Aquí colocamos toda la lógica de configuración de selectores para el ingreso de datos
+                    // Puedes copiar y pegar la lógica que has definido para la configuración estándar
+                    // Eventos change a los selectores de oficina
+                    var oficinaSelects = document.querySelectorAll('.pasajeros-box select[id^="oficina_"]');
+                    var dependenciaSelects = document.querySelectorAll('.pasajeros-box select[id^="dependencia_"]');
+                    var pasajeroSelects = document.querySelectorAll('.pasajeros-box select[id^="pasajero_"]');
+        
+                    
+                    oficinaSelects.forEach(function(oficinaSelect) {
+                        oficinaSelect.addEventListener('change', function() {
+                            var parentBox = this.closest('.pasajeros-box');
+                            var dependenciaSelect = parentBox.querySelector('select[id^="dependencia_"]');
+                            var pasajeroSelect = parentBox.querySelector('select[id^="pasajero_"]');
+                            var selectedOficinaId = this.value;
+        
+                            // Limpiar selectores dependientes
+                            dependenciaSelect.innerHTML = '<option style="text-align: center;" value="">-- Seleccione una dependencia --</option>';
+                            pasajeroSelect.innerHTML = '<option style="text-align: center;" value="">-- Seleccione un pasajero --</option>';
+        
+                            
+                            // OptGroups
+                            var optgroupUbicaciones = document.createElement('optgroup');
+                            optgroupUbicaciones.label = 'Ubicaciones';
+        
+                            var optgroupDepartamentos = document.createElement('optgroup');
+                            optgroupDepartamentos.label = 'Departamentos';
+        
+                            // Configurar selectores de dependencia
+                            ubicaciones.forEach(function(ubicacion) {
+                                if (ubicacion.OFICINA_ID == selectedOficinaId) {
+                                    var option = document.createElement('option');
+                                    option.value = ubicacion.UBICACION_ID;
+                                    option.textContent = ubicacion.UBICACION_NOMBRE;
+                                    optgroupUbicaciones.appendChild(option);
+                                }
+                            });
+        
+                            departamentos.forEach(function(departamento) {
+                                if (departamento.OFICINA_ID == selectedOficinaId) {
+                                    var option = document.createElement('option');
+                                    option.value = departamento.DEPARTAMENTO_ID;
+                                    option.textContent = departamento.DEPARTAMENTO_NOMBRE;
+                                    optgroupDepartamentos.appendChild(option);
+                                }
+                            });
+        
+                            // Agregar los grupos de opciones al selector de dependencia
+                            dependenciaSelect.appendChild(optgroupUbicaciones);
+                            dependenciaSelect.appendChild(optgroupDepartamentos);
+        
+                            // Habilitar/deshabilitar selectores dependientes
+                            dependenciaSelect.disabled = selectedOficinaId === '';
+                            pasajeroSelect.disabled = true;
+        
+                        });
+                    });
+        
+                    // Eventos change a los selectores de dependencia
+                    dependenciaSelects.forEach(function(dependenciaSelect) {
+                        dependenciaSelect.addEventListener('change', function() {
+                            var parentBox = this.closest('.pasajeros-box');
+                            var pasajeroSelect = parentBox.querySelector('select[id^="pasajero_"]');
+                            var selectedDependenciaId = this.value;
+        
+                            // Limpiar selector de pasajero
+                            pasajeroSelect.innerHTML = '<option style="text-align: center;" value="">-- Seleccione un pasajero --</option>';
+        
+                            // Configurar selectores de pasajero
+                            var optgroupUsuarios = document.createElement('optgroup');
+                            optgroupUsuarios.label = 'Funcionarios Asociados';
+        
+                            users.forEach(function(user) {
+                                if (user.UBICACION_ID == selectedDependenciaId || user.DEPARTAMENTO_ID == selectedDependenciaId) {
+                                    var option = document.createElement('option');
+                                    option.value = user.id;
+                                    option.textContent = user.USUARIO_NOMBRES + ' ' + user.USUARIO_APELLIDOS;
+                                    optgroupUsuarios.appendChild(option);
+                                }
+                            });
+        
+                            pasajeroSelect.appendChild(optgroupUsuarios);
+                            // Habilitar/deshabilitar selector de pasajero
+                            pasajeroSelect.disabled = selectedDependenciaId === '';
+        
+                        });
+                    });
+        
+                    // Eventos change a los selectores de pasajero
+                    pasajeroSelects.forEach(function(pasajeroSelect, index) {
+                        pasajeroSelect.addEventListener('change', function() {
+                            var selectedUserId = this.value;
+                            var indice = index;
+        
+                            // Verificar duplicados en otros selectores de pasajero
+                            var esDuplicado = false;
+                            var contador = 0;
+                            pasajeroSelects.forEach(function(otraSeleccion, otroIndice) {
+                                contador ++;
+                                if (otroIndice !== indice && otraSeleccion.value === selectedUserId) {
+                                    esDuplicado = true;
+                                    alert('El funcionario seleccionado ya figura como "Pasajero N° '+(contador)+'". Por favor, seleccione otra persona.');
+                                    return;
+                                }
+                            });
+        
+                            // Verificar si el pasajero seleccionado es igual al conductor
+                            var conductorId = document.getElementById('conductor').value; // Obtener el valor del conductor
+                            if (selectedUserId === conductorId) {
+                                esDuplicado = true;
+                                alert('El funcionario seleccionado ya figura como conductor. Por favor, seleccione otra persona.');
+                            }
+        
+                            // Si hay un duplicado, establecer el valor del selector actual en blanco
+                            if (esDuplicado) {
+                                this.value = '';
+                            }
+                        });
+                    });
+                }
+        
+        
+            
+            });
+        </script>
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                var oficinas = {!! json_encode($oficinas) !!};
+                var ubicaciones = {!! json_encode($ubicaciones) !!};
+                var departamentos = {!! json_encode($departamentos) !!};
+                var conductores = {!! json_encode($conductores) !!};
+        
+                var oficinaSelects = document.querySelectorAll('.oficina');
+                var dependenciaSelects = document.querySelectorAll('.dependencia');
+                var conductorSelects = document.querySelectorAll('.conductor');
+        
+        
+        
+                // Lógica para conductor recuperado
+                function fillSelectors(selectedOficinaId, selectedDependenciaId, selectedConductorId) {
+                    // Llenar select de oficinas
+                    oficinaSelects.forEach(function(oficinaSelect) {
+                        oficinas.forEach(function(oficina) {
+                            var option = document.createElement('option');
+                            option.value = oficina.OFICINA_ID;
+                            option.textContent = oficina.OFICINA_NOMBRE;
+                            if (oficina.OFICINA_ID === selectedOficinaId) {
+                                option.selected = true;
+                            }
+                            oficinaSelect.appendChild(option);
+                        });
+                    });
+        
+                    // Llenar select de dependencias (ubicaciones y departamentos)
+                    dependenciaSelects.forEach(function(dependenciaSelect) {
+                        dependenciaSelect.innerHTML = '<option style="text-align: center;"  value="">-- Seleccione una dependencia --</option>';
+        
                         var optgroupUbicaciones = document.createElement('optgroup');
                         optgroupUbicaciones.label = 'Ubicaciones';
-    
+        
                         var optgroupDepartamentos = document.createElement('optgroup');
                         optgroupDepartamentos.label = 'Departamentos';
-    
-                        // Configurar selectores de dependencia
+        
+                        ubicaciones.forEach(function(ubicacion) {
+                            if (ubicacion.OFICINA_ID == selectedOficinaId) {
+                                var option = document.createElement('option');
+                                option.value = ubicacion.UBICACION_ID;
+                                option.textContent = ubicacion.UBICACION_NOMBRE;
+                                if (ubicacion.UBICACION_ID === selectedDependenciaId) {
+                                    option.selected = true;
+                                }
+                                optgroupUbicaciones.appendChild(option);
+                            }
+                        });
+        
+                        departamentos.forEach(function(departamento) {
+                            if (departamento.OFICINA_ID == selectedOficinaId) {
+                                var option = document.createElement('option');
+                                option.value = departamento.DEPARTAMENTO_ID;
+                                option.textContent = departamento.DEPARTAMENTO_NOMBRE;
+                                if (departamento.DEPARTAMENTO_ID === selectedDependenciaId) {
+                                    option.selected = true;
+                                }
+                                optgroupDepartamentos.appendChild(option);
+                            }
+                        });
+        
+                        dependenciaSelect.appendChild(optgroupUbicaciones);
+                        dependenciaSelect.appendChild(optgroupDepartamentos);
+                    });
+        
+                    // Llenar select de conductores
+                    conductorSelects.forEach(function(conductorSelect) {
+                        conductorSelect.innerHTML = '<option style="text-align: center;" value="">-- Seleccione un conductor --</option>';
+        
+                        conductores.forEach(function(conductor) {
+                            if ((conductor.UBICACION_ID == selectedDependenciaId) || (conductor.DEPARTAMENTO_ID == selectedDependenciaId)) {
+                                var option = document.createElement('option');
+                                option.value = conductor.id;
+                                option.textContent = conductor.USUARIO_NOMBRES + ' ' + conductor.USUARIO_APELLIDOS;
+                                if (conductor.id === selectedConductorId) {
+                                    option.selected = true;
+                                }
+                                conductorSelect.appendChild(option);
+                            }
+                        });
+                    });
+                }
+        
+                // Llenar los selectores con los datos de la solicitud si existen
+                var solicitudConductor = {!! isset($solicitud->conductor) ? json_encode($solicitud->conductor) : 'null' !!};
+                if (solicitudConductor) {
+                    fillSelectors(solicitudConductor.OFICINA_ID, solicitudConductor.UBICACION_ID || solicitudConductor.DEPARTAMENTO_ID, solicitudConductor.id);
+                    oficinaSelects.disabled = true;
+                    dependenciaSelects.disabled = true;
+                    conductorSelects.disabled = true;
+                } else {
+                    // Llenar los selectores con valores por defecto
+                    fillSelectors('', '', '');
+                }
+        
+                // Eventos change a los selectores de oficina
+                oficinaSelects.forEach(function(oficinaSelect) {
+                    oficinaSelect.addEventListener('change', function() {
+                        var selectedOficinaId = this.value;
+                        var parentBox = this.closest('.pasajero-box');
+                        var dependenciaSelect = parentBox.querySelector('.dependencia');
+                        var conductorSelect = parentBox.querySelector('.conductor');
+        
+                        dependenciaSelect.innerHTML = '<option style="text-align: center;" value="">-- Seleccione una dependencia --</option>';
+                        conductorSelect.innerHTML= '<option style="text-align: center;" value="">-- Seleccione un conductor --</option>';
+        
+                        var optgroupUbicaciones = document.createElement('optgroup');
+                        optgroupUbicaciones.label = 'Ubicaciones';
+        
+                        var optgroupDepartamentos = document.createElement('optgroup');
+                        optgroupDepartamentos.label = 'Departamentos';
+        
                         ubicaciones.forEach(function(ubicacion) {
                             if (ubicacion.OFICINA_ID == selectedOficinaId) {
                                 var option = document.createElement('option');
@@ -980,7 +1439,7 @@
                                 optgroupUbicaciones.appendChild(option);
                             }
                         });
-    
+        
                         departamentos.forEach(function(departamento) {
                             if (departamento.OFICINA_ID == selectedOficinaId) {
                                 var option = document.createElement('option');
@@ -989,295 +1448,166 @@
                                 optgroupDepartamentos.appendChild(option);
                             }
                         });
-    
-                        // Agregar los grupos de opciones al selector de dependencia
+        
                         dependenciaSelect.appendChild(optgroupUbicaciones);
                         dependenciaSelect.appendChild(optgroupDepartamentos);
-    
-                        // Habilitar/deshabilitar selectores dependientes
-                        dependenciaSelect.disabled = selectedOficinaId === '';
-                        pasajeroSelect.disabled = true;
-    
+        
+                        if (selectedOficinaId === '') {
+                            dependenciaSelect.disabled = true;
+                            conductorSelect.disabled = true;
+                        } else {
+                            dependenciaSelect.disabled = false;
+                            conductorSelect.disabled = true;
+                        }
                     });
                 });
-    
+        
                 // Eventos change a los selectores de dependencia
                 dependenciaSelects.forEach(function(dependenciaSelect) {
                     dependenciaSelect.addEventListener('change', function() {
-                        var parentBox = this.closest('.pasajeros-box');
-                        var pasajeroSelect = parentBox.querySelector('select[id^="pasajero_"]');
                         var selectedDependenciaId = this.value;
-    
-                        // Limpiar selector de pasajero
-                        pasajeroSelect.innerHTML = '<option style="text-align: center;" value="">-- Seleccione un pasajero --</option>';
-    
-                        // Configurar selectores de pasajero
-                        var optgroupUsuarios = document.createElement('optgroup');
-                        optgroupUsuarios.label = 'Funcionarios Asociados';
-    
-                        users.forEach(function(user) {
-                            if (user.UBICACION_ID == selectedDependenciaId || user.DEPARTAMENTO_ID == selectedDependenciaId) {
+                        var parentBox = this.closest('.pasajero-box');
+                        var conductorSelect = parentBox.querySelector('.conductor');
+        
+                        conductorSelect.innerHTML = '<option style="text-align: center;" value="">-- Seleccione al conductor --</option>';
+        
+                        var optgroupConductoresAsociados = document.createElement('optgroup');
+                        optgroupConductoresAsociados.label = 'Conductores Asociados';
+        
+                        conductores.forEach(function(conductor) {
+                            if ((conductor.UBICACION_ID == selectedDependenciaId) || (conductor.DEPARTAMENTO_ID == selectedDependenciaId)) {
                                 var option = document.createElement('option');
-                                option.value = user.id;
-                                option.textContent = user.USUARIO_NOMBRES + ' ' + user.USUARIO_APELLIDOS;
-                                optgroupUsuarios.appendChild(option);
+                                option.value = conductor.id;
+                                option.textContent = conductor.USUARIO_NOMBRES + ' ' + conductor.USUARIO_APELLIDOS;
+                                optgroupConductoresAsociados.appendChild(option);
                             }
                         });
-    
-                        pasajeroSelect.appendChild(optgroupUsuarios);
-                        // Habilitar/deshabilitar selector de pasajero
-                        pasajeroSelect.disabled = selectedDependenciaId === '';
-    
+        
+                        conductorSelect.appendChild(optgroupConductoresAsociados);
+        
+                        if (selectedDependenciaId === '') {
+                            conductorSelect.disabled = true;
+                        } else {
+                            conductorSelect.disabled = false;
+                        }
                     });
                 });
-    
-                // Eventos change a los selectores de pasajero
-                pasajeroSelects.forEach(function(pasajeroSelect, index) {
-                    pasajeroSelect.addEventListener('change', function() {
-                        var selectedUserId = this.value;
-                        var indice = index;
-    
-                        // Verificar duplicados en otros selectores de pasajero
-                        var esDuplicado = false;
-                        var contador = 0;
-                        pasajeroSelects.forEach(function(otraSeleccion, otroIndice) {
-                            contador ++;
-                            if (otroIndice !== indice && otraSeleccion.value === selectedUserId) {
-                                esDuplicado = true;
-                                alert('El funcionario seleccionado ya figura como "Pasajero N° '+(contador)+'". Por favor, seleccione otra persona.');
+        
+                // Eventos change a los selectores de conductores
+                conductorSelects.forEach(function(conductorSelect) {
+                    conductorSelect.addEventListener('change', function() {
+                        var selectedConductorId = this.value;
+        
+                        // Obtener todos los contenedores de filas de pasajeros
+                        var pasajeroRows = document.querySelectorAll('.pasajeros-box');
+                        
+                        // Inicializar el contador de pasajeros
+                        var contador = 1;
+        
+                        pasajeroRows.forEach(function(row) {
+                            // Obtener el último selector de pasajeros dentro de esta fila
+                            var ultimoPasajeroSelect = row.querySelector('.form-control:last-child');
+        
+                            // Verificar si el pasajero actual coincide con el conductor seleccionado
+                            if (ultimoPasajeroSelect && ultimoPasajeroSelect.value === selectedConductorId) {
+                                // Mostrar una alerta si el conductor seleccionado ya está asignado como pasajero en otro lugar
+                                alert('El conductor seleccionado ya figura como "Pasajero N° ' + contador + '". Por favor, seleccione a otra persona.');
+                                
+                                // Limpiar la selección del conductor
+                                conductorSelect.value = '';
+                                
+                                // Detener la iteración del forEach
                                 return;
                             }
+        
+                            // Incrementar el contador de pasajeros
+                            contador++;
                         });
-    
-                        // Verificar si el pasajero seleccionado es igual al conductor
-                        var conductorId = document.getElementById('conductor').value; // Obtener el valor del conductor
-                        if (selectedUserId === conductorId) {
-                            esDuplicado = true;
-                            alert('El funcionario seleccionado ya figura como conductor. Por favor, seleccione otra persona.');
-                        }
-    
-                        // Si hay un duplicado, establecer el valor del selector actual en blanco
-                        if (esDuplicado) {
-                            this.value = '';
-                        }
                     });
-                });
-            }
-    
-    
-           
-        });
-    </script>
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            var oficinas = {!! json_encode($oficinas) !!};
-            var ubicaciones = {!! json_encode($ubicaciones) !!};
-            var departamentos = {!! json_encode($departamentos) !!};
-            var conductores = {!! json_encode($conductores) !!};
-    
-            var oficinaSelects = document.querySelectorAll('.oficina');
-            var dependenciaSelects = document.querySelectorAll('.dependencia');
-            var conductorSelects = document.querySelectorAll('.conductor');
-    
-    
-    
-            // Lógica para conductor recuperado
-            function fillSelectors(selectedOficinaId, selectedDependenciaId, selectedConductorId) {
-                // Llenar select de oficinas
-                oficinaSelects.forEach(function(oficinaSelect) {
-                    oficinas.forEach(function(oficina) {
-                        var option = document.createElement('option');
-                        option.value = oficina.OFICINA_ID;
-                        option.textContent = oficina.OFICINA_NOMBRE;
-                        if (oficina.OFICINA_ID === selectedOficinaId) {
-                            option.selected = true;
-                        }
-                        oficinaSelect.appendChild(option);
-                    });
-                });
-    
-                // Llenar select de dependencias (ubicaciones y departamentos)
-                dependenciaSelects.forEach(function(dependenciaSelect) {
-                    dependenciaSelect.innerHTML = '<option style="text-align: center;"  value="">-- Seleccione una dependencia --</option>';
-    
-                    var optgroupUbicaciones = document.createElement('optgroup');
-                    optgroupUbicaciones.label = 'Ubicaciones';
-    
-                    var optgroupDepartamentos = document.createElement('optgroup');
-                    optgroupDepartamentos.label = 'Departamentos';
-    
-                    ubicaciones.forEach(function(ubicacion) {
-                        if (ubicacion.OFICINA_ID == selectedOficinaId) {
-                            var option = document.createElement('option');
-                            option.value = ubicacion.UBICACION_ID;
-                            option.textContent = ubicacion.UBICACION_NOMBRE;
-                            if (ubicacion.UBICACION_ID === selectedDependenciaId) {
-                                option.selected = true;
-                            }
-                            optgroupUbicaciones.appendChild(option);
-                        }
-                    });
-    
-                    departamentos.forEach(function(departamento) {
-                        if (departamento.OFICINA_ID == selectedOficinaId) {
-                            var option = document.createElement('option');
-                            option.value = departamento.DEPARTAMENTO_ID;
-                            option.textContent = departamento.DEPARTAMENTO_NOMBRE;
-                            if (departamento.DEPARTAMENTO_ID === selectedDependenciaId) {
-                                option.selected = true;
-                            }
-                            optgroupDepartamentos.appendChild(option);
-                        }
-                    });
-    
-                    dependenciaSelect.appendChild(optgroupUbicaciones);
-                    dependenciaSelect.appendChild(optgroupDepartamentos);
-                });
-    
-                // Llenar select de conductores
-                conductorSelects.forEach(function(conductorSelect) {
-                    conductorSelect.innerHTML = '<option style="text-align: center;" value="">-- Seleccione un conductor --</option>';
-    
-                    conductores.forEach(function(conductor) {
-                        if ((conductor.UBICACION_ID == selectedDependenciaId) || (conductor.DEPARTAMENTO_ID == selectedDependenciaId)) {
-                            var option = document.createElement('option');
-                            option.value = conductor.id;
-                            option.textContent = conductor.USUARIO_NOMBRES + ' ' + conductor.USUARIO_APELLIDOS;
-                            if (conductor.id === selectedConductorId) {
-                                option.selected = true;
-                            }
-                            conductorSelect.appendChild(option);
-                        }
-                    });
-                });
-            }
-    
-            // Llenar los selectores con los datos de la solicitud si existen
-            var solicitudConductor = {!! isset($solicitud->conductor) ? json_encode($solicitud->conductor) : 'null' !!};
-            if (solicitudConductor) {
-                fillSelectors(solicitudConductor.OFICINA_ID, solicitudConductor.UBICACION_ID || solicitudConductor.DEPARTAMENTO_ID, solicitudConductor.id);
-                oficinaSelects.disabled = true;
-                dependenciaSelects.disabled = true;
-                conductorSelects.disabled = true;
-            } else {
-                // Llenar los selectores con valores por defecto
-                fillSelectors('', '', '');
-            }
-    
-            // Eventos change a los selectores de oficina
-            oficinaSelects.forEach(function(oficinaSelect) {
-                oficinaSelect.addEventListener('change', function() {
-                    var selectedOficinaId = this.value;
-                    var parentBox = this.closest('.pasajero-box');
-                    var dependenciaSelect = parentBox.querySelector('.dependencia');
-                    var conductorSelect = parentBox.querySelector('.conductor');
-    
-                    dependenciaSelect.innerHTML = '<option style="text-align: center;" value="">-- Seleccione una dependencia --</option>';
-                    conductorSelect.innerHTML= '<option style="text-align: center;" value="">-- Seleccione un conductor --</option>';
-    
-                    var optgroupUbicaciones = document.createElement('optgroup');
-                    optgroupUbicaciones.label = 'Ubicaciones';
-    
-                    var optgroupDepartamentos = document.createElement('optgroup');
-                    optgroupDepartamentos.label = 'Departamentos';
-    
-                    ubicaciones.forEach(function(ubicacion) {
-                        if (ubicacion.OFICINA_ID == selectedOficinaId) {
-                            var option = document.createElement('option');
-                            option.value = ubicacion.UBICACION_ID;
-                            option.textContent = ubicacion.UBICACION_NOMBRE;
-                            optgroupUbicaciones.appendChild(option);
-                        }
-                    });
-    
-                    departamentos.forEach(function(departamento) {
-                        if (departamento.OFICINA_ID == selectedOficinaId) {
-                            var option = document.createElement('option');
-                            option.value = departamento.DEPARTAMENTO_ID;
-                            option.textContent = departamento.DEPARTAMENTO_NOMBRE;
-                            optgroupDepartamentos.appendChild(option);
-                        }
-                    });
-    
-                    dependenciaSelect.appendChild(optgroupUbicaciones);
-                    dependenciaSelect.appendChild(optgroupDepartamentos);
-    
-                    if (selectedOficinaId === '') {
-                        dependenciaSelect.disabled = true;
-                        conductorSelect.disabled = true;
-                    } else {
-                        dependenciaSelect.disabled = false;
-                        conductorSelect.disabled = true;
-                    }
                 });
             });
-    
-            // Eventos change a los selectores de dependencia
-            dependenciaSelects.forEach(function(dependenciaSelect) {
-                dependenciaSelect.addEventListener('change', function() {
-                    var selectedDependenciaId = this.value;
-                    var parentBox = this.closest('.pasajero-box');
-                    var conductorSelect = parentBox.querySelector('.conductor');
-    
-                    conductorSelect.innerHTML = '<option style="text-align: center;" value="">-- Seleccione al conductor --</option>';
-    
-                    var optgroupConductoresAsociados = document.createElement('optgroup');
-                    optgroupConductoresAsociados.label = 'Conductores Asociados';
-    
-                    conductores.forEach(function(conductor) {
-                        if ((conductor.UBICACION_ID == selectedDependenciaId) || (conductor.DEPARTAMENTO_ID == selectedDependenciaId)) {
-                            var option = document.createElement('option');
-                            option.value = conductor.id;
-                            option.textContent = conductor.USUARIO_NOMBRES + ' ' + conductor.USUARIO_APELLIDOS;
-                            optgroupConductoresAsociados.appendChild(option);
-                        }
-                    });
-    
-                    conductorSelect.appendChild(optgroupConductoresAsociados);
-    
-                    if (selectedDependenciaId === '') {
-                        conductorSelect.disabled = true;
+        </script>
+        
+        <script>
+            // Agrega el script para mostrar/ocultar pasajeros
+            document.addEventListener('DOMContentLoaded', function() {
+                // Obtener referencia al botón y al div de los pasajeros
+                const botonPasajeros = document.getElementById('botonPasajeros');
+                const pasajerosDiv = document.getElementById('pasajeros');
+                const divOculto = document.getElementById('retorno');
+                const botonAgregarPasajero = document.getElementById('botonAgregarPasajero');
+                const botonEliminarPasajero = document.getElementById('botonEliminarPasajero');
+                let capacidadMaxima = obtenerCapacidadMaxima(); // Obtener la capacidad máxima permitida
+        
+                // Ocultar los botones de agregar y eliminar pasajeros inicialmente
+                botonAgregarPasajero.style.display = 'none';
+                botonEliminarPasajero.style.display = 'none';
+        
+                botonPasajeros.addEventListener('click', function() {
+                    console.log("Botón clickeado");
+                    if (pasajerosDiv.style.display === 'none') {
+                        console.log("Mostrando pasajeros");
+                        pasajerosDiv.style.display = 'block'; // Mostrar el div de los pasajeros    
+                        botonPasajeros.innerHTML = '<i class="fa-solid fa-user-minus"></i> Ocultar Pasajeros'; // Cambiar texto
+                        
+                        verificarVisibilidadBotones(); // Verificar visibilidad de botones
+                        // Desplazar la página hasta la sección de pasajeros
+                        window.scrollTo({
+                            top: pasajerosDiv.offsetTop,
+                            behavior: "smooth" // Desplazamiento suave
+                        });
                     } else {
-                        conductorSelect.disabled = false;
+                        console.log("Ocultando pasajeros");
+                        pasajerosDiv.style.display = 'none'; // Ocultar el div de los pasajeros
+                        botonPasajeros.innerHTML = '<i class="fa-solid fa-user-plus"></i> Mostrar Pasajeros'; // Cambiar texto
+                        botonAgregarPasajero.style.display = 'none';
+                        botonEliminarPasajero.style.display = 'none';
+                        // Desplazar la página hasta la sección de Solicitante
+                        window.scrollTo({
+                            top: divOculto.offsetTop,
+                            behavior: "smooth" // Desplazamiento suave
+                        });
                     }
                 });
-            });
-    
-            // Eventos change a los selectores de conductores
-            conductorSelects.forEach(function(conductorSelect) {
-                conductorSelect.addEventListener('change', function() {
-                    var selectedConductorId = this.value;
-    
-                    // Obtener todos los contenedores de filas de pasajeros
-                    var pasajeroRows = document.querySelectorAll('.pasajeros-box');
+        
+                // Función para obtener la capacidad máxima del vehículo seleccionado
+                function obtenerCapacidadMaxima() {
+                    // Obtener el elemento select del vehículo
+                    const selectVehiculo = document.getElementById('VEHICULO_ID');
+        
+                    // Obtener la opción seleccionada
+                    const opcionSeleccionada = selectVehiculo.options[selectVehiculo.selectedIndex];
+        
+                    // Obtener la capacidad máxima del atributo de datos personalizado (data-capacidad)
+                    const capacidadMaxima = opcionSeleccionada.getAttribute('data-capacidad');
+        
+                    // Retornar la capacidad máxima como un número entero
+                    return parseInt(capacidadMaxima);
+                }
+        
+                // Función para verificar la visibilidad de los botones de agregar y eliminar pasajeros
+                function verificarVisibilidadBotones() {
+                    const pasajeroBoxes = pasajerosDiv.querySelectorAll('.pasajeros-box');
+                    const cantidadPasajeros = pasajeroBoxes.length;
+                    console.log(cantidadPasajeros);
+                    console.log(capacidadMaxima);
+        
+                    // Mostrar u ocultar los botones de acuerdo a la cantidad de pasajeros y la capacidad máxima
+                    if (( cantidadPasajeros >= 0 ) && ( cantidadPasajeros < (capacidadMaxima-1) )) {
+                        console.log("HOLA");
+                        botonAgregarPasajero.style.display = 'block';
+                    } 
                     
-                    // Inicializar el contador de pasajeros
-                    var contador = 1;
-    
-                    pasajeroRows.forEach(function(row) {
-                        // Obtener el último selector de pasajeros dentro de esta fila
-                        var ultimoPasajeroSelect = row.querySelector('.form-control:last-child');
-    
-                        // Verificar si el pasajero actual coincide con el conductor seleccionado
-                        if (ultimoPasajeroSelect && ultimoPasajeroSelect.value === selectedConductorId) {
-                            // Mostrar una alerta si el conductor seleccionado ya está asignado como pasajero en otro lugar
-                            alert('El conductor seleccionado ya figura como "Pasajero N° ' + contador + '". Por favor, seleccione a otra persona.');
-                            
-                            // Limpiar la selección del conductor
-                            conductorSelect.value = '';
-                            
-                            // Detener la iteración del forEach
-                            return;
-                        }
-    
-                        // Incrementar el contador de pasajeros
-                        contador++;
-                    });
-                });
+                    if((cantidadPasajeros <= (capacidadMaxima-1)) && (cantidadPasajeros > 0)) {
+                        botonEliminarPasajero.style.display ='block';
+                    } else {
+                        botonEliminarPasajero.style.display ='none';
+                    }
+                
+                }
             });
-        });
-    </script>
-    
+        </script>
+
     <script>
         // Agrega el script para mostrar/ocultar pasajeros
         document.addEventListener('DOMContentLoaded', function() {
@@ -1285,14 +1615,8 @@
             const botonPasajeros = document.getElementById('botonPasajeros');
             const pasajerosDiv = document.getElementById('pasajeros');
             const divOculto = document.getElementById('retorno');
-            const botonAgregarPasajero = document.getElementById('botonAgregarPasajero');
-            const botonEliminarPasajero = document.getElementById('botonEliminarPasajero');
-            let capacidadMaxima = obtenerCapacidadMaxima(); // Obtener la capacidad máxima permitida
-    
-            // Ocultar los botones de agregar y eliminar pasajeros inicialmente
-            botonAgregarPasajero.style.display = 'none';
-            botonEliminarPasajero.style.display = 'none';
-    
+        
+
             botonPasajeros.addEventListener('click', function() {
                 console.log("Botón clickeado");
                 if (pasajerosDiv.style.display === 'none') {
@@ -1319,84 +1643,10 @@
                     });
                 }
             });
-    
-            // Función para obtener la capacidad máxima del vehículo seleccionado
-            function obtenerCapacidadMaxima() {
-                // Obtener el elemento select del vehículo
-                const selectVehiculo = document.getElementById('VEHICULO_ID');
-    
-                // Obtener la opción seleccionada
-                const opcionSeleccionada = selectVehiculo.options[selectVehiculo.selectedIndex];
-    
-                // Obtener la capacidad máxima del atributo de datos personalizado (data-capacidad)
-                const capacidadMaxima = opcionSeleccionada.getAttribute('data-capacidad');
-    
-                // Retornar la capacidad máxima como un número entero
-                return parseInt(capacidadMaxima);
-            }
-    
-            // Función para verificar la visibilidad de los botones de agregar y eliminar pasajeros
-            function verificarVisibilidadBotones() {
-                const pasajeroBoxes = pasajerosDiv.querySelectorAll('.pasajeros-box');
-                const cantidadPasajeros = pasajeroBoxes.length;
-                console.log(cantidadPasajeros);
-                console.log(capacidadMaxima);
-    
-                // Mostrar u ocultar los botones de acuerdo a la cantidad de pasajeros y la capacidad máxima
-                if (( cantidadPasajeros >= 0 ) && ( cantidadPasajeros < (capacidadMaxima-1) )) {
-                    console.log("HOLA");
-                    botonAgregarPasajero.style.display = 'block';
-                } 
-                
-                if((cantidadPasajeros <= (capacidadMaxima-1)) && (cantidadPasajeros > 0)) {
-                    botonEliminarPasajero.style.display ='block';
-                } else {
-                    botonEliminarPasajero.style.display ='none';
-                }
-            
-            }
+
         });
     </script>
-
-<script>
-    // Agrega el script para mostrar/ocultar pasajeros
-    document.addEventListener('DOMContentLoaded', function() {
-        // Obtener referencia al botón y al div de los pasajeros
-        const botonPasajeros = document.getElementById('botonPasajeros');
-        const pasajerosDiv = document.getElementById('pasajeros');
-        const divOculto = document.getElementById('retorno');
-      
-
-        botonPasajeros.addEventListener('click', function() {
-            console.log("Botón clickeado");
-            if (pasajerosDiv.style.display === 'none') {
-                console.log("Mostrando pasajeros");
-                pasajerosDiv.style.display = 'block'; // Mostrar el div de los pasajeros    
-                botonPasajeros.innerHTML = '<i class="fa-solid fa-user-minus"></i> Ocultar Pasajeros'; // Cambiar texto
-                
-                verificarVisibilidadBotones(); // Verificar visibilidad de botones
-                // Desplazar la página hasta la sección de pasajeros
-                window.scrollTo({
-                    top: pasajerosDiv.offsetTop,
-                    behavior: "smooth" // Desplazamiento suave
-                });
-            } else {
-                console.log("Ocultando pasajeros");
-                pasajerosDiv.style.display = 'none'; // Ocultar el div de los pasajeros
-                botonPasajeros.innerHTML = '<i class="fa-solid fa-user-plus"></i> Mostrar Pasajeros'; // Cambiar texto
-                botonAgregarPasajero.style.display = 'none';
-                botonEliminarPasajero.style.display = 'none';
-                // Desplazar la página hasta la sección de Solicitante
-                window.scrollTo({
-                    top: divOculto.offsetTop,
-                    behavior: "smooth" // Desplazamiento suave
-                });
-            }
-        });
-
-    });
-</script>
-    @stop
+@stop
     
     
 

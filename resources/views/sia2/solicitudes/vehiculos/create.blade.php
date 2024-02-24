@@ -13,7 +13,7 @@
 
 
     <div class="container">
-        <form action="{{ route('solicitudesvehiculos.store') }}" method="POST">
+        <form id="formulario" action="{{ route('solicitudesvehiculos.store') }}" method="POST">
             @csrf
             @if ($errors->any())
                 <div class="alert alert-danger">
@@ -45,11 +45,11 @@
                 <div class="col-md-4">
                     <div class="mb-3">
                         <label for="SOLICITUD_ESTADO"><i class="fa-solid fa-right-to-bracket"></i> Estado de la Solicitud:</label>
-                        <input type="text" class="form-control" id="SOLICITUD_ESTADO" name="SOLICITUD_ESTADO" value="POR INGRESAR" readonly style="color: #E22C2C; text-align: center;">
+                        <input type="text" class="form-control" id="SOLICITUD_ESTADO" name="SOLICITUD_ESTADO" value="POR INGRESAR" readonly style=" text-align: center; color: black; font-weight: bold;">
                     </div>
                     {{-- Leyenda --}}
                     <div class="mb-3">
-                        <small>La solicitud todavía <strong>no</strong> ha sido ingresada</small>
+                        <small>La solicitud todavía <strong>no</strong> ha sido ingresada.</small>
                     </div>
                 </div>
             </div>
@@ -145,26 +145,40 @@
                 </div>
             </div>
 
-            
-            <div class="form-group" id="motivoSolicitud" style="display: none;">
+            <div class="form-group" id="motivoSolicitud" style="display: none;>
                 <label for="SOLICITUD_VEHICULO_MOTIVO"><i class="fa-solid fa-file-pen"></i> Labor a realizar:</label>
-                <textarea id="SOLICITUD_VEHICULO_MOTIVO" name="SOLICITUD_VEHICULO_MOTIVO" rows="5" class="form-control" placeholder="Indique la labor a realizar (MÁX 255 CARACTERES)" maxlength="255" required></textarea>
+                <textarea id="SOLICITUD_VEHICULO_MOTIVO" name="SOLICITUD_VEHICULO_MOTIVO" rows="5" class="form-control" placeholder="Indique la labor a realizar (MÁX 255 CARACTERES)" maxlength="255" required>{{ old('SOLICITUD_VEHICULO_MOTIVO') }}</textarea>
             </div>
+            
              
         
 
             {{-- BOTONES PARA AGREGAR O ELIMINAR PASAJEROS/CONDUCTOR  (NO TOCAR) --}}
             <div id="pasajeros" style="display: none;">
             </div>
-            <div class="col">
-                <div class="row">
-                    <button id="agregarPasajeroBtn" class="btn" style="background-color: #00B050; color: #fff;" type="button">
-                        <i class="fas fa-plus"></i> Agregar Pasajero
-                    </button>
+            <div class="row">
+                <div class="col-md-3">
+                    <!-- Botón Cancelar -->
+                    
+                </div>
+                <div class="col-md-3">
+
+                </div>
+                <div class="col-md-6">
+                    <div class="row">
+                        <div class="col-md-6 text-end">
+                            <button id="agregarPasajeroBtn" class="btn btn-custom" style="background-color: #1389EB; color: #fff;" type="button">
+                                <i class="fas fa-plus"></i> Agregar Pasajero
+                            </button>
+                        </div>
+                        <div class="col-md-6">
+                            <button id="eliminarPasajeroBtn" class="btn btn-custom" style="background-color: #9DA6B2; color: #fff;">
+                                <i class="fas fa-minus"></i> Eliminar Pasajero
+                            </button>
                             
-                    <button id="eliminarPasajeroBtn" class="btn" style="background-color: #E22C2C; color: #fff;">
-                        <i class="fas fa-minus"></i> Eliminar Pasajero
-                    </button>
+                           
+                        </div>
+                    </div>
                 </div>
             </div>
 
@@ -228,38 +242,49 @@
                     <div class="form-group col-md-4">
                         <label for="TRABAJA_NUMERO_ORDEN_TRABAJO"><i class="fa-solid fa-arrow-up-9-1"></i> Número de la Orden de Trabajo:</label>
                         <input type="number" class="form-control" id="TRABAJA_NUMERO_ORDEN_TRABAJO" name="TRABAJA_NUMERO_ORDEN_TRABAJO" placeholder="-- Ingrese el número de orden --"  style="text-align: center;" required min="0" max="999999" value="">
-                        <div class="invalid-feedback" id="numeroOrdenTrabajoError"></div>
+                        @error('TRABAJA_NUMERO_ORDEN_TRABAJO')
+                        <div class="error" style="color: #E22C2C">{{ $message }}</div>
+                        @enderror
                     </div>
                     <div class="form-group col-md-2"></div>
                     <div class="form-group col-md-3">
                         <label for="TRABAJA_HORA_INICIO_ORDEN_TRABAJO"><i class="fa-solid fa-clock"></i> Inicio orden de trabajo:</label>
                         <input type="time" class="form-control" id="TRABAJA_HORA_INICIO_ORDEN_TRABAJO" name="TRABAJA_HORA_INICIO_ORDEN_TRABAJO" required placeholder="-- Seleccione la hora de inicio --" style="background-color: #fff; color: #000; text-align: center;" value="{{ old('TRABAJA_HORA_INICIO_ORDEN_TRABAJO') }}">
-                        <div class="invalid-feedback" id="inicioOrdenTrabajoError"></div>
+                        @error('TRABAJA_HORA_INICIO_ORDEN_TRABAJO')
+                        <div class="error" style="color: #E22C2C">{{ $message }}</div>
+                        @enderror
                     </div>
                     <div class="form-group col-md-3">
                         <label for="TRABAJA_HORA_TERMINO_ORDEN_TRABAJO"><i class="fa-solid fa-clock"></i> Fin orden de trabajo:</label>
                         <input type="time" class="form-control" id="TRABAJA_HORA_TERMINO_ORDEN_TRABAJO" name="TRABAJA_HORA_TERMINO_ORDEN_TRABAJO" required placeholder="-- Seleccione la hora de término--" style="background-color: #fff; color: #000; text-align: center;" value="{{ old('TRABAJA_HORA_TERMINO_ORDEN_TRABAJO') }}">
-                        <div class="invalid-feedback" id="terminoOrdenTrabajoError"></div>
+                        @error('TRABAJA_HORA_TERMINO_ORDEN_TRABAJO')
+                        <div class="error" style="color: #E22C2C">{{ $message }}</div>
+                        @enderror
                     </div>
                 </div>
             </div>
 
             <br><br><br>
             <div class="row">
+                <div class="col-md-3">
+                    <!-- Botón Cancelar -->
+                    <button type="button" class="btn btn-custom" onclick="window.history.back();" style="background-color: #E22C2C; color: white;"><i class="fa-solid fa-angles-left"></i> Cancelar</button>
+                </div>
+                <div class="col-md-3">
+                   
+                </div>
                 <div class="col-md-6">
-                    <!-- Botón Cancelar -->
-                    <button type="button" class="btn" onclick="window.history.back();" style="background-color: #E22C2C; color: white;"><i class="fa-solid fa-angles-left"></i> Cancelar</button>
-                </div>
-                <div class="col-md-4">
-                    <!-- Botón Cancelar -->
-                </div>
+                    <div class="row">
+                        <div class="col-md-6 text-end">
+                        </div>
+                        <div class="col-md-6">
 
-                <div class="col-md-2 text-end">
-                    <button type="submit"   class="btn"  style="background-color: #00B050; color: white;" ><i class="fa-solid fa-clipboard-check"></i> Crear Solicitud</button>
-        
+                            <button type="submit" id="submitButton" class="btn btn-custom"  style="background-color: #00B050; color: white;" ><i class="fa-solid fa-clipboard-check"></i> Crear Solicitud</button>
+                        </div>
+                    </div>
                 </div>
             </div>
-            <br>
+           
        
     </div>
      
@@ -298,13 +323,26 @@
         font-size: 18px;
     }
 </style>
+
+<style>
+    .btn-custom {
+        width: 100%; /* Puedes ajustar el ancho según tus necesidades */
+    }
+    
+</style>
+
+<style>
+    .input-error {
+        border-color: red !important;
+    }
+</style>
 @stop
 
 @section('js')
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
 
-   
+
 
     <script>
         const fechaInput = document.getElementById('fecha_solicitud');
@@ -350,11 +388,8 @@
             var terminoOrden = document.getElementById('TRABAJA_HORA_TERMINO_ORDEN_TRABAJO');
 
             // Establece los campos de orden de trabajo como no requeridos
-            numeroOrden.value = null;
             numeroOrden.required = false;
-            inicioOrden.value = null;
             inicioOrden.required = false;
-            terminoOrden.value = null;
             terminoOrden.required = false;
         }
     });
@@ -497,6 +532,90 @@
     });
 </script>
 
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        // Obtener el formulario
+        let formulario = document.getElementById('formulario');
+
+        // Agregar un evento de escucha para el envío del formulario
+        formulario.addEventListener('submit', function(event) {
+            // Obtener los valores de los campos
+            let fechaHoraInicioSolicitada = document.getElementById('fechaHoraInicioSolicitada').value;
+            let fechaHoraTerminoSolicitada = document.getElementById('fechaHoraTerminoSolicitada').value;
+            let horaInicioConduccion = document.getElementById('SOLICITUD_VEHICULO_HORA_INICIO_CONDUCCION').value;
+            let horaTerminoConduccion = document.getElementById('SOLICITUD_VEHICULO_HORA_TERMINO_CONDUCCION').value;
+            let checkbox = document.getElementById('mostrarOrdenTrabajo');
+
+            // Inicializar mensaje de error
+            let mensajeError = "";
+
+            // Validar los campos antes de enviar el formulario
+            if (fechaHoraInicioSolicitada === '') {
+                mensajeError += "Por favor, selecciona una fecha y hora de salida del estacionamiento.\n";
+                document.getElementById('fechaHoraInicioSolicitada').classList.add('input-error');
+            } else {
+                document.getElementById('fechaHoraInicioSolicitada').classList.remove('input-error');
+            }
+
+            if (fechaHoraTerminoSolicitada === '') {
+                mensajeError += "Por favor, selecciona una fecha y hora de reingreso al estacionamiento.\n";
+                document.getElementById('fechaHoraTerminoSolicitada').classList.add('input-error');
+            } else {
+                document.getElementById('fechaHoraTerminoSolicitada').classList.remove('input-error');
+            }
+
+            if (horaInicioConduccion === '') {
+                mensajeError += "Por favor, selecciona una hora de inicio de conducción.\n";
+                document.getElementById('SOLICITUD_VEHICULO_HORA_INICIO_CONDUCCION').classList.add('input-error');
+            } else {
+                document.getElementById('SOLICITUD_VEHICULO_HORA_INICIO_CONDUCCION').classList.remove('input-error');
+            }
+
+            if (horaTerminoConduccion === '') {
+                mensajeError += "Por favor, selecciona una hora de término de conducción.\n";
+                document.getElementById('SOLICITUD_VEHICULO_HORA_TERMINO_CONDUCCION').classList.add('input-error');
+            } else {
+                document.getElementById('SOLICITUD_VEHICULO_HORA_TERMINO_CONDUCCION').classList.remove('input-error');
+            }
+
+            // Si se activa el checkbox de mostrar orden de trabajo, validar los campos relacionados
+            if (checkbox.checked) {
+                let horaInicioOrdenTrabajo = document.getElementById('TRABAJA_HORA_INICIO_ORDEN_TRABAJO').value;
+                let horaTerminoOrdenTrabajo = document.getElementById('TRABAJA_HORA_TERMINO_ORDEN_TRABAJO').value;
+                
+                if (horaInicioOrdenTrabajo === '') {
+                    mensajeError += "Por favor, selecciona una hora de inicio de orden de trabajo.\n";
+                    document.getElementById('TRABAJA_HORA_INICIO_ORDEN_TRABAJO').classList.add('input-error');
+                } else {
+                    document.getElementById('TRABAJA_HORA_INICIO_ORDEN_TRABAJO').classList.remove('input-error');
+                }
+
+                if (horaTerminoOrdenTrabajo === '') {
+                    mensajeError += "Por favor, selecciona una hora de término de orden de trabajo.\n";
+                    document.getElementById('TRABAJA_HORA_TERMINO_ORDEN_TRABAJO').classList.add('input-error');
+                } else {
+                    document.getElementById('TRABAJA_HORA_TERMINO_ORDEN_TRABAJO').classList.remove('input-error');
+                }
+            } else {
+                document.getElementById('TRABAJA_NUMERO_ORDEN_TRABAJO').disabled = true;
+                document.getElementById('TRABAJA_HORA_INICIO_ORDEN_TRABAJO').disabled = true;
+                document.getElementById('TRABAJA_HORA_TERMINO_ORDEN_TRABAJO').disabled = true;
+            }
+
+            // Si hay mensaje de error, mostrar alerta y detener envío del formulario
+            if (mensajeError !== "") {
+                alert(mensajeError);
+                event.preventDefault();
+            } else {
+                const submitButton = document.getElementById('submitButton');
+    
+                submitButton.addEventListener('click', function() {
+                    submitButton.disabled = true;
+                });
+            }
+        });
+    });
+</script>
 
 
 <script>
