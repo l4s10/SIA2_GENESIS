@@ -252,6 +252,8 @@
             <button type="submit" name="action" value="finalizar_revision" class="btn btn-success"><i class="fa-solid fa-check"></i> Finalizar revisiones y autorizar</button>
             <button type="submit" name="action" value="rechazar" class="btn btn-danger"><i class="fa-solid fa-ban"></i> Rechazar</button>
         </form>
+    @else
+        <a href="{{ route('solicitudes.materiales.index') }}" class="btn btn-secondary"><i class="fa-solid fa-hand-point-left"></i> Volver</a>
     @endif
 @stop
 
