@@ -43,21 +43,61 @@
             <thead class="tablacolor">
                 <tr>
                     <th scope="col">Solicitante</th>
+                    <th scope="col">Rut</th>
+                    <th scope="col">Dependencia</th>
+                    <th scope="col">Email</th>
                     <th scope="col">Estado</th>
-                    <th scope="col">Fecha de solicitud</th>
+                    <th scope="col">Fecha de Ingreso</th>
                     <th>Acciones</th>
                 </tr>
             </thead>
             <tbody>
                 @foreach($solicitudes as $solicitud)
                     <tr>
-                        <td>{{ $solicitud->solicitante->USUARIO_NOMBRES }} {{$solicitud->solicitante->USUARIO_APELLIDOS}}</td>
-                        <!-- Colores para el estado de las tablas -->
-                        <td><span class="badge rounded-pill estado-{{ strtolower(str_replace(' ', '-', $solicitud->SOLICITUD_ESTADO)) }}">
-                        {{ $solicitud->SOLICITUD_ESTADO }}
-                        </span>
+                        <td>
+                            <div class="d-flex justify-content-center">
+                                {{ $solicitud->solicitante->USUARIO_NOMBRES }} {{ $solicitud->solicitante->USUARIO_APELLIDOS }}
+                            </div>
                         </td>
-                        <td>{{ $solicitud->created_at }}</td>
+                        <td>
+                            <div class="d-flex justify-content-center">
+                                {{ $solicitud->solicitante->USUARIO_RUT }}
+                            </div>
+                        </td>
+                        <td>
+                            <div class="d-flex justify-content-center">
+                                {{ $solicitud->solicitante->ubicacion ? $solicitud->solicitante->ubicacion->UBICACION_NOMBRE : $solicitud->solicitante->departamento->DEPARTAMENTO_NOMBRE}}
+                            </div>
+                        </td>
+                        <td>
+                            <div class="d-flex justify-content-center">
+                                {{ $solicitud->solicitante->email}}
+                            </div>
+                        </td>
+                        <td>
+                            <div class="d-flex justify-content-center">
+                                @if ($solicitud->SOLICITUD_ESTADO == 'INGRESADO')
+                                    <span style="color: #e6500a;">🟠 <span style="color: black; font-weight: bold;">INGRESADO</span></span>
+                                @elseif ($solicitud->SOLICITUD_ESTADO == 'EN REVISIÓN')
+                                    <span style="color: #0000ff;">🔵 <span style="color: black; font-weight: bold;">EN REVISIÓN</span></span>
+                                @elseif ($solicitud->SOLICITUD_ESTADO == 'POR APROBAR')
+                                    <span style="color: #ffff00;">🟡 <span style="color: black; font-weight: bold;">POR APROBAR</span></span>
+                                @elseif ($solicitud->SOLICITUD_ESTADO == 'POR AUTORIZAR')
+                                    <span style="color: #00ff00;">🟢 <span style="color: black; font-weight: bold;">POR AUTORIZAR</span></span>
+                                @elseif ($solicitud->SOLICITUD_ESTADO == 'POR RENDIR')
+                                    <span style="color: #ffffff;">⚪ <span style="color: black; font-weight: bold;">POR RENDIR</span></span>
+                                @elseif ($solicitud->SOLICITUD_ESTADO == 'RECHAZADO')
+                                    <span style="color: #ff0000;">🔴 <span style="color: black; font-weight: bold;">RECHAZADO</span></span>
+                                @elseif ($solicitud->SOLICITUD_ESTADO == 'TERMINADO')
+                                    <span style="color: #000000;">⚫ <span style="color: black; font-weight: bold;">TERMINADO</span></span>
+                                @endif
+                            </div>
+                        </td>
+                        <td>
+                            <div class="d-flex justify-content-center">
+                                {{ $solicitud->formatted_created_at }}
+                            </div>
+                        </td>
                         <td>
                             <div class="d-flex justify-content-center">
                                 <a href="{{ route('solicitudes.formularios.show', $solicitud->SOLICITUD_ID) }}" class="btn btn-primary"><i class="fa-solid fa-eye"></i></a>
@@ -117,6 +157,7 @@
         background-color: #d9d9d9;
         }
     </style>
+
 @stop
 
 @section('js')
@@ -126,7 +167,7 @@
             $('#solicitudes').DataTable({
                 "lengthMenu": [[5, 10, 50, -1], [5, 10, 50, "All"]],
                 "columnDefs": [
-                    { "orderable": false, "targets": 3 }
+                    { "orderable": false, "targets": 6 }
                 ],
                 "language": {
                     "url": "https://cdn.datatables.net/plug-ins/1.11.3/i18n/es_es.json"

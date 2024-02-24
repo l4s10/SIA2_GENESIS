@@ -13,7 +13,11 @@ Route::get('solicitudesvehiculos/indexPorAprobar', [SolicitudVehiculosController
 // Ruta para index de solicitudes Por Rendir
 Route::get('solicitudesvehiculos/indexPorRendir', [SolicitudVehiculosController::class, 'indexPorRendir'])->name('solicitudesvehiculos.indexPorRendir');
 
+// Ruta para acceder al Timeline
+Route::get('solicitudesvehiculos/{id}', [SolicitudVehiculosController::class, 'timeline'])->name('solicitudesvehiculos.timeline');
 
+// Agregar la ruta para verificar la contraseña
+Route::post('verificar-contrasena', [SolicitudVehiculosController::class, 'verificarContrasena'])->name('verificar.contrasena');
 
 // Ruta para descargar PDF
 Route::get('descargar-plantilla/{id}', [SolicitudVehiculosController::class, 'descargarPlantilla'])->name('descargar.plantilla');
