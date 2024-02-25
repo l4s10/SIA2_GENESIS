@@ -253,8 +253,8 @@
             <br><br><br>
             <div class="row">
                 <div class="col-md-6">
-                    <!-- Botón Cancelar -->
-                    <button type="button" class="btn" onclick="window.history.back();" style="background-color: #E22C2C; color: white;"><i class="fa-solid fa-angles-left"></i> Cancelar</button>
+                    {{-- Botón de envío --}}
+                    <a href="{{ route('solicitudesvehiculos.index') }}" class="btn btn-secondary"><i class="fa-solid fa-arrow-left"></i> Volver</a>
                 </div>
                 <div class="col-md-4">
                     <!-- Botón Cancelar -->
