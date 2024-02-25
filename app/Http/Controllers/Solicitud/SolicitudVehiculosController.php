@@ -195,6 +195,7 @@ class SolicitudVehiculosController extends Controller
      */
     public function store(Request $request)
     {
+        dd($request);
         // Intentar guardar la solicitud en la base de datos
         try {
             //if ( $request->)

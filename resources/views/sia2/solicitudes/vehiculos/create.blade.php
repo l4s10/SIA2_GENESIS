@@ -525,6 +525,8 @@
             let fechaHoraTerminoSolicitada = document.getElementById('fechaHoraTerminoSolicitada').value;
             let horaInicioConduccion = document.getElementById('SOLICITUD_VEHICULO_HORA_INICIO_CONDUCCION').value;
             let horaTerminoConduccion = document.getElementById('SOLICITUD_VEHICULO_HORA_TERMINO_CONDUCCION').value;
+            let viaticoConductor = document.getElementById('SOLICITUD_VEHICULO_VIATICO').value;
+
             let checkbox = document.getElementById('mostrarOrdenTrabajo');
 
             // Inicializar mensaje de error
@@ -532,31 +534,38 @@
 
             // Validar los campos antes de enviar el formulario
             if (fechaHoraInicioSolicitada === '') {
-                mensajeError += "Por favor, selecciona una fecha y hora de salida del estacionamiento.\n";
+                mensajeError += "Por favor, seleccione una fecha y hora de salida del estacionamiento.\n";
                 document.getElementById('fechaHoraInicioSolicitada').classList.add('input-error');
             } else {
                 document.getElementById('fechaHoraInicioSolicitada').classList.remove('input-error');
             }
 
             if (fechaHoraTerminoSolicitada === '') {
-                mensajeError += "Por favor, selecciona una fecha y hora de reingreso al estacionamiento.\n";
+                mensajeError += "Por favor, seleccione una fecha y hora de reingreso al estacionamiento.\n";
                 document.getElementById('fechaHoraTerminoSolicitada').classList.add('input-error');
             } else {
                 document.getElementById('fechaHoraTerminoSolicitada').classList.remove('input-error');
             }
 
             if (horaInicioConduccion === '') {
-                mensajeError += "Por favor, selecciona una hora de inicio de conducción.\n";
+                mensajeError += "Por favor, seleccione una hora de inicio de conducción.\n";
                 document.getElementById('SOLICITUD_VEHICULO_HORA_INICIO_CONDUCCION').classList.add('input-error');
             } else {
                 document.getElementById('SOLICITUD_VEHICULO_HORA_INICIO_CONDUCCION').classList.remove('input-error');
             }
 
             if (horaTerminoConduccion === '') {
-                mensajeError += "Por favor, selecciona una hora de término de conducción.\n";
+                mensajeError += "Por favor, seleccione una hora de término de conducción.\n";
                 document.getElementById('SOLICITUD_VEHICULO_HORA_TERMINO_CONDUCCION').classList.add('input-error');
             } else {
                 document.getElementById('SOLICITUD_VEHICULO_HORA_TERMINO_CONDUCCION').classList.remove('input-error');
+            }
+
+            if (viaticoConductor === '') {
+                mensajeError += "Por favor, especifique solicitud de viático.";
+                document.getElementById('SOLICITUD_VEHICULO_VIATICO').classList.add('input-error');
+            } else {
+                document.getElementById('SOLICITUD_VEHICULO_VIATICO').classList.remove('input-error');
             }
 
             // Si se activa el checkbox de mostrar orden de trabajo, validar los campos relacionados
@@ -585,6 +594,10 @@
 
             // Si hay mensaje de error, mostrar alerta y detener envío del formulario
             if (mensajeError !== "") {
+                    document.getElementById('TRABAJA_NUMERO_ORDEN_TRABAJO').disabled = false;
+                    document.getElementById('TRABAJA_HORA_INICIO_ORDEN_TRABAJO').disabled = false;
+                    document.getElementById('TRABAJA_HORA_TERMINO_ORDEN_TRABAJO').disabled = false;
+
                 alert(mensajeError);
                 event.preventDefault();
             } else {
