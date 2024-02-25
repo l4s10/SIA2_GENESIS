@@ -5,7 +5,7 @@ document.addEventListener('DOMContentLoaded', function() {
         data: {
             labels: [],
             datasets: [{
-                label: 'Solicitudes por Estado',
+                label: 'Cantidad de solicitudes por vehículo',
                 data: [],
                 backgroundColor: [],
                 borderWidth: 1
@@ -40,9 +40,9 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     function updateChart4(data) {
-        chart4.data.labels = data.grafico4.rankingTiposEquipos.map(item => item.TIPO_EQUIPO_NOMBRE);
-        chart4.data.datasets[0].data = data.grafico4.rankingTiposEquipos.map(item => item.total_solicitudes);
-        chart4.data.datasets[0].backgroundColor = data.grafico4.rankingTiposEquipos.map(() => getRandomColor());
+        chart4.data.labels = data.grafico4.rankingVehiculos.map(item => item.VEHICULO_PATENTE);
+        chart4.data.datasets[0].data = data.grafico4.rankingVehiculos.map(item => item.total_solicitudes);
+        chart4.data.datasets[0].backgroundColor = data.grafico4.rankingVehiculos.map(() => getRandomColor());
         chart4.update();
     }
 

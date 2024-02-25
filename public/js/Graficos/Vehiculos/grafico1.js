@@ -1,4 +1,3 @@
-// grafico1.js
 document.addEventListener('DOMContentLoaded', function() {
     const ctx1 = document.getElementById('grafico1').getContext('2d');
     const myChart = new Chart(ctx1, {
@@ -35,7 +34,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     function updateChart(data) {
         myChart.data.labels = data.grafico1.ranking.map(item => item.nombre_completo);
-        myChart.data.datasets[0].data = data.grafico1.ranking.map(item => item.total_gestiones);
+        myChart.data.datasets[0].data = data.grafico1.ranking.map(item => item.cantidad); // Modificado para usar 'cantidad'
         myChart.data.datasets[0].backgroundColor = data.grafico1.ranking.map(() => getRandomColor());
         myChart.update();
     }
