@@ -38,40 +38,6 @@
         </div>
     </div>
 
-    <div class="accordion" id="accordionExample">
-        <div class="card">
-            <div class="card-header" id="headingOne">
-                <h2 class="mb-0">
-                    <button class="btn btn-link" type="button" data-toggle="collapse" data-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
-                        Información adicional sobre el modulo.
-                    </button>
-                </h2>
-            </div>
-
-            <div id="collapseOne" class="collapse show" aria-labelledby="headingOne" data-parent="#accordionExample">
-                <div class="card-body">
-                    <div class="row">
-                        <div class="col-md-6">
-                            <label for="start-date">Ejemplo%</label>
-                        </div>
-                        <div class="col-md-6">
-                            <label for="end-date">Ejemplo1%</label>
-                        </div>
-                    </div>
-                    <br>
-                    <div class="row">
-                        <div class="col-md-6">
-                            <label for="start-date">Ejemplo2%</label>
-                        </div>
-                        <div class="col-md-6">
-                            <label for="end-date">Ejemplo3%</label>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
     <div class="row">
         <div class="col-md-6">
             <div class="card">
@@ -85,8 +51,26 @@
         </div>
     </div>
 
-    <div class="card">
-        <canvas id="grafico3"></canvas>
+    <div class="row">
+        <div class="col-md-6">
+            <div class="card">
+                <canvas id="grafico3"></canvas>
+            </div>
+        </div>
+
+        <div class="col-md-6">
+            <div class="card">
+                <canvas id="grafico4"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+                <canvas id="grafico5"></canvas>
+            </div>
+        </div>
     </div>
 @endsection
 
@@ -106,7 +90,7 @@
     <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
 
-    <script>
+    {{-- <script>
         // Inicializar Flatpickr
         document.addEventListener('DOMContentLoaded', function() {
             flatpickr('#start-date', {
@@ -126,7 +110,7 @@
                 defaultDate: 'today'
             });
         });
-    </script>
+    </script> --}}
 
 
     {{-- @if(session('api_token'))
@@ -135,6 +119,11 @@
         console.log('API Token stored:', localStorage.getItem('api_token'));
     </script>
     @endif --}}
+
+    {{-- Inicializar calendarios --}}
+    <script src="{{ asset('js/Components/fechasGraficos.js') }}"></script>
+
+    {{-- Importar el archivo JS para obtener los datos --}}
     <script src="{{ asset('js/Graficos/Materiales/getData.js') }}"></script>
 
     {{-- Importar el archivo JS para el gráfico 1 --}}
@@ -143,4 +132,9 @@
     <script src="{{ asset('js/Graficos/Materiales/grafico2.js') }}"></script>
     {{-- Importamos el archivo JS para el grafico 3 --}}
     <script src="{{ asset('js/Graficos/Materiales/grafico3.js') }}"></script>
+    {{-- Importamos el archivo JS para el grafico 4 --}}
+    <script src="{{ asset('js/Graficos/Materiales/grafico4.js') }}"></script>
+    {{-- Importamos el archivo JS para el grafico 5 --}}
+    <script src="{{ asset('js/Graficos/Materiales/grafico5.js') }}"></script>
+
 @endsection
