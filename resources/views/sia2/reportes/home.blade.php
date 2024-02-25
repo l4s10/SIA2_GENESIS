@@ -63,23 +63,13 @@
             <p class="card-text">Este módulo permite ver los reportes de <strong>Equipos</strong>. Para saber las cantidades de solicitudes de <strong>Equipos</strong> del sistema completo.</p>
         </div>
         <div class="card-footer">
-            <a class="btn btn-primary" href=" "><i class="fa-solid fa-chart-pie"></i> Graficos</a>
+            <a class="btn btn-primary" href="{{ route('reportes.equipos.index') }}"><i class="fa-solid fa-chart-pie"></i> Graficos</a>
         </div>
     </div>
     <div class="card text-bg-primary mb-3">
         <div class="card-header">Módulo de Informes sobre reservas de salas</div>
         <div class="card-body">
             <p class="card-text">Este módulo permite ver los reportes de <strong>Reservas de salas</strong>. Para saber las cantidades de solicitudes de <strong>Reservas de salas</strong> del sistema completo.</p>
-        </div>
-        <div class="card-footer">
-            <a class="btn btn-primary" href=" "><i class="fa-solid fa-chart-pie"></i> Graficos</a>
-        </div>
-    </div>
-
-    <div class="card text-bg-primary mb-3" style="max-width: 100%; text-align: justify;">
-        <div class="card-header">Módulo de Informes sobre inventario</div>
-        <div class="card-body">
-            <p class="card-text">Este módulo permite ver los reportes de <strong>Inventario</strong>. Para saber las cantidades de solicitudes de <strong>Inventario</strong> del sistema completo.</p>
         </div>
         <div class="card-footer">
             <a class="btn btn-primary" href=" "><i class="fa-solid fa-chart-pie"></i> Graficos</a>
@@ -98,8 +88,6 @@
 @stop
 
 @section('css')
-    <link rel="stylesheet" href="/css/admin_custom.css">
-    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.2/css/dataTables.bootstrap5.min.css">
     <style>
     .alert {
     opacity: 0.7; /* Ajusta la opacidad a tu gusto */
@@ -119,21 +107,5 @@
 @stop
 
 @section('js')
-    <!-- CONEXION FONT-AWESOME CON TOOLKIT -->
-    <script src="https://kit.fontawesome.com/742a59c628.js" crossorigin="anonymous"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.1.3/js/bootstrap.bundle.min.js"></script>
-    <!-- Agregando funciones de paginacion, busqueda, etc -->
-    <script src="https://code.jquery.com/jquery-3.5.1.js"></script>
-        <script src="https://cdn.datatables.net/1.13.2/js/jquery.dataTables.min.js"></script>
-        <script src="https://cdn.datatables.net/1.13.2/js/dataTables.bootstrap5.min.js"></script>
-
-        <!-- Para inicializar -->
-        <script>
-            $(document).ready(function () {
-                $('#materiales').DataTable({
-                    "lengthMenu": [[5,10, 50, -1], [5, 10, 50, "All"]]
-                });
-            });
-        </script>
 
 @stop
