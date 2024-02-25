@@ -148,7 +148,7 @@
             @method('PUT')
 
             {{-- Estado solicitud --}}
-            <div class="form-group">
+            {{-- <div class="form-group">
                 <label for="SOLICITUD_REPARACION_ESTADO"><i class="fa-solid fa-file-circle-check"></i> Estado de la solicitud</label>
                 <select class="form-control" id="SOLICITUD_REPARACION_ESTADO" name="SOLICITUD_REPARACION_ESTADO">
                     <option value="INGRESADO" {{ $solicitud->SOLICITUD_REPARACION_ESTADO == 'INGRESADO' ? 'selected' : '' }}>🟠 INGRESADO</option>
@@ -157,7 +157,7 @@
                     <option value="RECHAZADO" {{ $solicitud->SOLICITUD_REPARACION_ESTADO == 'RECHAZADO' ? 'selected' : '' }}>🔴 RECHAZADO</option>
                     <option value="TERMINADO" {{ $solicitud->SOLICITUD_REPARACION_ESTADO == 'TERMINADO' ? 'selected' : '' }}>⚫ TERMINADO</option>
                 </select>
-            </div>
+            </div> --}}
 
             <div class="row">
                 <div class="col-md-6">
@@ -185,7 +185,9 @@
             {{-- Botones --}}
             <div class="form-group">
                 <a href="{{ route('solicitudes.reparaciones.index') }}" class="btn btn-secondary"><i class="fa-solid fa-hand-point-left"></i> Volver</a>
-                <button type="submit" class="btn agregar"><i class="fa-solid fa-plus"></i> Guardar cambios</button>
+                <button type="submit" name="action" value="guardar" class="btn agregar"><i class="fa-solid fa-plus"></i> Guardar revisión</button>
+                <button type="submit" name="action" value="finalizar_revision" class="btn btn-success"><i class="fa-solid fa-check"></i> Finalizar revisiones y autorizar</button>
+                <button type="submit" name="action" value="rechazar" class="btn btn-danger"><i class="fa-solid fa-ban"></i> Rechazar</button>
             </div>
         </form>
     @else

@@ -179,7 +179,7 @@
             @csrf
             @method('PUT')
             {{-- Estado de la solicitud --}}
-            <div class="form-group">
+            {{-- <div class="form-group">
                 <label for="SOLICITUD_ESTADO"><i class="fa-solid fa-file-circle-check"></i> Estado de la solicitud</label>
                 <select class="form-control" id="SOLICITUD_ESTADO" name="SOLICITUD_ESTADO">
                     <option value="INGRESADO" {{ old('SOLICITUD_ESTADO', $solicitud->SOLICITUD_ESTADO) == 'INGRESADO' ? 'selected' : '' }}>🟠 INGRESADO</option>
@@ -191,7 +191,7 @@
                 @error('SOLICITUD_ESTADO')
                     <div class="alert alert-danger">{{ $message }}</div>
                 @enderror
-            </div>
+            </div> --}}
 
             {{-- Fechas asignadas --}}
             <div class="row">
@@ -256,7 +256,9 @@
 
             {{-- Botones de retorno y envio --}}
             <a href="{{ route('solicitudes.equipos.index') }}" class="btn btn-secondary"><i class="fa-solid fa-hand-point-left"></i> Volver</a>
-            <button type="submit" class="btn agregar"><i class="fa-solid fa-plus"></i> Guardar cambios</button>
+            <button type="submit" name="action" value="guardar" class="btn agregar"><i class="fa-solid fa-plus"></i> Guardar revisión</button>
+            <button type="submit" name="action" value="finalizar_revision" class="btn btn-success"><i class="fa-solid fa-check"></i> Finalizar revisiones y autorizar</button>
+            <button type="submit" name="action" value="rechazar" class="btn btn-danger"><i class="fa-solid fa-ban"></i> Rechazar</button>
         </form>
     @else
         <a href="{{ route('solicitudes.equipos.index') }}" class="btn btn-secondary"><i class="fa-solid fa-hand-point-left"></i> Volver</a>
