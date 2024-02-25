@@ -26,9 +26,21 @@ class Cargo extends Model
         Relacion de uno a uno -> BelongsTo
         Relacion de uno a muchos / cero a muchos -> HasMany
     */
-    //*Relación de uno a uno con Oficina*/
-    public function oficina()
-    {
-        return $this->belongsTo(Oficina::class, 'OFICINA_ID', 'OFICINA_ID');
-    }
+     // Relación 1:n con Resolucion (un cargo obedece a múltiples resoluciones)
+     public function firma()
+     {
+         return $this->hasMany(Resolucion::class, 'CARGO_ID');
+     }
+ 
+     // Relación n:n con Resolucion a través de la tabla intermedia 'obedecen_resoluciones'
+     public function obediencia()
+     {
+         return $this->belongsToMany(Resolucion::class, 'obedecen_resoluciones', 'CARGO_ID', 'RESOLUCION_ID');
+     }
+ 
+     // Relación 1:1 con Oficina
+     public function oficina()
+     {
+         return $this->belongsTo(Oficina::class, 'OFICINA_ID', 'OFICINA_ID');
+     }
 }
