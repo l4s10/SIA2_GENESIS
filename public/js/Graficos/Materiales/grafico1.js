@@ -1,115 +1,64 @@
-// Objetivo: Generar el gráfico de gestiones por usuario
-
+// grafico1.js
 document.addEventListener('DOMContentLoaded', function() {
-    // Obtener el contexto del canvas (Inicializar)
     const ctx1 = document.getElementById('grafico1').getContext('2d');
-
-    // Inicializar el data [] del gráfico
-    const initialChartData = {
-        labels: [],
-        datasets: [{
-            label: 'Gestiones por Usuario',
-            data: [],
-            backgroundColor: [],
-            borderWidth: 1
-        }]
-    };
-    // Crear el gráfico
     const myChart = new Chart(ctx1, {
         type: 'pie',
-        data: initialChartData,
+        data: {
+            labels: [],
+            datasets: [{
+                label: 'Gestiones por Usuario',
+                data: [],
+                backgroundColor: [],
+                borderWidth: 1
+            }]
+        },
         options: {
             responsive: true,
             plugins: {
-                legend: {
-                    display: true,
-                    labels: {
-                        // Aquí puedes configurar las etiquetas de la leyenda
-                    }
-                },
+                legend: { display: true },
                 title: {
                     display: true,
                     text: 'Gestionadores de solicitudes de Materiales',
-                    padding: {
-                        top: 10,
-                        bottom: 30
-                    }
+                    padding: { top: 10, bottom: 30 }
                 }
             }
         }
     });
 
-    // Función para obtener un color aleatorio
     function getRandomColor() {
-        const letters = '0123456789ABCDEF';
         let color = '#';
         for (let i = 0; i < 6; i++) {
-            color += letters[Math.floor(Math.random() * 16)];
+            color += '0123456789ABCDEF'[Math.floor(Math.random() * 16)];
         }
         return color;
     }
 
-    // Función para actualizar el gráfico
     function updateChart(data) {
-        const newData = data.grafico1.ranking.map(item => ({
-            label: item.nombre_completo,
-            value: item.total_gestiones,
-            color: getRandomColor()
-        }));
-        myChart.data.labels = newData.map(item => item.label);
-        myChart.data.datasets[0].data = newData.map(item => item.value);
-        myChart.data.datasets[0].backgroundColor = newData.map(item => item.color);
+        myChart.data.labels = data.grafico1.ranking.map(item => item.nombre_completo);
+        myChart.data.datasets[0].data = data.grafico1.ranking.map(item => item.total_gestiones);
+        myChart.data.datasets[0].backgroundColor = data.grafico1.ranking.map(() => getRandomColor());
         myChart.update();
     }
 
-    // Al cargar la página por primera vez, consumir la ruta sin fechas
-    fetch('/api/reportes/materiales/get-graficos', {
-        method: 'GET',
-        headers: {
-            'Accept': 'application/json',
-            'Content-Type': 'application/json',
-            // 'Authorization': 'Bearer ' + localStorage.getItem('api_token'),
-            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
-        },
-    })
-        .then(response => response.json())
+    window.getData.getInitialChartData()
         .then(data => {
             if (data.status === 'success') {
-                updateChart(data.data); // Cambiado aquí para acceder directamente a data.grafico1
+                updateChart(data.data);
             }
         })
         .catch(error => console.error('Error:', error));
 
-        // Al hacer click en el botón de actualizar (LISTENER)
-        document.querySelector('#refresh-button').addEventListener('click', function () {
-            var fechaInicio = document.querySelector('#start-date').value;
-            var fechaFin = document.querySelector('#end-date').value;
+    document.querySelector('#refresh-button').addEventListener('click', function() {
+        const fechaInicio = document.querySelector('#start-date').value;
+        const fechaFin = document.querySelector('#end-date').value;
 
-            Swal.fire({
-                title: 'Actualizando registros',
-                timer: 2000,
-                didOpen: () => {
-                    Swal.showLoading();
-                },
-                willClose: () => {
-                   // Al cerrarse
-                }
-            });
+        Swal.fire({
+            title: 'Actualizando registros',
+            timer: 2000,
+            didOpen: () => { Swal.showLoading(); },
+        });
 
-            fetch('/api/reportes/materiales/filtrar-general', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Accept': 'application/json',
-                    // 'Authorization': 'Bearer ' + localStorage.getItem('api_token'),
-                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
-                },
-                body: JSON.stringify({
-                    fecha_inicio: fechaInicio,
-                    fecha_fin: fechaFin
-                })
-            })
-            .then(response => response.json())
+        window.getData.getFilteredChartData(fechaInicio, fechaFin)
             .then(data => {
                 Swal.close();
                 if (data.status === 'success') {
@@ -120,6 +69,5 @@ document.addEventListener('DOMContentLoaded', function() {
                 Swal.fire('Error', 'No se pudieron actualizar los datos.', 'error');
                 console.error('Error:', error);
             });
-        });
-
+    });
 });

@@ -135,6 +135,7 @@
         console.log('API Token stored:', localStorage.getItem('api_token'));
     </script>
     @endif --}}
+    <script src="{{ asset('js/Graficos/Materiales/getData.js') }}"></script>
 
     {{-- Importar el archivo JS para el gráfico 1 --}}
     <script src="{{ asset('js/Graficos/Materiales/grafico1.js') }}"></script>
