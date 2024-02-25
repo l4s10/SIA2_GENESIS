@@ -60,16 +60,16 @@ class ReportesSalasController extends Controller
     public function filtrarGeneral(Request $request)
     {
         try {
-            // Extraer fechas del request
-            $fechaInicio = $request->input('fecha_inicio');
-            $fechaFin = $request->input('fecha_fin');
-
             // Cada gráfico devuelve su propia estructura de datos
             $rankingGestionadores = $this->Grafico1($request);
             // Cargamos el grafico2
             $solicitudesPorUbicacionDepto = $this->Grafico2($request);
             // Cargamos el grafico3
             $rankingEstados = $this->Grafico3($request);
+            // Cargamos el grafico4
+            $rankingBodegasSolicitadas = $this->Grafico4($request);
+            // Cargamos el grafico5
+            $promedioAtencion = $this->Grafico5($request);
             // Retornamos en JSON la data filtrada de los gráficos
             // Ahora 'data' contiene un array con todos los datos de los gráficos
             return response()->json([
@@ -77,7 +77,9 @@ class ReportesSalasController extends Controller
                 'data' => [
                     'grafico1' => $rankingGestionadores,
                     'grafico2' => $solicitudesPorUbicacionDepto,
-                    'grafico3' => $rankingEstados
+                    'grafico3' => $rankingEstados,
+                    'grafico4' => $rankingBodegasSolicitadas,
+                    'grafico5' => $promedioAtencion
                 ]
             ]);
         } catch (\Exception $e) {
