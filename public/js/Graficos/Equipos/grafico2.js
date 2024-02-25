@@ -1,11 +1,11 @@
 document.addEventListener('DOMContentLoaded', function() {
-    const ctx4 = document.getElementById('grafico4').getContext('2d');
-    const chart4 = new Chart(ctx4, {
-        type: 'bar',
+    const ctx2 = document.getElementById('grafico2').getContext('2d');
+    const myChart2 = new Chart(ctx2, {
+        type: 'pie',
         data: {
             labels: [],
             datasets: [{
-                label: 'Solicitudes por Estado',
+                label: 'Solicitudes por Entidad',
                 data: [],
                 backgroundColor: [],
                 borderWidth: 1
@@ -17,17 +17,10 @@ document.addEventListener('DOMContentLoaded', function() {
                 legend: { display: true },
                 title: {
                     display: true,
-                    text: 'Ranking de materiales mas solicitados',
+                    text: 'Solicitudes de equipos requeridos por Ubicacion/Departamento',
                     padding: { top: 10, bottom: 30 }
                 }
-            },
-            scales: {
-                y: {
-                    beginAtZero: true,
-                    ticks: { precision: 0 }
-                }
-            },
-            barThickness: 65,
+            }
         }
     });
 
@@ -39,18 +32,23 @@ document.addEventListener('DOMContentLoaded', function() {
         return color;
     }
 
-    function updateChart4(data) {
-        chart4.data.labels = data.grafico4.rankingTiposMateriales.map(item => item.MATERIAL_NOMBRE);
-        chart4.data.datasets[0].data = data.grafico4.rankingTiposMateriales.map(item => item.total_solicitudes);
-        chart4.data.datasets[0].backgroundColor = data.grafico4.rankingTiposMateriales.map(() => getRandomColor());
-        chart4.update();
+    function updateChart2(data) {
+        const newData = data.grafico2.solicitudesPorEntidad.map(item => ({
+            label: item.entidad,
+            value: item.total_solicitudes,
+            color: getRandomColor() // Asumiendo que getRandomColor también está global
+        }));
+        myChart2.data.labels = newData.map(item => item.label);
+        myChart2.data.datasets[0].data = newData.map(item => item.value);
+        myChart2.data.datasets[0].backgroundColor = newData.map(item => item.color);
+        myChart2.update();
     }
 
     // Utiliza getData global para obtener y actualizar los datos del gráfico
     window.getData.getInitialChartData()
         .then(data => {
             if (data.status === 'success') {
-                updateChart4(data.data); // Asegúrate de que data.data contenga la estructura correcta
+                updateChart2(data.data); // Asegúrate de que data.data contenga la estructura correcta
             }
         })
         .catch(error => console.error('Error:', error));
@@ -62,14 +60,14 @@ document.addEventListener('DOMContentLoaded', function() {
         Swal.fire({
             title: 'Actualizando registros',
             timer: 2000,
-            didOpen: () => { Swal.showLoading(); },
+            didOpen: () => { Swal.showLoading(); }
         });
 
         window.getData.getFilteredChartData(fechaInicio, fechaFin)
             .then(data => {
                 Swal.close();
                 if (data.status === 'success') {
-                    updateChart4(data.data);
+                    updateChart2(data.data); // Asegúrate de que data.data contenga la estructura correcta
                 }
             })
             .catch(error => {

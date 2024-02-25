@@ -1,6 +1,7 @@
 document.addEventListener('DOMContentLoaded', function() {
-    const ctx4 = document.getElementById('grafico4').getContext('2d');
-    const chart4 = new Chart(ctx4, {
+    const ctx3 = document.getElementById('grafico3').getContext('2d');
+
+    const myChart = new Chart(ctx3, {
         type: 'bar',
         data: {
             labels: [],
@@ -17,7 +18,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 legend: { display: true },
                 title: {
                     display: true,
-                    text: 'Ranking de materiales mas solicitados',
+                    text: 'Ranking de estados por solicitudes de equipos',
                     padding: { top: 10, bottom: 30 }
                 }
             },
@@ -39,37 +40,43 @@ document.addEventListener('DOMContentLoaded', function() {
         return color;
     }
 
-    function updateChart4(data) {
-        chart4.data.labels = data.grafico4.rankingTiposMateriales.map(item => item.MATERIAL_NOMBRE);
-        chart4.data.datasets[0].data = data.grafico4.rankingTiposMateriales.map(item => item.total_solicitudes);
-        chart4.data.datasets[0].backgroundColor = data.grafico4.rankingTiposMateriales.map(() => getRandomColor());
-        chart4.update();
+    function updateChart(data) {
+        const newData = data.grafico3.rankingEstados.map(item => ({
+            label: item.SOLICITUD_ESTADO,
+            value: item.total_solicitudes,
+            color: getRandomColor()
+        }));
+        myChart.data.labels = newData.map(item => item.label);
+        myChart.data.datasets[0].data = newData.map(item => item.value);
+        myChart.data.datasets[0].backgroundColor = newData.map(item => item.color);
+        myChart.update();
     }
 
-    // Utiliza getData global para obtener y actualizar los datos del gráfico
     window.getData.getInitialChartData()
         .then(data => {
             if (data.status === 'success') {
-                updateChart4(data.data); // Asegúrate de que data.data contenga la estructura correcta
+                updateChart(data.data); // Actualizar el tercer gráfico
             }
         })
         .catch(error => console.error('Error:', error));
 
-    document.querySelector('#refresh-button').addEventListener('click', function() {
+    document.querySelector('#refresh-button').addEventListener('click', function () {
         const fechaInicio = document.querySelector('#start-date').value;
         const fechaFin = document.querySelector('#end-date').value;
 
         Swal.fire({
             title: 'Actualizando registros',
             timer: 2000,
-            didOpen: () => { Swal.showLoading(); },
+            didOpen: () => {
+                Swal.showLoading();
+            }
         });
 
         window.getData.getFilteredChartData(fechaInicio, fechaFin)
             .then(data => {
                 Swal.close();
                 if (data.status === 'success') {
-                    updateChart4(data.data);
+                    updateChart(data.data);
                 }
             })
             .catch(error => {

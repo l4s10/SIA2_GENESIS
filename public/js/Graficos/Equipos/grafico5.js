@@ -1,56 +1,49 @@
 document.addEventListener('DOMContentLoaded', function() {
-    const ctx4 = document.getElementById('grafico4').getContext('2d');
-    const chart4 = new Chart(ctx4, {
-        type: 'bar',
+    const ctx5 = document.getElementById('grafico5').getContext('2d');
+    const chart5 = new Chart(ctx5, {
+        type: 'line', // Cambia según necesites
         data: {
-            labels: [],
+            labels: ['Promedio Creación-Atención', 'Promedio Revisión-Aprobación', 'Promedio Aprobación-Entrega'],
             datasets: [{
-                label: 'Solicitudes por Estado',
+                label: 'Tiempos Promedio (días)',
                 data: [],
-                backgroundColor: [],
+                backgroundColor: 'rgba(255, 99, 132, 0.2)',
+                borderColor: 'rgba(255, 99, 132, 1)',
                 borderWidth: 1
             }]
         },
         options: {
             responsive: true,
+            scales: {
+                y: {
+                    beginAtZero: true
+                }
+            },
             plugins: {
                 legend: { display: true },
                 title: {
                     display: true,
-                    text: 'Ranking de materiales mas solicitados',
+                    text: 'Promedio en dias de los tiempos de atención de solicitudes de equipos',
                     padding: { top: 10, bottom: 30 }
                 }
-            },
-            scales: {
-                y: {
-                    beginAtZero: true,
-                    ticks: { precision: 0 }
-                }
-            },
-            barThickness: 65,
+            }
         }
     });
 
-    function getRandomColor() {
-        let color = '#';
-        for (let i = 0; i < 6; i++) {
-            color += '0123456789ABCDEF'[Math.floor(Math.random() * 16)];
-        }
-        return color;
-    }
-
-    function updateChart4(data) {
-        chart4.data.labels = data.grafico4.rankingTiposMateriales.map(item => item.MATERIAL_NOMBRE);
-        chart4.data.datasets[0].data = data.grafico4.rankingTiposMateriales.map(item => item.total_solicitudes);
-        chart4.data.datasets[0].backgroundColor = data.grafico4.rankingTiposMateriales.map(() => getRandomColor());
-        chart4.update();
+    function updateChart5(data) {
+        chart5.data.datasets[0].data = [
+            data.grafico5.promedioAtencion.promedio_atencion || 0,
+            data.grafico5.promedioRevisionAprobacion.promedio_revision_aprobacion || 0, // Usar 0 si es null
+            data.grafico5.promedioAprobacionEntrega.promedio_aprobacion_entrega || 0
+        ];
+        chart5.update();
     }
 
     // Utiliza getData global para obtener y actualizar los datos del gráfico
     window.getData.getInitialChartData()
         .then(data => {
             if (data.status === 'success') {
-                updateChart4(data.data); // Asegúrate de que data.data contenga la estructura correcta
+                updateChart5(data.data); // Asegúrate de que data.data contenga la estructura correcta
             }
         })
         .catch(error => console.error('Error:', error));
@@ -69,7 +62,7 @@ document.addEventListener('DOMContentLoaded', function() {
             .then(data => {
                 Swal.close();
                 if (data.status === 'success') {
-                    updateChart4(data.data);
+                    updateChart5(data.data);
                 }
             })
             .catch(error => {

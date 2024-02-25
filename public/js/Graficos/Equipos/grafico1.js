@@ -1,11 +1,12 @@
+// grafico1.js
 document.addEventListener('DOMContentLoaded', function() {
-    const ctx4 = document.getElementById('grafico4').getContext('2d');
-    const chart4 = new Chart(ctx4, {
-        type: 'bar',
+    const ctx1 = document.getElementById('grafico1').getContext('2d');
+    const myChart = new Chart(ctx1, {
+        type: 'pie',
         data: {
             labels: [],
             datasets: [{
-                label: 'Solicitudes por Estado',
+                label: 'Gestiones por Usuario',
                 data: [],
                 backgroundColor: [],
                 borderWidth: 1
@@ -17,17 +18,10 @@ document.addEventListener('DOMContentLoaded', function() {
                 legend: { display: true },
                 title: {
                     display: true,
-                    text: 'Ranking de materiales mas solicitados',
+                    text: 'Gestionadores de solicitudes de Equipos',
                     padding: { top: 10, bottom: 30 }
                 }
-            },
-            scales: {
-                y: {
-                    beginAtZero: true,
-                    ticks: { precision: 0 }
-                }
-            },
-            barThickness: 65,
+            }
         }
     });
 
@@ -39,18 +33,17 @@ document.addEventListener('DOMContentLoaded', function() {
         return color;
     }
 
-    function updateChart4(data) {
-        chart4.data.labels = data.grafico4.rankingTiposMateriales.map(item => item.MATERIAL_NOMBRE);
-        chart4.data.datasets[0].data = data.grafico4.rankingTiposMateriales.map(item => item.total_solicitudes);
-        chart4.data.datasets[0].backgroundColor = data.grafico4.rankingTiposMateriales.map(() => getRandomColor());
-        chart4.update();
+    function updateChart(data) {
+        myChart.data.labels = data.grafico1.ranking.map(item => item.nombre_completo);
+        myChart.data.datasets[0].data = data.grafico1.ranking.map(item => item.total_gestiones);
+        myChart.data.datasets[0].backgroundColor = data.grafico1.ranking.map(() => getRandomColor());
+        myChart.update();
     }
 
-    // Utiliza getData global para obtener y actualizar los datos del gráfico
     window.getData.getInitialChartData()
         .then(data => {
             if (data.status === 'success') {
-                updateChart4(data.data); // Asegúrate de que data.data contenga la estructura correcta
+                updateChart(data.data);
             }
         })
         .catch(error => console.error('Error:', error));
@@ -69,7 +62,7 @@ document.addEventListener('DOMContentLoaded', function() {
             .then(data => {
                 Swal.close();
                 if (data.status === 'success') {
-                    updateChart4(data.data);
+                    updateChart(data.data);
                 }
             })
             .catch(error => {

@@ -17,7 +17,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 legend: { display: true },
                 title: {
                     display: true,
-                    text: 'Ranking de materiales mas solicitados',
+                    text: 'Ranking de equipos mas solicitados',
                     padding: { top: 10, bottom: 30 }
                 }
             },
@@ -40,9 +40,9 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     function updateChart4(data) {
-        chart4.data.labels = data.grafico4.rankingTiposMateriales.map(item => item.MATERIAL_NOMBRE);
-        chart4.data.datasets[0].data = data.grafico4.rankingTiposMateriales.map(item => item.total_solicitudes);
-        chart4.data.datasets[0].backgroundColor = data.grafico4.rankingTiposMateriales.map(() => getRandomColor());
+        chart4.data.labels = data.grafico4.rankingTiposEquipos.map(item => item.TIPO_EQUIPO_NOMBRE);
+        chart4.data.datasets[0].data = data.grafico4.rankingTiposEquipos.map(item => item.total_solicitudes);
+        chart4.data.datasets[0].backgroundColor = data.grafico4.rankingTiposEquipos.map(() => getRandomColor());
         chart4.update();
     }
 
