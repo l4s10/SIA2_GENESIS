@@ -13,7 +13,7 @@
         <h1>Detalle de la Solicitud</h1>
         <div class="solicitud-details">
             <p><strong>ID de Solicitud:</strong> {{ $solicitud->id }}</p>
-            <!-- Agrega más detalles de la solicitud según tu modelo -->
+            {{-- Detalles de la solicitud aquí--}}
         </div>
         <h2>Timeline de la Solicitud</h2>
         <div class="timeline">
@@ -37,7 +37,7 @@
                             <p>{{ $revision->created_at }}</p>
                             <p>Observaciones: {{ $revision->REVISION_SOLICITUD_OBSERVACION }}</p>
                             <p>Estado:
-                                @if(in_array($revision->SOLICITUD_VEHICULO_ESTADO, ['INGRESADO', 'EN REVISIÓN', 'POR APROBAR', 'POR AUTORIZAR', 'POR RENDIR', 'TERMINADO']))
+                                @if(in_array($revision->SOLICITUD_VEHICULO_ESTADO, ['INGRESADO', 'EN REVISIÓN', 'POR APROBAR', 'POR AUTORIZAR', 'POR RENDIR', 'TERMINADO', 'RECHAZADO']))
                                     {{ $revision->SOLICITUD_VEHICULO_ESTADO }}
                                 @else
                                     Estado Desconocido
@@ -57,6 +57,6 @@
             </div>
         </div>
     </div>
-    <!-- Agrega tus scripts JS aquí si es necesario -->
+
     <script src="scripts.js"></script>
 @endsection
