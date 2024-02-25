@@ -137,9 +137,9 @@
     @endif --}}
 
     {{-- Importar el archivo JS para el gráfico 1 --}}
-    <script src="{{ asset('js/grafico1.js') }}"></script>
+    <script src="{{ asset('js/Graficos/Materiales/grafico1.js') }}"></script>
     {{-- Importar el archivo JS para el gráfico 2 --}}
-    <script src="{{ asset('js/grafico2.js') }}"></script>
+    <script src="{{ asset('js/Graficos/Materiales/grafico2.js') }}"></script>
     {{-- Importamos el archivo JS para el grafico 3 --}}
-    <script src="{{ asset('js/grafico3.js') }}"></script>
+    <script src="{{ asset('js/Graficos/Materiales/grafico3.js') }}"></script>
 @endsection
