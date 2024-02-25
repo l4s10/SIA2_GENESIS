@@ -27,7 +27,7 @@ class ReportesBodegasController extends Controller
             $grafico1 = $this->Grafico1(new Request());
             $grafico2 = $this->Grafico2(new Request());
             $grafico3 = $this->Grafico3(new Request());
-
+            $grafico4 = $this->Grafico4(new Request());
             $grafico5 = $this->Grafico5(new Request());
 
             // Devolver los resultados en un solo JSON
@@ -37,6 +37,7 @@ class ReportesBodegasController extends Controller
                     'grafico1' => $grafico1,
                     'grafico2' => $grafico2,
                     'grafico3' => $grafico3,
+                    'grafico4' => $grafico4,
                     'grafico5' => $grafico5
                 ]
             ]);
@@ -59,10 +60,6 @@ class ReportesBodegasController extends Controller
     public function filtrarGeneral(Request $request)
     {
         try{
-            // Fechas de inicio y fin del request
-            $fechaInicio = $request->input('fecha_inicio');
-            $fechaFin = $request->input('fecha_fin');
-
             // Obtener los datos de cada gráfico individualmente, aplicando los filtros de fechas
             $grafico1 = $this->Grafico1($request);
             $grafico2 = $this->Grafico2($request);
@@ -250,6 +247,47 @@ class ReportesBodegasController extends Controller
         }
     }
 
+        /**
+     * Gráfico 4: Ranking de salas más solicitadas
+     * Ranking de las salas más solicitadas.
+     * Identifica las salas que han recibido la mayor cantidad de solicitudes, contando solo solicitudes únicas,
+     * y las ordena por la cantidad de veces que han sido solicitadas.
+     *
+     * @param Request $request Contiene opcionalmente 'fecha_inicio' y 'fecha_fin' para filtrar las solicitudes.
+     * @return array|\Illuminate\Http\JsonResponse
+    */
+    public function Grafico4(Request $request)
+    {
+        try {
+            // Opcionalmente recibidos desde el request
+            $fechaInicio = $request->input('fecha_inicio');
+            $fechaFin = $request->input('fecha_fin');
+            $oficinaId = Auth::user()->OFICINA_ID; // Obtener el ID de la oficina del usuario autenticado
+
+            $rankingBodegas = SolicitudBodega::query()
+                ->join('solicitudes', 'solicitudes_bodegas.SOLICITUD_ID', '=', 'solicitudes.SOLICITUD_ID')
+                ->join('bodegas', 'solicitudes_bodegas.BODEGA_ID', '=', 'bodegas.BODEGA_ID')
+                ->join('users', 'solicitudes.USUARIO_id', '=', 'users.id') // Obtenemos el ID del usuario que hizo la solicitud para filtrar por oficina
+                ->where('users.OFICINA_ID', '=', $oficinaId) // Filtrar por OFICINA_ID
+                ->select('bodegas.BODEGA_NOMBRE', DB::raw('COUNT(DISTINCT solicitudes.SOLICITUD_ID) as total_solicitudes'))
+                ->when($fechaInicio && $fechaFin, function ($query) use ($fechaInicio, $fechaFin) {
+                    return $query->whereBetween('solicitudes.created_at', [$fechaInicio, $fechaFin]);
+                })
+                ->groupBy('bodegas.BODEGA_NOMBRE')
+                ->orderBy('total_solicitudes', 'DESC')
+                ->get();
+
+            return [
+                'rankingBodegasSolicitadas' => $rankingBodegas
+            ];
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Error al obtener el ranking de bodegas: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
     /**
     *   Grafico 5: PROMEDIO DE ATENCION (CREADO-EN REVISION, EN REVISION- APROBADO/RECHAZADO, APROBADO/RECHAZADO-ENTREGADO)
     *   Este método calcula el tiempo promedio que toma cada estado de la solicitud de materiales.
@@ -304,7 +342,7 @@ class ReportesBodegasController extends Controller
              // Promedio atencion desde a"APROBADO"/"RECHAZADO" a "TERMINADO"
             // Filtrar solicitudes materiales en estado "TERMINADO"
             // Comparar fechas: La fecha de SOLICITUD_FECHA_HORA_INICIO_ASIGNADA de la solicitud. Con la fecha de modificacion de la solicitud "updated_at".
-            $promedioAprobacionEntregado = SolicitudBodega::query()
+            $promedioAprobacionEntrega = SolicitudBodega::query()
                 ->join('solicitudes', 'solicitudes_bodegas.SOLICITUD_ID', '=', 'solicitudes.SOLICITUD_ID')
                 ->join('users', 'solicitudes.USUARIO_id', '=', 'users.id')
                 ->where('users.OFICINA_ID', $oficinaId)
@@ -318,7 +356,7 @@ class ReportesBodegasController extends Controller
             return [
                 'promedioAtencion' => $promedioAtencion,
                 'promedioRevisionAprobacion' => $promedioRevisionAprobacion,
-                'promedioAprobacionEntregado' => $promedioAprobacionEntregado
+                'promedioAprobacionEntregado' => $promedioAprobacionEntrega
             ];
 
         }catch(\Exception $e){
