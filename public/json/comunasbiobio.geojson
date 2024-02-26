@@ -1,0 +1,295 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "properties": {
+        "comuna": "Concepción"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [-73.0498, -36.8261]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "comuna": "Talcahuano"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [-73.1167, -36.7167]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "comuna": "Hualpén"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [-73.1515, -36.7764]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "comuna": "San Pedro de la Paz"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [-73.1608, -36.8337]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "comuna": "Chiguayante"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [-73.0158, -36.9212]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "comuna": "Coronel"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [-73.1548, -37.0315]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "comuna": "Lota"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [-73.1657, -37.0887]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "comuna": "Tomé"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [-72.9524, -36.6089]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "comuna": "Penco"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [-72.9937, -36.7333]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "comuna": "Florida"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [-72.6117, -36.8249]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "comuna": "Hualqui"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [-72.9332, -36.9797]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "comuna": "Santa Juana"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [-72.9389, -37.1829]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "comuna": "Cabrero"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [-72.4087, -37.0387]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "comuna": "Curanilahue"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [-73.2332, -37.4791]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "comuna": "Los Álamos"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [-73.2908, -37.6118]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "comuna": "Lebu"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [-73.6511, -37.6055]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "comuna": "Arauco"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [-73.3094, -37.2519]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "comuna": "Cañete"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [-73.4002, -37.7979]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "comuna": "Contulmo"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [-73.2362, -38.0293]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "comuna": "Mulchén"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [-72.2328, -37.7141]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "comuna": "Nacimiento"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [-72.6667, -37.5]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "comuna": "Negrete"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [-72.7167, -37.5833]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "comuna": "Quilaco"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [-72.5, -37.6]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "comuna": "Quilleco"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [-72.6667, -37.4]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "comuna": "San Rosendo"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [-72.9667, -37.2833]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "comuna": "Santa Bárbara"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [-72.9667, -37.6667]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "comuna": "Tucapel"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [-72.7167, -37.2667]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "comuna": "Yumbel"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [-72.5833, -37.0833]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "comuna": "Alto Biobío"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [-71.8333, -37.7333]
+      }
+    }
+  ]
+}
