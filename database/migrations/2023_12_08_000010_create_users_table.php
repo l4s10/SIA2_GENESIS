@@ -23,7 +23,7 @@ return new class extends Migration
             $table->unsignedBigInteger('GRUPO_ID')->nullable();
             $table->unsignedBigInteger('ESCALAFON_ID');
             $table->unsignedBigInteger('GRADO_ID');
-            $table->unsignedBigInteger('CARGO_ID');
+            $table->unsignedBigInteger('CARGO_ID')->nullable();
             //* Campos correcciones (DATOS PERSONALES) */
             $table->string('USUARIO_RUT')->unique();
             $table->date('USUARIO_FECHA_NAC');

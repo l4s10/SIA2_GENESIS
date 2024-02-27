@@ -6,14 +6,15 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 
-class DeleganFacultad extends Model
+class DelegaFacultad extends Model
 {
     use HasFactory;
     protected $table = 'delegan_facultades';
-    protected $primaryKey = ['RESOLUCION_ID', 'FACULTAD_ID'];
+    protected $primaryKey = ['RESOLUCION_ID','FACULTAD_ID'];
     public $incrementing = false;
+    public $timestamps = true;
+
     protected $fillable = [
-        'RESOLUCION_ID',
         'FACULTAD_ID',
     ];
 
@@ -22,7 +23,7 @@ class DeleganFacultad extends Model
     {
         return $this->belongsTo(Resolucion::class, 'RESOLUCION_ID', 'RESOLUCION_ID');
     }
-
+    
     // Relación con el modelo Facultad
     public function facultad()
     {

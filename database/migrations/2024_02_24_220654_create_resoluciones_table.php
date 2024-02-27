@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('resoluciones', function (Blueprint $table) {
             $table->id('RESOLUCION_ID');
             $table->unsignedBigInteger('TIPO_RESOLUCION_ID');
-            $table->unsignedBigInteger('CARGO_ID');
+            $table->unsignedBigInteger('CARGO_ID')->nullable();
             $table->integer('RESOLUCION_NUMERO');
             $table->date('RESOLUCION_FECHA');
             $table->string('RESOLUCION_DOCUMENTO', 191)->nullable();

@@ -9,7 +9,6 @@ class ObedeceResolucion extends Model
     use HasFactory;
 
     protected $table = 'obedecen_resoluciones';
-    protected $primaryKey = ['RESOLUCION_ID', 'CARGO_ID'];
     public $incrementing = false;
     protected $fillable = [
         'RESOLUCION_ID',

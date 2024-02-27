@@ -14,10 +14,13 @@ return new class extends Migration
         Schema::create('delegan_facultades', function (Blueprint $table) {
             $table->unsignedBigInteger('RESOLUCION_ID');
             $table->unsignedBigInteger('FACULTAD_ID');
+
+            $table->timestamps();
+
             
             // Definición de claves foráneas
-            $table->foreign('RESOLUCION_ID')->references('RESOLUCION_ID')->on('resoluciones')->onDelete('cascade');
-            $table->foreign('FACULTAD_ID')->references('FACULTAD_ID')->on('facultades')->onDelete('cascade');
+            $table->foreign('RESOLUCION_ID')->references('RESOLUCION_ID')->on('resoluciones')->onDelete('CASCADE');
+            $table->foreign('FACULTAD_ID')->references('FACULTAD_ID')->on('facultades')->onDelete('CASCADE');
 
             // Clave primaria compuesta
             $table->primary(['RESOLUCION_ID', 'FACULTAD_ID']);

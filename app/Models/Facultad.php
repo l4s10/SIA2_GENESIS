@@ -19,10 +19,11 @@ class Facultad extends Model
         'FACULTAD_ART_LEY_ASOCIADA',
     ];
 
-    // Relación muchos a muchos con Resolucion a través de la tabla intermedia
-    public function resoluciones()
+    
+
+    public function delegacion()
     {
-        return $this->belongsToMany(Resolucion::class, 'delegan_facultades', 'FACULTAD_ID', 'RESOLUCION_ID');
+        return $this->hasMany(DelegaFacultad::class, 'FACULTAD_ID', 'FACULTAD_ID');
     }
 
 }

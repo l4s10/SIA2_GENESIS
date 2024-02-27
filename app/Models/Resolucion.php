@@ -28,20 +28,19 @@ class Resolucion extends Model
     }
 
     // Relación 1:1 con Cargo (una resolución es firmada por un cargo)
-    public function cargo()
+    public function firmante()
     {
         return $this->belongsTo(Cargo::class, 'CARGO_ID');
     }
 
-    // Relación n:n con Facultad a través de la tabla intermedia
-    public function facultades()
+    public function obedientes()
     {
-        return $this->belongsToMany(Facultad::class, 'delegan_facultades', 'RESOLUCION_ID', 'FACULTAD_ID');
+        return $this->hasMany(ObedeceResolucion::class, 'RESOLUCION_ID', 'RESOLUCION_ID');
     }
 
-    // Relación n:n con Cargo a través de la tabla intermedia 'obedecen_resoluciones'
-    public function obediencia()
+    public function delegacion()
     {
-        return $this->belongsToMany(Cargo::class, 'obedecen_resoluciones', 'RESOLUCION_ID', 'CARGO_ID');
+        return $this->hasMany(DelegaFacultad::class, 'RESOLUCION_ID', 'RESOLUCION_ID');
     }
+
 }

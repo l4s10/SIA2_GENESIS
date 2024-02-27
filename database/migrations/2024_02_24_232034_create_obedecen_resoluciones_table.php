@@ -15,9 +15,12 @@ return new class extends Migration
             $table->unsignedBigInteger('RESOLUCION_ID');
             $table->unsignedBigInteger('CARGO_ID');
             
+            $table->timestamps();
+
+
             // Definición de claves foráneas
-            $table->foreign('RESOLUCION_ID')->references('RESOLUCION_ID')->on('resoluciones')->onDelete('cascade');
-            $table->foreign('CARGO_ID')->references('CARGO_ID')->on('cargos')->onDelete('cascade');
+            $table->foreign('RESOLUCION_ID')->references('RESOLUCION_ID')->on('resoluciones')->onDelete('CASCADE');
+            $table->foreign('CARGO_ID')->references('CARGO_ID')->on('cargos')->onDelete('CASCADE');
 
             // Clave primaria compuesta
             $table->primary(['RESOLUCION_ID', 'CARGO_ID']);
