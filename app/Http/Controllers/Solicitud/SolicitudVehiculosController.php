@@ -4,7 +4,7 @@ namespace App\Http\Controllers\Solicitud;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Carbon;
-use App\Exports\VehiculosExport; 
+use App\Exports\VehiculosExport;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log; // Asegúrate de importar Log
 use Illuminate\Support\Facades\Validator;
@@ -40,7 +40,7 @@ use App\Models\Rendicion;
 
 class SolicitudVehiculosController extends Controller
 {
-    
+
     /**
      * Display a listing of the resource.
      */
@@ -50,18 +50,18 @@ class SolicitudVehiculosController extends Controller
         try {
             // Obtener la oficina del usuario actual
             $oficinaIdUsuario = Auth::user()->OFICINA_ID;
-    
+
             // Obtener las solicitudes vehiculares realizadas por usuarios de la oficina correspondiente
             $solicitudes = SolicitudVehicular::whereHas('user', function ($query) use ($oficinaIdUsuario) {
                 $query->where('OFICINA_ID', $oficinaIdUsuario);
             })->get();
-    
+
             // Formatear las fechas created_at en DD:MM:AA
             foreach ($solicitudes as $solicitud) {
                 $solicitud->formatted_created_at = Carbon::parse($solicitud->created_at)->format('d-m-y H:i');
             }
-            
-    
+
+
             // Retornar la vista con las solicitudes
             return view('sia2.solicitudes.vehiculos.index', compact('solicitudes'));
         } catch (Exception $e) {
@@ -74,10 +74,10 @@ class SolicitudVehiculosController extends Controller
         try {
             // Obtener la oficina del usuario actual
             $oficinaIdUsuario = Auth::user()->OFICINA_ID;
-    
+
             // Inicializar la variable $solicitudes
             $solicitudes = null;
-    
+
             // Verificar si el usuario es el jefe del departamento de administración
             if (Auth::user()->cargo->CARGO_NOMBRE == 'JEFE DE DEPARTAMENTO DE ADMINISTRACION') {
                 // Si es el jefe de departamento de administración, obtener todas las solicitudes por aprobar de la misma oficina
@@ -101,7 +101,7 @@ class SolicitudVehiculosController extends Controller
                     ->where('SOLICITUD_VEHICULO_ESTADO', 'POR APROBAR')
                     ->get();
             }
-    
+
             // Formatear las fechas created_at en DD:MM:AA
             foreach ($solicitudes as $solicitud) {
                 $solicitud->formatted_created_at = Carbon::parse($solicitud->created_at)->format('d-m-y H:i');
@@ -119,10 +119,10 @@ class SolicitudVehiculosController extends Controller
         try {
             // Obtener la oficina del usuario actual
             $oficinaIdUsuario = Auth::user()->OFICINA_ID;
-    
+
             // Obtener el ID del usuario autenticado
             $userId = Auth::user()->id;
-    
+
             // Si es el jefe de departamento de administración, obtener todas las solicitudes por aprobar de la misma oficina
             $solicitudes = SolicitudVehicular::whereHas('user', function ($query) use ($oficinaIdUsuario) {
                     $query->where('OFICINA_ID', $oficinaIdUsuario);
@@ -132,13 +132,13 @@ class SolicitudVehiculosController extends Controller
                     $query->where('CONDUCTOR_id', $userId);
                 })
                 ->get();
-    
-            
+
+
             // Formatear las fechas created_at en DD:MM:AA
             foreach ($solicitudes as $solicitud) {
                 $solicitud->formatted_created_at = Carbon::parse($solicitud->created_at)->format('d-m-y H:i');
             }
-            
+
             // Retornar la vista con las solicitudes
             return view('sia2.solicitudes.vehiculos.indexPorRendir', compact('solicitudes'));
         } catch (Exception $e) {
@@ -195,7 +195,7 @@ class SolicitudVehiculosController extends Controller
      */
     public function store(Request $request)
     {
-        dd($request);
+        // dd($request);
         // Intentar guardar la solicitud en la base de datos
         try {
             //if ( $request->)
@@ -222,7 +222,7 @@ class SolicitudVehiculosController extends Controller
                     'TRABAJA_HORA_TERMINO_ORDEN_TRABAJO' => 'required|date_format:H:i|after_or_equal:TRABAJA_HORA_INICIO_ORDEN_TRABAJO',
                 ]);
             }
-    
+
             $validator = Validator::make($request->all(), $validatorRules, [
                 'SOLICITUD_VEHICULO_COMUNA.required' => 'El campo "comuna destino" es obligatorio.',
                 'SOLICITUD_VEHICULO_COMUNA.exists' => 'La comuna seleccionada no es válida.',
@@ -258,7 +258,7 @@ class SolicitudVehiculosController extends Controller
                 'TRABAJA_HORA_TERMINO_ORDEN_TRABAJO.date_format' => 'El formato de la hora de término de la orden de trabajo no es válido.',
                 'TRABAJA_HORA_TERMINO_ORDEN_TRABAJO.after_or_equal' => 'La hora de término de la orden de trabajo debe ser posterior a la hora de inicio de la orden de trabajo.',
             ]);
-    
+
             // Manejar errores de validación
             if ($validator->fails()) {
                 return redirect()->back()->withErrors($validator)->withInput();
@@ -279,11 +279,11 @@ class SolicitudVehiculosController extends Controller
             $solicitud->SOLICITUD_VEHICULO_FECHA_HORA_TERMINO_SOLICITADA = Carbon::createFromFormat('d-m-Y H:i', $request->input('SOLICITUD_VEHICULO_FECHA_HORA_TERMINO_SOLICITADA'))->format('Y-m-d H:i:s');
             $solicitud->SOLICITUD_VEHICULO_HORA_INICIO_CONDUCCION = $request->input('SOLICITUD_VEHICULO_HORA_INICIO_CONDUCCION');
             $solicitud->SOLICITUD_VEHICULO_HORA_TERMINO_CONDUCCION = $request->input('SOLICITUD_VEHICULO_HORA_TERMINO_CONDUCCION');
-    
+
             $solicitud->SOLICITUD_VEHICULO_JEFE_QUE_AUTORIZA = $request->input('SOLICITUD_VEHICULO_JEFE_QUE_AUTORIZA');
             $solicitud->SOLICITUD_VEHICULO_VIATICO = $request->input('SOLICITUD_VEHICULO_VIATICO');
             $solicitud->save();
-          
+
             // Validar si los datos están presentes en la solicitud
             if ($request->has('TRABAJA_NUMERO_ORDEN_TRABAJO') && $request->has('TRABAJA_HORA_INICIO_ORDEN_TRABAJO') && $request->has('TRABAJA_HORA_TERMINO_ORDEN_TRABAJO')) {
                 $ordenDeTrabajo = new OrdenDeTrabajo();
@@ -294,9 +294,9 @@ class SolicitudVehiculosController extends Controller
                 $ordenDeTrabajo->save();
 
             }
-    
 
-    
+
+
             // Obtener las IDs de los pasajeros de la solicitud
             $pasajerosIds = [];
             foreach ($request->all() as $key => $value) {
@@ -304,16 +304,16 @@ class SolicitudVehiculosController extends Controller
                     $pasajerosIds[] = $value;
                 }
             }
-    
+
             // Omitir el primer elemento (conductor) del array
             $pasajerosIds = array_slice($pasajerosIds, 1);
-    
+
             foreach ($pasajerosIds as $pasajeroId) {
                 // Verificar si el pasajero ya está asociado a la solicitud
                 $existePasajero = Pasajero::where('USUARIO_id', $pasajeroId)
                     ->where('SOLICITUD_VEHICULO_ID', $solicitud->SOLICITUD_VEHICULO_ID)
                     ->exists();
-    
+
                 if (!$existePasajero) {
                     // Crear un nuevo pasajero y asociarlo a la solicitud
                     $pasajero = new Pasajero();
@@ -322,7 +322,7 @@ class SolicitudVehiculosController extends Controller
                     $pasajero->save();
                 }
             }
-    
+
             return redirect()->route('solicitudesvehiculos.index')->with('success', 'Solicitud creada exitosamente.');
         } catch (Exception $e) {
             Log::error($e->getMessage());
@@ -332,7 +332,7 @@ class SolicitudVehiculosController extends Controller
 
     /**
      * Display the specified resource.
-     */   
+     */
     public function timeline($id)
     {
         try {
@@ -352,7 +352,7 @@ class SolicitudVehiculosController extends Controller
             // Determinar la fuente de la solicitud a través de la URL
             $source = request()->input('source');
 
-            
+
             // Encontrar la solicitud por su ID
             $solicitud = SolicitudVehicular::findOrFail($id);
             $solicitud->SOLICITUD_VEHICULO_FECHA_HORA_INICIO_SOLICITADA = Carbon::parse($solicitud->SOLICITUD_VEHICULO_FECHA_HORA_INICIO_SOLICITADA)->format('d-m-Y H:i');
@@ -365,7 +365,7 @@ class SolicitudVehiculosController extends Controller
 
             // Obtener todas las oficinas (en caso de que el conductor venga desde otra dirección regional)
             $oficinas = Oficina::all();
-            
+
             // Obtener todas las ubicaciones (en caso de que el conductor venga desde otra dirección regional)
             $ubicaciones = Ubicacion::all();
 
@@ -405,7 +405,7 @@ class SolicitudVehiculosController extends Controller
                 });
             })
             ->get();
-                        
+
             // Determinar la vista a retornar
             if ($source === 'indexPorAprobar') {
                 // Retornar la vista editPorAprobar
@@ -423,8 +423,8 @@ class SolicitudVehiculosController extends Controller
                 // Manejar excepción de modelo no encontrado
 
                 return redirect()->route('solicitudesvehiculos.indexPorAprobar')->with('error', 'Ocurrió un error inesperado.');
-            } else if ($source === 'indexPorRendir') { 
-            
+            } else if ($source === 'indexPorRendir') {
+
                 return redirect()->route('solicitudesvehiculos.indexPorRendir')->with('error', 'Ocurrió un error inesperado.');
 
             }else {
@@ -437,15 +437,15 @@ class SolicitudVehiculosController extends Controller
             if ($source === 'indexPorAprobar') {
                 // Manejar excepciones si es necesario
                 return redirect()->route('solicitudesvehiculos.indexPorAprobar')->with('error', 'Error al cargar la solicitud de vehículo por aprobar o autorizar. ');
-            } else if ($source === 'indexPorRendir') {  
+            } else if ($source === 'indexPorRendir') {
                 return redirect()->route('solicitudesvehiculos.indexPorRendir')->with('error', 'Error al cargar la solicitud de vehículo por rendir. ');
              }else {
                 // Manejar excepciones si es necesario
                 return redirect()->route('solicitudesvehiculos.index')->with('error', 'Error al cargar la solicitud de vehículo para editar. ');
-            }  
+            }
         }
     }
-    
+
 
 
     /**
@@ -456,16 +456,16 @@ class SolicitudVehiculosController extends Controller
         try {
             // Encontrar la solicitud por su ID
             $solicitud = SolicitudVehicular::findOrFail($id);
-            
+
             if (  $request->has('rechazarSolicitud')) {
                 $solicitud->SOLICITUD_VEHICULO_ESTADO = ('RECHAZADO');
                 $solicitud->save();
                 return redirect()->route('solicitudesvehiculos.index')->with('success', 'Solicitud rechazada correctamente.');
             } else {
-                
-            
 
-           
+
+
+
                 // Validación de datos
                 $validatorRules = [
                     'VEHICULO_ID' => 'required|exists:vehiculos,VEHICULO_ID',
@@ -476,7 +476,7 @@ class SolicitudVehiculosController extends Controller
                     'SOLICITUD_VEHICULO_HORA_INICIO_CONDUCCION' => 'required|date_format:H:i',
                     'SOLICITUD_VEHICULO_HORA_TERMINO_CONDUCCION' => 'required|date_format:H:i|after_or_equal:SOLICITUD_VEHICULO_HORA_INICIO_CONDUCCION',
                 ];
-                
+
                 // Validar si los datos están presentes en la solicitud
                 if ($request->has('TRABAJA_NUMERO_ORDEN_TRABAJO') || $request->has('TRABAJA_HORA_INICIO_ORDEN_TRABAJO') || $request->has('TRABAJA_HORA_TERMINO_ORDEN_TRABAJO')) {
                     // Realizar la validación de los datos recibidos
@@ -569,7 +569,7 @@ class SolicitudVehiculosController extends Controller
                 if ($request->has('TRABAJA_NUMERO_ORDEN_TRABAJO') && $request->has('TRABAJA_HORA_INICIO_ORDEN_TRABAJO') && $request->has('TRABAJA_HORA_TERMINO_ORDEN_TRABAJO')) {
                     // Buscar la orden de trabajo asociada a la solicitud, si existe
                     $ordenDeTrabajo = OrdenDeTrabajo::where('SOLICITUD_VEHICULO_ID', $solicitud->SOLICITUD_VEHICULO_ID)->first();
-                    
+
                     if ($ordenDeTrabajo) {
                         // Si la orden de trabajo existe, actualiza sus campos
                         $ordenDeTrabajo->ORDEN_TRABAJO_NUMERO = $request->input('TRABAJA_NUMERO_ORDEN_TRABAJO');
@@ -592,7 +592,7 @@ class SolicitudVehiculosController extends Controller
 
                     return redirect()->back()->withErrors($validator)->withInput();
                 }
-        
+
                 // Actualizar los campos de la solicitud con los datos asociados a la revisión
                 $solicitud->VEHICULO_ID = $request->input('VEHICULO_ID');
                 $solicitud->CONDUCTOR_id = $request->input('CONDUCTOR_id');
@@ -610,10 +610,10 @@ class SolicitudVehiculosController extends Controller
                     // Registrar la autorización de la solicitud
                     $autorizacion = new Autorizacion();
                     $autorizacion->USUARIO_id =  Auth::user()->id;
-                    $autorizacion->SOLICITUD_VEHICULO_ID = $solicitud->SOLICITUD_VEHICULO_ID;     
-                    $solicitud->SOLICITUD_VEHICULO_ESTADO = 'POR RENDIR'; 
+                    $autorizacion->SOLICITUD_VEHICULO_ID = $solicitud->SOLICITUD_VEHICULO_ID;
+                    $solicitud->SOLICITUD_VEHICULO_ESTADO = 'POR RENDIR';
 
-                    $autorizacion->save();          
+                    $autorizacion->save();
                 }*/
 
                 // Verificar si se envió el botón de autorizar
@@ -623,7 +623,7 @@ class SolicitudVehiculosController extends Controller
                         $existeAutorizacion = Autorizacion::where('SOLICITUD_VEHICULO_ID', $solicitud->SOLICITUD_VEHICULO_ID)
                             ->where('USUARIO_id', Auth::user()->id)
                             ->exists();
-                
+
                         if ($existeAutorizacion) {
                             return redirect()->back()->with('error', 'La solicitud ya registra una autorización con su firma.');
                         } else {
@@ -643,7 +643,7 @@ class SolicitudVehiculosController extends Controller
                         $autorizacionJefeDpto->SOLICITUD_VEHICULO_ID = $solicitud->SOLICITUD_VEHICULO_ID;
                         $autorizacionJefeDpto->save();
 
-                        
+
                         // Cambiar el estado de la solicitud
                         $solicitud->SOLICITUD_VEHICULO_ESTADO = 'POR RENDIR';
 
@@ -662,9 +662,9 @@ class SolicitudVehiculosController extends Controller
                             // Verificar si se envió el botón de revisar
                 if (($request->has('guardarRevision'))|| ($request->has('finalizarRevisiones'))) {
                     if($request->has('finalizarRevisiones')) {
-                        $solicitud->SOLICITUD_VEHICULO_ESTADO = 'POR APROBAR'; 
+                        $solicitud->SOLICITUD_VEHICULO_ESTADO = 'POR APROBAR';
                     } else {
-                        $solicitud->SOLICITUD_VEHICULO_ESTADO = 'EN REVISIÓN'; 
+                        $solicitud->SOLICITUD_VEHICULO_ESTADO = 'EN REVISIÓN';
 
                     }
                     // Registrar la revisión de la solicitud
@@ -694,10 +694,10 @@ class SolicitudVehiculosController extends Controller
                     $solicitud->save();
 
                 }
-                
+
                 // Verificar si se envió el botón de revisar
                 if (($request->input('accionGuardar') == 1)) {
-                    $solicitud->SOLICITUD_VEHICULO_ESTADO = 'EN REVISIÓN'; 
+                    $solicitud->SOLICITUD_VEHICULO_ESTADO = 'EN REVISIÓN';
                     // Registrar la revisión de la solicitud
                     $revision = new RevisionSolicitud();
                     $revision->USUARIO_id = Auth::user()->id;
@@ -705,7 +705,7 @@ class SolicitudVehiculosController extends Controller
                     $revision->REVISION_SOLICITUD_OBSERVACION = $request->input('REVISION_SOLICITUD_OBSERVACION');
                     $revision->save();
                 } else if (($request->input('accionTerminar') == 1)) {
-                    $solicitud->SOLICITUD_VEHICULO_ESTADO = 'POR APROBAR'; 
+                    $solicitud->SOLICITUD_VEHICULO_ESTADO = 'POR APROBAR';
                     // Registrar la revisión de la solicitud
                     $revision = new RevisionSolicitud();
                     $revision->USUARIO_id = Auth::user()->id;
@@ -729,7 +729,7 @@ class SolicitudVehiculosController extends Controller
                 } else if ($request->has('botonRendir')) {
                     return redirect()->route('solicitudesvehiculos.indexPorRendir')->with('success', 'Solicitud firmada con éxito');
                 }
-            } 
+            }
         } catch (ModelNotFoundException $e) {
             // Manejar excepción de modelo no encontrado
             return redirect()->route('solicitudesvehiculos.index')->with('error', 'Ocurrió un error inesperado.');
@@ -767,21 +767,21 @@ class SolicitudVehiculosController extends Controller
         }
     }*/
 
-    
+
     private function actualizarPasajeros($solicitud, $request)
     {
         $pasajerosIdsNuevos = collect();
-    
+
         // Obtener los IDs de los pasajeros proporcionados en la solicitud actual
         foreach ($request->all() as $key => $value) {
             if (strpos($key, 'pasajero_') === 0) {
                 $pasajerosIdsNuevos->push($value);
             }
         }
-    
+
         // Eliminar todos los pasajeros asociados actualmente a la solicitud
         $solicitud->pasajeros()->delete();
-    
+
         // Crear y asociar nuevos pasajeros a la solicitud
         foreach ($pasajerosIdsNuevos as $nuevoPasajeroId) {
             $solicitud->pasajeros()->create(['USUARIO_id' => $nuevoPasajeroId]);
@@ -803,11 +803,11 @@ class SolicitudVehiculosController extends Controller
     }
 
 
-   
+
     public function descargarPlantilla(Request $request, $id)
     {
         try {
-            
+
             // Cargar la plantilla Excel existente
             $plantillaFilePath = storage_path('excel/Hoja de salida.xlsx');
             $spreadsheet = IOFactory::load($plantillaFilePath);
@@ -963,7 +963,7 @@ class SolicitudVehiculosController extends Controller
                     ['H7', strtoupper($solicitud->comunaDestino->COMUNA_NOMBRE)],
                     ['H8', $solicitud->SOLICITUD_VEHICULO_MOTIVO],
 
-                    
+
 
 
                     // HORAS INICIO Y TERMINO CONDUCCIÓN, Y VIÁTICO
@@ -980,7 +980,7 @@ class SolicitudVehiculosController extends Controller
                     ['B24', strtoupper($solicitud->conductor->USUARIO_NOMBRES . ' ' . $solicitud->conductor->USUARIO_APELLIDOS . ' | Venc Licencia: ' . $fechaVencimientoLicencia . ' | N° Póliza: ' . $polizaConductor->POLIZA_NUMERO)],
                     // JEFE QUE AUTORIZA
                     ['H24', strtoupper($jefeQueAutoriza)],
-                    
+
                     // PATENTE
                     ['G28', strtoupper($solicitud->vehiculo->VEHICULO_PATENTE)],
                     // TIPO VEHICULO
@@ -1001,10 +1001,10 @@ class SolicitudVehiculosController extends Controller
             foreach ($pasajeros as $index => $pasajero) {
                 // Calcular la fila para cada pasajero
                 $filaPasajero = $inicioFilaPasajeros + $index;
-                
+
                 // Asignar el nombre del pasajero a la celda correspondiente en la columna C y la fila calculada
                 $spreadsheet->getActiveSheet()->setCellValue('C' . $filaPasajero, $pasajero->usuario->USUARIO_NOMBRES . ' ' . $pasajero->usuario->USUARIO_APELLIDOS);
-                
+
                 // Agregar la dirección regional del pasajero
                 $spreadsheet->getActiveSheet()->setCellValue('H' . $filaPasajero, $pasajero->usuario->ubicacion ? $pasajero->usuario->ubicacion->UBICACION_NOMBRE : $pasajero->usuario->departamento->DEPARTAMENTO_NOMBRE . ' | ' . ($pasajero->usuario->oficina ? $pasajero->usuario->oficina->OFICINA_NOMBRE : ''));
 
@@ -1054,7 +1054,7 @@ class SolicitudVehiculosController extends Controller
     public function verificarContrasena(Request $request)
     {
         /*dd($request);
-        
+
         $password = $request->input('password');
 
         // Lógica para verificar la contraseña

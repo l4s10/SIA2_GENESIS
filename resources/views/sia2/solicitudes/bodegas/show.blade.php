@@ -24,11 +24,9 @@
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach($solicitud->bodegas as $bodega)
-                        <tr>
-                            <td>{{ $bodega->BODEGA_NOMBRE }}</td>
-                        </tr>
-                    @endforeach
+                    <tr>
+                        <td>{{ $solicitud->bodegas->bodega->BODEGA_NOMBRE }}</td>
+                    </tr>
                 </tbody>
             </table>
         </div>

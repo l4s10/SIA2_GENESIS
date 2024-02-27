@@ -113,25 +113,23 @@
                             </tr>
                         </thead>
                         <tbody>
-                            @foreach($solicitud->salas as $sala)
-                                <tr>
-                                    <td>{{ $sala->SALA_NOMBRE }}</td>
-                                    <td>{{ $sala->SALA_CAPACIDAD }}</td>
-                                    <td>
-                                        @switch($sala->SALA_ESTADO)
-                                            @case('DISPONIBLE')
-                                                <span class="badge estado-aceptado rounded-pill">DISPONIBLE</span>
-                                                @break
-                                            @case('OCUPADA')
-                                                <span class="badge estado-rechazado rounded-pill">OCUPADA</span>
-                                                @break
-                                            @default
-                                                <span class="badge badge-secondary">{{ $sala->SALA_ESTADO }}</span>
-                                        @endswitch
-                                    </td>
-                                    <td>{{$salaAsignada->SALA_NOMBRE ?? 'NO SE HA ASIGNADO UNA SALA POR AHORA.'}}</td>
-                                </tr>
-                            @endforeach
+                            <tr>
+                                <td>{{ $solicitud->salas->sala->SALA_NOMBRE }}</td>
+                                <td>{{ $solicitud->salas->sala->SALA_CAPACIDAD }}</td>
+                                <td>
+                                    @switch($solicitud->salas->sala->SALA_ESTADO)
+                                        @case('DISPONIBLE')
+                                            <span class="badge estado-aceptado rounded-pill">DISPONIBLE</span>
+                                            @break
+                                        @case('OCUPADA')
+                                            <span class="badge estado-rechazado rounded-pill">OCUPADA</span>
+                                            @break
+                                        @default
+                                            <span class="badge badge-secondary">{{ $solicitud->salas->sala->SALA_ESTADO }}</span>
+                                    @endswitch
+                                </td>
+                                <td>{{$solicitud->salas->salaAsignada->SALA_NOMBRE ?? 'NO SE HA ASIGNADO UNA SALA POR AHORA.'}}</td>
+                            </tr>
                         </tbody>
                     </table>
                 </div>
