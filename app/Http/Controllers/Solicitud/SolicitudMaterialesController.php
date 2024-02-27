@@ -317,7 +317,6 @@ class SolicitudMaterialesController extends Controller
     {
         try {
             $solicitud = Solicitud::findOrFail($id);
-
             // Verificar si el usuario autenticado es el solicitante y si la solicitud no está ya terminada
             if (Auth::user()->USUARIO_ID == $solicitud->SOLICITUD_USUARIO_ID && $solicitud->SOLICITUD_ESTADO == 'AUTORIZADO') {
                 $solicitud->SOLICITUD_ESTADO = 'TERMINADO';
