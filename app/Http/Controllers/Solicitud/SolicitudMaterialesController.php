@@ -312,4 +312,23 @@ class SolicitudMaterialesController extends Controller
             return redirect()->back()->with('error', 'Error al autorizar los equipos, vuelva a intentarlo más tarde.');
         }
     }
+
+    public function confirmar($id)
+    {
+        try {
+            $solicitud = Solicitud::findOrFail($id);
+
+            // Verificar si el usuario autenticado es el solicitante y si la solicitud no está ya terminada
+            if (Auth::user()->USUARIO_ID == $solicitud->SOLICITUD_USUARIO_ID && $solicitud->SOLICITUD_ESTADO == 'AUTORIZADO') {
+                $solicitud->SOLICITUD_ESTADO = 'TERMINADO';
+                $solicitud->save();
+
+                return redirect()->route('solicitudes.materiales.index')->with('success', 'Solicitud confirmada con éxito.');
+            } else {
+                return redirect()->route('solicitudes.materiales.index')->with('error', 'No se puede confirmar la solicitud.');
+            }
+        } catch (\Exception $e) {
+            return redirect()->route('solicitudes.materiales.index')->with('error', 'Error al confirmar la solicitud: ' . $e->getMessage());
+        }
+    }
 }

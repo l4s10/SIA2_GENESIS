@@ -39,4 +39,8 @@ Route::prefix('solicitudes')->group(function () {
     Route::delete('/materiales/{solicitudesmaterial}', [SolicitudMaterialesController::class, 'destroy'])
         ->name('solicitudes.materiales.destroy')
         ->middleware('can:eliminar_solicitud');
+
+    // Enrutamiento para el metodo confirmar)
+    Route::put('/materiales/{solicitudesmaterial}/confirmar', [SolicitudMaterialesController::class, 'confirmar'])
+        ->name('solicitudes.materiales.confirmar');
 });
