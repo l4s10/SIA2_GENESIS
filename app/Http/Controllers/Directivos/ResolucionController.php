@@ -293,7 +293,8 @@ class ResolucionController extends Controller
             // Verificar si se debe eliminar el archivo adjunto actual
             if ($request->has('ELIMINAR_DOCUMENTO')) {
                 // Eliminar el archivo adjunto actual
-                Storage::disk('public')->delete('resoluciones/' . $resolucion->DOCUMENTO);                $resolucion->DOCUMENTO = null;
+                Storage::disk('public')->delete('resoluciones/' . $resolucion->DOCUMENTO);
+                $resolucion->DOCUMENTO = null;
             }
             // Guardar el modelo actualizado
             $resolucion->save();

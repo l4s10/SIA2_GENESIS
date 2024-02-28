@@ -32,78 +32,103 @@ class BusquedaFuncionarioController extends Controller
      */
     public function index(Request $request)
     {
-        //Parámetros de control
-        $busquedaResolucionCargo = null;
-        $busquedaResolucionCargoFallida = null;
-        $busquedaResolucionFuncionario = null;
-        $busquedaResolucionFuncionarioFallida = null;
-
-        //inputs importados desde la vista para busqueda por datos y cargos
+        // Obtener la oficina del usuario autenticado
+        $direccionRegionalAutenticada = Auth::user()->OFICINA_ID;
+    
+        // Obtener los parámetros de búsqueda del request
         $nombres = $request->input('NOMBRES');
         $apellidos = $request->input('APELLIDOS');
         $rut = $request->input('RUT');
         $idCargoFuncionario = $request->input('CARGO_ID');
-        //id del Cargo delegado de la resolución
-        $idCargo = $request->input('DELEGADO_ID');
-
-        //Parámetros compactados a la vista
+        $idCargo = $request->input('OBEDIENTE_ID');
+    
+        // Inicializar variables
         $resoluciones = [];
-        $cargoFuncionario = null; // Valor predeterminado
+        $cargoFuncionario = null; 
         $cargoResolucion = null;
         $rutRes = null;
-
-        if ($nombres && $apellidos && $rut && $idCargoFuncionario) {
-            $query = Resolucion::whereHas('delegado.users', function ($query) use ($nombres, $apellidos, $rut, $idCargoFuncionario) {
-                $query->where('NOMBRES', $nombres)
-                    ->where('APELLIDOS', $apellidos)
-                    ->where('RUT', $rut)
-                    ->where('CARGO_ID',$idCargoFuncionario);
-            });
-            $resoluciones = $query->with('tipo', 'firmante', 'delegado', 'facultad')->get();
-
-            if ($resoluciones->isNotEmpty()) {
-                $user = $resoluciones->first()->delegado->users->first();
-                if ($user) {
-                    //Parámetros del funcionario seleccionado para realizar búsqueda de sus resoluciones
-                    $cargoFuncionario = $user->cargo->CARGO;
-                    $rutRes = $user->RUT;
+        $busquedaResolucionCargo = null;
+        $busquedaResolucionCargoFallida = null;
+        $busquedaResolucionFuncionario = null;
+        $busquedaResolucionFuncionarioFallida = null;
+    
+        // Verificar que los parámetros de búsqueda no estén vacíos
+        if (!empty($nombres) && !empty($apellidos) && !empty($rut) && !empty($idCargoFuncionario)) {
+            // Buscar al usuario que cumpla con los criterios
+            $user = User::where([
+                ['OFICINA_ID', $direccionRegionalAutenticada],
+                ['USUARIO_NOMBRES', $nombres],
+                ['USUARIO_APELLIDOS', $apellidos],
+                ['USUARIO_RUT', $rut],
+                ['CARGO_ID', $idCargoFuncionario]
+            ])->first();        
+    
+            // Consultar las resoluciones asociadas al cargo del usuario
+            if ($user) {
+                // Consulta para obtener las resoluciones
+                $resoluciones = Resolucion::whereHas('obedientes', function ($query) use ($idCargoFuncionario, $direccionRegionalAutenticada) {
+                    $query->where('CARGO_ID', $idCargoFuncionario)
+                        ->whereHas('cargo', function ($query) use ($direccionRegionalAutenticada) {
+                            $query->where('OFICINA_ID', $direccionRegionalAutenticada);
+                        });
+                })->get();
+    
+                //dd($resoluciones);
+                if ($resoluciones->isNotEmpty()) {
+                    $cargoFuncionario = $user->cargo->CARGO_NOMBRE;
+                    $rutRes = $user->USUARIO_RUT;
+                    $busquedaResolucionFuncionario = true;
+                } else {
+                    $busquedaResolucionFuncionarioFallida = true;
                 }
-                $busquedaResolucionFuncionario = true;
-            }else{
-                $user = User::where('CARGO_ID',$idCargoFuncionario)->first();
-                $cargoFuncionario = $user->cargo->CARGO;
-                $rutRes = $user->RUT;
-                $busquedaResolucionFuncionarioFallida = true;
             }
-        }elseif ($idCargo) {
-            //$resoluciones = Resolucion::where('ID_DELEGADO', $idCargo)->get();
-            $query = Resolucion::whereHas('delegado', function ($query) use ($idCargo) {
-                $query->where('CARGO_ID', $idCargo);
-            });
-            $resoluciones = $query->with('tipo', 'firmante', 'delegado', 'facultad')->get();
-
+            //dd($user,$resoluciones);
+        } elseif ($idCargo) {
+            // Consulta para obtener las resoluciones asociadas al cargo en la misma OFICINA_ID
+            $resoluciones = Resolucion::with('tipoResolucion', 'firmante', 'obedientes.cargo', 'delegacion')
+                ->whereHas('obedientes', function ($query) use ($idCargo, $direccionRegionalAutenticada) {
+                    $query->where('CARGO_ID', $idCargo)
+                        ->whereHas('cargo', function ($query) use ($direccionRegionalAutenticada) {
+                            $query->where('OFICINA_ID', $direccionRegionalAutenticada);
+                        });
+                })
+                ->get();
+    
+            
             if ($resoluciones->isNotEmpty()) {
-                $cargoResolucion = $resoluciones->first()->delegado->CARGO;
+
+                
+                // Itera sobre cada resolución para obtener los nombres de los cargos
+                foreach ($resoluciones as $resolucion) {
+                    // Obtiene el nombre del primer cargo de la primera obedecencia
+                    $cargoResolucion = $resolucion->obedientes->first()->cargo->CARGO_NOMBRE;
+                    break;
+                }
+
+                // Ahora tienes los nombres de los cargos en $cargosResolucion
                 $busquedaResolucionCargo = true;
-            }else{
+            } else {
                 $aux = Cargo::where('CARGO_ID', $idCargo)->first();
-                $cargoResolucion = $aux->CARGO;
+                $cargoResolucion = $aux->CARGO_NOMBRE;
                 $busquedaResolucionCargoFallida = true;
             }
-
+            //dd($cargoResolucion);
         }
-
-        //Cargos asociados a la dirección regional del usuario autenticado, para ser enviados a la vista
-        $exclusionCargos = ['FUNCIONARIO', 'EXTERNO']; // Cargos a excluir
-        $direccionRegionalAutenticada = Auth::user()->OFICINA_ID;
+    
+        // Obtener cargos asociados a la dirección regional del usuario autenticado
+        $exclusionCargos = ['FUNCIONARIO', 'EXTERNO'];
         $cargos = Cargo::where('OFICINA_ID', $direccionRegionalAutenticada)
             ->whereNotIn('CARGO_NOMBRE', $exclusionCargos)
             ->get();
-        return view('sia2.directivos.directivos.busquedafuncionario.index', compact('resoluciones', 'cargos','nombres', 'apellidos', 'cargoFuncionario','rutRes', 'cargoResolucion','busquedaResolucionCargo','busquedaResolucionFuncionario','busquedaResolucionCargoFallida','busquedaResolucionFuncionarioFallida'));
+    
+        return view('sia2.directivos.directivos.busquedafuncionario.index', compact('resoluciones', 'cargos', 'nombres', 'apellidos', 'cargoFuncionario', 'rutRes', 'cargoResolucion', 'busquedaResolucionCargo', 'busquedaResolucionFuncionario', 'busquedaResolucionCargoFallida', 'busquedaResolucionFuncionarioFallida'));
     }
+    
 
     public function buscarFuncionarios(Request $request)
     {
+        $direccionRegionalAutenticada = Auth::user()->OFICINA_ID; // dirección regional sesión autenticada
+
         // Obtener los valores de nombres, apellidos, rut e idCargo desde la solicitud AJAX
         $nombres = strtolower($request->input('nombres'));
         $apellidos = strtolower($request->input('apellidos'));
@@ -114,29 +139,28 @@ class BusquedaFuncionarioController extends Controller
         $funcionarios = User::query();
 
         if (!empty($nombres)) {
-            $funcionarios->where('NOMBRES', 'LIKE', strtolower($nombres) . '%');
+            $funcionarios->where('USUARIO_NOMBRES', 'LIKE', strtolower($nombres) . '%');
         }
 
         if (!empty($apellidos)) {
-            $funcionarios->where('APELLIDOS', 'LIKE', strtolower($apellidos) . '%');
+            $funcionarios->where('USUARIO_APELLIDOS', 'LIKE', strtolower($apellidos) . '%');
         }
 
         if (!empty($rut)) {
-            $funcionarios->where('RUT', 'LIKE', strtolower($rut) . '%');
+            $funcionarios->where('USUARIO_RUT', 'LIKE', strtolower($rut) . '%');
         }
 
-        $direccionRegionalAutenticada = auth()->user()->cargo->ID_DIRECCION; // dirección regional sesión autenticada
         // Cargos a excluir de la búsqueda: ['FUNCIONARIO', 'EXTERNO'];
 
         // Función callback para aplicar condición de filtro al obtener colección de funcionarios
         $funcionarios = $funcionarios->whereHas('cargo', function ($query) {
-            $query->whereNotIn('CARGO', ['FUNCIONARIO', 'EXTERNO']);
-        })->whereHas('cargo.direccion', function ($query) use ($direccionRegionalAutenticada) {
-            $query->where('ID_DIRECCION', $direccionRegionalAutenticada);
+            $query->whereNotIn('CARGO_NOMBRE', ['FUNCIONARIO', 'EXTERNO']);
+        })->whereHas('cargo.oficina', function ($query) use ($direccionRegionalAutenticada) {
+            $query->where('OFICINA_ID', $direccionRegionalAutenticada);
         });
 
         if (!empty($idCargoFuncionario)) {
-            $funcionarios->where('ID_CARGO', $idCargoFuncionario);
+            $funcionarios->where('CARGO_ID', $idCargoFuncionario);
         }
 
         //Obtención de colección de posibles funcionarios
@@ -146,6 +170,7 @@ class BusquedaFuncionarioController extends Controller
         // Luego cargamos la nueva variable "busquedaAjax"
         session()->put('busquedaAjax', true);
         // Retorna los resultados de búsqueda en formato JSON
+
         return response()->json($funcionarios);
     }
 

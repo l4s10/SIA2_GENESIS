@@ -7,9 +7,9 @@
 @stop
 
 @section('content')
-    <div class="container">
         <form id="searchForm" action="{{ route('directivos.indexBusquedaFuncionarios') }}" method="GET">
             @csrf
+            <br><br>
             <fieldset>
                 <legend><i class="fa-solid fa-caret-right"></i> Resoluciones asociadas a un funcionario específico</legend>
                 <div class="row g-3">
@@ -39,16 +39,16 @@
                         @enderror
                     </div>
                     <div class="col">
-                        <label for="ID_CARGO" class="form-label">Cargo:</label>
+                        <label for="CARGO_ID" class="form-label">Cargo:</label>
                         <div class="input-group">
-                            <select id="ID_CARGO" name="ID_CARGO" class="form-control @error('ID_CARGO') is-invalid @enderror">
+                            <select id="CARGO_ID" name="CARGO_ID" class="form-control @error('CARGO_ID') is-invalid @enderror">
                                 <option value="" selected>--Seleccione Cargo--</option>
                                 @foreach ($cargos as $cargo)
-                                    <option value="{{ $cargo->ID_CARGO }}">{{ $cargo->CARGO }}</option>
+                                    <option value="{{ $cargo->CARGO_ID }}">{{ $cargo->CARGO_NOMBRE }}</option>
                                 @endforeach
                             </select>
                         </div>
-                        @error('ID_CARGO')
+                        @error('CARGO_ID')
                         <div class="invalid-feedback">{{ $message }}</div>
                         @enderror
                     </div>
@@ -65,19 +65,19 @@
 
                 <div class="row g-3">
                     <div class="col d-flex flex-column align-items-start">
-                        <label for="ID_DELEGADO" class="form-label">Autoridad:</label>
+                        <label for="OBEDIENTE_ID" class="form-label">Autoridad:</label>
                         <div class="input-group custom-input-group">
-                            <select id="ID_DELEGADO" name="ID_DELEGADO" class="w-50 custom-select @error('ID_DELEGADO') is-invalid @enderror">
+                            <select id="OBEDIENTE_ID" name="OBEDIENTE_ID" class="w-50 custom-select @error('OBEDIENTE_ID') is-invalid @enderror">
                                 <option value="" selected>--Seleccione Cargo Delegado--</option>
                                 @foreach ($cargos as $cargo)
-                                    <option value="{{ $cargo->ID_CARGO }}">{{ $cargo->CARGO }}</option>
+                                    <option value="{{ $cargo->CARGO_ID }}">{{ $cargo->CARGO_NOMBRE }}</option>
                                 @endforeach
                             </select>
                             <div class="input-group-append">
                                 <button type="button" id="buscarPorCargo" class="btn btn-primary"><i class="fa-solid fa-magnifying-glass"></i></button>
                             </div>
                         </div>
-                        @error('ID_DELEGADO')
+                        @error('OBEDIENTE_ID')
                             <div class="invalid-feedback">{{ $message }}</div>
                         @enderror
                     </div>
@@ -137,27 +137,44 @@
                     <tbody>
                         @foreach($resoluciones as $resolucion)
                             <tr>
-                                <td>{{ $resolucion->NRO_RESOLUCION }}</td>
-                                <td>{{ date('d/m/Y', strtotime($resolucion->FECHA)) }}</td>
-                                <td>{{ $resolucion->tipo->NOMBRE }}</td>
-                                <td>{{ $resolucion->firmante->CARGO }}</td>
-                                <td>{{ $resolucion->delegado->CARGO }}</td>
-                                <td>{{ $resolucion->facultad->NOMBRE }}</td>
-                                <td>{{ $resolucion->facultad->LEY_ASOCIADA }}</td>
                                 <td>
-                                    <span class="glosa-abreviada">{{ substr($resolucion->facultad->CONTENIDO, 0, 0) }}</span>
-                                    <button class="btn btn-sia-primary btn-block btn-expand" data-glosa="{{ $resolucion->facultad->CONTENIDO }}">
-                                        <i class="fa-solid fa-square-plus"></i>
-                                    </button>
-                                    <button class="btn btn-sia-primary btn-block btn-collapse" style="display: none;">
-                                        <i class="fa-solid fa-square-minus"></i>
-                                    </button>
-
-                                    <span class="glosa-completa" style="display: none;">{{ $resolucion->facultad->CONTENIDO }}</span>
+                                    <div class="d-flex justify-content-center">
+                                        {{ $resolucion->RESOLUCION_NUMERO }}
+                                    </div>
+                                </td>
+                                <td>{{ date('d-m-Y', strtotime($resolucion->RESOLUCION_FECHA)) }}</td>
+                                <td>{{ $resolucion->tipoResolucion->TIPO_RESOLUCION_NOMBRE }}</td>
+                                <td>{{ $resolucion->firmante->CARGO_NOMBRE }}</td>
+                                <td>
+                                    @foreach($resolucion->obedientes as $obediente)
+                                        {{ $obediente->cargo->CARGO_NOMBRE }}<br>
+                                    @endforeach
                                 </td>
                                 <td>
-                                    @if ($resolucion->DOCUMENTO)
-                                        <a href="{{ asset('storage/resoluciones/' . $resolucion->DOCUMENTO) }}" class="btn btn-sia-primary btn-block" target="_blank">
+                                    @foreach($resolucion->delegacion as $delegacion)
+                                        {{ $delegacion->facultad->FACULTAD_NOMBRE }}<br>
+                                    @endforeach
+                                </td>
+                                <td>
+                                    @foreach($resolucion->delegacion as $delegacion)
+                                        {{ $delegacion->facultad->FACULTAD_LEY_ASOCIADA }}<br>
+                                    @endforeach
+                                </td>
+                                <td>
+                                    @foreach($resolucion->delegacion as $delegacion)
+                                        <span class="glosa-abreviada">{{ substr($delegacion->facultad->FACULTAD_CONTENIDO, 0, 0) }}</span>
+                                        <button class="btn btn-sia-primary btn-block btn-expand" data-glosa="{{ $delegacion->facultad->FACULTAD_CONTENIDO }}">
+                                            <i class="fa-solid fa-square-plus"></i>
+                                        </button>
+                                        <button class="btn btn-sia-primary btn-block btn-collapse" style="display: none;">
+                                            <i class="fa-solid fa-square-minus"></i>
+                                        </button>
+                                        <span class="glosa-completa" style="display: none;">{{ $delegacion->facultad->FACULTAD_CONTENIDO }}</span><br>
+                                    @endforeach
+                                </td>
+                                <td>
+                                    @if ($resolucion->RESOLUCION_DOCUMENTO)
+                                        <a href="{{ asset('storage/resoluciones/' . $resolucion->RESOLUCION_DOCUMENTO) }}" class="btn btn-sia-primary btn-block" target="_blank">
                                             <i class="fa-solid fa-file-pdf" style="color: green;"></i>
                                         </a>
                                     @else
@@ -188,7 +205,6 @@
                 @endif
             @endif
         @endif
-    </div>
 @stop
 
 @section('css')
@@ -227,13 +243,13 @@
         $(function() {
             var timeoutId; // Variable para almacenar el ID del temporizador
             // Agrega eventos de cambio en los campos de nombres y apellidos
-            $('#NOMBRES, #APELLIDOS, #RUT, #ID_CARGO').on('input', function() {
+            $('#NOMBRES, #APELLIDOS, #RUT, #CARGO_ID').on('input', function() {
                 clearTimeout(timeoutId); // Limpiar el temporizador si existe uno
                 // Obtener los valores ingresados en los campos de nombres y apellidos
                 var nombres = $('#NOMBRES').val();
                 var apellidos = $('#APELLIDOS').val();
                 var rut = $('#RUT').val();
-                var idCargoFuncionario = $('#ID_CARGO').val();
+                var idCargoFuncionario = $('#CARGO_ID').val();
 
                 if (!nombres && !apellidos && !rut && !idCargoFuncionario) {
                     // Si todos los campos están vacíos, borrar la tabla de resultados
@@ -256,7 +272,7 @@
                                     var htmlResultados = generarHTMLResultados(response);
                                     $("#resultados-busqueda").html(htmlResultados);
                                 } else {
-                                    $("#resultados-busqueda").html('<h4>No existen funcionarios para esos registros</h4>');
+                                    $("#resultados-busqueda").html('<h4>No existen funcionarios para los parámetros ingresados</h4>');
                                     $("#resultados-busqueda").append('<div style="margin-top: 60px;"></div>');
                                 }
                             },
@@ -267,13 +283,13 @@
                         });
                     }, 500); // Esperar 500 ms después de la última entrada antes de realizar la búsqueda
                 }
-                $('#ID_DELEGADO').val("");
+                $('#OBEDIENTE_ID').val("");
                 deshabilitarBotonDelegado();
             });
 
             //Envía a la vista el nombre del cargo seleccionado en búsqueda
             function obtenerNombreCargo(idCargoFuncionario) {
-                var cargoSeleccionado = $('#ID_CARGO option[value="' + idCargoFuncionario + '"]').text();
+                var cargoSeleccionado = $('#CARGO_ID option[value="' + idCargoFuncionario + '"]').text();
                 return cargoSeleccionado;
             }
 
@@ -282,9 +298,9 @@
                 var html = '<h4>Seleccione un funcionario(a)</h4>';
                 html += '<table class="table"><thead><tr><th>Nombres</th><th>Apellidos</th><th>Rut</th><th>Cargo</th><th class="text-center">Ver Resoluciones</th></tr></thead><tbody>';
                 response.forEach(function(item) {
-                    var cargo = obtenerNombreCargo(item.ID_CARGO); // Obtener el nombre del cargo utilizando la función obtenerNombreCargo
-                    html += "<tr><td>" + item.NOMBRES + "</td><td>" + item.APELLIDOS + "</td><td>" + item.RUT + "</td><td>" + cargo + "</td>";
-                    html += '<td class="text-center"><button class="btn btn-primary btn-buscar-datos" data-nombres="' + item.NOMBRES + '" data-apellidos="' + item.APELLIDOS + '" data-rut="' + item.RUT + '" data-id-cargo="' + item.ID_CARGO + '" onclick="verResoluciones"><i class="fa-solid fa-magnifying-glass"></i></button></td>';
+                    var cargo = obtenerNombreCargo(item.CARGO_ID); // Obtener el nombre del cargo utilizando la función obtenerNombreCargo
+                    html += "<tr><td>" + item.USUARIO_NOMBRES + "</td><td>" + item.USUARIO_APELLIDOS + "</td><td>" + item.USUARIO_RUT + "</td><td>" + cargo + "</td>";
+                    html += '<td class="text-center"><button class="btn btn-primary btn-buscar-datos" data-nombres="' + item.USUARIO_NOMBRES + '" data-apellidos="' + item.USUARIO_APELLIDOS + '" data-rut="' + item.USUARIO_RUT + '" data-id-cargo="' + item.CARGO_ID + '" onclick="verResoluciones"><i class="fa-solid fa-magnifying-glass"></i></button></td>';
                 });
                 html += '</tbody></table>';
                 return html;
@@ -305,7 +321,7 @@
                 $('#NOMBRES').val(nombres);
                 $('#APELLIDOS').val(apellidos);
                 $('#RUT').val(rut);
-                $('#ID_CARGO').val(idCargoFuncionario);
+                $('#CARGO_ID').val(idCargoFuncionario);
 
                 // Enviar el formulario
                 $('#searchForm').submit();
@@ -313,7 +329,7 @@
 
             //Control del botón búsqueda por cargo
             function deshabilitarBotonDelegado() {
-                var selectedValue = $('#ID_DELEGADO').val();
+                var selectedValue = $('#OBEDIENTE_ID').val();
                 // Habilita o deshabilita el botón según la selección
                 if (selectedValue !== "") {
                     $('#buscarPorCargo').prop('disabled', false);
@@ -353,7 +369,6 @@
                     [5, 10, 50, -1],
                     [5, 10, 50, "All"]
                 ],
-                "responsive": true,
                 "columnDefs": [{
                     "orderable": false,
                     "targets": 8
@@ -363,21 +378,21 @@
                 }
             });
 
-            $('#ID_DELEGADO').change(function() {
+            $('#OBEDIENTE_ID').change(function() {
                 deshabilitarBotonDelegado();
 
-                // Vaciar los campos si se selecciona un ID_DELEGADO
-                if ($('#ID_DELEGADO').val() !== "") {
+                // Vaciar los campos si se selecciona un OBEDIENTE_ID
+                if ($('#OBEDIENTE_ID').val() !== "") {
                     $('#NOMBRES').val("");
                     $('#APELLIDOS').val("");
                     $('#RUT').val("");
-                    $('#ID_CARGO').val("");
+                    $('#CARGO_ID').val("");
                     $("#resultados-busqueda").empty();
                 }
             });
 
             // Deshabilita el botón al cargar la página si no hay opción seleccionada inicialmente
-            if ($('#ID_DELEGADO').val() === "") {
+            if ($('#OBEDIENTE_ID').val() === "") {
                 $('#buscarPorCargo').prop('disabled', true);
             }
         });

@@ -7,133 +7,132 @@
 @stop
 
 @section('content')
-    <div class="container">
         <form id="searchForm" action="{{ route('directivos.indexBusquedaBasica') }}" method="GET">
             @csrf
 
             <div class="row">
                 <div class="col-md-3 form-group">
-                    <label for="NRO_RESOLUCION" class="form-label"><i class="fas fa-bookmark"></i> Número de Resolución:</label>
-                    <select id="NRO_RESOLUCION" name="NRO_RESOLUCION" class="form-control" disabled>
+                    <label for="RESOLUCION_NUMERO" class="form-label"><i class="fas fa-bookmark"></i> Número de Resolución:</label>
+                    <select id="RESOLUCION_NUMERO" name="RESOLUCION_NUMERO" class="form-control" disabled>
                         <option value="" selected>--Seleccione Nro--</option>
                         @foreach ($nros as $nro)
-                            <option value="{{ $nro->NRO_RESOLUCION }}">{{ $nro->NRO_RESOLUCION }}</option>
+                            <option value="{{ $nro->RESOLUCION_NUMERO }}" {{ old('RESOLUCION_NUMERO') == $nro->RESOLUCION_NUMERO ? 'selected' : '' }}>{{ $nro->RESOLUCION_NUMERO }}</option>
                         @endforeach
                     </select>
                     <div class="form-check mt-2">
-                        <input class="form-check-input" type="checkbox" name="selectedFilters[NRO_RESOLUCION]" value="NRO_RESOLUCION" id="filter_NRO_RESOLUCION">
-                        <label class="form-check-label" for="filter_NRO_RESOLUCION">Incluir como filtro de búsqueda</label>
+                        <input class="form-check-input" type="checkbox" name="selectedFilters[RESOLUCION_NUMERO]" value="RESOLUCION_NUMERO" id="filter_RESOLUCION_NUMERO">
+                        <label class="form-check-label" for="filter_RESOLUCION_NUMERO">Incluir como filtro de búsqueda</label>
                     </div>
                 </div>
 
                 <div class="col-md-3 form-group">
-                    <label for="ID_TIPO" class="form-label"><i class="fas fa-bookmark"></i> Tipo Resolución:</label>
-                    <select id="ID_TIPO" name="ID_TIPO" class="form-control" disabled>
+                    <label for="TIPO_RESOLUCION_ID" class="form-label"><i class="fas fa-bookmark"></i> Tipo Resolución:</label>
+                    <select id="TIPO_RESOLUCION_ID" name="TIPO_RESOLUCION_ID" class="form-control" disabled>
                         <option value="" selected>--Seleccione Tipo--</option>
                         @foreach ($tipos as $tipo)
-                            <option value="{{ $tipo->ID_TIPO }}">{{ $tipo->NOMBRE }}</option>
+                            <option value="{{ $tipo->TIPO_RESOLUCION_ID }}" {{ old('TIPO_RESOLUCION_ID') == $tipo->TIPO_RESOLUCION_ID ? 'selected' : '' }}>{{ $tipo->TIPO_RESOLUCION_NOMBRE }}</option>
                         @endforeach
                     </select>
                     <div class="form-check mt-2">
-                        <input class="form-check-input" type="checkbox" name="selectedFilters[ID_TIPO]" value="ID_TIPO" id="filter_ID_TIPO">
-                        <label class="form-check-label" for="filter_ID_TIPO">Incluir como filtro de búsqueda</label>
+                        <input class="form-check-input" type="checkbox" name="selectedFilters[TIPO_RESOLUCION_ID]" value="TIPO_RESOLUCION_ID" id="filter_TIPO_RESOLUCION_ID">
+                        <label class="form-check-label" for="filter_TIPO_RESOLUCION_ID">Incluir como filtro de búsqueda</label>
                     </div>
                 </div>
             
 
                 <div class="col-md-3 form-group">
-                    <label for="FECHA" class="form-label"><i class="fas fa-bookmark"></i> Fecha:</label>
-                    <select id="FECHA" name="FECHA" class="form-control @error('FECHA') is-invalid @enderror" disabled>
+                    <label for="RESOLUCION_FECHA" class="form-label"><i class="fas fa-bookmark"></i> Fecha:</label>
+                    <select id="RESOLUCION_FECHA" name="RESOLUCION_FECHA" class="form-control @error('RESOLUCION_FECHA') is-invalid @enderror" disabled>
                         <option value="" selected>--Seleccione Fecha--</option>
                         @foreach ($fechas as $fecha)
-                            <option value="{{ $fecha->FECHA }}">{{ date('d-m-Y', strtotime($fecha->FECHA)) }}</option>
+                            <option value="{{ $fecha->RESOLUCION_FECHA }}" {{ old('RESOLUCION_FECHA') == $fecha->RESOLUCION_FECHA ? 'selected' : '' }}>{{ date('d-m-Y', strtotime($fecha->RESOLUCION_FECHA)) }}</option>
                         @endforeach
                     </select>
-                    @error('FECHA')
+                    @error('RESOLUCION_FECHA')
                         <div class="invalid-feedback">{{ $message }}</div>
                     @enderror
                     <div class="form-check mt-2">
-                        <input class="form-check-input" type="checkbox" name="selectedFilters[FECHA]" value="FECHA" id="filter_FECHA">
-                        <label class="form-check-label" for="filter_FECHA">Incluir como filtro de búsqueda</label>                    
+                        <input class="form-check-input" type="checkbox" name="selectedFilters[RESOLUCION_FECHA]" value="RESOLUCION_FECHA" id="filter_RESOLUCION_FECHA">
+                        <label class="form-check-label" for="filter_RESOLUCION_FECHA">Incluir como filtro de búsqueda</label>                    
                     </div>
                 </div>
 
                 <div class="col-md-3 form-group">
-                    <label for="ID_FACULTAD" class="form-label"><i class="fas fa-bookmark"></i> Facultad:</label>
-                    <select id="ID_FACULTAD" name="ID_FACULTAD" class="form-control" disabled>
+                    <label for="FACULTAD_ID" class="form-label"><i class="fas fa-bookmark"></i> Facultad:</label>
+                    <select id="FACULTAD_ID" name="FACULTAD_ID" class="form-control" disabled>
                         <option value="" selected>--Seleccione Facultad--</option>
                         @foreach ($facultades as $facultad)
-                            <option value="{{ $facultad->ID_FACULTAD }}">{{ $facultad->NOMBRE }}</option>
+                            <option value="{{ $facultad->FACULTAD_ID }}" {{ old('FACULTAD_ID') == $facultad->FACULTAD_ID ? 'selected' : '' }}>{{ $facultad->FACULTAD_NOMBRE }}</option>
                         @endforeach
                     </select>
                     <div class="form-check mt-2">
-                        <input class="form-check-input" type="checkbox" name="selectedFilters[ID_FACULTAD]" value="ID_FACULTAD" id="filter_ID_FACULTAD">
-                        <label class="form-check-label" for="filter_ID_FACULTAD">Incluir como filtro de búsqueda</label>
+                        <input class="form-check-input" type="checkbox" name="selectedFilters[FACULTAD_ID]" value="FACULTAD_ID" id="filter_FACULTAD_ID">
+                        <label class="form-check-label" for="filter_FACULTAD_ID">Incluir como filtro de búsqueda</label>
                     </div>
                 </div>
             </div>
             
             <div class="row">
                 <div class="col-md-3 form-group">
-                    <label for="LEY_ASOCIADA" class="form-label"><i class="fas fa-bookmark"></i> Ley asociada:</label>
-                    <select id="LEY_ASOCIADA" name="LEY_ASOCIADA" class="form-control" disabled>
+                    <label for="FACULTAD_LEY_ASOCIADA" class="form-label"><i class="fas fa-bookmark"></i> Ley asociada:</label>
+                    <select id="FACULTAD_LEY_ASOCIADA" name="FACULTAD_LEY_ASOCIADA" class="form-control" disabled>
                         <option value="" selected>--Seleccione Ley--</option>
-                        @foreach ($facultades as $facultad)
-                            <option value="{{ $facultad->ID_FACULTAD }}">{{ $facultad->LEY_ASOCIADA }}</option>
+                        @foreach ($leyesAsociadas as $leyAsociada)
+                            <option value="{{ $leyAsociada }}" {{ old('FACULTAD_LEY_ASOCIADA') == $leyAsociada ? 'selected' : '' }}>{{ $leyAsociada }}</option>
                         @endforeach
                     </select>
                     <div class="form-check mt-2">
-                        <input class="form-check-input" type="checkbox" name="selectedFilters[LEY_ASOCIADA]" value="LEY_ASOCIADA" id="filter_LEY_ASOCIADA">
-                        <label class="form-check-label" for="filter_LEY_ASOCIADA">Incluir como filtro de búsqueda</label>
+                        <input class="form-check-input" type="checkbox" name="selectedFilters[FACULTAD_LEY_ASOCIADA]" value="FACULTAD_LEY_ASOCIADA" id="filter_FACULTAD_LEY_ASOCIADA">
+                        <label class="form-check-label" for="filter_FACULTAD_LEY_ASOCIADA">Incluir como filtro de búsqueda</label>
                     </div>
                 </div>
                 
 
                 
                 <div class="col-md-3 form-group">
-                    <label for="ART_LEY_ASOCIADA" class="form-label"><i class="fas fa-bookmark"></i> Artículo de ley:</label>
-                    <select id="ART_LEY_ASOCIADA" name="ART_LEY_ASOCIADA" class="form-control" disabled>
+                    <label for="FACULTAD_ART_LEY_ASOCIADA" class="form-label"><i class="fas fa-bookmark"></i> Artículo de ley:</label>
+                    <select id="FACULTAD_ART_LEY_ASOCIADA" name="FACULTAD_ART_LEY_ASOCIADA" class="form-control" disabled>
                         <option value="" selected>--Seleccione Artículo--</option>
-                        @foreach ($facultades as $facultad)
-                            <option value="{{ $facultad->ID_FACULTAD }}">{{ $facultad->ART_LEY_ASOCIADA }}</option>
+                        @foreach ($articulosDeLeyAsociadas as $articuloDeLeyAsociada)
+                            <option value="{{ $articuloDeLeyAsociada }}" {{ old('FACULTAD_ART_LEY_ASOCIADA') == $articuloDeLeyAsociada ? 'selected' : '' }}>{{ $articuloDeLeyAsociada }}</option>
                         @endforeach
                     </select>
-                    @error('ART_LEY_ASOCIADA')
+                    @error('FACULTAD_ART_LEY_ASOCIADA')
                         <div class="invalid-feedback">{{ $message }}</div>
                     @enderror
                     <div class="form-check mt-2">
-                        <input class="form-check-input" type="checkbox" name="selectedFilters[ART_LEY_ASOCIADA]" value="ART_LEY_ASOCIADA" id="filter_ART_LEY_ASOCIADA">
-                        <label class="form-check-label" for="filter_ART_LEY_ASOCIADA">Incluir como filtro de búsqueda</label>
+                        <input class="form-check-input" type="checkbox" name="selectedFilters[FACULTAD_ART_LEY_ASOCIADA]" value="FACULTAD_ART_LEY_ASOCIADA" id="filter_FACULTAD_ART_LEY_ASOCIADA">
+                        <label class="form-check-label" for="filter_FACULTAD_ART_LEY_ASOCIADA">Incluir como filtro de búsqueda</label>
                     </div>
                 </div>
                 
 
 
                 <div class="col-md-3 form-group">
-                    <label for="ID_FIRMANTE" class="form-label"><i class="fas fa-bookmark"></i> Firmante:</label>
-                    <select id="ID_FIRMANTE" name="ID_FIRMANTE" class="form-control" disabled>
+                    <label for="CARGO_ID" class="form-label"><i class="fas fa-bookmark"></i> Firmante:</label>
+                    <select id="CARGO_ID" name="CARGO_ID" class="form-control" disabled>
                         <option value="" selected>--Seleccione Firmante--</option>
-                        @foreach ($firmantes as $idFirmante => $nombreFirmante)
-                            <option value="{{ $idFirmante }}">{{ $nombreFirmante }}</option>
+                        @foreach ($firmantes as $firmante)
+                            <option value="{{ $firmante->CARGO_ID }}" {{ old('CARGO_ID') == $firmante->CARGO_ID ? 'selected' : '' }}>{{ $firmante->CARGO_NOMBRE }}</option>
                         @endforeach
                     </select>
                     <div class="form-check mt-2">
-                        <input class="form-check-input" type="checkbox" name="selectedFilters[ID_FIRMANTE]" value="ID_FIRMANTE" id="filter_ID_FIRMANTE">
-                        <label class="form-check-label" for="filter_ID_FIRMANTE">Incluir como filtro de búsqueda</label>
+                        <input class="form-check-input" type="checkbox" name="selectedFilters[CARGO_ID]" value="CARGO_ID" id="filter_CARGO_ID">
+                        <label class="form-check-label" for="filter_CARGO_ID">Incluir como filtro de búsqueda</label>
                     </div>
                 </div>
 
                 <div class="col-md-3 form-group">
-                    <label for="ID_DELEGADO" class="form-label"><i class="fas fa-bookmark"></i> Delegado:</label>
-                    <select id="ID_DELEGADO" name="ID_DELEGADO" class="form-control" disabled>
+                    <label for="DELEGADO_ID" class="form-label"><i class="fas fa-bookmark"></i> Delegado:</label>
+                    <select id="DELEGADO_ID" name="DELEGADO_ID" class="form-control" disabled>
                         <option value="" selected>--Seleccione Delegado--</option>
-                        @foreach ($delegados as $idCargo => $nombreDelegado)
-                            <option value="{{ $idCargo }}">{{ $nombreDelegado }}</option>
+                        @foreach ($delegados as $delegado)
+                            <option value="{{ $delegado->CARGO_ID }}" {{ old('DELEGADO_ID') == $delegado->CARGO_ID ? 'selected' : '' }}>{{ $delegado->CARGO_NOMBRE }}</option>
                         @endforeach
                     </select>
                     <div class="form-check mt-2">
-                        <input class="form-check-input" type="checkbox" name="selectedFilters[ID_DELEGADO]" value="ID_DELEGADO" id="filter_ID_DELEGADO">
-                        <label class="form-check-label" for="filter_ID_DELEGADO">Incluir como filtro de búsqueda</label>
+                        <input class="form-check-input" type="checkbox" name="selectedFilters[DELEGADO_ID]" value="DELEGADO_ID" id="filter_DELEGADO_ID">
+                        <label class="form-check-label" for="filter_DELEGADO_ID">Incluir como filtro de búsqueda</label>
                     </div>
                 </div>
             </div>
@@ -166,39 +165,60 @@
                     <tbody>
                         @foreach($resoluciones as $resolucion)
                             <tr>
-                                <td>{{ $resolucion->NRO_RESOLUCION }}</td>
-                                <td>{{ date('d/m/Y', strtotime($resolucion->FECHA)) }}</td>
-                                <td>{{ $resolucion->tipo->NOMBRE }}</td>
-                                <td>{{ $resolucion->firmante->CARGO }}</td>
-                                <td>{{ $resolucion->delegado->CARGO }}</td>
-                                <td>{{ $resolucion->facultad->NOMBRE }}</td>
-                                <td>{{ $resolucion->facultad->LEY_ASOCIADA }}</td>
-                                <td>{{ $resolucion->facultad->ART_LEY_ASOCIADA }}</td>
                                 <td>
-                                    <span class="glosa-abreviada">{{ substr($resolucion->facultad->CONTENIDO, 0, 0) }}</span>
-                                    <button class="btn btn-sia-primary btn-block btn-expand" data-glosa="{{ $resolucion->facultad->CONTENIDO }}">
-                                        <i class="fa-solid fa-square-plus"></i>
-                                    </button>
-                                    <button class="btn btn-sia-primary btn-block btn-collapse" style="display: none;">
-                                        <i class="fa-solid fa-square-minus"></i>
-                                    </button>
-                                    
-                                    <span class="glosa-completa" style="display: none;">{{ $resolucion->facultad->CONTENIDO }}</span>
+                                    <div class="d-flex justify-content-center">
+                                        {{ $resolucion->RESOLUCION_NUMERO }}
+                                    </div>
+                                </td>
+                                <td>{{ date('d/m/Y', strtotime($resolucion->RESOLUCION_FECHA)) }}</td>
+                                <td>{{ $resolucion->tipoResolucion->TIPO_RESOLUCION_NOMBRE }}</td>
+                                <td>{{ $resolucion->firmante->CARGO_NOMBRE }}</td>
+                                <td>
+                                    @foreach($resolucion->obedientes as $obediente)
+                                        {{ $obediente->cargo->CARGO_NOMBRE }}<br>
+                                    @endforeach
                                 </td>
                                 <td>
-                                    <span class="observaciones-abreviada">{{ substr($resolucion->OBSERVACIONES, 0, 0) }}</span>
-                                    <button class="btn btn-sia-primary btn-block btn-expand-obs" data-obs="{{ $resolucion->OBSERVACIONES }}">
+                                    @foreach($resolucion->delegacion as $delegacion)
+                                        {{ $delegacion->facultad->FACULTAD_NOMBRE }}<br>
+                                    @endforeach
+                                </td>
+                                <td>
+                                    @foreach($resolucion->delegacion as $delegacion)
+                                        {{ $delegacion->facultad->FACULTAD_LEY_ASOCIADA }}<br>
+                                    @endforeach
+                                </td>                                
+                                <td>
+                                    @foreach($resolucion->delegacion as $delegacion)
+                                        {{ $delegacion->facultad->FACULTAD_ART_LEY_ASOCIADA }}<br>
+                                    @endforeach
+                                </td>
+                                <td>
+                                    @foreach($resolucion->delegacion as $delegacion)
+                                        <span class="glosa-abreviada">{{ substr($delegacion->facultad->FACULTAD_CONTENIDO, 0, 0) }}</span>
+                                        <button class="btn btn-sia-primary btn-block btn-expand" data-glosa="{{ $delegacion->facultad->FACULTAD_CONTENIDO }}">
+                                            <i class="fa-solid fa-square-plus"></i>
+                                        </button>
+                                        <button class="btn btn-sia-primary btn-block btn-collapse" style="display: none;">
+                                            <i class="fa-solid fa-square-minus"></i>
+                                        </button>
+                                        <span class="glosa-completa" style="display: none;">{{ $delegacion->facultad->FACULTAD_CONTENIDO }}</span><br>
+                                    @endforeach
+                                </td>
+                                <td>
+                                    <span class="observaciones-abreviada">{{ substr($resolucion->RESOLUCION_OBSERVACIONES, 0, 0) }}</span>
+                                    <button class="btn btn-sia-primary btn-block btn-expand-obs" data-obs="{{ $resolucion->RESOLUCION_OBSERVACIONES }}">
                                         <i class="fa-solid fa-square-plus"></i>
                                     </button>
                                     <button class="btn btn-sia-primary btn-block btn-collapse-obs" style="display: none;">
                                         <i class="fa-solid fa-square-minus"></i>
                                     </button>
                                     
-                                    <span class="observaciones-completa" style="display: none;">{{ $resolucion->OBSERVACIONES }}</span>
+                                    <span class="observaciones-completa" style="display: none;">{{ $resolucion->RESOLUCION_OBSERVACIONES }}</span>
                                 </td>
                                 <td>
-                                    @if ($resolucion->DOCUMENTO)
-                                        <a href="{{ asset('storage/resoluciones/' . $resolucion->DOCUMENTO) }}" class="btn btn-sia-primary btn-block" target="_blank">
+                                    @if ($resolucion->RESOLUCION_DOCUMENTO)
+                                        <a href="{{ asset('storage/resoluciones/' . $resolucion->RESOLUCION_DOCUMENTO) }}" class="btn btn-sia-primary btn-block" target="_blank">
                                             <i class="fa-solid fa-file-pdf" style="color: green;"></i>
                                         </a>
                                     @else
@@ -214,13 +234,12 @@
             <div style="margin-top: 60px;"></div> <!-- Espacio entre las funcionalidades -->
             <div class="alert alert-info">Ingrese algún parámetro para obtener resoluciones</div>
         @endif
-    </div>
 @stop
 
 @section('css')
     <link rel="stylesheet" href="/css/admin_custom.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" integrity="sha512-TDt7dKgGsPvwsSTcc2CC7SE2/w7Px6CoaGh7fFA13iP8/wx4NSJ8G4PkiUmcnqC4E6F3jTQFJOU2gUTr0lXG2A==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 
     <style>
         .textarea-container {
@@ -313,7 +332,6 @@
                     [5, 10, 50, -1],
                     [5, 10, 50, "All"]
                 ],
-                "responsive": false,
                 "columnDefs": [{
                     "orderable": false,
                     "targets": 10

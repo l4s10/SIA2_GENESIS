@@ -20,11 +20,7 @@ Route::prefix('directivos')->group(function () {
     // Página de búsqueda por Funcionario
     Route::get('/busqueda-funcionario', [BusquedaFuncionarioController::class, 'index'])
     ->name('directivos.indexBusquedaFuncionarios');
+});
 
     // Ruta para buscar funcionarios mediante AJAX
-    Route::post('/busqueda-funcionario/buscar', [BusquedaFuncionarioController::class, 'buscarFuncionarios'])
-     ->name('directivos.buscarFuncionarios');
-
-
-
-});
+    Route::get('/consultaAjax', [BusquedaFuncionarioController::class, 'buscarFuncionarios']);
