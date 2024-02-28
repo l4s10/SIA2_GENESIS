@@ -195,7 +195,6 @@ class SolicitudVehiculosController extends Controller
      */
     public function store(Request $request)
     {
-        // dd($request);
         // Intentar guardar la solicitud en la base de datos
         try {
             //if ( $request->)
@@ -850,6 +849,7 @@ class SolicitudVehiculosController extends Controller
             $totalKmsRecorridos= 0;
             // Verificar si se encontró la rendición
             if ($rendicion) {
+                $totalKmsRecorridos=($rendicion->RENDICION_KILOMETRAJE_TERMINO - $rendicion->RENDICION_KILOMETRAJE_INICIO);
                 // Acceder a la firma del conductor desde la rendición
                 $firmaConductor = ( 'Firmado digitalmente por: ' . "\n" . $rendicion->user->USUARIO_NOMBRES.' '.$rendicion->user->USUARIO_APELLIDOS . "\n" . ' Rut: '.$rendicion->user->USUARIO_RUT . "\n" . 'Fecha: '. Carbon::parse($rendicion->created_at)->format('d-m-Y H:i') );
 

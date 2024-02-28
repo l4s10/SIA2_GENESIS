@@ -31,6 +31,15 @@ Route::group(['middleware' => 'auth'], function (){
     // rutas para reportes
     require __DIR__.'/Reportes/ReportesRoutes.php';
 
+    // rutas para directivos
+    require __DIR__.'/Directivos/DirectivosRoutes.php';
+    require __DIR__.'/Directivos/FacultadesRoutes.php';
+    require __DIR__.'/Directivos/ResolucionesRoutes.php';
+    require __DIR__.'/Directivos/PolizasRoutes.php';
+    require __DIR__.'/Directivos/CargosRoutes.php';
+
+
+
     // rutas para panel de control
     require __DIR__.'/Panel/RegionesRoutes.php';
     require __DIR__.'/Panel/ComunasRoutes.php';
