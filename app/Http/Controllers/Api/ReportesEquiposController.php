@@ -60,6 +60,8 @@ class ReportesEquiposController extends Controller
             $rankingEstados = $this->Grafico3($request);
             // Cargamos el grafico4
             $rankingTiposEquipos = $this->Grafico4($request);
+            // Cargamos el grafico5
+            $promedioAtencion = $this->Grafico5($request);
 
             // Construye la respuesta con todos los datos de los gráficos para la carga inicial
             return response()->json([
@@ -68,7 +70,8 @@ class ReportesEquiposController extends Controller
                     'grafico1' => $rankingGestionadores,
                     'grafico2' => $solicitudesPorUbicacionDepto,
                     'grafico3' => $rankingEstados,
-                    'grafico4' => $rankingTiposEquipos
+                    'grafico4' => $rankingTiposEquipos,
+                    'grafico5' => $promedioAtencion
                 ]
             ]);
         } catch (\Exception $e) {
@@ -106,7 +109,7 @@ class ReportesEquiposController extends Controller
                 ->join('users as solicitantes', 'solicitudes.USUARIO_id', '=', 'solicitantes.id')
                 ->where('solicitantes.OFICINA_ID', $oficinaId)
                 ->when($fechaInicio && $fechaFin, function ($query) use ($fechaInicio, $fechaFin) {
-                    return $query->whereBetween('solicitudes.created_at', [$fechaInicio, $fechaFin]);
+                    return $query->whereBetween(DB::raw('DATE(solicitudes.created_at)'), [$fechaInicio, $fechaFin]);
                 })
                 ->select('solicitudes.SOLICITUD_ID')
                 ->distinct()
@@ -119,7 +122,7 @@ class ReportesEquiposController extends Controller
                 ->where('revisores.OFICINA_ID', $oficinaId)
                 ->when($fechaInicio && $fechaFin, function ($query) use ($fechaInicio, $fechaFin) {
                     // Aplicar el filtro de fechas a las revisiones
-                    return $query->whereBetween('revisiones_solicitudes.created_at', [$fechaInicio, $fechaFin]);
+                    return $query->whereBetween(DB::raw('DATE(revisiones_solicitudes.created_at)'), [$fechaInicio, $fechaFin]);
                 })
                 ->select('revisores.id', DB::raw('CONCAT(revisores.USUARIO_NOMBRES, " ", revisores.USUARIO_APELLIDOS) as nombre_completo'), DB::raw('COUNT(revisiones_solicitudes.SOLICITUD_ID) as total_gestiones'))
                 ->groupBy('revisores.id', 'revisores.USUARIO_NOMBRES', 'revisores.USUARIO_APELLIDOS')
@@ -164,7 +167,7 @@ class ReportesEquiposController extends Controller
             ->join('users as solicitantes', 'solicitudes.USUARIO_id', '=', 'solicitantes.id')
             ->where('solicitantes.OFICINA_ID', $oficinaId)
             ->when($fechaInicio && $fechaFin, function ($query) use ($fechaInicio, $fechaFin) {
-                return $query->whereBetween('solicitudes.created_at', [$fechaInicio, $fechaFin]);
+                return $query->whereBetween(DB::raw('solicitudes.created_at)'), [$fechaInicio, $fechaFin]);
             })
             ->select('solicitudes.SOLICITUD_ID')
             ->distinct()
@@ -231,7 +234,7 @@ class ReportesEquiposController extends Controller
                 ->where('users.OFICINA_ID', '=', $oficinaId) // Filtrar por OFICINA_ID
                 ->select('solicitudes.SOLICITUD_ESTADO', DB::raw('COUNT(DISTINCT solicitudes.SOLICITUD_ID) as total_solicitudes'))
                 ->when($fechaInicio && $fechaFin, function ($query) use ($fechaInicio, $fechaFin) {
-                    return $query->whereBetween('solicitudes.created_at', [$fechaInicio, $fechaFin]);
+                    return $query->whereBetween(DB::raw('solicitudes.created_at)'), [$fechaInicio, $fechaFin]);
                 })
                 ->groupBy('solicitudes.SOLICITUD_ESTADO')
                 ->orderBy('total_solicitudes', 'DESC')
@@ -275,7 +278,7 @@ class ReportesEquiposController extends Controller
                 ->join('users', 'solicitudes.USUARIO_id', '=', 'users.id')
                 ->where('users.OFICINA_ID', $oficinaId)
                 ->when($fechaInicio && $fechaFin, function ($query) use ($fechaInicio, $fechaFin) {
-                    return $query->whereBetween('solicitudes.created_at', [$fechaInicio, $fechaFin]);
+                    return $query->whereBetween(DB::raw('solicitudes.created_at)'), [$fechaInicio, $fechaFin]);
                 })
                 ->select('tipos_equipos.TIPO_EQUIPO_NOMBRE', DB::raw('COUNT(solicitudes_equipos.TIPO_EQUIPO_ID) as total_solicitudes'))
                 ->groupBy('tipos_equipos.TIPO_EQUIPO_NOMBRE')
@@ -316,7 +319,7 @@ class ReportesEquiposController extends Controller
                 ->join('users', 'solicitudes.USUARIO_id', '=', 'users.id')
                 ->where('users.OFICINA_ID', $oficinaId)
                 ->when($fechaInicio && $fechaFin, function ($query) use ($fechaInicio, $fechaFin) {
-                    return $query->whereBetween('solicitudes.created_at', [$fechaInicio, $fechaFin]);
+                    return $query->whereBetween(DB::raw('solicitudes.created_at)'), [$fechaInicio, $fechaFin]);
                 })
                 ->select(DB::raw('AVG(DATEDIFF(revisiones_solicitudes.created_at, solicitudes.created_at)) as promedio_atencion'))
                 ->first();
@@ -339,7 +342,7 @@ class ReportesEquiposController extends Controller
                 ->where('solicitudes.SOLICITUD_ESTADO', 'APROBADO')
                 ->orWhere('solicitudes.SOLICITUD_ESTADO', 'RECHAZADO')
                 ->when($fechaInicio && $fechaFin, function ($query) use ($fechaInicio, $fechaFin) {
-                    return $query->whereBetween('solicitudes.created_at', [$fechaInicio, $fechaFin]);
+                    return $query->whereBetween(DB::raw('solicitudes.created_at)'), [$fechaInicio, $fechaFin]);
                 })
                 ->select(DB::raw('AVG(DATEDIFF(solicitudes.SOLICITUD_FECHA_HORA_INICIO_ASIGNADA, revisiones_solicitudes.created_at)) as promedio_revision_aprobacion'))
                 ->first();
@@ -353,7 +356,7 @@ class ReportesEquiposController extends Controller
                 ->where('users.OFICINA_ID', $oficinaId)
                 ->where('solicitudes.SOLICITUD_ESTADO', 'TERMINADO')
                 ->when($fechaInicio && $fechaFin, function ($query) use ($fechaInicio, $fechaFin) {
-                    return $query->whereBetween('solicitudes.created_at', [$fechaInicio, $fechaFin]);
+                    return $query->whereBetween(DB::raw('solicitudes.created_at)'), [$fechaInicio, $fechaFin]);
                 })
                 ->select(DB::raw('AVG(DATEDIFF(solicitudes.updated_at, solicitudes.SOLICITUD_FECHA_HORA_INICIO_ASIGNADA)) as promedio_aprobacion_entrega'))
                 ->first();

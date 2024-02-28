@@ -68,7 +68,15 @@ class SolicitudVehicular extends Model
         return $this->belongsTo(Comuna::class, 'COMUNA_ID', 'COMUNA_ID');
     }
 
-
+    // Funcion para devolver las fechas en formato correcto CHILE
+    public function mostrarFecha($value)
+    {
+        //caso vacio retornar nulo
+        if ($value == null) {
+            return null;
+        }
+        return date('d-m-Y H:i', strtotime($value));
+    }
 }
 
 

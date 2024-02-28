@@ -52,4 +52,14 @@ class SolicitudReparacion extends Model
     // {
     //     return $this->belongsTo(Vehiculo::class, 'VEHICULO_ID', 'VEHICULO_ID');
     // }
+
+    // Funcion para devolver las fechas en formato correcto CHILE
+    public function mostrarFecha($value)
+    {
+        //caso vacio retornar nulo
+        if ($value == null) {
+            return null;
+        }
+        return date('d-m-Y H:i', strtotime($value));
+    }
 }

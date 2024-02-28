@@ -316,7 +316,9 @@
 
             {{-- Botones de retorno y envo --}}
             <a href="{{ route('solicitudes.salas.index') }}" class="btn btn-secondary"><i class="fa-solid fa-hand-point-left"></i> Volver</a>
-            <button type="submit" class="btn agregar"><i class="fa-solid fa-plus"></i> Guardar cambios</button>
+            <button type="submit" name="action" value="guardar" class="btn agregar"><i class="fa-solid fa-plus"></i> Guardar revisión</button>
+            <button type="submit" name="action" value="finalizar_revision" class="btn btn-success"><i class="fa-solid fa-check"></i> Finalizar revisiones y autorizar</button>
+            <button type="submit" name="action" value="rechazar" class="btn btn-danger"><i class="fa-solid fa-ban"></i> Rechazar</button>
         </form>
     @else
         <a href="{{ route('solicitudes.salas.index') }}" class="btn btn-secondary"><i class="fa-solid fa-hand-point-left"></i> Volver</a>

@@ -53,56 +53,21 @@
             </thead>
             <tbody>
                 @foreach ($solicitudes as $solicitud)
-                    <tr>
-                        <td>
-                            <div class="d-flex justify-content-center">
-                                {{ $solicitud->solicitante->USUARIO_NOMBRES }} {{ $solicitud->solicitante->USUARIO_APELLIDOS }}
-                            </div>
+                <tr>
+                        <td>{{ $solicitud->solicitante->USUARIO_NOMBRES }} {{ $solicitud->solicitante->USUARIO_APELLIDOS }}</td>
+                        <td>{{ $solicitud->solicitante->USUARIO_RUT }}</td>
+                        <td>{{ $solicitud->solicitante->ubicacion ? $solicitud->solicitante->ubicacion->UBICACION_NOMBRE : $solicitud->solicitante->departamento->DEPARTAMENTO_NOMBRE}}</td>
+                        <td>{{ $solicitud->solicitante->email }}</td>
+                        <td><span class="badge rounded-pill estado-{{ strtolower(str_replace(' ', '-', $solicitud->SOLICITUD_ESTADO)) }}">
+                        {{ $solicitud->SOLICITUD_ESTADO }}
+                        </span>
                         </td>
-                        <td>
-                            <div class="d-flex justify-content-center">
-                                {{ $solicitud->solicitante->USUARIO_RUT }}
-                            </div>
-                        </td>
-                        <td>
-                            <div class="d-flex justify-content-center">
-                                {{ $solicitud->solicitante->ubicacion ? $solicitud->solicitante->ubicacion->UBICACION_NOMBRE : $solicitud->solicitante->departamento->DEPARTAMENTO_NOMBRE}}
-                            </div>
-                        </td>
-                        <td>
-                            <div class="d-flex justify-content-center">
-                                {{ $solicitud->solicitante->email}}
-                            </div>
-                        </td>
-                        <td>
-                            <div class="d-flex justify-content-center">
-                                @if ($solicitud->SOLICITUD_ESTADO == 'INGRESADO')
-                                    <span style="color: #e6500a;">🟠 <span style="color: black; font-weight: bold;">INGRESADO</span></span>
-                                @elseif ($solicitud->SOLICITUD_ESTADO == 'EN REVISIÓN')
-                                    <span style="color: #0000ff;">🔵 <span style="color: black; font-weight: bold;">EN REVISIÓN</span></span>
-                                @elseif ($solicitud->SOLICITUD_ESTADO == 'POR APROBAR')
-                                    <span style="color: #ffff00;">🟡 <span style="color: black; font-weight: bold;">POR APROBAR</span></span>
-                                @elseif ($solicitud->SOLICITUD_ESTADO == 'POR AUTORIZAR')
-                                    <span style="color: #00ff00;">🟢 <span style="color: black; font-weight: bold;">POR AUTORIZAR</span></span>
-                                @elseif ($solicitud->SOLICITUD_ESTADO == 'POR RENDIR')
-                                    <span style="color: #ffffff;">⚪ <span style="color: black; font-weight: bold;">POR RENDIR</span></span>
-                                @elseif ($solicitud->SOLICITUD_ESTADO == 'RECHAZADO')
-                                    <span style="color: #ff0000;">🔴 <span style="color: black; font-weight: bold;">RECHAZADO</span></span>
-                                @elseif ($solicitud->SOLICITUD_ESTADO == 'TERMINADO')
-                                    <span style="color: #000000;">⚫ <span style="color: black; font-weight: bold;">TERMINADO</span></span>
-                                @endif
-                            </div>
-                        </td>
-                        <td>
-                            <div class="d-flex justify-content-center">
-                                {{ $solicitud->formatted_created_at }}
-                            </div>
-                        </td>
+                        <td>{{ $solicitud->mostrarFecha($solicitud->created_at) }}</td>
                         <td>
                             <div class="d-flex justify-content-center">
                                 <a href="{{ route('solicitudes.bodegas.show', $solicitud->SOLICITUD_ID) }}" class="btn btn-primary"><i class="fa-solid fa-eye"></i></a>
                                 <a href="{{ route('solicitudes.bodegas.edit', $solicitud->SOLICITUD_ID) }}" class="btn botoneditar ml-2"><i class="fa-solid fa-pencil"></i></a>
-                                <form action="{{ route('solicitudes.bodegas.destroy', $solicitud->SOLICITUD_ID) }}" method="POST">
+                                <form action="{{ route('solicitudes.bodegas.destroy', $solicitud->SOLICITUD_ID) }}" method="POST" class="d-inline">
                                     @csrf
                                     @method('DELETE')
                                     <button type="submit" class="btn btn-danger ml-2"><i class="fa-solid fa-trash"></i></button>
@@ -133,28 +98,30 @@
     </style>
     <style>
 
-        .estado-INGRESADO {
-            background-color: #f58220;
+        /*Colores de los estados*/
+        .estado-ingresado {
+        color: #000000;
+        background-color: #FFA600;
         }
 
-        .estado-EN_REVISIÓN {
-            background-color: #ffff00;
+        .estado-en-revision {
+        color: #000000;
+        background-color: #F7F70B;
         }
 
-        .estado-POR_APROBAR {
-            background-color: #00ff00;
+        .estado-aprobado {
+        color: #ffffff;
+        background-color: #0CB009;
         }
 
-        .estado-POR_AUTORIZAR {
-            background-color: #0000ff;
+        .estado-rechazado {
+        color: #FFFFFF;
+        background-color: #F70B0B;
         }
 
-        .estado-POR_RENDIR {
-            background-color: #800080;
-        }
-
-        .estado-TERMINADO {
-            background-color: #ff0000;
+        .estado-terminado {
+        color: #000000;
+        background-color: #d9d9d9;
         }
 
     </style>
