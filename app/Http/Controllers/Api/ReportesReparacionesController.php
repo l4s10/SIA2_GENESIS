@@ -271,7 +271,7 @@ class ReportesReparacionesController extends Controller
                 ->when($fechaInicio && $fechaFin, function ($query) use ($fechaInicio, $fechaFin) {
                     return $query->whereBetween('solicitudes_reparaciones.created_at', [$fechaInicio, $fechaFin]);
                 })
-                ->select('departamentos.DEPARTAMENTO_NOMBRE as departamento', DB::raw('COUNT(*) as cantidad'))
+                ->select('departamentos.DEPARTAMENTO_NOMBRE as entidad', DB::raw('COUNT(*) as cantidad'))
                 ->groupBy('departamentos.DEPARTAMENTO_NOMBRE')
                 ->orderBy('cantidad', 'DESC')
                 ->get();
@@ -286,15 +286,17 @@ class ReportesReparacionesController extends Controller
                 ->when($fechaInicio && $fechaFin, function ($query) use ($fechaInicio, $fechaFin) {
                     return $query->whereBetween('solicitudes_reparaciones.created_at', [$fechaInicio, $fechaFin]);
                 })
-                ->select('ubicaciones.UBICACION_NOMBRE as ubicacion', DB::raw('COUNT(*) as cantidad'))
+                ->select('ubicaciones.UBICACION_NOMBRE as entidad', DB::raw('COUNT(*) as cantidad'))
                 ->groupBy('ubicaciones.UBICACION_NOMBRE')
                 ->orderBy('cantidad', 'DESC')
                 ->get();
 
+            // Unir los resultados de las dos consultas anteriores (merge)
+            $solicitudesPorEntidad = $solicitudesPorDepartamento->merge($solicitudesPorUbicacion);
+
             // Retornar las solicitudes filtradas por departamento y ubicación, teniendo en cuenta las categorías específicas
             return [
-                'solicitudesPorDepartamento' => $solicitudesPorDepartamento,
-                'solicitudesPorUbicacion' => $solicitudesPorUbicacion,
+                'solicitudesPorEntidad' => $solicitudesPorEntidad,
             ];
         } catch (\Exception $e) {
             return response()->json([
@@ -325,7 +327,7 @@ class ReportesReparacionesController extends Controller
                 ->when($fechaInicio && $fechaFin, function ($query) use ($fechaInicio, $fechaFin) {
                     return $query->whereBetween('solicitudes_reparaciones.created_at', [$fechaInicio, $fechaFin]);
                 })
-                ->select('departamentos.DEPARTAMENTO_NOMBRE as departamento', DB::raw('COUNT(*) as cantidad'))
+                ->select('departamentos.DEPARTAMENTO_NOMBRE as entidad', DB::raw('COUNT(*) as cantidad'))
                 ->groupBy('departamentos.DEPARTAMENTO_NOMBRE')
                 ->orderBy('cantidad', 'DESC')
                 ->get();
@@ -340,15 +342,17 @@ class ReportesReparacionesController extends Controller
                 ->when($fechaInicio && $fechaFin, function ($query) use ($fechaInicio, $fechaFin) {
                     return $query->whereBetween('solicitudes_reparaciones.created_at', [$fechaInicio, $fechaFin]);
                 })
-                ->select('ubicaciones.UBICACION_NOMBRE as ubicacion', DB::raw('COUNT(*) as cantidad'))
+                ->select('ubicaciones.UBICACION_NOMBRE as entidad', DB::raw('COUNT(*) as cantidad'))
                 ->groupBy('ubicaciones.UBICACION_NOMBRE')
                 ->orderBy('cantidad', 'DESC')
                 ->get();
 
+            // Unir los resultados de las dos consultas anteriores (merge)
+            $mantenimientosPorEntidad = $mantenimientosPorDepartamento->merge($mantenimientosPorUbicacion);
+
             // Retornar las solicitudes de mantenimiento por departamento y ubicación
             return[
-                'mantenimientosPorDepartamento' => $mantenimientosPorDepartamento,
-                'mantenimientosPorUbicacion' => $mantenimientosPorUbicacion,
+                'solicitudesPorEntidad' => $mantenimientosPorEntidad,
             ];
         } catch (\Exception $e) {
             return response()->json([
@@ -405,10 +409,10 @@ class ReportesReparacionesController extends Controller
                 ->select(
                     'revisiones_solicitudes.USUARIO_id',
                     DB::raw('CONCAT(users.USUARIO_NOMBRES, " ", users.USUARIO_APELLIDOS) as nombre_completo'),
-                    DB::raw('COUNT(DISTINCT revisiones_solicitudes.SOLICITUD_REPARACION_ID) as total')
+                    DB::raw('COUNT(DISTINCT revisiones_solicitudes.SOLICITUD_REPARACION_ID) as total_gestiones')
                 )
                 ->groupBy('revisiones_solicitudes.USUARIO_id', 'nombre_completo')
-                ->orderBy('total', 'DESC')
+                ->orderBy('total_gestiones', 'DESC')
                 ->get();
 
             return ['gestionadoresSolicitudesVehiculos' => $gestionadores];
@@ -438,10 +442,10 @@ class ReportesReparacionesController extends Controller
                 ->select(
                     'revisiones_solicitudes.USUARIO_id',
                     DB::raw('CONCAT(users.USUARIO_NOMBRES, " ", users.USUARIO_APELLIDOS) as nombre_completo'),
-                    DB::raw('COUNT(DISTINCT revisiones_solicitudes.SOLICITUD_REPARACION_ID) as total')
+                    DB::raw('COUNT(DISTINCT revisiones_solicitudes.SOLICITUD_REPARACION_ID) as total_gestiones')
                 )
                 ->groupBy('revisiones_solicitudes.USUARIO_id', 'nombre_completo')
-                ->orderBy('total', 'DESC')
+                ->orderBy('total_gestiones', 'DESC')
                 ->get();
 
             return ['gestionadoresSolicitudesInmuebles' => $gestionadores];

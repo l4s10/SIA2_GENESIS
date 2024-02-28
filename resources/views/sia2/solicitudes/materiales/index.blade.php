@@ -65,6 +65,16 @@
                         <td>{{ $solicitud->mostrarFecha($solicitud->created_at) }}</td>
                         <td>
                             <div class="d-flex justify-content-center">
+                                {{-- Si el usuario autentificado es el solicitante, y el estado es igual a "AUTORIZADO" mostrar un boton adicional para confirmar la recepcion --}}
+                                {{-- Para el backend esto solo actualizara el estado a terminado, actualizando la fecha de "updated_at" cerrandola para siempre. --}}
+                                @if (auth()->user()->USUARIO_ID == $solicitud->SOLICITUD_USUARIO_ID && $solicitud->SOLICITUD_ESTADO == 'AUTORIZADO')
+                                    <form action="{{ route('solicitudes.materiales.confirmar', $solicitud->SOLICITUD_ID) }}" method="POST">
+                                        @csrf
+                                        @method('PUT')
+                                        <button type="submit" class="btn btn-success mr-2"><i class="fa-solid fa-check"></i>Confirmar recepcion</button>
+                                    </form>
+                                @endif
+
                                 <a href="{{ route('solicitudes.materiales.show', $solicitud->SOLICITUD_ID) }}" class="btn btn-primary"><i class="fa-solid fa-eye"></i></a>
                                 <a href="{{ route('solicitudes.materiales.edit', $solicitud->SOLICITUD_ID) }}" class="btn botoneditar ml-2"><i class="fa-solid fa-pencil"></i></a>
                                 <form action="{{ route('solicitudes.materiales.destroy', $solicitud->SOLICITUD_ID) }}" method="POST" class="d-inline">

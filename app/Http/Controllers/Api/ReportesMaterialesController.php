@@ -56,10 +56,6 @@ class ReportesMaterialesController extends Controller
     public function filtrarGeneral(Request $request)
     {
         try {
-            // Extraer fechas del request
-            $fechaInicio = $request->input('fecha_inicio');
-            $fechaFin = $request->input('fecha_fin');
-
             // Cada gráfico devuelve su propia estructura de datos
             $rankingGestionadores = $this->Grafico1($request);
             // Cargamos el grafico2

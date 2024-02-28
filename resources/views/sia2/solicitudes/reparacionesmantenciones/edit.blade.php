@@ -141,7 +141,7 @@
     </div>
 
     {{-- Formulario para revisar la solicitud --}}
-    @if(in_array($solicitud->SOLICITUD_ESTADO, ['INGRESADO', 'EN REVISION']))
+    @if(in_array($solicitud->SOLICITUD_REPARACION_ESTADO, ['INGRESADO', 'EN REVISION']))
         <h2>Revisar solicitud</h2>
         <form action="{{ route('solicitudes.reparaciones.update', $solicitud->SOLICITUD_REPARACION_ID) }}" method="POST">
             @csrf
