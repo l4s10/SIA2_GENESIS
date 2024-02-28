@@ -49,7 +49,7 @@
         </div>
 
         <a href="{{route('bodegas.index')}}" class="btn btn-secondary" tabindex="5"><i class="fas fa-hand-point-left"></i> Cancelar</a>
-        <button type="submit" class="btn guardar"><i class="fas fa-floppy-disk"></i> Guardar</button>
+        <button type="submit" class="btn guardar"><i class="fas fa-floppy-disk"></i> Guardar Bodega</button>
     </form>
 </div>
 @stop

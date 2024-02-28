@@ -37,7 +37,7 @@
     {{-- Botones para agregar tipos de equipos --}}
     <a class="btn agregar mb-3" href="{{ route('tiposequipos.create') }}"><i class="fa-solid fa-plus"></i> Agregar Tipo de Equipo</a>
     {{-- Atajo a ver equipos --}}
-    <a class="btn btn-secondary mb-3" href="{{ route('equipos.index')}}"><i class="fa-solid fa-eye"></i>Administrar Equipos</a>
+    <a class="btn btn-secondary mb-3" href="{{ route('equipos.index')}}"><i class="fa-solid fa-eye"></i> Administrar Equipos</a>
 
     <div class="table-responsive">
     <table id="tiposEquipos" class="table table-bordered mt-4">

@@ -3,7 +3,7 @@
 @section('title', 'Ingresar Vehiculo')
 
 @section('content_header')
-    <h1>Ingresar vehículo</h1>
+    <h1>Ingresar Vehículo</h1>
     <br>
 @stop
 
@@ -157,7 +157,7 @@
             <div class="row">
                 <div class="col-md-12">
                     <a href="{{ route('vehiculos.index') }}" class="btn btn-secondary" tabindex="11"><i class="fa-solid fa-hand-point-left"></i> Cancelar</a>
-                    <button type="submit" class="btn btn-primary" tabindex="12"><i class="fa-solid fa-floppy-disk"></i> Guardar</button>
+                    <button type="submit" class="btn agregar" tabindex="12"><i class="fa-solid fa-floppy-disk"></i> Guardar Vehículo</button>
                 </div>
             </div>
         </form>
@@ -167,6 +167,12 @@
 
 @section('css')
     <link rel="stylesheet" href="/css/admin_custom.css">
+    <style>
+        .agregar{
+            background-color: #e6500a;
+            color: #fff;
+        }
+    </style>
 @stop
 
 @section('js')
