@@ -32,9 +32,7 @@
                     </div>
                 </div>
                 <div class="card-footer">
-                    <div id="map" style="display: none;"></div>
                     <button id="refresh-button" class="btn guardar">Actualizar</button>
-                    <button id="map-open" class="btn btn-primary move-right" onclick="toggleMap()"><i class="fa-solid fa-map-location-dot"></i></button>
                 </div>
             </div>
         </div>
@@ -78,9 +76,6 @@
 @endsection
 
 @section('css')
-    <!-- Leaflet version mas reciente -->
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="crossorigin=""/>
-    <link rel="stylesheet" href="https://unpkg.com/leaflet-routing-machine@latest/dist/leaflet-routing-machine.css" />
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
 
     <style>/* Estilos personalizados si es necesario */
@@ -92,10 +87,6 @@
 @endsection
 
 @section('js')
-    <!-- Leaflet version mas reciente -->
-    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="crossorigin=""></script>
-    <script src="https://unpkg.com/leaflet-routing-machine@latest/dist/leaflet-routing-machine.js"></script>
-
     <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
@@ -148,62 +139,4 @@
     {{-- Importamos el archivo JS para el grafico 5 --}}
     <script src="{{ asset('js/Graficos/Materiales/grafico5.js') }}"></script>
 
-<!-- Scrip para inicizaliar el mapa -->
-<script>
-        document.addEventListener('DOMContentLoaded', function() {
-            var mapDiv = document.getElementById('map');
-            var mapOpenButton = document.getElementById('map-open');
-            var map;
-            var featureGroup;
-
-            function toggleMap() {
-                if (mapDiv.style.display === 'none') {
-                    mapDiv.style.display = 'block';
-                    mapDiv.requestFullscreen(); // Solicita el modo de pantalla completa para el elemento del mapa
-                    initializeMap();
-                } else {
-                    mapDiv.style.display = 'none';
-                    document.exitFullscreen(); // Sale del modo de pantalla completa si el mapa ya no está visible
-                    mapOpenButton.disabled = false; // Restablece el botón a su estado original
-                }
-            }
-
-            function initializeMap() {
-                var map = L.map('map').setView([-36.8261, -73.0498], 13); // Coordenadas de Concepción, Chile y nivel de zoom 13
-
-                L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-                }).addTo(map);
-
-                // Carga el archivo GeoJSON y agrega las comunas como marcadores en el mapa
-                fetch('json/comunasbiobio.geojson')
-                    .then(response => response.json())
-                    .then(data => {
-                        L.geoJSON(data, {
-                            pointToLayer: function (feature, latlng) {
-                                return L.marker(latlng).bindPopup(feature.properties.comuna);
-                            }
-                        }).addTo(map);
-                    })
-                    .catch(error => {
-                        console.error('Error al cargar el archivo GeoJSON:', error);
-                    });
-
-                // Agregar el control de enrutamiento
-                L.Routing.control({
-                    waypoints: [
-                        L.latLng(-36.8261, -73.0498),  // Coordenadas de Concepción
-                        L.latLng(-36.7167, -73.1167)   // Coordenadas de Talcahuano
-                    ],
-                    language: 'es',
-                    lineOptions: {
-                        styles: [
-                            { color: 'red', opacity: 0.6, weight: 4 },
-                        ]
-                    }
-                }).addTo(map);
-            }
-            mapOpenButton.addEventListener('click', toggleMap);
-        });
-</script>
 @endsection
