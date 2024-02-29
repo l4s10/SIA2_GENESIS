@@ -33,7 +33,7 @@ class EquipoController extends Controller
             return view('sia2.activos.modequipos.equipos.index', compact('equipos'));
         } catch (\Exception $e) {
             // Maneja la excepción y muestra un mensaje de error
-            return back()->with('error', 'Error cargando los equipos: ' . $e->getMessage());
+            return back()->with('error', 'Error cargando los equipos: ');
         }
     }
 
@@ -251,7 +251,7 @@ class EquipoController extends Controller
             ]);
 
             // Validar clave única compuesta
-            $validator->after(function ($validator) use ($request, $id) {
+           /* $validator->after(function ($validator) use ($request, $id) {
                 $exists = Equipo::where([
                     'OFICINA_ID' => Auth::user()->OFICINA_ID,
                     'EQUIPO_MARCA' => $request->input('EQUIPO_MARCA'),
@@ -262,7 +262,7 @@ class EquipoController extends Controller
                     $validator->errors()->add('EQUIPO_MARCA', 'Esta marca de equipo con el modelo de equipo especificado, ya existen en su dirección regional.');
                     $validator->errors()->add('EQUIPO_MODELO', 'Este modelo de equipo con la marca de equipo especificada, ya existen en su dirección regional.');
                 }
-            });
+            });*/
 
             // Validar y redirigir mensaje al blade, si falla
             if ($validator->fails()) {
