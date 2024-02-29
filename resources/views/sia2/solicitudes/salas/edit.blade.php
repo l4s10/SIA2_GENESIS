@@ -125,38 +125,42 @@
         </div>
 
         {{-- Acordeon para equipos solicitados --}}
-        <div class="card">
-            <div class="card-header" id="equiposSolicitadosHeading">
-                <h2 class="mb-0">
-                    <button class="btn btn-link" type="button" data-toggle="collapse" data-target="#equiposSolicitadosCollapse" aria-expanded="false" aria-controls="equiposSolicitadosCollapse">
-                        Equipos solicitados
-                    </button>
-                </h2>
-            </div>
-            <div id="equiposSolicitadosCollapse" class="collapse" aria-labelledby="equiposSolicitadosHeading" data-parent="#generalAccordion">
-                <div class="card-body">
-                    {{-- Contenido de equipos solicitados --}}
-                    <table class="table table-bordered">
-                        <thead class="tablacarrito">
-                            <tr>
-                                <th>Tipo de Equipo</th>
-                                <th>Cantidad</th>
-                                <th>Cantidad autorizada</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach($solicitud->equipos as $tipoEquipo)
+        {{-- Mostrar solo si hay equipos asociados --}}
+        @if ($solicitud->equipos->isNotEmpty())
+            <div class="card">
+                <div class="card-header" id="equiposSolicitadosHeading">
+                    <h2 class="mb-0">
+                        <button class="btn btn-link" type="button" data-toggle="collapse" data-target="#equiposSolicitadosCollapse" aria-expanded="false" aria-controls="equiposSolicitadosCollapse">
+                            Equipos solicitados
+                        </button>
+                    </h2>
+                </div>
+                <div id="equiposSolicitadosCollapse" class="collapse" aria-labelledby="equiposSolicitadosHeading" data-parent="#generalAccordion">
+                    <div class="card-body">
+                        {{-- Contenido de equipos solicitados --}}
+                        <table class="table table-bordered">
+                            <thead class="tablacarrito">
                                 <tr>
-                                    <td>{{ $tipoEquipo->TIPO_EQUIPO_NOMBRE }}</td>
-                                    <td>{{ $tipoEquipo->pivot->SOLICITUD_EQUIPOS_CANTIDAD }}</td>
-                                    <td>{{ $tipoEquipo->pivot->SOLICITUD_EQUIPOS_CANTIDAD_AUTORIZADA }}</td>
+                                    <th>Tipo de Equipo</th>
+                                    <th>Cantidad</th>
+                                    <th>Cantidad autorizada</th>
                                 </tr>
-                            @endforeach
-                        </tbody>
-                    </table>
+                            </thead>
+                            <tbody>
+                                @foreach($solicitud->equipos as $tipoEquipo)
+                                    <tr>
+                                        <td>{{ $tipoEquipo->TIPO_EQUIPO_NOMBRE }}</td>
+                                        <td>{{ $tipoEquipo->pivot->SOLICITUD_EQUIPOS_CANTIDAD }}</td>
+                                        <td>{{ $tipoEquipo->pivot->SOLICITUD_EQUIPOS_CANTIDAD_AUTORIZADA }}</td>
+                                    </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
-        </div>
+        @endif
+
 
         {{-- Acordeon para las observaciones --}}
         @if ($solicitud->revisiones->isNotEmpty())
@@ -212,7 +216,7 @@
             @csrf
             @method('PUT')
             {{-- Estado de la solicitud --}}
-            <div class="form-group">
+            {{-- <div class="form-group">
                 <label for="SOLICITUD_ESTADO"><i class="fa-solid fa-file-circle-check"></i> Estado de la solicitud</label>
                 <select class="form-control" id="SOLICITUD_ESTADO" name="SOLICITUD_ESTADO">
                     <option value="INGRESADO" {{ old('SOLICITUD_ESTADO', $solicitud->SOLICITUD_ESTADO) == 'INGRESADO' ? 'selected' : '' }}>🟠 INGRESADO</option>
@@ -224,7 +228,7 @@
                 @error('SOLICITUD_ESTADO')
                     <div class="alert alert-danger">{{ $message }}</div>
                 @enderror
-            </div>
+            </div> --}}
 
             <div class="row">
                 <div class="col-md-6">
@@ -264,33 +268,34 @@
             </div>
 
             {{-- Autorizar cantidades de equipos solicitados --}}
-            <div class="form-group">
-                <label for="autorizarEquipos">Autorizar cantidades de equipos solicitados</label>
-                <table class="table table-bordered">
-                    <thead class="tablacolor">
-                        <tr>
-                            <th>Tipo de Equipo</th>
-                            <th>Cantidad solicitada</th>
-                            <th>Cantidad a autorizar</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach($solicitud->equipos as $tipoEquipo)
-                        <tr>
-                            <td>{{ $tipoEquipo->TIPO_EQUIPO_NOMBRE }}</td>
-                            <td>{{ $tipoEquipo->pivot->SOLICITUD_EQUIPOS_CANTIDAD }}</td>
-                            <td>
-                                <input class="form-control" type="number" name="autorizar[{{ $tipoEquipo->TIPO_EQUIPO_ID }}]" value="{{ $tipoEquipo->pivot->SOLICITUD_EQUIPOS_CANTIDAD_AUTORIZADA }}" min="0">
-                                @if($errors->has('autorizar.' . $tipoEquipo->TIPO_EQUIPO_ID))
-                                    <span class="text-danger">{{ $errors->first('autorizar.' . $tipoEquipo->TIPO_EQUIPO_ID) }}</span>
-                                @endif
-                            </td>
-                        </tr>
-                        @endforeach
-                    </tbody>
-                </table>
-            </div>
-
+            @if ($solicitud->equipos->isNotEmpty())
+                <div class="form-group">
+                    <label for="autorizarEquipos">Autorizar cantidades de equipos solicitados</label>
+                    <table class="table table-bordered">
+                        <thead class="tablacolor">
+                            <tr>
+                                <th>Tipo de Equipo</th>
+                                <th>Cantidad solicitada</th>
+                                <th>Cantidad a autorizar</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach($solicitud->equipos as $tipoEquipo)
+                            <tr>
+                                <td>{{ $tipoEquipo->TIPO_EQUIPO_NOMBRE }}</td>
+                                <td>{{ $tipoEquipo->pivot->SOLICITUD_EQUIPOS_CANTIDAD }}</td>
+                                <td>
+                                    <input class="form-control" type="number" name="autorizar[{{ $tipoEquipo->TIPO_EQUIPO_ID }}]" value="{{ $tipoEquipo->pivot->SOLICITUD_EQUIPOS_CANTIDAD_AUTORIZADA }}" min="0">
+                                    @if($errors->has('autorizar.' . $tipoEquipo->TIPO_EQUIPO_ID))
+                                        <span class="text-danger">{{ $errors->first('autorizar.' . $tipoEquipo->TIPO_EQUIPO_ID) }}</span>
+                                    @endif
+                                </td>
+                            </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+                </div>
+            @endif
             {{-- Observaciones de la solicitud --}}
             <div class="form-group">
                 <label for="REVISION_SOLICITUD_OBSERVACION"><i class="fa-solid fa-eye"></i> Observaciones</label>
@@ -359,4 +364,9 @@
         background-color: #d9d9d9;
         }
     </style>
+@stop
+
+@section('js')
+    {{-- Llamar a fechasAutorizadas.js --}}
+    <script src="{{ asset('js/Components/fechasAutorizadas.js') }}"></script>
 @stop

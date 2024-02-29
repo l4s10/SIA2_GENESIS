@@ -237,3 +237,7 @@
     </style>
 @stop
 
+@section('js')
+    {{-- Llamar a fechasAutorizadas.js --}}
+    <script src="{{ asset('js/Components/fechasAutorizadas.js') }}"></script>
+@stop
