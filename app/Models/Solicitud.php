@@ -74,7 +74,7 @@ class Solicitud extends Model
         // PARA EVENTO FULLCALENDAR
         public function salasAutorizadas()
         {
-            return $this->masMany(SolicitudSala::class, 'SOLICITUD_ID', 'SOLICITUD_ID');
+            return $this->hasMany(SolicitudSala::class, 'SOLICITUD_ID', 'SOLICITUD_ID');
         }
 
         // Relación de uno a muchos con SolicitudBodega (para obtener array de bodegas autorizadas asociadas a esta solcitud)
@@ -84,12 +84,14 @@ class Solicitud extends Model
             return $this->hasMany(SolicitudBodega::class, 'SOLICITUD_ID', 'SOLICITUD_ID');
         }
 
-        // Relación de uno a uno con SolicitudBodega
+
+        // Relación de muchos a muchos con Bodegas
         public function bodegas()
         {
             return $this->belongsToMany(Bodega::class, 'solicitudes_bodegas', 'SOLICITUD_ID', 'BODEGA_ID')
                 ->withTimestamps();
         }
+
         // Relación de uno a muchos con RevisionSolicitud
         public function revisiones()
         {
