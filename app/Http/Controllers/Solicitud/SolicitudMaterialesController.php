@@ -175,9 +175,23 @@ class SolicitudMaterialesController extends Controller
                 break;
 
                 case 'rechazar':
+                    // verificar al menos que haya una observacion (motivo del rechazo) con validator
+                    $validator = Validator::make($request->all(),[
+                        'REVISION_SOLICITUD_OBSERVACION' => 'required|string|max:255',
+                    ], [
+                        //Mensajes de error
+                        'REVISION_SOLICITUD_OBSERVACION.required' => 'Indique el motivo del rechazo.',
+                        'REVISION_SOLICITUD_OBSERVACION.string' => 'El campo Observación debe ser una cadena de caracteres.',
+                    ]);
+                    // Si la validación falla, se redirecciona al formulario con los errores
+                    if ($validator->fails()) {
+                        return redirect()->back()->withErrors($validator)->withInput();
+                    }
                     // Lógica para rechazar la solicitud
                     $solicitud->update(['SOLICITUD_ESTADO' => 'RECHAZADO']);
-                    // Redireccion a la vista index de solicitud de materiales, con el mensaje de exito.
+                    // Guardar la observacion del rechazo
+                    $this->createRevisionSolicitud($request, $solicitud);
+                    // redireccionar a la vista de solicitudes con un mensaje de éxito
                     return redirect()->route('solicitudes.materiales.index')->with('success', 'Solicitud rechazada exitosamente');
                 break;
 
