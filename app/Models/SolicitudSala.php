@@ -12,23 +12,11 @@ class SolicitudSala extends Model
 
     public $timestamps = true;
 
-    // Relacion para devolver la solicitud asociada a la sala
-    public function solicitud()
-    {
-        return $this->belongsTo('App\Models\Solicitud', 'SOLICITUD_ID');
-    }
-
-    // Relacion para devolver la sala solicitada
-    public function sala()
-    {
-        return $this->belongsTo('App\Models\Sala', 'SALA_ID');
-    }
-
-    // Relacion para devolver la sala asignada
+    // Relacion de uno a uno con Sala
     public function salaAsignada()
     {
-        return $this->belongsTo('App\Models\Sala', 'SOLICITUD_SALA_ID_ASIGNADA');
+        return $this->belongsTo(Sala::class, 'SALA_ID', 'SALA_ID');
     }
-}
 
+}
 

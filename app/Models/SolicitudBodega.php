@@ -12,15 +12,9 @@ class SolicitudBodega extends Model
 
     public $timestamps = true;
 
-    // Relacion para devolver la solicitud asociada a la bodega
-    public function solicitud()
-    {
-        return $this->belongsTo('App\Models\Solicitud', 'SOLICITUD_ID');
-    }
-
-    // Relacion para devolver la bodega autorizada a la solicitud
     public function bodega()
     {
-        return $this->belongsTo('App\Models\Bodega', 'BODEGA_ID');
+        return $this->belongsTo(Bodega::class, 'BODEGA_ID', 'BODEGA_ID');
     }
+
 }

@@ -44,13 +44,18 @@ class HomeController extends Controller
             ->distinct()
             ->pluck('SOLICITUD_ID');
 
+
         $salas = [];
 
         // Parseamos a evento de FullCalendar
         foreach ($solicitudesUnicasSalas as $solicitudId) {
-            $solicitud = Solicitud::find($solicitudId);
+            $solicitud = Solicitud::with('salasAutorizadas.salaAsignada')->find($solicitudId);
+            $nombresSalas = $solicitud->salasAutorizadas->map(function($solicitudSala) {
+                return $solicitudSala->salaAsignada->SALA_NOMBRE;
+            })->join(', '); // Une los nombres de las salas con coma
+
             $salas[] = [
-                'title' => $solicitud->salas->salaAsignada->SALA_NOMBRE,
+                'title' => $nombresSalas, // Aquí pasas todos los nombres de las salas
                 'start' => $solicitud->SOLICITUD_FECHA_HORA_INICIO_ASIGNADA,
                 'end' => $solicitud->SOLICITUD_FECHA_HORA_TERMINO_ASIGNADA,
                 'color' => '#0064A0',
@@ -59,6 +64,7 @@ class HomeController extends Controller
                 'tipoEvento' => 'Reserva de sala'
             ];
         }
+
 
         // Obtenemos los SOLICITUD_ID de las solicitudes de bodegas únicas que pertenecen a la oficina del usuario autenticado en base a fechas si se proporcionan.
         $solicitudesUnicasBodegas = SolicitudBodega::query()
@@ -74,10 +80,13 @@ class HomeController extends Controller
 
         // Parseamos a evento de FullCalendar
         foreach ($solicitudesUnicasBodegas as $solicitudId) {
-            $solicitud = Solicitud::find($solicitudId);
+            $solicitud = Solicitud::with('bodegasAutorizadas.bodega')->find($solicitudId);
+            $nombresBodegas = $solicitud->bodegasAutorizadas->map(function($solicitudBodega) {
+                return $solicitudBodega->bodega->BODEGA_NOMBRE;
+            })->join(', '); // Une los nombres de las bodegas con coma
+
             $bodegas[] = [
-                //title obtener bodega solicitada
-                'title' => $solicitud->bodegas->bodega->BODEGA_NOMBRE,
+                'title' => $nombresBodegas, // Aquí pasas todos los nombres de las bodegas
                 'start' => $solicitud->SOLICITUD_FECHA_HORA_INICIO_ASIGNADA,
                 'end' => $solicitud->SOLICITUD_FECHA_HORA_TERMINO_ASIGNADA,
                 'color' => '#E6500A',
@@ -86,6 +95,7 @@ class HomeController extends Controller
                 'tipoEvento' => 'Reserva de bodega'
             ];
         }
+
 
 
         // Tipos de categorías para mantenimientos

@@ -61,16 +61,34 @@ class Solicitud extends Model
                 ->withTimestamps();
         }
 
-        // Relación de uno a uno con SolicitudSala
+        // !! Preguntar cardinalidad @Rick1701
+        // Relación de muchos a muchos con Salas (para recuperar la tabla en edit).
         public function salas()
         {
-            return $this->hasOne(SolicitudSala::class, 'SOLICITUD_ID', 'SOLICITUD_ID');
+            return $this->belongsToMany(Sala::class, 'solicitudes_salas', 'SOLICITUD_ID', 'SALA_ID')
+                ->withPivot('SOLICITUD_SALA_ID_ASIGNADA')
+                ->withTimestamps();
+        }
+
+        // Relación de uno a muchos con SolicitudSala (para obtener array de salas autorizadas asociadas a esta solcitud)
+        // PARA EVENTO FULLCALENDAR
+        public function salasAutorizadas()
+        {
+            return $this->masMany(SolicitudSala::class, 'SOLICITUD_ID', 'SOLICITUD_ID');
+        }
+
+        // Relación de uno a muchos con SolicitudBodega (para obtener array de bodegas autorizadas asociadas a esta solcitud)
+        // PARA EVENTO FULLCALENDAR
+        public function bodegasAutorizadas()
+        {
+            return $this->hasMany(SolicitudBodega::class, 'SOLICITUD_ID', 'SOLICITUD_ID');
         }
 
         // Relación de uno a uno con SolicitudBodega
         public function bodegas()
         {
-            return $this->hasOne(SolicitudBodega::class, 'SOLICITUD_ID', 'SOLICITUD_ID');
+            return $this->belongsToMany(Bodega::class, 'solicitudes_bodegas', 'SOLICITUD_ID', 'BODEGA_ID')
+                ->withTimestamps();
         }
         // Relación de uno a muchos con RevisionSolicitud
         public function revisiones()
