@@ -395,32 +395,31 @@
             <div class="row">
                 <div class="col-md-3">
                     <!-- Botón Cancelar -->
-                    <button type="button" class="btn btn-custom" onclick="window.history.back();" style="background-color: #E22C2C; color: white;"><i class="fa-solid fa-angles-left"></i> Cancelar</button>
+
+                    <a href="{{ route('solicitudesvehiculos.index') }}" class="btn btn-cancelar"><i class="fa-solid fa-hand-point-left"></i> Cancelar</a>
                 </div>
                 <div class="col-md-3">
                     <!-- Botón Rechazar -->
                     <input type="hidden" name="rechazoSolicitud" id="rechazoSolicitud" value="0">
-                    <button type="submit" class="btn btn-custom" name="rechazarSolicitud" style="background-color: #E22C2C; color: white;" ><i class="fa-solid fa-x" style="margin-right: 5px;"></i> Rechazar solicitud</button>
+                    <button type="submit" class="btn btn-custom" name="rechazarSolicitud" style="background-color: #E22C2C; color: white;" ><i class="fa-solid fa-ban" style="margin-right: 5px;"></i> Rechazar solicitud</button>
                 </div>
                 <div class="col-md-6">
                     <div class="row">
 
                         <div class="col-md-6">
                             <!-- Botón Guardar esta Revisión -->
-                            <button type="button" class="btn btn-custom" name="guardarRevision" style="background-color: #00B050; color: white;"><i class="fa-solid fa-floppy-disk" style="margin-right: 5px;"></i> Guardar esta revisión</button>
+                            <button type="button" class="btn btn-agregar" name="guardarRevision" style=" color: white;"><i class="fa-solid fa-floppy-disk" style="margin-right: 5px;"></i> Guardar esta revisión</button>
                             <input type="hidden" id="accionGuardar" name="accionGuardar" value="0">
-
                         </div>
                         <div class="col-md-6 text-end">
                             <!-- Botón Terminar Revisiones -->
                             <button type="button" class="btn btn-custom" name="finalizarRevisiones" style="background-color: #00B050; color: white;"><i class="fa-solid fa-clipboard-check" style="margin-right: 5px;"></i> Terminar revisiones</button>
                             <input type="hidden" id="accionTerminar" name="accionTerminar" value="0">
-
                         </div>
                     </div>
                 </div>
             </div>
-
+          
 
             <br>
 
@@ -437,6 +436,18 @@
     <style>
         .btn-custom {
             width: 100%; /* Puedes ajustar el ancho según tus necesidades */
+        }
+        
+        .btn-cancelar {
+            width: 100%;
+            background-color: #6c757d;
+            color: white; 
+        }  
+
+        .btn-agregar{
+            width: 100%;
+            background-color: #e6500a;
+            color: #fff;
         }
     </style>
     <style>

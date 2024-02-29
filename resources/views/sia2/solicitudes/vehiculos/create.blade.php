@@ -252,21 +252,31 @@
 
             <br><br><br>
             <div class="row">
-                <div class="col-md-6">
-                    {{-- Botón de envío --}}
-                    <a href="{{ route('solicitudesvehiculos.index') }}" class="btn btn-secondary"><i class="fa-solid fa-arrow-left"></i> Volver</a>
-                </div>
-                <div class="col-md-4">
+                <div class="col-md-3">
                     <!-- Botón Cancelar -->
+                    <a href="{{ route('solicitudesvehiculos.index') }}" class="btn btn-cancelar"><i class="fa-solid fa-hand-point-left"></i> Cancelar</a>
                 </div>
+                <div class="col-md-3">
+                    
+                </div>
+                <div class="col-md-6">
+                    <div class="row">
 
-                <div class="col-md-2 text-end">
-                    <button type="submit"   class="btn"  style="background-color: #00B050; color: white;" ><i class="fa-solid fa-clipboard-check"></i> Crear Solicitud</button>
+                        <div class="col-md-6">
+                            <!-- Botón Guardar esta Revisión -->
+                          
 
+                        </div>
+                        <div class="col-md-6 text-end">
+                            <!-- Botón Terminar Revisiones -->
+                            <button type="submit"   class="btn btn-custom"  style="background-color: #00B050; color: white;" ><i class="fa-solid fa-clipboard-check"></i> Crear Solicitud</button>
+
+                        </div>
+                    </div>
                 </div>
             </div>
-            <br>
 
+            <br>
     </div>
 
 
@@ -310,6 +320,11 @@
         width: 100%; /* Puedes ajustar el ancho según tus necesidades */
     }
 
+    .btn-cancelar {
+        width: 100%;
+        background-color: #6c757d;
+        color: white; 
+    }  
 </style>
 
 <style>
