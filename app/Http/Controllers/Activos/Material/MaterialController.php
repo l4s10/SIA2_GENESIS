@@ -213,7 +213,7 @@ class MaterialController extends Controller
                 'TIPO_MOVIMIENTO.max' => 'El campo "Tipo de Movimiento" no debe exceder los :max caracteres.'
             ]);
 
-            $validator->after(function ($validator) use ($request) {
+            /*$validator->after(function ($validator) use ($request) {
                 $exists = Material::where([
                     'OFICINA_ID' => Auth::user()->OFICINA_ID,
                     'MATERIAL_NOMBRE' => $request->input('MATERIAL_NOMBRE'),
@@ -224,7 +224,7 @@ class MaterialController extends Controller
                     $validator->errors()->add('MATERIAL_NOMBRE', 'Este nombre de material con el tipo de material especificado, ya existen en su dirección regional.');
                     $validator->errors()->add('TIPO_MATERIAL_ID', 'Este tipo de material con el nombre de material especificado, ya existen en su dirección regional.');
                 }
-            });
+            });*/
 
             // Validar y redirigir mensaje al blade, si falla
             if ($validator->fails()) {
