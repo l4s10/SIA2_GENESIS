@@ -47,12 +47,12 @@ class SolicitudReparacion extends Model
         return $this->hasMany(RevisionSolicitud::class, 'SOLICITUD_REPARACION_ID', 'SOLICITUD_REPARACION_ID');
     }
 
-    //!! Base para vehículo corregida
-    // public function vehiculo()
-    // {
-    //     return $this->belongsTo(Vehiculo::class, 'VEHICULO_ID', 'VEHICULO_ID');
-    // }
-
+    // Relacion con vehiculos a traves de su ID
+    public function vehiculo()
+    {
+        return $this->belongsTo(Vehiculo::class, 'VEHICULO_ID', 'VEHICULO_ID');
+    }
+    
     // Funcion para devolver las fechas en formato correcto CHILE
     public function mostrarFecha($value)
     {

@@ -81,7 +81,7 @@ class SolicitudBodegasController extends Controller
             ]);
 
             // Asociar la bodega a la solicitud
-            $solicitud->bodegas()->attach($request->input('BODEGA_ID'));
+            $solicitud->bodegas()->create(['BODEGA_ID' => $request->input('BODEGA_ID')]);
 
             // Redirigir a la vista de solicitudes con mensaje de éxito
             return redirect()->route('solicitudes.bodegas.index')->with('success', 'Solicitud creada exitosamente.');

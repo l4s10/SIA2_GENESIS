@@ -438,12 +438,12 @@ return [
             'submenu' => [
                 [
                     'text' => 'Búsqueda avanzada',
-                    'url'  => '#',
+                    'route'  => 'directivos.indexBusquedaFuncionarios',
                     'icon' => 'fas fa-fw fa-solid fa-search-plus',
                 ],
                 [
                     'text' => 'Búsqueda básica',
-                    'url'  => '#',
+                    'route'  => 'directivos.indexBusquedaBasica',
                     'icon' => 'fas fa-fw fa-solid fa-search-minus',
                 ],
             ],
@@ -454,22 +454,22 @@ return [
             'submenu' => [
                 [
                     'text' => 'Resoluciones',
-                    'url'  => '#',
+                    'route'  => 'resoluciones.index',
                     'icon' => 'fas fa-fw fa-solid fa-file-alt',
                 ],
                 [
                     'text' => 'Pólizas',
-                    'url'  => '#',
+                    'route'  => 'polizas.index',
                     'icon' => 'fas fa-fw fa-solid fa-file-contract',
                 ],
                 [
                     'text' => 'Facultades',
-                    'url'  => '#',
+                    'route'  => 'facultades.index',
                     'icon' => 'fas fa-fw fa-solid fa-file-signature',
                 ],
                 [
                     'text' => 'Cargos',
-                    'url'  => '#',
+                    'route'  => 'cargos.index',
                     'icon' => 'fas fa-fw fa-solid fa-file-invoice',
                 ],
             ],

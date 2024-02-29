@@ -26,12 +26,8 @@
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach($solicitud->salas as $sala)
-                        <tr>
-                            <td>{{ $sala->SALA_NOMBRE }}</td>
-                            <td>{{$salaAsignada->SALA_NOMBRE ?? 'No se ha asignado una sala por ahora.'}}</td>
-                        </tr>
-                    @endforeach
+                    <td>{{ $solicitud->salas->sala->SALA_NOMBRE }}</td>
+                    <td>{{$salaAsignada->SALA_NOMBRE ?? 'No se ha asignado una sala por ahora.'}}</td>
                 </tbody>
             </table>
 

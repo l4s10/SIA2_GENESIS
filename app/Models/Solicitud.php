@@ -61,22 +61,17 @@ class Solicitud extends Model
                 ->withTimestamps();
         }
 
-        // !! Preguntar cardinalidad @Rick1701
-        // Relación de muchos a muchos con Salas
+        // Relación de uno a uno con SolicitudSala
         public function salas()
         {
-            return $this->belongsToMany(Sala::class, 'solicitudes_salas', 'SOLICITUD_ID', 'SALA_ID')
-                ->withPivot('SOLICITUD_SALA_ID_ASIGNADA')
-                ->withTimestamps();
+            return $this->hasOne(SolicitudSala::class, 'SOLICITUD_ID', 'SOLICITUD_ID');
         }
 
-        // Relación de muchos a muchos con Bodegas
+        // Relación de uno a uno con SolicitudBodega
         public function bodegas()
         {
-            return $this->belongsToMany(Bodega::class, 'solicitudes_bodegas', 'SOLICITUD_ID', 'BODEGA_ID')
-                ->withTimestamps();
+            return $this->hasOne(SolicitudBodega::class, 'SOLICITUD_ID', 'SOLICITUD_ID');
         }
-
         // Relación de uno a muchos con RevisionSolicitud
         public function revisiones()
         {

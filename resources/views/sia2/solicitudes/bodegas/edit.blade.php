@@ -111,23 +111,21 @@
                             </tr>
                         </thead>
                         <tbody>
-                            @foreach($solicitud->bodegas as $bodega)
-                                <tr>
-                                    <td>{{ $bodega->BODEGA_NOMBRE }}</td>
-                                    <td>
-                                        @switch($bodega->BODEGA_ESTADO)
-                                            @case('DISPONIBLE')
-                                                <span class="badge estado-aceptado rounded-pill">DISPONIBLE</span>
-                                                @break
-                                            @case('OCUPADA')
-                                                <span class="badge estado-rechazado rounded-pill">OCUPADA</span>
-                                                @break
-                                            @default
-                                                <span class="badge badge-secondary">{{ $sala->SALA_ESTADO }}</span>
-                                        @endswitch
-                                    </td>
-                                </tr>
-                            @endforeach
+                            <tr>
+                                <td>{{ $solicitud->bodegas->bodega->BODEGA_NOMBRE }}</td>
+                                <td>
+                                    @switch($solicitud->bodegas->bodega->BODEGA_ESTADO)
+                                        @case('DISPONIBLE')
+                                            <span class="badge estado-aceptado rounded-pill">DISPONIBLE</span>
+                                            @break
+                                        @case('OCUPADA')
+                                            <span class="badge estado-rechazado rounded-pill">OCUPADA</span>
+                                            @break
+                                        @default
+                                            <span class="badge badge-secondary">{{ $solicitud->bodegas->bodega->BODEGA_ESTADO }}</span>
+                                    @endswitch
+                                </td>
+                            </tr>
                         </tbody>
                     </table>
                 </div>

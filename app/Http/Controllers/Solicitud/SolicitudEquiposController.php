@@ -107,7 +107,7 @@ class SolicitudEquiposController extends Controller
             return redirect()->route('solicitudes.equipos.index')->with('success', 'Solicitud creada exitosamente');
         }catch(Exception $e){
             // Manejar excepciones si es necesario
-            return redirect()->back()->with('error', 'Error al enviar la solicitud.'. $e->getMessage());
+            return redirect()->back()->with('error', 'Error al enviar la solicitud.');
         }
     }
 
