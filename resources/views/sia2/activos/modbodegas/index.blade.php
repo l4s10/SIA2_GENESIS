@@ -48,7 +48,10 @@
                 @foreach($bodegas as $bodega)
                     <tr>
                         <td>{{ $bodega->BODEGA_NOMBRE }}</td>
-                        <td>{{ $bodega->BODEGA_ESTADO }}</td>
+                        <td><span class="badge rounded-pill estado-{{ strtolower(str_replace(' ', '-', $bodega->BODEGA_ESTADO)) }}">
+                        {{ $bodega->BODEGA_ESTADO }}
+                        </span>
+                        </td>
                         <td>
                             <div class="d-flex justify-content-center">
                                 <a href="{{ route('bodegas.edit', $bodega->BODEGA_ID) }}" class="btn botoneditar">
@@ -84,6 +87,21 @@
             background-color: #1aa16b;
             color: #fff;
         }
+
+        .estado-disponible {
+        color: #ffffff;
+        background-color: #0CB009;
+        }
+
+        .estado-ocupado {
+            color: #FFFFFF;
+            background-color: #F70B0B;
+        }
+
+        .estado-desabilitado {
+        color: #000000;
+        background-color: #F7F70B;
+    }
     </style>
 @stop
 

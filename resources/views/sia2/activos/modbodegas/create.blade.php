@@ -11,17 +11,17 @@
     <form action="{{ route('bodegas.store') }}" method="POST">
         @csrf
 
-        <div class="col-md-6">
-            <div class="mb-3">
-                <label for="OFICINA" class="form-label"><i class="fa-solid fa-map-location-dot"></i> Dirección Regional </label>
-                <select id="OFICINA" class="form-control" name="OFICINA" required disabled>
-                    <option value="{{ $oficinaAsociada->OFICINA_ID }}">{{ $oficinaAsociada->OFICINA_NOMBRE }}</option>
-                </select>
-                @error('ID_REGION')
-                    <div class="alert alert-danger mt-2">{{ $message }}</div>
-                @enderror
-            </div>
+
+        <div class="mb-3">
+            <label for="OFICINA" class="form-label"><i class="fa-solid fa-map-location-dot"></i> Dirección Regional </label>
+            <select id="OFICINA" class="form-control" name="OFICINA" required disabled>
+                <option value="{{ $oficinaAsociada->OFICINA_ID }}">{{ $oficinaAsociada->OFICINA_NOMBRE }}</option>
+            </select>
+            @error('ID_REGION')
+                <div class="alert alert-danger mt-2">{{ $message }}</div>
+            @enderror
         </div>
+
 
         <div class="mb-3">
             <label for="BODEGA_NOMBRE" class="form-label"><i class="fas fa-book-bookmark"></i> Nombre de la bodega:</label>

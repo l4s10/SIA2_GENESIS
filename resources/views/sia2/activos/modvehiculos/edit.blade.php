@@ -146,8 +146,8 @@
                         <label for="VEHICULO_ESTADO" class="form-label"><i class="fa-solid fa-square-check"></i> Estado</label>
                         <select name="VEHICULO_ESTADO" id="VEHICULO_ESTADO" class="form-control" tabindex="10" required>
                             <option disabled value="">-- Seleccione un estado --</option>
-                            <option value="DISPONIBLE" {{ $vehiculo->VEHICULO_ESTADO == 'DISPONIBLE' ? 'selected' : '' }}>DISPONIBLE</option>
-                            <option value="OCUPADO" {{ $vehiculo->VEHICULO_ESTADO == 'OCUPADO' ? 'selected' : '' }}>OCUPADO</option>
+                            <option value="DISPONIBLE" {{ $vehiculo->VEHICULO_ESTADO == 'DISPONIBLE' ? 'selected' : '' }}>🟢 DISPONIBLE</option>
+                            <option value="OCUPADO" {{ $vehiculo->VEHICULO_ESTADO == 'OCUPADO' ? 'selected' : '' }}>🔴 OCUPADO</option>
                         </select>
                         @error('VEHICULO_ESTADO')
                             <div class="alert alert-danger mt-2">{{ $message }}</div>

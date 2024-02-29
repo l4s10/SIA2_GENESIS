@@ -60,7 +60,10 @@
                         <td>{{ $vehiculo->VEHICULO_MARCA }}</td>
                         <td>{{ $vehiculo->VEHICULO_MODELO }}</td>
                         <td>{{ $vehiculo->VEHICULO_ANO }}</td>
-                        <td>{{ $vehiculo->VEHICULO_ESTADO }}</td>
+                        <td><span class="badge rounded-pill estado-{{ strtolower(str_replace(' ', '-', $vehiculo->VEHICULO_ESTADO )) }}">
+                        {{ $vehiculo->VEHICULO_ESTADO  }}
+                        </span>
+                        </td>
                         <td>{{ $vehiculo->VEHICULO_KILOMETRAJE }}</td>
                         <td>{{ $vehiculo->VEHICULO_NIVEL_ESTANQUE }}</td>
                         <td>
@@ -113,6 +116,17 @@
             background-color: #1aa16b;
             color: #fff;
         }
+
+        .estado-disponible {
+        color: #ffffff;
+        background-color: #0CB009;
+        }
+
+        .estado-ocupado {
+            color: #FFFFFF;
+            background-color: #F70B0B;
+        }
+
     </style>
 @stop
 

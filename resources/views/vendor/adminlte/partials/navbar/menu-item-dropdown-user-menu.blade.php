@@ -24,7 +24,7 @@
         @endif
         {{-- !! OBTENER NOMBRES AQUI PARA EL NAVBAR --}}
         <span @if(config('adminlte.usermenu_image')) class="d-none d-md-inline" @endif>
-            {{ Auth::user()->USUARIO_NOMBRES }} {{ Auth::user()->USUARIO_APELLIDOS}}
+        {{ Auth::user()->USUARIO_NOMBRES }} {{ Auth::user()->USUARIO_APELLIDOS }} ({{Auth::user()->roles->pluck('name')->first()}})
         </span>
     </a>
 
@@ -85,3 +85,8 @@
     </ul>
 
 </li>
+<style>
+.navbar .user-menu .nav-link span {
+    color: #FFFFFF;
+}
+</style>

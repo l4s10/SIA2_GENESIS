@@ -23,13 +23,13 @@
         </script>
     @elseif(session('error'))
         <script>
-            document.addEventListener('DOMContentLoader', () => {
-                Swal.fire([
+            document.addEventListener('DOMContentLoaded', () => {
+                Swal.fire({
                     icon: 'error',
                     title: '{{ session('error') }}',
                     confirmButtonText: 'OK',
                     confirmButtonColor: '#0064A0'
-                ]);
+                });
             });
         </script>
     @endif
@@ -65,26 +65,26 @@
                         <tr>
                             <td>{{ $material->tipoMaterial->TIPO_MATERIAL_NOMBRE }}</td>
                             <td>{{ $material->MATERIAL_NOMBRE }}</td>
-                            <td>{{ $material->MATERIAL_STOCK }}</td>
+                            <td class="{{ $material->MATERIAL_STOCK <= 5 ? 'estado-critico' : '' }}">{{ $material->MATERIAL_STOCK }}</td>
                             <td>
-                            <div class="d-flex justify-content-center">
-                                <a href="{{ route('materiales.edit', $material->MATERIAL_ID) }}" class="btn botoneditar">
-                                    <i class="fa-solid fa-pen-to-square"></i> Editar
-                                </a>
-                                <form action="{{ route('materiales.destroy', $material->MATERIAL_ID) }}" method="POST" class="ml-2">
-                                    @csrf
-                                    @method('DELETE')
-                                    <button type="submit" class="btn btn-danger">
-                                        <i class="fa-solid fa-trash"></i> Borrar
-                                    </button>
-                                </form>
-                            </div>
-                        </td>
-                    </tr>
-                @endforeach
-            </tbody>
-        </table>
-    </div>
+                                <div class="d-flex justify-content-center">
+                                    <a href="{{ route('materiales.edit', $material->MATERIAL_ID) }}" class="btn botoneditar">
+                                        <i class="fa-solid fa-pen-to-square"></i> Editar
+                                    </a>
+                                    <form action="{{ route('materiales.destroy', $material->MATERIAL_ID) }}" method="POST" class="ml-2">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button type="submit" class="btn btn-danger">
+                                            <i class="fa-solid fa-trash"></i> Borrar
+                                        </button>
+                                    </form>
+                                </div>
+                            </td>
+                        </tr>
+                    @endforeach
+                </tbody>
+            </table>
+        </div>
 @stop
 
 @section('css')
@@ -100,6 +100,9 @@
         .botoneditar{
             background-color: #1aa16b;
             color: #fff;
+        }
+        .estado-critico {
+        color: #F70B0B;
         }
     </style>
 @stop

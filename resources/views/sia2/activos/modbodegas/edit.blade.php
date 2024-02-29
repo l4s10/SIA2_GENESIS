@@ -13,16 +13,14 @@
         @method('PUT')
 
 
-        <div class="col-md-6">
-            <div class="mb-3">
-                <label for="OFICINA" class="form-label"><i class="fa-solid fa-map-location-dot"></i> Dirección Regional </label>
-                <select id="OFICINA" class="form-control" name="OFICINA" required disabled>
-                    <option value="{{ $oficinaAsociada->OFICINA_ID }}">{{ $oficinaAsociada->OFICINA_NOMBRE }}</option>
-                </select>
-                @error('OFICINA')
-                    <div class="alert alert-danger mt-2">{{ $message }}</div>
-                @enderror
-            </div>
+        <div class="mb-3">
+            <label for="OFICINA" class="form-label"><i class="fa-solid fa-map-location-dot"></i> Dirección Regional </label>
+            <select id="OFICINA" class="form-control" name="OFICINA" required disabled>
+                <option value="{{ $oficinaAsociada->OFICINA_ID }}">{{ $oficinaAsociada->OFICINA_NOMBRE }}</option>
+            </select>
+            @error('OFICINA')
+                <div class="alert alert-danger mt-2">{{ $message }}</div>
+            @enderror
         </div>
 
         <div class="mb-3">
@@ -39,9 +37,9 @@
             <label for="BODEGA_ESTADO" class="form-label"><i class="fas fa-person-chalkboard"></i> Estado:</label>
             <select class="form-control{{ $errors->has('BODEGA_ESTADO') ? ' is-invalid' : '' }}" aria-label="Seleccione el tipo de sala" id="BODEGA_ESTADO" name="BODEGA_ESTADO" required>
                 <option disabled value="" selected>-- Seleccione un estado --</option>
-                <option value="DISPONIBLE" {{ old('BODEGA_ESTADO', $bodega->BODEGA_ESTADO) == 'DISPONIBLE' ? 'selected' : '' }}>DISPONIBLE</option>
-                <option value="OCUPADO" {{ old('BODEGA_ESTADO', $bodega->BODEGA_ESTADO) == 'NO DISPONIBLE' ? 'selected' : '' }}>NO DISPONIBLE</option>
-                <option value="DESABILITADO" {{ old('BODEGA_ESTADO', $bodega->BODEGA_ESTADO) == 'DESABILITADO' ? 'selected' : '' }}>DESABILITADO</option>
+                <option value="DISPONIBLE" {{ old('BODEGA_ESTADO', $bodega->BODEGA_ESTADO) == 'DISPONIBLE' ? 'selected' : '' }}>🟢 DISPONIBLE</option>
+                <option value="OCUPADO" {{ old('BODEGA_ESTADO', $bodega->BODEGA_ESTADO) == 'NO DISPONIBLE' ? 'selected' : '' }}>🔴 NO DISPONIBLE</option>
+                <option value="DESABILITADO" {{ old('BODEGA_ESTADO', $bodega->BODEGA_ESTADO) == 'DESABILITADO' ? 'selected' : '' }}>🟡 DESABILITADO</option>
             </select>
             @if ($errors->has('BODEGA_ESTADO'))
                 <div class="invalid-feedback">

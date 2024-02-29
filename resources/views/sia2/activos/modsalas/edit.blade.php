@@ -11,15 +11,15 @@
     <form action="{{ route('salas.update', $sala->SALA_ID) }}" method="POST">
         @csrf
         @method('PUT')
-        <div class="col-md-6">
-            <div class="mb-3">
-                <label for="OFICINA" class="form-label"><i class="fa-solid fa-map-location-dot"></i> Dirección Regional </label>
-                <input type="text" id="OFICINA" class="form-control" name="OFICINA" value="{{ $oficinaAsociada->OFICINA_NOMBRE }}" required readonly>
-                @error('ID_REGION')
-                    <div class="alert alert-danger mt-2">{{ $message }}</div>
-                @enderror
-            </div>
+
+        <div class="mb-3">
+            <label for="OFICINA" class="form-label"><i class="fa-solid fa-map-location-dot"></i> Dirección Regional </label>
+            <input type="text" id="OFICINA" class="form-control" name="OFICINA" value="{{ $oficinaAsociada->OFICINA_NOMBRE }}" required readonly>
+            @error('ID_REGION')
+                <div class="alert alert-danger mt-2">{{ $message }}</div>
+            @enderror
         </div>
+
 
         <div class="mb-3">
             <label for="SALA_NOMBRE" class="form-label"><i class="fas fa-book-bookmark"></i> Nombre de la sala:</label>
@@ -46,9 +46,9 @@
             <label for="SALA_ESTADO" class="form-label"><i class="fas fa-person-chalkboard"></i> Estado:</label>
             <select class="form-control{{ $errors->has('SALA_ESTADO') ? ' is-invalid' : '' }}" aria-label="Seleccione el tipo de sala" id="SALA_ESTADO" name="SALA_ESTADO" required>
                 <option disabled value="" selected>-- Seleccione un estado --</option>
-                <option value="DISPONIBLE" {{ old('SALA_ESTADO', $sala->SALA_ESTADO) == 'DISPONIBLE' ? 'selected' : '' }}>DISPONIBLE</option>
-                <option value="OCUPADO" {{ old('SALA_ESTADO', $sala->SALA_ESTADO) == 'OCUPADO' ? 'selected' : '' }}>OCUPADO</option>
-                <option value="DESABILITADO" {{ old('SALA_ESTADO', $sala->SALA_ESTADO) == 'DESABILITADO' ? 'selected' : '' }}>DESABILITADO</option>
+                <option value="DISPONIBLE" {{ old('SALA_ESTADO', $sala->SALA_ESTADO) == 'DISPONIBLE' ? 'selected' : '' }}>🟢 DISPONIBLE</option>
+                <option value="OCUPADO" {{ old('SALA_ESTADO', $sala->SALA_ESTADO) == 'OCUPADO' ? 'selected' : '' }}>🔴 OCUPADO</option>
+                <option value="DESABILITADO" {{ old('SALA_ESTADO', $sala->SALA_ESTADO) == 'DESABILITADO' ? 'selected' : '' }}>🟡 DESABILITADO</option>
             </select>
             @if ($errors->has('SALA_ESTADO'))
                 <div class="invalid-feedback">

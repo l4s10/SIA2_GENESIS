@@ -50,7 +50,10 @@
                     <tr>
                         <td>{{ $sala->SALA_NOMBRE }}</td>
                         <td>{{ $sala->SALA_CAPACIDAD }}</td>
-                        <td>{{ $sala->SALA_ESTADO }}</td>
+                        <td><span class="badge rounded-pill estado-{{ strtolower(str_replace(' ', '-', $sala->SALA_ESTADO )) }}">
+                        {{ $sala->SALA_ESTADO  }}
+                        </span>
+                        </td>
                         <td>
                             <div class="d-flex justify-content-center">
                                 <a href="{{ route('salas.edit', $sala->SALA_ID) }}" class="btn botoneditar">
@@ -85,6 +88,21 @@
         .botoneditar{
             background-color: #1aa16b;
             color: #fff;
+        }
+
+        .estado-disponible {
+        color: #ffffff;
+        background-color: #0CB009;
+        }
+
+        .estado-ocupado {
+            color: #FFFFFF;
+            background-color: #F70B0B;
+        }
+
+        .estado-desabilitado {
+        color: #000000;
+        background-color: #F7F70B;
         }
     </style>
 @stop

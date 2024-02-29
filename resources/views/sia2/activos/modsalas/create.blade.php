@@ -11,15 +11,15 @@
     <form action="{{ route('salas.store') }}" method="POST">
         @csrf
 
-        <div class="col-md-6">
-            <div class="mb-3">
-                <label for="OFICINA" class="form-label"><i class="fa-solid fa-map-location-dot"></i> Dirección Regional </label>
-                <input type="text" id="OFICINA" class="form-control" name="OFICINA" value="{{ $oficinaAsociada->OFICINA_NOMBRE }}" required readonly>
-                @error('ID_REGION')
-                    <div class="alert alert-danger mt-2">{{ $message }}</div>
-                @enderror
-            </div>
+
+        <div class="mb-3">
+            <label for="OFICINA" class="form-label"><i class="fa-solid fa-map-location-dot"></i> Dirección Regional </label>
+            <input type="text" id="OFICINA" class="form-control" name="OFICINA" value="{{ $oficinaAsociada->OFICINA_NOMBRE }}" required readonly>
+            @error('ID_REGION')
+                <div class="alert alert-danger mt-2">{{ $message }}</div>
+            @enderror
         </div>
+
 
         <div class="mb-3">
             <label for="SALA_NOMBRE" class="form-label"><i class="fas fa-book-bookmark"></i> Nombre de la sala:</label>

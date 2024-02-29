@@ -70,24 +70,9 @@
                                 {{ $solicitud->user->email}}
                             </div>
                         </td>
-                        <td>
-                            <div class="d-flex justify-content-center">
-                                @if ($solicitud->SOLICITUD_VEHICULO_ESTADO == 'INGRESADO')
-                                    <span style="color: #e6500a;">🟠 <span style="color: black; font-weight: bold;">INGRESADO</span></span>
-                                @elseif ($solicitud->SOLICITUD_VEHICULO_ESTADO == 'EN REVISIÓN')
-                                    <span style="color: #0000ff;">🔵 <span style="color: black; font-weight: bold;">EN REVISIÓN</span></span>
-                                @elseif ($solicitud->SOLICITUD_VEHICULO_ESTADO == 'POR APROBAR')
-                                    <span style="color: #ffff00;">🟡 <span style="color: black; font-weight: bold;">POR APROBAR</span></span>
-                                @elseif ($solicitud->SOLICITUD_VEHICULO_ESTADO == 'POR AUTORIZAR')
-                                    <span style="color: #00ff00;">🟢 <span style="color: black; font-weight: bold;">POR AUTORIZAR</span></span>
-                                @elseif ($solicitud->SOLICITUD_VEHICULO_ESTADO == 'POR RENDIR')
-                                    <span style="color: #ffffff;">⚪ <span style="color: black; font-weight: bold;">POR RENDIR</span></span>
-                                @elseif ($solicitud->SOLICITUD_VEHICULO_ESTADO == 'RECHAZADO')
-                                    <span style="color: #ff0000;">🔴 <span style="color: black; font-weight: bold;">RECHAZADO</span></span>
-                                @elseif ($solicitud->SOLICITUD_VEHICULO_ESTADO == 'TERMINADO')
-                                    <span style="color: #000000;">⚫ <span style="color: black; font-weight: bold;">TERMINADO</span></span>
-                                @endif
-                            </div>
+                        <td><span class="badge rounded-pill estado-{{ strtolower(str_replace(' ', '-', $solicitud->SOLICITUD_VEHICULO_ESTADO)) }}">
+                        {{ $solicitud->SOLICITUD_VEHICULO_ESTADO }}
+                        </span>
                         </td>
                         <td>
                             <div class="d-flex justify-content-center">
@@ -133,19 +118,45 @@
 @section('css')
 
 <style>
-    /* Estilos personalizados si es necesario */
-    .tablacolor {
-        background-color: #0064a0; /* Color de fondo personalizado */
-        color: #fff; /* Color de texto personalizado */
-    }
-    .agregar {
-        background-color: #e6500a;
-        color: #fff;
-    }
-    .botoneditar {
-        background-color: #1aa16b;
-        color: #fff;
-    }
+        /* Estilos personalizados si es necesario */
+        .tablacolor {
+            background-color: #0064a0; /* Color de fondo personalizado */
+            color: #fff; /* Color de texto personalizado */
+        }
+        .agregar {
+            background-color: #e6500a;
+            color: #fff;
+        }
+        .botoneditar {
+            background-color: #1aa16b;
+            color: #fff;
+        }
+        
+        /*Colores de los estados*/
+        .estado-ingresado {
+        color: #000000;
+        background-color: #FFA600;
+        }
+
+        .estado-en-revision {
+        color: #000000;
+        background-color: #F7F70B;
+        }
+
+        .estado-rechazado {
+        color: #FFFFFF;
+        background-color: #F70B0B;
+        }
+
+        .estado-terminado {
+        color: #000000;
+        background-color: #d9d9d9;
+        }
+
+        .estado-autorizado {
+        color: #ffffff;
+        background-color: #0CB009;
+        }
 </style>
 
 

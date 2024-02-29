@@ -21,6 +21,15 @@
 ?>
 <nav class="main-header navbar
     {{ config('adminlte.classes_topnav_nav', 'navbar-expand') }}
+    @role('ADMINISTRADOR')
+    navbar-primary
+    @elseif(request()->user()->hasRole('SERVICIOS'))
+    navbar-success
+    @elseif(request()->user()->hasAnyRole(['INFORMATICA', 'JURIDICO']))
+    navbar-danger
+    @else
+    navbar-warning
+    @endrole
     {{ config('adminlte.classes_topnav', 'navbar-white navbar-light') }}">
 
     {{-- Navbar left links --}}

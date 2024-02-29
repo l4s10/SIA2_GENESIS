@@ -71,7 +71,7 @@
                                     <form action="{{ route('solicitudes.materiales.confirmar', $solicitud->SOLICITUD_ID) }}" method="POST">
                                         @csrf
                                         @method('PUT')
-                                        <button type="submit" class="btn btn-success mr-2"><i class="fa-solid fa-check"></i>Confirmar recepcion</button>
+                                        <button type="submit" class="btn estado-ingresado mr-2"><i class="fa-solid fa-people-carry-box"></i></button>
                                     </form>
                                 @endif
 
@@ -117,11 +117,6 @@
         background-color: #F7F70B;
         }
 
-        .estado-aprobado {
-        color: #ffffff;
-        background-color: #0CB009;
-        }
-
         .estado-rechazado {
         color: #FFFFFF;
         background-color: #F70B0B;
@@ -131,6 +126,12 @@
         color: #000000;
         background-color: #d9d9d9;
         }
+
+        .estado-autorizado {
+        color: #ffffff;
+        background-color: #0CB009;
+        }
+        
     </style>
 
 @stop
