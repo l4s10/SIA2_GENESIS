@@ -68,6 +68,10 @@
         });
     </script>
     @endif
+    {{-- <form method="POST" action="{{ route('send.email') }}">
+        @csrf
+        <button class="btn btn-primary" type="submit">Enviar correo de prueba</button>
+    </form> --}}
 
     <div class="" id="calendar"></div>
     <!-- Carta para mostrar los detalles del evento -->
@@ -119,10 +123,12 @@
 
 @section('js')
     <!-- Incluir archivos JS flatpicker-->
-    {{-- events: @json($events), (AGREGAR DESPUES A CALENDARIO) --}}
     <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
     <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/es.js"></script>
+
+    <!-- CONEXION FONT-AWESOME CON TOOLKIT -->
+    <script src="https://kit.fontawesome.com/742a59c628.js" crossorigin="anonymous"></script>
 
     <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@fullcalendar/core@6.1.8/locales/es.global.min.js"></script>
@@ -138,6 +144,7 @@
                     right: 'dayGridMonth,timeGridWeek,timeGridDay'
                 },
                 locale: 'es',
+                events: @json($events),
                 displayEventEnd: true,
                 dayHeaderFormat: { weekday: 'long' },
                 eventClick: function(info) {

@@ -11,4 +11,10 @@ class SolicitudBodega extends Model
     protected $fillable = ['SOLICITUD_ID', 'BODEGA_ID'];
 
     public $timestamps = true;
+
+    public function bodega()
+    {
+        return $this->belongsTo(Bodega::class, 'BODEGA_ID', 'BODEGA_ID');
+    }
+
 }

@@ -11,5 +11,12 @@ class SolicitudSala extends Model
     protected $fillable = ['SOLICITUD_ID', 'SALA_ID', 'SOLICITUD_SALA_ID_ASIGNADA'];
 
     public $timestamps = true;
+
+    // Relacion de uno a uno con Sala
+    public function salaAsignada()
+    {
+        return $this->belongsTo(Sala::class, 'SALA_ID', 'SALA_ID');
+    }
+
 }
 
