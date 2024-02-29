@@ -105,8 +105,8 @@ class SolicitudSalasController extends Controller
                 Cart::instance('carrito_equipos')->destroy();
             }
 
-            // Creamos la relación entre la solicitud y la sala solicitada (hasOne)
-            $solicitud->salas()->create(['SALA_ID' => $request->input('SALA_ID')]);
+            // Creamos la relación entre la solicitud y la sala solicitada
+            $solicitud->salas()->attach($request->input('SALA_ID'));
 
             // Redireccionamos a la vista de solicitudes con un mensaje de éxito.
             return redirect()->route('solicitudes.salas.index')->with('success', 'Solicitud creada correctamente.');

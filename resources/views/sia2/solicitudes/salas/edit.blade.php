@@ -86,21 +86,7 @@
                     </div>
                     <h4>Descripción</h4>
                     <p><strong><i class="fa-solid fa-file-pen"></i> Descripción:</strong> {{ $solicitud->SOLICITUD_MOTIVO }}</p>
-                </div>
-            </div>
-        </div>
 
-        {{-- Acordeon para sala solicitada y asignada --}}
-        <div class="card">
-            <div class="card-header" id="salasSolicitadasHeading">
-                <h2 class="mb-0">
-                    <button class="btn btn-link" type="button" data-toggle="collapse" data-target="#salasSolicitadasCollapse" aria-expanded="true" aria-controls="salasSolicitadasCollapse">
-                        Sala solicitada y asignada
-                    </button>
-                </h2>
-            </div>
-            <div id="salasSolicitadasCollapse" class="collapse" aria-labelledby="salasSolicitadasHeading" data-parent="#generalAccordion">
-                <div class="card-body">
                     {{-- Aquí va el contenido de las salas solicitadas --}}
                     <h5>Sala Solicitadas</h5>
                     <table class="table table-bordered">
@@ -113,23 +99,25 @@
                             </tr>
                         </thead>
                         <tbody>
-                            <tr>
-                                <td>{{ $solicitud->salas->sala->SALA_NOMBRE }}</td>
-                                <td>{{ $solicitud->salas->sala->SALA_CAPACIDAD }}</td>
-                                <td>
-                                    @switch($solicitud->salas->sala->SALA_ESTADO)
-                                        @case('DISPONIBLE')
-                                            <span class="badge estado-aceptado rounded-pill">DISPONIBLE</span>
-                                            @break
-                                        @case('OCUPADA')
-                                            <span class="badge estado-rechazado rounded-pill">OCUPADA</span>
-                                            @break
-                                        @default
-                                            <span class="badge badge-secondary">{{ $solicitud->salas->sala->SALA_ESTADO }}</span>
-                                    @endswitch
-                                </td>
-                                <td>{{$solicitud->salas->salaAsignada->SALA_NOMBRE ?? 'NO SE HA ASIGNADO UNA SALA POR AHORA.'}}</td>
-                            </tr>
+                            @foreach($solicitud->salas as $sala)
+                                <tr>
+                                    <td>{{ $sala->SALA_NOMBRE }}</td>
+                                    <td>{{ $sala->SALA_CAPACIDAD }}</td>
+                                    <td>
+                                        @switch($sala->SALA_ESTADO)
+                                            @case('DISPONIBLE')
+                                                <span class="badge estado-aceptado rounded-pill">DISPONIBLE</span>
+                                                @break
+                                            @case('OCUPADA')
+                                                <span class="badge estado-rechazado rounded-pill">OCUPADA</span>
+                                                @break
+                                            @default
+                                                <span class="badge badge-secondary">{{ $sala->SALA_ESTADO }}</span>
+                                        @endswitch
+                                    </td>
+                                    <td>{{$salaAsignada->SALA_NOMBRE ?? 'NO SE HA ASIGNADO UNA SALA POR AHORA.'}}</td>
+                                </tr>
+                            @endforeach
                         </tbody>
                     </table>
                 </div>

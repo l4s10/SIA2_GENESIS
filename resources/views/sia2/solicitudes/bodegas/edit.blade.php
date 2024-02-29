@@ -86,22 +86,7 @@
                     </div>
                     <h4>Descripción</h4>
                     <p><strong><i class="fa-solid fa-file-pen"></i> Descripción:</strong> {{ $solicitud->SOLICITUD_MOTIVO }}</p>
-                </div>
-            </div>
-        </div>
 
-        {{-- Acordeon para las bodegas solicitadas --}}
-        <div class="card">
-            <div class="card-header" id="headingBodegas">
-                <h2 class="mb-0">
-                    <button class="btn btn-link" type="button" data-toggle="collapse" data-target="#collapseBodegas" aria-expanded="false" aria-controls="collapseBodegas">
-                        Bodegas Solicitadas
-                    </button>
-                </h2>
-            </div>
-
-            <div id="collapseBodegas" class="collapse" aria-labelledby="headingBodegas" data-parent="#generalAccordion">
-                <div class="card-body">
                     <h5>Bodega solicitada</h5>
                     <table class="table table-bordered">
                         <thead class="tablacolor">
@@ -111,21 +96,23 @@
                             </tr>
                         </thead>
                         <tbody>
-                            <tr>
-                                <td>{{ $solicitud->bodegas->bodega->BODEGA_NOMBRE }}</td>
-                                <td>
-                                    @switch($solicitud->bodegas->bodega->BODEGA_ESTADO)
-                                        @case('DISPONIBLE')
-                                            <span class="badge estado-aceptado rounded-pill">DISPONIBLE</span>
-                                            @break
-                                        @case('OCUPADA')
-                                            <span class="badge estado-rechazado rounded-pill">OCUPADA</span>
-                                            @break
-                                        @default
-                                            <span class="badge badge-secondary">{{ $solicitud->bodegas->bodega->BODEGA_ESTADO }}</span>
-                                    @endswitch
-                                </td>
-                            </tr>
+                            @foreach($solicitud->bodegas as $bodega)
+                                <tr>
+                                    <td>{{ $bodega->BODEGA_NOMBRE }}</td>
+                                    <td>
+                                        @switch($bodega->BODEGA_ESTADO)
+                                            @case('DISPONIBLE')
+                                                <span class="badge estado-aceptado rounded-pill">DISPONIBLE</span>
+                                                @break
+                                            @case('OCUPADA')
+                                                <span class="badge estado-rechazado rounded-pill">OCUPADA</span>
+                                                @break
+                                            @default
+                                                <span class="badge badge-secondary">{{ $sala->SALA_ESTADO }}</span>
+                                        @endswitch
+                                    </td>
+                                </tr>
+                            @endforeach
                         </tbody>
                     </table>
                 </div>
