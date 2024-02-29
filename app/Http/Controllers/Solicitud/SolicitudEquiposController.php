@@ -150,6 +150,32 @@ class SolicitudEquiposController extends Controller
     {
         // try-catch
         try{
+            // Obtener la solicitud
+            $solicitud = Solicitud::has('equipos')->findOrFail($id);
+
+            // Determinar la acción basada en el botón presionado
+            switch ($request->input('action')) {
+                case 'guardar':
+                    // Lógica para guardar cambios
+                    $solicitud->update(['SOLICITUD_ESTADO' => 'EN REVISION']);
+                break;
+
+                case 'finalizar_revision':
+                    // Lógica para finalizar la revisión
+                    $solicitud->update(['SOLICITUD_ESTADO' => 'AUTORIZADO']);
+                break;
+
+                case 'rechazar':
+                    // Lógica para rechazar la solicitud
+                    $solicitud->update(['SOLICITUD_ESTADO' => 'RECHAZADO']);
+                    // Redireccionar a la vista de solicitudes con un mensaje de éxito
+                    return redirect()->route('solicitudes.equipos.index')->with('success', 'Solicitud rechazada exitosamente');
+                break;
+
+                // default:
+                    // Lógica por defecto o para casos no contemplados
+                    // break;
+            }
             // Valida los datos del formulario de solicitud de equipos.
             $validator = Validator::make($request->all(),[
                 // 'SOLICITUD_ESTADO' => 'required|string|max:255|in:INGRESADO,EN REVISION,APROBADO,RECHAZADO,TERMINADO',
@@ -174,30 +200,6 @@ class SolicitudEquiposController extends Controller
                 return redirect()->back()->withErrors($validator)->withInput();
             }
 
-            // Obtener la solicitud
-            $solicitud = Solicitud::has('equipos')->findOrFail($id);
-
-            // Determinar la acción basada en el botón presionado
-            switch ($request->input('action')) {
-                case 'guardar':
-                    // Lógica para guardar cambios
-                    $solicitud->update(['SOLICITUD_ESTADO' => 'EN REVISION']);
-                break;
-
-                case 'finalizar_revision':
-                    // Lógica para finalizar la revisión
-                    $solicitud->update(['SOLICITUD_ESTADO' => 'AUTORIZADO']);
-                break;
-
-                case 'rechazar':
-                    // Lógica para rechazar la solicitud
-                    $solicitud->update(['SOLICITUD_ESTADO' => 'RECHAZADO']);
-                break;
-
-                // default:
-                    // Lógica por defecto o para casos no contemplados
-                    // break;
-            }
             // Actualizar la solicitud
             $solicitud->update([
                 // 'SOLICITUD_ESTADO' => $request->input('SOLICITUD_ESTADO'),

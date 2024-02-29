@@ -178,6 +178,32 @@ class SolicitudSalasController extends Controller
         // try-catch
         try
         {
+            // Recuperar la solicitud que solo tenga salas asociadas
+            $solicitud = Solicitud::has('salas')->findOrFail($id);
+
+            // Determinar la acción basada en el botón presionado
+            switch ($request->input('action')) {
+                case 'guardar':
+                    // Lógica para guardar cambios
+                    $solicitud->update(['SOLICITUD_ESTADO' => 'EN REVISION']);
+                break;
+
+                case 'finalizar_revision':
+                    // Lógica para finalizar la revisión
+                    $solicitud->update(['SOLICITUD_ESTADO' => 'AUTORIZADO']);
+                break;
+
+                case 'rechazar':
+                    // Lógica para rechazar la solicitud
+                    $solicitud->update(['SOLICITUD_ESTADO' => 'RECHAZADO']);
+                    // redireccionar a la vista de solicitudes con un mensaje de éxito
+                    return redirect()->route('solicitudes.salas.index')->with('success', 'Solicitud actualizada correctamente.');
+                break;
+
+                // default:
+                    // Lógica por defecto o para casos no contemplados
+                    // break;
+            }
             // Validar los datos del formulario de edición de la solicitud
             $validator = Validator::make($request->all(),[
                 // PARA ASIGNACION
@@ -203,31 +229,6 @@ class SolicitudSalasController extends Controller
             // Si la validación falla, se redirecciona al formulario con los errores
             if ($validator->fails()) {
                 return redirect()->back()->withErrors($validator)->withInput();
-            }
-
-            // Recuperar la solicitud que solo tenga salas asociadas
-            $solicitud = Solicitud::has('salas')->findOrFail($id);
-
-            // Determinar la acción basada en el botón presionado
-            switch ($request->input('action')) {
-                case 'guardar':
-                    // Lógica para guardar cambios
-                    $solicitud->update(['SOLICITUD_ESTADO' => 'EN REVISION']);
-                break;
-
-                case 'finalizar_revision':
-                    // Lógica para finalizar la revisión
-                    $solicitud->update(['SOLICITUD_ESTADO' => 'AUTORIZADO']);
-                break;
-
-                case 'rechazar':
-                    // Lógica para rechazar la solicitud
-                    $solicitud->update(['SOLICITUD_ESTADO' => 'RECHAZADO']);
-                break;
-
-                // default:
-                    // Lógica por defecto o para casos no contemplados
-                    // break;
             }
 
             // actualizar la solicitud

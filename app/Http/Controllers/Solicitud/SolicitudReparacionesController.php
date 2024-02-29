@@ -144,26 +144,6 @@ class SolicitudReparacionesController extends Controller
     {
         // try-catch
         try{
-            // Validar los datos del formulario de solicitud de reparaciones.
-            $validator = Validator::make($request->all(),[
-                // 'SOLICITUD_REPARACION_ESTADO' => 'required|string|max:20',
-                'SOLICITUD_REPARACION_FECHA_HORA_INICIO' => 'nullable|date',
-                'SOLICITUD_REPARACION_FECHA_HORA_TERMINO' => 'nullable|date|after_or_equal:SOLICITUD_REPARACION_FECHA_HORA_INICIO',
-                'REVISION_SOLICITUD_OBSERVACION' => 'required|string|max:255',
-            ], [
-                //Mensajes de error
-                'required' => 'El campo :attribute es requerido.',
-                'string' => 'El campo :attribute debe ser una cadena de caracteres.',
-                'max' => 'El campo :attribute debe tener un máximo de :max caracteres.',
-                'date' => 'El campo :attribute debe ser una fecha válida.',
-                'after_or_equal' => 'El campo :attribute debe ser una fecha posterior o igual a la fecha de inicio.',
-            ]);
-
-            // Si falla la validación, redirigir al formulario con los errores
-            if($validator->fails()){
-                return redirect()->back()->withErrors($validator)->withInput();
-            }
-
             // Buscar la solicitud por ID
             $solicitud = SolicitudReparacion::findOrFail($id);
 
@@ -182,11 +162,32 @@ class SolicitudReparacionesController extends Controller
                 case 'rechazar':
                     // Lógica para rechazar la solicitud
                     $solicitud->update(['SOLICITUD_REPARACION_ESTADO' => 'RECHAZADO']);
+                    // Redirigir a la vista de solicitudes con mensaje de éxito
+                    return redirect()->route('solicitudes.reparaciones.index')->with('success', 'Solicitud rechazada exitosamente.');
                 break;
 
                 // default:
                     // Lógica por defecto o para casos no contemplados
                     // break;
+            }
+            // Validar los datos del formulario de solicitud de reparaciones.
+            $validator = Validator::make($request->all(),[
+                // 'SOLICITUD_REPARACION_ESTADO' => 'required|string|max:20',
+                'SOLICITUD_REPARACION_FECHA_HORA_INICIO' => 'nullable|date',
+                'SOLICITUD_REPARACION_FECHA_HORA_TERMINO' => 'nullable|date|after_or_equal:SOLICITUD_REPARACION_FECHA_HORA_INICIO',
+                'REVISION_SOLICITUD_OBSERVACION' => 'required|string|max:255',
+            ], [
+                //Mensajes de error
+                'required' => 'El campo :attribute es requerido.',
+                'string' => 'El campo :attribute debe ser una cadena de caracteres.',
+                'max' => 'El campo :attribute debe tener un máximo de :max caracteres.',
+                'date' => 'El campo :attribute debe ser una fecha válida.',
+                'after_or_equal' => 'El campo :attribute debe ser una fecha posterior o igual a la fecha de inicio.',
+            ]);
+
+            // Si falla la validación, redirigir al formulario con los errores
+            if($validator->fails()){
+                return redirect()->back()->withErrors($validator)->withInput();
             }
 
             // Actualizar la solicitud

@@ -159,6 +159,32 @@ class SolicitudMaterialesController extends Controller
     {
         // try-catch
         try{
+            // Obtener la solicitud
+            $solicitud = Solicitud::has('materiales')->findOrFail($id);
+
+             // Determinar la acción basada en el botón presionado
+            switch ($request->input('action')) {
+                case 'guardar':
+                    // Lógica para guardar cambios
+                    $solicitud->update(['SOLICITUD_ESTADO' => 'EN REVISION']);
+                break;
+
+                case 'finalizar_revision':
+                    // Lógica para finalizar la revisión
+                    $solicitud->update(['SOLICITUD_ESTADO' => 'AUTORIZADO']);
+                break;
+
+                case 'rechazar':
+                    // Lógica para rechazar la solicitud
+                    $solicitud->update(['SOLICITUD_ESTADO' => 'RECHAZADO']);
+                    // Redireccion a la vista index de solicitud de materiales, con el mensaje de exito.
+                    return redirect()->route('solicitudes.materiales.index')->with('success', 'Solicitud rechazada exitosamente');
+                break;
+
+                // default:
+                    // Lógica por defecto o para casos no contemplados
+                    // break;
+            }
             // Valida los datos del formulario de solicitud de equipos.
             $validator = Validator::make($request->all(),[
                 // 'SOLICITUD_ESTADO' => 'required|string|max:255|in:INGRESADO,EN REVISION,APROBADO,RECHAZADO,TERMINADO',
@@ -181,31 +207,6 @@ class SolicitudMaterialesController extends Controller
             // Si la validación falla, redirige al formulario con los errores y el input antiguo
             if ($validator->fails()) {
                 return redirect()->back()->withErrors($validator)->withInput();
-            }
-
-            // Obtener la solicitud
-            $solicitud = Solicitud::has('materiales')->findOrFail($id);
-
-             // Determinar la acción basada en el botón presionado
-            switch ($request->input('action')) {
-                case 'guardar':
-                    // Lógica para guardar cambios
-                    $solicitud->update(['SOLICITUD_ESTADO' => 'EN REVISION']);
-                break;
-
-                case 'finalizar_revision':
-                    // Lógica para finalizar la revisión
-                    $solicitud->update(['SOLICITUD_ESTADO' => 'AUTORIZADO']);
-                break;
-
-                case 'rechazar':
-                    // Lógica para rechazar la solicitud
-                    $solicitud->update(['SOLICITUD_ESTADO' => 'RECHAZADO']);
-                break;
-
-                // default:
-                    // Lógica por defecto o para casos no contemplados
-                    // break;
             }
 
             // Actualizar la solicitud
