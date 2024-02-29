@@ -286,7 +286,7 @@
 
             <div class="row mb-4">
                 <div class="col-md-3">
-                    <button id="botonPasajeros" type="button" class="btn btn-custom" style="background-color: #9DA6B2; color: #fff;">
+                    <button id="botonPasajeros" type="button" class="btn btn-custom" style="background-color: #1389EB; color: #fff;">
                         <i class="fa-solid fa-user-plus"></i> Mostrar Pasajeros
                     </button>
                 </div>
@@ -354,12 +354,12 @@
             <div class="row">
                 <div class="col-md-3">
                     <!-- Botón Cancelar -->
-                    <button type="button" class="btn btn-custom" onclick="window.history.back();" style="background-color: #E22C2C; color: white;"><i class="fa-solid fa-angles-left"></i> Cancelar</button>
+                    <a href="{{ route('solicitudesvehiculos.indexPorAprobar') }}" class="btn btn-cancelar"><i class="fa-solid fa-hand-point-left"></i> Cancelar</a>
                 </div>
                 <div class="col-md-3">
                     <!-- Botón Rechazar -->
                     <input type="hidden" name="rechazoSolicitud" id="rechazoSolicitud" value="0">
-                    <button type="submit" class="btn btn-custom" name="rechazarSolicitud" style="background-color: #E22C2C; color: white;" ><i class="fa-solid fa-x" style="margin-right: 5px;"></i> Rechazar solicitud</button>
+                    <button type="submit" class="btn btn-custom" name="rechazarSolicitud" style="background-color: #E22C2C; color: white;" ><i class="fa-solid fa-ban" style="margin-right: 5px;"></i> Rechazar solicitud</button>
                 </div>
                 <div class="col-md-6">
                     <div class="row">
@@ -391,7 +391,7 @@
                             </div>
                         </div>
                         <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary" onclick="cerrarModal()" style="background-color: #E22C2C; color: white;"><i class="fa-solid fa-angles-left"></i> Cancelar</button>
+                            <button type="button" class="btn btn-secondary" onclick="cerrarModal()" style="background-color: #6c757d; color: white;"><i class="fa-solid fa-hand-point-left"></i> Cancelar</button>
                             <button type="button" class="btn btn-primary" onclick="verificarContraseña()" style="background-color: #00B050; color: white;"><i class="fa-solid fa-signature"></i> Firmar</button>
                         </div>
                     </div>
@@ -412,6 +412,12 @@
         .btn-custom {
             width: 100%; /* Puedes ajustar el ancho según tus necesidades */
         }
+
+        .btn-cancelar {
+            width: 100%;
+            background-color: #6c757d;
+            color: white; 
+        }  
     </style>
 @stop
 

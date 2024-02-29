@@ -473,7 +473,8 @@
             <div class="row">
                 <div class="col-md-3">
                     <!-- Botón Cancelar -->
-                    <button type="button" class="btn btn-custom" onclick="window.history.back();" style="background-color: #E22C2C; color: white;"><i class="fa-solid fa-angles-left"></i> Cancelar</button>
+
+                    <a href="{{ route('solicitudesvehiculos.indexPorRendir') }}" class="btn btn-cancelar"><i class="fa-solid fa-hand-point-left"></i> Cancelar</a>
                 </div>
                 <div class="col-md-3">
                    
@@ -512,7 +513,7 @@
                             </div>
                         </div>
                         <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary" onclick="cerrarModal()" style="background-color: #E22C2C; color: white;"><i class="fa-solid fa-angles-left"></i> Cancelar</button>
+                            <button type="button" class="btn btn-secondary" onclick="cerrarModal()" style="background-color: #6c757d; color: white;"><i class="fa-solid fa-hand-point-left"></i> Cancelar</button>
                             <button type="button" class="btn btn-primary" onclick="verificarContraseña()" style="background-color: #00B050; color: white;"><i class="fa-solid fa-signature"></i> Firmar</button>
                         </div>
                     </div>
@@ -530,6 +531,12 @@
         .btn-custom {
             width: 100%; /* Puedes ajustar el ancho según tus necesidades */
         }
+    
+        .btn-cancelar {
+            width: 100%;
+            background-color: #6c757d;
+            color: white; 
+        }  
     </style>
 @stop
 

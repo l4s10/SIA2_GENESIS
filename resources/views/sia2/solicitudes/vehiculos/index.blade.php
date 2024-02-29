@@ -50,18 +50,53 @@
             <tbody>
                 @foreach ($solicitudes as $solicitud)
                     <tr>
-                        <td>{{ $solicitud->user->USUARIO_NOMBRES }} {{ $solicitud->user->USUARIO_APELLIDOS }}</td>
-                        <td>{{ $solicitud->user->USUARIO_RUT }}</td>                        
-                        <td>{{ $solicitud->user->ubicacion ? $solicitud->user->ubicacion->UBICACION_NOMBRE : $solicitud->user->departamento->DEPARTAMENTO_NOMBRE}}</td>
-                        <td>{{ $solicitud->user->email}}</td>
-                        <td><span class="badge rounded-pill estado-{{ strtolower(str_replace(' ', '-', $solicitud->SOLICITUD_VEHICULO_ESTADO)) }}">
-                        {{ $solicitud->SOLICITUD_VEHICULO_ESTADO }}
-                        </span>
-                        </td>
-                        <td>{{ $solicitud->mostrarFecha($solicitud->created_at) }}</td>
                         <td>
-                            @if ($solicitud->SOLICITUD_VEHICULO_ESTADO == 'INGRESADO' || $solicitud->SOLICITUD_VEHICULO_ESTADO == 'EN REVISIÓN')
-                                <div class="d-flex justify-content-between">
+                            <div class="d-flex justify-content-center">
+                                {{ $solicitud->user->USUARIO_NOMBRES }} {{ $solicitud->user->USUARIO_APELLIDOS }}
+                            </div>
+                        </td>
+                        <td>
+                            <div class="d-flex justify-content-center">
+                                {{ $solicitud->user->USUARIO_RUT }}
+                            </div>
+                        </td>                        
+                        <td>
+                            <div class="d-flex justify-content-center">
+                                {{ $solicitud->user->ubicacion ? $solicitud->user->ubicacion->UBICACION_NOMBRE : $solicitud->user->departamento->DEPARTAMENTO_NOMBRE}}
+                            </div>
+                        </td>
+                        <td> 
+                            <div class="d-flex justify-content-center">
+                                {{ $solicitud->user->email}}
+                            </div>
+                        </td>
+                        <td>
+                            <div class="d-flex justify-content-center">
+                                @if ($solicitud->SOLICITUD_VEHICULO_ESTADO == 'INGRESADO')
+                                    <span style="color: #e6500a;">🟠 <span style="color: black; font-weight: bold;">INGRESADO</span></span>
+                                @elseif ($solicitud->SOLICITUD_VEHICULO_ESTADO == 'EN REVISIÓN')
+                                    <span style="color: #0000ff;">🔵 <span style="color: black; font-weight: bold;">EN REVISIÓN</span></span>
+                                @elseif ($solicitud->SOLICITUD_VEHICULO_ESTADO == 'POR APROBAR')
+                                    <span style="color: #ffff00;">🟡 <span style="color: black; font-weight: bold;">POR APROBAR</span></span>
+                                @elseif ($solicitud->SOLICITUD_VEHICULO_ESTADO == 'POR AUTORIZAR')
+                                    <span style="color: #00ff00;">🟢 <span style="color: black; font-weight: bold;">POR AUTORIZAR</span></span>
+                                @elseif ($solicitud->SOLICITUD_VEHICULO_ESTADO == 'POR RENDIR')
+                                    <span style="color: #ffffff;">⚪ <span style="color: black; font-weight: bold;">POR RENDIR</span></span>
+                                @elseif ($solicitud->SOLICITUD_VEHICULO_ESTADO == 'RECHAZADO')
+                                    <span style="color: #ff0000;">🔴 <span style="color: black; font-weight: bold;">RECHAZADO</span></span>
+                                @elseif ($solicitud->SOLICITUD_VEHICULO_ESTADO == 'TERMINADO')
+                                    <span style="color: #000000;">⚫ <span style="color: black; font-weight: bold;">TERMINADO</span></span>
+                                @endif
+                            </div>
+                        </td>
+                        <td>
+                            <div class="d-flex justify-content-center">
+                                {{ $solicitud->formatted_created_at }}
+                            </div>
+                        </td>
+                        <td>
+                                @if ($solicitud->SOLICITUD_VEHICULO_ESTADO == 'INGRESADO' || $solicitud->SOLICITUD_VEHICULO_ESTADO == 'EN REVISIÓN')
+                                    <div class="d-flex justify-content-between">
                                         <a href="{{ route('solicitudesvehiculos.edit', $solicitud->SOLICITUD_VEHICULO_ID) }}" class="btn btn-secondary"><i class="fa-solid fa-pencil"></i></a>
 
                                     <a href="{{ route('solicitudesvehiculos.timeline', $solicitud->SOLICITUD_VEHICULO_ID) }}" class="btn btn-primary"><i class="fa-solid fa-eye"></i></a>
@@ -77,13 +112,15 @@
                                         <button type="submit" class="btn btn-danger ml-2"><i class="fa-solid fa-trash"></i></button> {{--
                                     </form>--}}
                                 </div>
-                            @endif           
+                                    @endif
+                                    
                         </td>
                         <td>
                             <div class="d-flex justify-content-center">
                                 <a href="{{ route('descargar.plantilla', $solicitud->SOLICITUD_VEHICULO_ID) }}" class="btn btn-success ml-2" id="descargar-pdf-btn"><i class="fa-solid fa-file-pdf"></i></a>
                             </div>
                         </td>
+       
                     </tr>
                 @endforeach
             </tbody>
@@ -109,33 +146,6 @@
         background-color: #1aa16b;
         color: #fff;
     }
-
-    /*Colores de los estados*/
-    .estado-ingresado {
-        color: #000000;
-        background-color: #FFA600;
-    }
-
-    .estado-en-revision {
-        color: #000000;
-        background-color: #F7F70B;
-    }
-
-    .estado-aprobado {
-        color: #ffffff;
-        background-color: #0CB009;
-    }
-
-    .estado-rechazado {
-        color: #FFFFFF;
-        background-color: #F70B0B;
-    }
-
-    .estado-terminado {
-        color: #000000;
-        background-color: #d9d9d9;
-    }
-
 </style>
 
 

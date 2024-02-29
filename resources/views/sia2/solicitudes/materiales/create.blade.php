@@ -129,8 +129,8 @@
                 </div>
             </div>
             {{-- Botón para Crear Solicitud y volver --}}
-            <a href="{{ route('solicitudes.materiales.index') }}" class="btn btn-secondary mt-4"><i class="fa-solid fa-arrow-left"></i> Volver</a>
-            <button type="submit" class="btn agregar mt-4"><i class="fa-solid fa-plus"></i> Crear Solicitud</button>
+            <a href="{{ route('solicitudes.materiales.index') }}" class="btn btn-secondary"><i class="fa-solid fa-hand-point-left"></i> Cancelar</a>
+            <button type="submit" class="btn agregar "><i class="fa-solid fa-clipboard-check"></i> Crear Solicitud</button>
         </form>
     </div>
 @stop
