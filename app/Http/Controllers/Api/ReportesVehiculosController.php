@@ -25,6 +25,7 @@ class ReportesVehiculosController extends Controller
             $grafico2 = $this->rankingDepartamentosUbicaciones(new Request());
             $grafico3 = $this->rankingSolicitudes(new Request());
             $grafico4 = $this->rankingVehiculosAsignados(new Request());
+            $grafico5 = $this->obtenerPromediosAtencionSolicitudesVehiculares();
 
             //devolver
             return response()->json([
@@ -34,6 +35,7 @@ class ReportesVehiculosController extends Controller
                     'grafico2' => $grafico2,
                     'grafico3' => $grafico3,
                     'grafico4' => $grafico4,
+                    'grafico5' => $grafico5,
                 ],
             ], 200);
         }catch(\Exception $e){
@@ -58,6 +60,7 @@ class ReportesVehiculosController extends Controller
             $grafico2 = $this->rankingDepartamentosUbicaciones($request);
             $grafico3 = $this->rankingSolicitudes($request);
             $grafico4 = $this->rankingVehiculosAsignados($request);
+            $grafico5 = $this->obtenerPromediosAtencionSolicitudesVehiculares();
 
 
             //devolver
@@ -68,6 +71,7 @@ class ReportesVehiculosController extends Controller
                     'grafico2' => $grafico2,
                     'grafico3' => $grafico3,
                     'grafico4' => $grafico4,
+                    'grafico5' => $grafico5,
                 ],
             ], 200);
         }catch(\Exception $e){
@@ -248,4 +252,35 @@ class ReportesVehiculosController extends Controller
         }
     }
 
+    public function obtenerPromediosAtencionSolicitudesVehiculares() {
+        // Promedio de días desde 'INGRESADO' a 'EN REVISIÓN'
+        $promedioIngresadoARevision = DB::table('solicitudes_vehiculos as sv')
+            ->join(DB::raw('(SELECT SOLICITUD_VEHICULO_ID, MIN(created_at) as created_at FROM revisiones_solicitudes WHERE REVISION_SOLICITUD_OBSERVACION IS NOT NULL GROUP BY SOLICITUD_VEHICULO_ID) rs'), function($join) {
+                $join->on('sv.SOLICITUD_VEHICULO_ID', '=', 'rs.SOLICITUD_VEHICULO_ID');
+            })
+            ->select(DB::raw('AVG(DATEDIFF(rs.created_at, sv.created_at)) as promedio_dias_ingresado_a_revision'))
+            ->first();
+
+        // Promedio de días desde 'INGRESADO' a 'POR RENDIR'
+        $promedioIngresadoARendir = DB::table('solicitudes_vehiculos as sv')
+            ->join(DB::raw('(SELECT SOLICITUD_VEHICULO_ID, MAX(created_at) as created_at FROM autorizaciones GROUP BY SOLICITUD_VEHICULO_ID) au'), function($join) {
+                $join->on('sv.SOLICITUD_VEHICULO_ID', '=', 'au.SOLICITUD_VEHICULO_ID');
+            })
+            ->select(DB::raw('AVG(DATEDIFF(au.created_at, sv.created_at)) as promedio_dias_ingresado_a_rendir'))
+            ->first();
+
+        // Promedio de días desde 'INGRESADO' a 'TERMINADO'
+        $promedioIngresadoATerminado = DB::table('solicitudes_vehiculos as sv')
+            ->join(DB::raw('(SELECT SOLICITUD_VEHICULO_ID, MAX(created_at) as created_at FROM rendiciones GROUP BY SOLICITUD_VEHICULO_ID) rn'), function($join) {
+                $join->on('sv.SOLICITUD_VEHICULO_ID', '=', 'rn.SOLICITUD_VEHICULO_ID');
+            })
+            ->select(DB::raw('AVG(DATEDIFF(rn.created_at, sv.created_at)) as promedio_dias_ingresado_a_terminado'))
+            ->first();
+
+        return [
+            'promedioAtencion' => $promedioIngresadoARevision ? $promedioIngresadoARevision->promedio_dias_ingresado_a_revision : null,
+            'promedioRevisionAprobacion' => $promedioIngresadoARendir ? $promedioIngresadoARendir->promedio_dias_ingresado_a_rendir : null,
+            'promedioAprobacionEntrega' => $promedioIngresadoATerminado ? $promedioIngresadoATerminado->promedio_dias_ingresado_a_terminado : null
+        ];
+    }
 }

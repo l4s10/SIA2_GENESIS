@@ -32,9 +32,9 @@ document.addEventListener('DOMContentLoaded', function() {
 
     function updateChart5(data) {
         chart5.data.datasets[0].data = [
-            data.grafico5.promedioAtencion.promedio_atencion || 0,
-            data.grafico5.promedioRevisionAprobacion.promedio_revision_aprobacion || 0, // Usar 0 si es null
-            data.grafico5.promedioAprobacionEntrega.promedio_aprobacion_entrega || 0
+            data.grafico5.promedioAtencion || 0,
+            data.grafico5.promedioRevisionAprobacion || 0, // Usar 0 si es null
+            data.grafico5.promedioAprobacionEntrega || 0
         ];
         chart5.update();
     }
