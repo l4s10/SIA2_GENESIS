@@ -21,11 +21,11 @@ class ReportesVehiculosController extends Controller
     {
         try{
             //Obtener datos de graficos
-            $grafico1 = $this->rankingRevisoresSolicitudesVehiculos(new Request());
-            $grafico2 = $this->rankingDepartamentosUbicaciones(new Request());
-            $grafico3 = $this->rankingSolicitudes(new Request());
-            $grafico4 = $this->rankingVehiculosAsignados(new Request());
-            $grafico5 = $this->obtenerPromediosAtencionSolicitudesVehiculares();
+            $grafico1 = $this->Grafico1(new Request());
+            $grafico2 = $this->Grafico2(new Request());
+            $grafico3 = $this->Grafico3(new Request());
+            $grafico4 = $this->Grafico4(new Request());
+            $grafico5 = $this->Grafico5(new Request());
 
             //devolver
             return response()->json([
@@ -56,11 +56,11 @@ class ReportesVehiculosController extends Controller
     {
         try{
             //Obtener datos de graficos
-            $grafico1 = $this->rankingRevisoresSolicitudesVehiculos($request);
-            $grafico2 = $this->rankingDepartamentosUbicaciones($request);
-            $grafico3 = $this->rankingSolicitudes($request);
-            $grafico4 = $this->rankingVehiculosAsignados($request);
-            $grafico5 = $this->obtenerPromediosAtencionSolicitudesVehiculares();
+            $grafico1 = $this->Grafico1(new Request());
+            $grafico2 = $this->Grafico2(new Request());
+            $grafico3 = $this->Grafico3(new Request());
+            $grafico4 = $this->Grafico4(new Request());
+            $grafico5 = $this->Grafico5(new Request());
 
 
             //devolver
@@ -88,7 +88,7 @@ class ReportesVehiculosController extends Controller
      * @param Request $request La solicitud HTTP.
      * @return array El ranking de revisores de solicitudes de vehículos.
      */
-    public function rankingRevisoresSolicitudesVehiculos(Request $request)
+    public function Grafico1(Request $request)
     {
         try {
             $fechaInicio = $request->input('fecha_inicio');
@@ -124,7 +124,7 @@ class ReportesVehiculosController extends Controller
      * @param Request $request La solicitud HTTP.
      * @return array El ranking de departamentos y ubicaciones.
      */
-    public function rankingDepartamentosUbicaciones(Request $request)
+    public function Grafico2(Request $request)
     {
         try {
             $fechaInicio = $request->input('fecha_inicio');
@@ -180,7 +180,7 @@ class ReportesVehiculosController extends Controller
      * @return array El ranking de solicitudes de vehículos.
      */
     // Grafico 1: Estados de solicitudes de vehículos
-    public function rankingSolicitudes(Request $request)
+    public function Grafico3(Request $request)
     {
         try {
             $fechaInicio = $request->input('fecha_inicio');
@@ -219,7 +219,7 @@ class ReportesVehiculosController extends Controller
      * @return array El ranking de vehículos asignados.
      * @throws \Exception Si ocurre un error al obtener el ranking de vehículos asignados.
      */
-    public function rankingVehiculosAsignados(Request $request)
+    public function Grafico4(Request $request)
     {
         try {
             $fechaInicio = $request->input('fecha_inicio');
@@ -252,7 +252,7 @@ class ReportesVehiculosController extends Controller
         }
     }
 
-    public function obtenerPromediosAtencionSolicitudesVehiculares() {
+    public function Grafico5() {
         // Promedio de días desde 'INGRESADO' a 'EN REVISIÓN'
         $promedioIngresadoARevision = DB::table('solicitudes_vehiculos as sv')
             ->join(DB::raw('(SELECT SOLICITUD_VEHICULO_ID, MIN(created_at) as created_at FROM revisiones_solicitudes WHERE REVISION_SOLICITUD_OBSERVACION IS NOT NULL GROUP BY SOLICITUD_VEHICULO_ID) rs'), function($join) {

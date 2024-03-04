@@ -28,37 +28,13 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 
 Route::post('/getToken', [LoginController::class, 'getToken']);
 
-Route::middleware('auth:sanctum')->get('/reportes/materiales/get-graficos', [ReportesMaterialesController::class, 'getGraficos']);
+// Importar archivos en la carpeta API
 
-// Route::get('/reportes/materiales', [ReportesMaterialesController::class, 'Grafico1']);
+require __DIR__.'/API/MaterialesRoutesAPI.php';
+require __DIR__.'/API/EquiposRoutesAPI.php';
+require __DIR__.'/API/SalasRoutesAPI.php';
+require __DIR__.'/API/BodegasRoutesAPI.php';
+require __DIR__.'/API/ReparacionesRoutesAPI.php';
+require __DIR__.'/API/SistemaRoutesAPI.php';
+require __DIR__.'/API/VehiculosRoutesAPI.php';
 
-Route::middleware('auth:sanctum')->post('/reportes/materiales/filtrar-general', [ReportesMaterialesController::class, 'filtrarGeneral']);
-
-
-// rutas para api de equipos
-Route::middleware('auth:sanctum')->get('/reportes/equipos/get-graficos', [ReportesEquiposController::class, 'getGraficos']);
-
-Route::middleware('auth:sanctum')->post('/reportes/equipos/filtrar-general', [ReportesEquiposController::class, 'filtrarGeneral']);
-
-// rutas para api de salas
-Route::middleware('auth:sanctum')->get('/reportes/salas/get-graficos', [ReportesSalasController::class, 'getGraficos']);
-
-// Rutas para la API de bodegas
-Route::middleware('auth:sanctum')->get('/reportes/bodegas/get-graficos', [ReportesBodegasController::class, 'getGraficos']);
-
-Route::middleware('auth:sanctum')->post('/reportes/bodegas/filtrar-general', [ReportesBodegasController::class, 'filtrarGeneral']);
-
-// Rutas para la API de reparaciones
-Route::middleware('auth:sanctum')->get('/reportes/reparaciones/get-graficos', [ReportesReparacionesController::class, 'getGraficos']);
-
-Route::middleware('auth:sanctum')->post('/reportes/reparaciones/filtrar-general', [ReportesReparacionesController::class, 'filtrarGeneral']);
-
-// Rutas para graficos del sistema
-Route::middleware('auth:sanctum')->get('/reportes/sistema/get-graficos', [ReportesSistemaController::class, 'getGraficos']);
-
-Route::middleware('auth:sanctum')->post('/reportes/sistema/filtrar-general', [ReportesSistemaController::class, 'filtrarGeneral']);
-
-// Rutas para graficos de vehiculos
-Route::middleware('auth:sanctum')->get('/reportes/vehiculos/get-graficos', [ReportesVehiculosController::class, 'getGraficos']);
-
-Route::middleware('auth:sanctum')->post('/reportes/vehiculos/filtrar-general', [ReportesVehiculosController::class, 'filtrarGeneral']);
