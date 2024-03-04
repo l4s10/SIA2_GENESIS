@@ -40,28 +40,37 @@ document.addEventListener('DOMContentLoaded', function() {
         myChart.update();
     }
 
-    window.getData.getInitialChartData()
+    const currentDate = new Date();
+    const firstDayOfMonth = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1);
+    const formattedFirstDay = formatDate(firstDayOfMonth);
+    const formattedCurrentDate = formatDate(currentDate);
+
+    // Llama a la funcion para consumir la data en la carga inicial (del mes actual)
+    window.getData.getFilteredChartData(formattedFirstDay, formattedCurrentDate)
         .then(data => {
             if (data.status === 'success') {
+                actualizarMensajeFecha(firstDayOfMonth, currentDate);
                 updateChart(data.data);
             }
         })
         .catch(error => console.error('Error:', error));
 
+    function formatDate(date) {
+        const year = date.getFullYear();
+        const month = String(date.getMonth() + 1).padStart(2, '0');
+        const day = String(date.getDate()).padStart(2, '0');
+        return `${year}-${month}-${day}`;
+    }
+
+    // Cuando se haga click en el boton de actualizar, hace un fetch de los datos
     document.querySelector('#refresh-button').addEventListener('click', function() {
         const fechaInicio = document.querySelector('#start-date').value;
         const fechaFin = document.querySelector('#end-date').value;
 
-        Swal.fire({
-            title: 'Actualizando registros',
-            timer: 2000,
-            didOpen: () => { Swal.showLoading(); },
-        });
-
         window.getData.getFilteredChartData(fechaInicio, fechaFin)
             .then(data => {
-                Swal.close();
                 if (data.status === 'success') {
+                    actualizarMensajeFecha(new Date(fechaInicio), new Date(fechaFin));
                     updateChart(data.data);
                 }
             })
@@ -70,4 +79,13 @@ document.addEventListener('DOMContentLoaded', function() {
                 console.error('Error:', error);
             });
     });
+
+
+    // Función que actualiza el mensaje con las fechas de filtro
+    function actualizarMensajeFecha(fechaInicio, fechaFin) {
+        const elementoMensaje = document.getElementById('fecha-filtro-info');
+        //Mostrar mensaje con fecha formateada
+        elementoMensaje.textContent = `Mostrando datos desde ${formatDate(fechaInicio)} hasta ${formatDate(fechaFin)}`;
+    }
+
 });

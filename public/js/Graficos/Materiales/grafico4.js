@@ -39,7 +39,7 @@ document.addEventListener('DOMContentLoaded', function() {
         return color;
     }
 
-    function updateChart4(data) {
+    function updateChart(data) {
         chart4.data.labels = data.grafico4.rankingTiposMateriales.map(item => item.MATERIAL_NOMBRE);
         chart4.data.datasets[0].data = data.grafico4.rankingTiposMateriales.map(item => item.total_solicitudes);
         chart4.data.datasets[0].backgroundColor = data.grafico4.rankingTiposMateriales.map(() => getRandomColor());
@@ -50,7 +50,7 @@ document.addEventListener('DOMContentLoaded', function() {
     window.getData.getInitialChartData()
         .then(data => {
             if (data.status === 'success') {
-                updateChart4(data.data); // Asegúrate de que data.data contenga la estructura correcta
+                updateChart(data.data); // Asegúrate de que data.data contenga la estructura correcta
             }
         })
         .catch(error => console.error('Error:', error));
@@ -59,17 +59,11 @@ document.addEventListener('DOMContentLoaded', function() {
         const fechaInicio = document.querySelector('#start-date').value;
         const fechaFin = document.querySelector('#end-date').value;
 
-        Swal.fire({
-            title: 'Actualizando registros',
-            timer: 2000,
-            didOpen: () => { Swal.showLoading(); },
-        });
-
         window.getData.getFilteredChartData(fechaInicio, fechaFin)
             .then(data => {
-                Swal.close();
                 if (data.status === 'success') {
-                    updateChart4(data.data);
+                    // actualizarMensajeFecha(new Date(fechaInicio), new Date(fechaFin));
+                    updateChart(data.data);
                 }
             })
             .catch(error => {

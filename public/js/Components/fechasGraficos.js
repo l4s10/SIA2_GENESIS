@@ -1,40 +1,33 @@
 $(function () {
-    // Configuración de Flatpickr para la selección de fechas y horas en la solicitud de vehículos
-
-    // Obtener la fecha y hora actual
-    let today = new Date();
-
-    // Configuración para la fecha de inicio
+    // Configuración inicial para la fecha de inicio
     let fechaInicioConfig = {
-        enableTime: true,
-        dateFormat: "Y-m-d H:i:s",
-        altFormat: "d-m-Y H:i",
+        dateFormat: "Y-m-d",
+        altFormat: "d-m-Y",
         altInput: true,
         locale: "es",
         minDate: '2019-01-01',
-        maxDate: new Date(today.getFullYear(), 11, 31), // Permitir fechas hasta fin de año
-        defaultDate: today, // Establecer la fecha por defecto como la fecha actual
-        minTime: today.getHours() + ":" + today.getMinutes(), // Establecer la hora mínima como la hora actual
-        maxTime: "19:00" // Hora máxima permitida
+        maxDate: new Date().fp_incr(365), // Hasta un año a partir de hoy
+        // No establecer defaultDate para iniciar vacío
+        onChange: function(selectedDates, dateStr, instance) {
+            // Actualizar la fecha mínima de fechaTerminoConfig
+            fechaTerminoConfig.minDate = dateStr;
+            // Recrear el Flatpickr de fecha de término
+            let fechaTerminoPicker = $("#end-date").flatpickr(fechaTerminoConfig);
+            fechaTerminoPicker.clear(); // Limpiar el campo para asegurar que inicie vacío
+        }
     };
 
-    // Configuración para la fecha de término
+    // Configuración inicial para la fecha de término, sin defaultDate para iniciar vacío
     let fechaTerminoConfig = {
-        enableTime: true,
-        dateFormat: "Y-m-d H:i:s",
-        altFormat: "d-m-Y H:i",
+        dateFormat: "Y-m-d",
+        altFormat: "d-m-Y",
         altInput: true,
         locale: "es",
         minDate: '2019-01-01',
-        maxDate: new Date(today.getFullYear() + 1, 1, 28), // Permitir fechas hasta febrero del siguiente año
-        defaultDate: today, // Establecer la fecha por defecto como la fecha actual
-        minTime: today.getHours() + ":" + today.getMinutes(), // Establecer la hora mínima como la hora actual
-        maxTime: "19:00" // Hora máxima permitida
+        maxDate: new Date().fp_incr(365) // Hasta un año a partir de hoy
     };
 
-    // Inicializar el calendario de fecha de inicio
-    $('#start-date').flatpickr(fechaInicioConfig);
-
-    // Inicializar el calendario de fecha de término
-    $('#end-date').flatpickr(fechaTerminoConfig);
+    // Inicializar Flatpickr para los campos de fecha
+    $("#start-date").flatpickr(fechaInicioConfig);
+    $("#end-date").flatpickr(fechaTerminoConfig);
 });

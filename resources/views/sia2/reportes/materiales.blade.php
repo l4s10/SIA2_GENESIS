@@ -40,6 +40,13 @@
         </div>
     </div>
 
+    <!-- Contenedor para el mensaje -->
+    <div class="row">
+        <div class="col-md-12">
+            <h2 id="fecha-filtro-info" class="text-center"></h2>
+        </div>
+    </div>
+
     <div class="row">
         <div class="col-md-6">
             <div class="card">
@@ -101,36 +108,6 @@
     <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
 
-    {{-- <script>
-        // Inicializar Flatpickr
-        document.addEventListener('DOMContentLoaded', function() {
-            flatpickr('#start-date', {
-                minDate: '2019-01-01',
-                maxDate: 'today',
-                dateFormat: 'Y-m-d', // Formato visible al usuario
-                altFormat: 'd-m-Y', // Formato de envío al servidor
-                altInput: true, // Habilitar el campo de entrada alternativo
-                defaultDate: 'today'
-            });
-            flatpickr('#end-date', {
-                minDate: '2019-01-01',
-                maxDate: 'today',
-                dateFormat: 'Y-m-d', // Formato visible al usuario
-                altFormat: 'd-m-Y', // Formato de envío al servidor
-                altInput: true, // Habilitar el campo de entrada alternativo
-                defaultDate: 'today'
-            });
-        });
-    </script> --}}
-
-
-    {{-- @if(session('api_token'))
-    <script>
-        localStorage.setItem('api_token', '{{ session('api_token') }}');
-        console.log('API Token stored:', localStorage.getItem('api_token'));
-    </script>
-    @endif --}}
-
     {{-- Inicializar calendarios --}}
     <script src="{{ asset('js/Components/fechasGraficos.js') }}"></script>
 
@@ -148,62 +125,79 @@
     {{-- Importamos el archivo JS para el grafico 5 --}}
     <script src="{{ asset('js/Graficos/Materiales/grafico5.js') }}"></script>
 
-<!-- Scrip para inicizaliar el mapa -->
-<script>
-        document.addEventListener('DOMContentLoaded', function() {
-            var mapDiv = document.getElementById('map');
-            var mapOpenButton = document.getElementById('map-open');
-            var map;
-            var featureGroup;
-
-            function toggleMap() {
-                if (mapDiv.style.display === 'none') {
-                    mapDiv.style.display = 'block';
-                    mapDiv.requestFullscreen(); // Solicita el modo de pantalla completa para el elemento del mapa
-                    initializeMap();
-                } else {
-                    mapDiv.style.display = 'none';
-                    document.exitFullscreen(); // Sale del modo de pantalla completa si el mapa ya no está visible
-                    mapOpenButton.disabled = false; // Restablece el botón a su estado original
-                }
-            }
-
-            function initializeMap() {
-                var map = L.map('map').setView([-36.8261, -73.0498], 13); // Coordenadas de Concepción, Chile y nivel de zoom 13
-
-                L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-                }).addTo(map);
-
-                // Carga el archivo GeoJSON y agrega las comunas como marcadores en el mapa
-                fetch('json/comunasbiobio.geojson')
-                    .then(response => response.json())
-                    .then(data => {
-                        L.geoJSON(data, {
-                            pointToLayer: function (feature, latlng) {
-                                return L.marker(latlng).bindPopup(feature.properties.comuna);
-                            }
-                        }).addTo(map);
-                    })
-                    .catch(error => {
-                        console.error('Error al cargar el archivo GeoJSON:', error);
-                    });
-
-                // Agregar el control de enrutamiento
-                L.Routing.control({
-                    waypoints: [
-                        L.latLng(-36.8261, -73.0498),  // Coordenadas de Concepción
-                        L.latLng(-36.7167, -73.1167)   // Coordenadas de Talcahuano
-                    ],
-                    language: 'es',
-                    lineOptions: {
-                        styles: [
-                            { color: 'red', opacity: 0.6, weight: 4 },
-                        ]
-                    }
-                }).addTo(map);
-            }
-            mapOpenButton.addEventListener('click', toggleMap);
+    {{-- Disparar sweetalert cuando se filtre --}}
+    <script>
+        document.getElementById('refresh-button').addEventListener('click', function() {
+            Swal.fire({
+                didOpen: () => {
+                    Swal.showLoading()
+                },
+                title: 'Filtrando datos',
+                text: 'Espere un momento por favor...',
+                icon: 'info',
+                timer: 2000,
+                showConfirmButton: false,
+                allowOutsideClick: false
+            });
         });
-</script>
+    </script>
+
+    <!-- Scrip para inicizaliar el mapa -->
+    <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                var mapDiv = document.getElementById('map');
+                var mapOpenButton = document.getElementById('map-open');
+                var map;
+                var featureGroup;
+
+                function toggleMap() {
+                    if (mapDiv.style.display === 'none') {
+                        mapDiv.style.display = 'block';
+                        mapDiv.requestFullscreen(); // Solicita el modo de pantalla completa para el elemento del mapa
+                        initializeMap();
+                    } else {
+                        mapDiv.style.display = 'none';
+                        document.exitFullscreen(); // Sale del modo de pantalla completa si el mapa ya no está visible
+                        mapOpenButton.disabled = false; // Restablece el botón a su estado original
+                    }
+                }
+
+                function initializeMap() {
+                    var map = L.map('map').setView([-36.8261, -73.0498], 13); // Coordenadas de Concepción, Chile y nivel de zoom 13
+
+                    L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+                    }).addTo(map);
+
+                    // Carga el archivo GeoJSON y agrega las comunas como marcadores en el mapa
+                    fetch('json/comunasbiobio.geojson')
+                        .then(response => response.json())
+                        .then(data => {
+                            L.geoJSON(data, {
+                                pointToLayer: function (feature, latlng) {
+                                    return L.marker(latlng).bindPopup(feature.properties.comuna);
+                                }
+                            }).addTo(map);
+                        })
+                        .catch(error => {
+                            console.error('Error al cargar el archivo GeoJSON:', error);
+                        });
+
+                    // Agregar el control de enrutamiento
+                    L.Routing.control({
+                        waypoints: [
+                            L.latLng(-36.8261, -73.0498),  // Coordenadas de Concepción
+                            L.latLng(-36.7167, -73.1167)   // Coordenadas de Talcahuano
+                        ],
+                        language: 'es',
+                        lineOptions: {
+                            styles: [
+                                { color: 'red', opacity: 0.6, weight: 4 },
+                            ]
+                        }
+                    }).addTo(map);
+                }
+                mapOpenButton.addEventListener('click', toggleMap);
+            });
+    </script>
 @endsection

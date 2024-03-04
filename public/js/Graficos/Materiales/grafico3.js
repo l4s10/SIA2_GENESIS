@@ -64,18 +64,10 @@ document.addEventListener('DOMContentLoaded', function() {
         const fechaInicio = document.querySelector('#start-date').value;
         const fechaFin = document.querySelector('#end-date').value;
 
-        Swal.fire({
-            title: 'Actualizando registros',
-            timer: 2000,
-            didOpen: () => {
-                Swal.showLoading();
-            }
-        });
-
         window.getData.getFilteredChartData(fechaInicio, fechaFin)
             .then(data => {
-                Swal.close();
                 if (data.status === 'success') {
+                    // actualizarMensajeFecha(new Date(fechaInicio), new Date(fechaFin));
                     updateChart(data.data);
                 }
             })

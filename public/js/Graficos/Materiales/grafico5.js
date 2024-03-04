@@ -30,7 +30,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 
-    function updateChart5(data) {
+    function updateChart(data) {
         chart5.data.datasets[0].data = [
             data.grafico5.promedioAtencion.promedio_creacion_atencion || 0,
             data.grafico5.promedioRevisionAprobacion.promedio_revision_aprobacion || 0, // Usar 0 si es null
@@ -43,7 +43,7 @@ document.addEventListener('DOMContentLoaded', function() {
     window.getData.getInitialChartData()
         .then(data => {
             if (data.status === 'success') {
-                updateChart5(data.data); // Asegúrate de que data.data contenga la estructura correcta
+                updateChart(data.data); // Asegúrate de que data.data contenga la estructura correcta
             }
         })
         .catch(error => console.error('Error:', error));
@@ -52,17 +52,11 @@ document.addEventListener('DOMContentLoaded', function() {
         const fechaInicio = document.querySelector('#start-date').value;
         const fechaFin = document.querySelector('#end-date').value;
 
-        Swal.fire({
-            title: 'Actualizando registros',
-            timer: 2000,
-            didOpen: () => { Swal.showLoading(); },
-        });
-
         window.getData.getFilteredChartData(fechaInicio, fechaFin)
             .then(data => {
-                Swal.close();
                 if (data.status === 'success') {
-                    updateChart5(data.data);
+                    // actualizarMensajeFecha(new Date(fechaInicio), new Date(fechaFin));
+                    updateChart(data.data);
                 }
             })
             .catch(error => {
