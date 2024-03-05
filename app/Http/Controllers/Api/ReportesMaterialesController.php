@@ -56,6 +56,14 @@ class ReportesMaterialesController extends Controller
     public function filtrarGeneral(Request $request)
     {
         try {
+            // Extraer fechas del request
+            $fechaInicio = $request->input('fecha_inicio');
+            $fechaFin = $request->input('fecha_fin');
+
+            // Ajustar la fecha de fin para que sea hasta el final del día
+            if ($fechaFin) {
+                $fechaFin = date('Y-m-d', strtotime($fechaFin)) . ' 23:59:59';
+            }
             // Cada gráfico devuelve su propia estructura de datos
             $rankingGestionadores = $this->Grafico1($request);
             // Cargamos el grafico2
@@ -110,6 +118,11 @@ class ReportesMaterialesController extends Controller
             $fechaInicio = $request->input('fecha_inicio');
             $fechaFin = $request->input('fecha_fin');
             $oficinaId = Auth::user()->OFICINA_ID; // Obtener el ID de la oficina del usuario autenticado
+
+            // Ajustar la fecha de fin para que sea hasta el final del día
+            if ($fechaFin) {
+                $fechaFin = date('Y-m-d', strtotime($fechaFin)) . ' 23:59:59';
+            }
 
             // Obtenemos los SOLICITUD_ID de las solicitudes de materiales únicas que pertenecen a la oficina del usuario autenticado en base a fechas si se proporcionan.
             $solicitudesUnicas = SolicitudMaterial::query()
@@ -171,6 +184,11 @@ class ReportesMaterialesController extends Controller
             $fechaInicio = $request->input('fecha_inicio');
             $fechaFin = $request->input('fecha_fin');
             $oficinaId = Auth::user()->OFICINA_ID; // Obtener el ID de la oficina del usuario autenticado
+
+            // Ajustar la fecha de fin para que sea hasta el final del día
+            if ($fechaFin) {
+                $fechaFin = date('Y-m-d', strtotime($fechaFin)) . ' 23:59:59';
+            }
 
             // Obtener los IDs de solicitudes únicos que cumplen con los criterios de fecha y oficina
             $solicitudesUnicas = SolicitudMaterial::query()
@@ -242,6 +260,11 @@ class ReportesMaterialesController extends Controller
             $fechaFin = $request->input('fecha_fin');
             $oficinaId = Auth::user()->OFICINA_ID; // Obtener el ID de la oficina del usuario autenticado
 
+            // Ajustar la fecha de fin para que sea hasta el final del día
+            if ($fechaFin) {
+                $fechaFin = date('Y-m-d', strtotime($fechaFin)) . ' 23:59:59';
+            }
+
             $rankingEstados = SolicitudMaterial::query()
                 ->join('solicitudes', 'solicitudes_materiales.SOLICITUD_ID', '=', 'solicitudes.SOLICITUD_ID')
                 ->join('users', 'solicitudes.USUARIO_id', '=', 'users.id') // Obtenemos el ID del usuario que hizo la solicitud para filtrar por oficina
@@ -289,6 +312,11 @@ class ReportesMaterialesController extends Controller
             $fechaFin = $request->input('fecha_fin');
             $oficinaId = Auth::user()->OFICINA_ID;
 
+            // Ajustar la fecha de fin para que sea hasta el final del día
+            if ($fechaFin) {
+                $fechaFin = date('Y-m-d', strtotime($fechaFin)) . ' 23:59:59';
+            }
+
             // Consulta para obtener el ranking de materiales más solicitados.
             // Se seleccionan los materiales de las solicitudes de materiales, filtrando por oficina y fechas, si se especifican.
             // Luego, se cuentan las solicitudes por cada material y se agrupan los resultados por material.
@@ -334,6 +362,12 @@ class ReportesMaterialesController extends Controller
             $fechaInicio = $request->input('fecha_inicio');
             $fechaFin = $request->input('fecha_fin');
             $oficinaId = Auth::user()->OFICINA_ID; // Obtener el ID de la oficina del usuario autenticado
+
+            // Ajustar la fecha de fin para que sea hasta el final del día
+            if ($fechaFin) {
+                $fechaFin = date('Y-m-d', strtotime($fechaFin)) . ' 23:59:59';
+            }
+
             // Realiza la consulta a la base de datos
             $promedioAtencion = SolicitudMaterial::query()
                 ->join('solicitudes', 'solicitudes_materiales.SOLICITUD_ID', '=', 'solicitudes.SOLICITUD_ID')

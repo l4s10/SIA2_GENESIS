@@ -52,6 +52,11 @@ class ReportesEquiposController extends Controller
             $fechaInicio = $request->input('fecha_inicio');
             $fechaFin = $request->input('fecha_fin');
 
+            // Ajustar la fecha de fin para que sea hasta el final del día
+            if ($fechaFin) {
+                $fechaFin = date('Y-m-d', strtotime($fechaFin)) . ' 23:59:59';
+            }
+
             // Cada gráfico devuelve su propia estructura de datos
             $rankingGestionadores = $this->Grafico1($request);
             // Cargamos el grafico2
@@ -102,6 +107,11 @@ class ReportesEquiposController extends Controller
             $fechaInicio = $request->input('fecha_inicio');
             $fechaFin = $request->input('fecha_fin');
             $oficinaId = Auth::user()->OFICINA_ID; // Obtener el ID de la oficina del usuario autenticado
+
+            // Ajustar la fecha de fin para que sea hasta el final del día
+            if ($fechaFin) {
+                $fechaFin = date('Y-m-d', strtotime($fechaFin)) . ' 23:59:59';
+            }
 
             // Obtenemos los SOLICITUD_ID de las solicitudes de materiales únicas que pertenecen a la oficina del usuario autenticado en base a fechas si se proporcionan.
             $solicitudesUnicas = SolicitudEquipos::query()
@@ -163,6 +173,11 @@ class ReportesEquiposController extends Controller
             $fechaInicio = $request->input('fecha_inicio');
             $fechaFin = $request->input('fecha_fin');
             $oficinaId = Auth::user()->OFICINA_ID; // Obtener el ID de la oficina del usuario autenticado
+
+            // Ajustar la fecha de fin para que sea hasta el final del día
+            if ($fechaFin) {
+                $fechaFin = date('Y-m-d', strtotime($fechaFin)) . ' 23:59:59';
+            }
 
             // Obtener los IDs de solicitudes únicos que cumplen con los criterios de fecha y oficina
             $solicitudesUnicas = SolicitudEquipos::query()
@@ -233,6 +248,11 @@ class ReportesEquiposController extends Controller
             $fechaFin = $request->input('fecha_fin');
             $oficinaId = Auth::user()->OFICINA_ID; // Obtener el ID de la oficina del usuario autenticado
 
+            // Ajustar la fecha de fin para que sea hasta el final del día
+            if ($fechaFin) {
+                $fechaFin = date('Y-m-d', strtotime($fechaFin)) . ' 23:59:59';
+            }
+
             $rankingEstados = SolicitudEquipos::query()
                 ->join('solicitudes', 'solicitudes_equipos.SOLICITUD_ID', '=', 'solicitudes.SOLICITUD_ID')
                 ->join('users', 'solicitudes.USUARIO_id', '=', 'users.id') // Obtenemos a los usuarios que hicieron las solicitudes para filtrar por OFICINA_ID
@@ -279,6 +299,11 @@ class ReportesEquiposController extends Controller
             $fechaFin = $request->input('fecha_fin');
             $oficinaId = Auth::user()->OFICINA_ID; // Obtener el ID de la oficina del usuario autenticado
 
+            // Ajustar la fecha de fin para que sea hasta el final del día
+            if ($fechaFin) {
+                $fechaFin = date('Y-m-d', strtotime($fechaFin)) . ' 23:59:59';
+            }
+
             // Realiza la consulta a la base de datos
             $rankingTiposEquipos = SolicitudEquipos::query()
                 ->join('solicitudes', 'solicitudes_equipos.SOLICITUD_ID', '=', 'solicitudes.SOLICITUD_ID')
@@ -321,6 +346,11 @@ class ReportesEquiposController extends Controller
             $fechaInicio = $request->input('fecha_inicio');
             $fechaFin = $request->input('fecha_fin');
             $oficinaId = Auth::user()->OFICINA_ID; // Obtener el ID de la oficina del usuario autenticado
+
+            // Ajustar la fecha de fin para que sea hasta el final del día
+            if ($fechaFin) {
+                $fechaFin = date('Y-m-d', strtotime($fechaFin)) . ' 23:59:59';
+            }
 
             // Realiza la consulta a la base de datos
             $promedioAtencion = SolicitudEquipos::query()

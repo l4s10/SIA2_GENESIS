@@ -60,11 +60,12 @@ class ReportesBodegasController extends Controller
     public function filtrarGeneral(Request $request)
     {
         try{
+
             // Obtener los datos de cada gráfico individualmente, aplicando los filtros de fechas
             $grafico1 = $this->Grafico1($request);
             $grafico2 = $this->Grafico2($request);
             $grafico3 = $this->Grafico3($request);
-
+            $grafico4 = $this->Grafico4($request);
             $grafico5 = $this->Grafico5($request);
 
             // Devolver los resultados en un solo JSON
@@ -74,6 +75,7 @@ class ReportesBodegasController extends Controller
                     'grafico1' => $grafico1,
                     'grafico2' => $grafico2,
                     'grafico3' => $grafico3,
+                    'grafico4' => $grafico4,
                     'grafico5' => $grafico5
                 ]
             ]);
@@ -102,6 +104,11 @@ class ReportesBodegasController extends Controller
             $fechaFin = $request->input('fecha_fin');
             $oficinaId = Auth::user()->OFICINA_ID;
 
+            // Ajustar la fecha de fin para que sea hasta el final del día
+            if ($fechaFin) {
+                $fechaFin = date('Y-m-d', strtotime($fechaFin)) . ' 23:59:59';
+            }
+
             // Obtenemos los SOLICITUD_ID de las solicitudes de bodegas únicas que pertenecen a la oficina del usuario autenticado en base a fechas si se proporcionan.
             $solicitudesUnicas = SolicitudBodega::query()
                 ->join('solicitudes', 'solicitudes_bodegas.SOLICITUD_ID', '=', 'solicitudes.SOLICITUD_ID')
@@ -128,10 +135,12 @@ class ReportesBodegasController extends Controller
                 ->orderBy('total_gestiones', 'DESC')
                 ->get();
 
-            // Devolver el resultado en un arreglo, para ser leido por el chart.js correspondiente.
-            return [
-                'ranking' => $rankingGestionadores
-            ];
+            // Devolver la response en JSON con el status y la data
+            return response()->json([
+                'status' => 'success',
+                'data' => $rankingGestionadores,
+                'message' => 'Reporte 1 obtenido con exito.'
+            ], 200);
         }catch(\Exception $e){
             return response()->json([
                 'status' => 'error',
@@ -156,6 +165,11 @@ class ReportesBodegasController extends Controller
             $fechaInicio = $request->input('fecha_inicio');
             $fechaFin = $request->input('fecha_fin');
             $oficinaId = Auth::user()->OFICINA_ID;
+
+            // Ajustar la fecha de fin para que sea hasta el final del día
+            if ($fechaFin) {
+                $fechaFin = date('Y-m-d', strtotime($fechaFin)) . ' 23:59:59';
+            }
 
             // Obtenemos los SOLICITUD_ID de las solicitudes de bodegas únicas que pertenecen a la oficina del usuario autenticado en base a fechas si se proporcionan.
             $solicitudesUnicas = SolicitudBodega::query()
@@ -190,10 +204,12 @@ class ReportesBodegasController extends Controller
             // Unimos los resultados de ambas consultas
             $solicitudesPorEntidad = $departamentosQuery->unionAll($ubicacionesQuery)->get();
 
-            // Retornamos el resultado en un arreglo, para ser leido por el chart.js correspondiente.
-            return [
-                'SolicitudesPorEntidad' => $solicitudesPorEntidad
-            ];
+            // Devolver la response en JSON con el status y la data
+            return response()->json([
+                'status' => 'success',
+                'data' => $solicitudesPorEntidad,
+                'message' => 'Reporte 2 obtenido con exito.'
+            ], 200);
         } catch (\Exception $e) {
             return response()->json([
                 'status' => 'error',
@@ -222,6 +238,11 @@ class ReportesBodegasController extends Controller
             $fechaFin = $request->input('fecha_fin');
             $oficinaId = Auth::user()->OFICINA_ID;
 
+            // Ajustar la fecha de fin para que sea hasta el final del día
+            if ($fechaFin) {
+                $fechaFin = date('Y-m-d', strtotime($fechaFin)) . ' 23:59:59';
+            }
+
             // Obtenemos el ranking de estados de solicitudes de bodegas basado en la cantidad de solicitudes en cada estado.
             $rankingEstados = SolicitudBodega::query()
                 ->join('solicitudes', 'solicitudes_bodegas.SOLICITUD_ID', '=', 'solicitudes.SOLICITUD_ID')
@@ -235,10 +256,12 @@ class ReportesBodegasController extends Controller
                 ->orderBy('total_solicitudes', 'DESC')
                 ->get();
 
-            // Devolver el resultado en un arreglo, para ser leido por el chart.js correspondiente.
-            return [
-                'rankingEstados' => $rankingEstados
-            ];
+            // Devolver la response en JSON con el status y la data
+            return response()->json([
+                'status' => 'success',
+                'data' => $rankingEstados,
+                'message' => 'Reporte 3 obtenido con exito.'
+            ], 200);
         } catch (\Exception $e) {
             return response()->json([
                 'status' => 'error',
@@ -264,6 +287,11 @@ class ReportesBodegasController extends Controller
             $fechaFin = $request->input('fecha_fin');
             $oficinaId = Auth::user()->OFICINA_ID; // Obtener el ID de la oficina del usuario autenticado
 
+            // Ajustar la fecha de fin para que sea hasta el final del día
+            if ($fechaFin) {
+                $fechaFin = date('Y-m-d', strtotime($fechaFin)) . ' 23:59:59';
+            }
+
             $rankingBodegas = SolicitudBodega::query()
                 ->join('solicitudes', 'solicitudes_bodegas.SOLICITUD_ID', '=', 'solicitudes.SOLICITUD_ID')
                 ->join('bodegas', 'solicitudes_bodegas.BODEGA_ID', '=', 'bodegas.BODEGA_ID')
@@ -277,9 +305,12 @@ class ReportesBodegasController extends Controller
                 ->orderBy('total_solicitudes', 'DESC')
                 ->get();
 
-            return [
-                'rankingBodegasSolicitadas' => $rankingBodegas
-            ];
+            // Devolver los datos en JSON
+            return response()->json([
+                'status' => 'success',
+                'data' => $rankingBodegas,
+                'message' => 'Reporte 4 obtenido con exito.'
+            ], 200);
         } catch (\Exception $e) {
             return response()->json([
                 'status' => 'error',
@@ -304,6 +335,11 @@ class ReportesBodegasController extends Controller
             $fechaInicio = $request->input('fecha_inicio');
             $fechaFin = $request->input('fecha_fin');
             $oficinaId = Auth::user()->OFICINA_ID;
+
+            // Ajustar la fecha de fin para que sea hasta el final del día
+            if ($fechaFin) {
+                $fechaFin = date('Y-m-d', strtotime($fechaFin)) . ' 23:59:59';
+            }
 
             $promedioAtencion = SolicitudBodega::query()
                 ->join('solicitudes', 'solicitudes_bodegas.SOLICITUD_ID', '=', 'solicitudes.SOLICITUD_ID')
@@ -353,12 +389,16 @@ class ReportesBodegasController extends Controller
                 ->select(DB::raw('AVG(DATEDIFF(solicitudes.updated_at, solicitudes.SOLICITUD_FECHA_HORA_INICIO_ASIGNADA)) as promedio_aprobacion_entregado'))
                 ->first();
 
-            return [
-                'promedioAtencion' => $promedioAtencion,
-                'promedioRevisionAprobacion' => $promedioRevisionAprobacion,
-                'promedioAprobacionEntregado' => $promedioAprobacionEntrega
-            ];
-
+            // Devolver datos en JSON con el status y la data
+            return response()->json([
+                'status' => 'success',
+                'data' => [
+                    'promedioAtencion' => $promedioAtencion,
+                    'promedioRevisionAprobacion' => $promedioRevisionAprobacion,
+                    'promedioAprobacionEntrega' => $promedioAprobacionEntrega
+                ],
+                'message' => 'Reporte 5 obtenido con exito.'
+            ], 200);
         }catch(\Exception $e){
             return response()->json([
                 'status' => 'error',
