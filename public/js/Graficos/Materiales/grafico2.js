@@ -32,41 +32,62 @@ document.addEventListener('DOMContentLoaded', function() {
         return color;
     }
 
-    function updateChart(data) {
-        const newData = data.grafico2.solicitudesPorEntidad.map(item => ({
-            label: item.entidad,
-            value: item.total_solicitudes,
-            color: getRandomColor() // Asumiendo que getRandomColor también está global
-        }));
-        myChart2.data.labels = newData.map(item => item.label);
-        myChart2.data.datasets[0].data = newData.map(item => item.value);
-        myChart2.data.datasets[0].backgroundColor = newData.map(item => item.color);
-        myChart2.update();
-    }
+    const currentDate = new Date();
+    const firstDayOfMonth = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1);
+    const formattedFirstDay = formatDate(firstDayOfMonth);
+    const formattedCurrentDate = formatDate(currentDate);
 
-    // Utiliza getData global para obtener y actualizar los datos del gráfico
-    window.getData.getInitialChartData()
+    // Llama a la funcion para consumir la data en la carga inicial (del mes actual)
+    window.getData.getFilteredChartData(formattedFirstDay, formattedCurrentDate)
         .then(data => {
             if (data.status === 'success') {
-                updateChart(data.data); // Asegúrate de que data.data contenga la estructura correcta
+                //Acceder a la data de la respuesta y actualizar el grafico con ella
+                const grafico2Data = data.data.grafico2.original.data;
+                myChart2.data.labels = grafico2Data.map(item => item.entidad);
+                myChart2.data.datasets[0].data = grafico2Data.map(item => item.total_solicitudes);
+                myChart2.data.datasets[0].backgroundColor = grafico2Data.map(() => getRandomColor());
+                myChart2.update();
             }
         })
         .catch(error => console.error('Error:', error));
 
+    // Funcion para formatear la fecha
+    function formatDate(date) {
+        const year = date.getFullYear();
+        const month = String(date.getMonth() + 1).padStart(2, '0');
+        const day = String(date.getDate()).padStart(2, '0');
+        return `${year}-${month}-${day}`;
+    }
+
+
+    // Cuando se haga click en el botón de actualizar, hace un fetch de los datos
     document.querySelector('#refresh-button').addEventListener('click', function() {
         const fechaInicio = document.querySelector('#start-date').value;
         const fechaFin = document.querySelector('#end-date').value;
 
-        window.getData.getFilteredChartData(fechaInicio, fechaFin)
-            .then(data => {
-                if (data.status === 'success') {
-                    // actualizarMensajeFecha(new Date(fechaInicio), new Date(fechaFin));
-                    updateChart(data.data);
-                }
+        // Consumir endpoint para el gráfico 2 de materiales
+        fetch('/api/reportes/materiales/grafico-2', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Accept': 'application/json',
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+            },
+            body: JSON.stringify({
+                fecha_inicio: fechaInicio,
+                fecha_fin: fechaFin
             })
-            .catch(error => {
-                Swal.fire('Error', 'No se pudieron actualizar los datos.', 'error');
-                console.error('Error:', error);
-            });
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.status === 'success') {
+                myChart2.data.labels = data.data.map(item => item.entidad);
+                myChart2.data.datasets[0].data = data.data.map(item => item.total_solicitudes);
+                myChart2.data.datasets[0].backgroundColor = data.data.map(() => getRandomColor());
+                myChart2.update();
+            }
+        })
+        .catch(error => console.error('Error:', error));
     });
+
 });

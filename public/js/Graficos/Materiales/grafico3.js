@@ -40,11 +40,43 @@ document.addEventListener('DOMContentLoaded', function() {
         return color;
     }
 
+    const currentDate = new Date();
+    const firstDayOfMonth = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1);
+    const formattedFirstDay = formatDate(firstDayOfMonth);
+    const formattedCurrentDate = formatDate(currentDate);
+
+    // Llama a la funcion para consumir la data en la carga inicial (del mes actual)
+    window.getData.getFilteredChartData(formattedFirstDay, formattedCurrentDate)
+        .then(data => {
+            if (data.status === 'success') {
+                // Assuming data is the entire response object you received
+                const grafico3Data = data.data.grafico3.original.data;
+
+                // Update chart labels, data, and background colors
+                myChart.data.labels = grafico3Data.map(item => item.SOLICITUD_ESTADO);
+                myChart.data.datasets[0].data = grafico3Data.map(item => item.total_solicitudes);
+                myChart.data.datasets[0].backgroundColor = grafico3Data.map(() => getRandomColor());
+
+                // Update the chart to reflect the new data
+                myChart.update();
+            }
+        })
+        .catch(error => console.error('Error:', error));
+
+    // Funcion para formatear la fecha
+    function formatDate(date) {
+        const year = date.getFullYear();
+        const month = String(date.getMonth() + 1).padStart(2, '0');
+        const day = String(date.getDate()).padStart(2, '0');
+        return `${year}-${month}-${day}`;
+    }
+
+    // Funcion para actualizar el grafico cuando se filtra por fechas despues de la carga inicial
     function updateChart(data) {
-        const newData = data.grafico3.rankingEstados.map(item => ({
+        const newData = data.map(item => ({
             label: item.SOLICITUD_ESTADO,
             value: item.total_solicitudes,
-            color: getRandomColor()
+            color: getRandomColor() // Assuming you have a function to generate colors
         }));
         myChart.data.labels = newData.map(item => item.label);
         myChart.data.datasets[0].data = newData.map(item => item.value);
@@ -52,28 +84,31 @@ document.addEventListener('DOMContentLoaded', function() {
         myChart.update();
     }
 
-    window.getData.getInitialChartData()
-        .then(data => {
-            if (data.status === 'success') {
-                updateChart(data.data); // Actualizar el tercer gráfico
-            }
-        })
-        .catch(error => console.error('Error:', error));
+        // Cuando se haga click en el botón de actualizar, hace un fetch de los datos
+        document.querySelector('#refresh-button').addEventListener('click', function() {
+            const fechaInicio = document.querySelector('#start-date').value;
+            const fechaFin = document.querySelector('#end-date').value;
 
-    document.querySelector('#refresh-button').addEventListener('click', function () {
-        const fechaInicio = document.querySelector('#start-date').value;
-        const fechaFin = document.querySelector('#end-date').value;
-
-        window.getData.getFilteredChartData(fechaInicio, fechaFin)
+            fetch('/api/reportes/materiales/grafico-3', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                },
+                body: JSON.stringify({
+                    fecha_inicio: fechaInicio,
+                    fecha_fin: fechaFin
+                })
+            })
+            .then(response => response.json())
             .then(data => {
                 if (data.status === 'success') {
-                    // actualizarMensajeFecha(new Date(fechaInicio), new Date(fechaFin));
+                    // Assumes updateChart is a function to update the chart with new data
                     updateChart(data.data);
                 }
             })
-            .catch(error => {
-                Swal.fire('Error', 'No se pudieron actualizar los datos.', 'error');
-                console.error('Error:', error);
-            });
-    });
+            .catch(error => console.error('Error:', error));
+        });
+
 });

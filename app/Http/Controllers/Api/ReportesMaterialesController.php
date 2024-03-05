@@ -136,9 +136,13 @@ class ReportesMaterialesController extends Controller
                 ->groupBy('revisores.id', 'revisores.USUARIO_NOMBRES', 'revisores.USUARIO_APELLIDOS')
                 ->orderBy('total_gestiones', 'DESC')
                 ->get();
-            return [
-                'ranking' => $rankingGestionadores
-            ];
+
+            // Devolver la response en JSON con el status y la data
+            return response()->json([
+                'status' => 'success',
+                'data' => $rankingGestionadores,
+                'message' => 'Reporte 1 obtenido con exito.'
+            ], 200);
         } catch (\Exception $e) {
             return response()->json([
                 'status' => 'error',
@@ -202,10 +206,12 @@ class ReportesMaterialesController extends Controller
             // Combinar los resultados de departamentos y ubicaciones
             $solicitudesPorEntidad = $departamentosQuery->unionAll($ubicacionesQuery)->get();
 
-            // Devolver la data
-            return [
-                'solicitudesPorEntidad' => $solicitudesPorEntidad
-            ];
+            // Devolver la response en JSON con el status y la data
+            return response()->json([
+                'status' => 'success',
+                'data' => $solicitudesPorEntidad,
+                'message' => 'Reporte 2 obtenido con exito.'
+            ], 200);
         } catch (\Exception $e) {
             return response()->json([
                 'status' => 'error',
@@ -248,9 +254,12 @@ class ReportesMaterialesController extends Controller
                 ->orderBy('total_solicitudes', 'DESC')
                 ->get();
 
-            return [
-                'rankingEstados' => $rankingEstados
-            ];
+            // Devolver la response en JSON con el status y la data
+            return response()->json([
+                'status' => 'success',
+                'data' => $rankingEstados,
+                'message' => 'Reporte 3 obtenido con exito.'
+            ], 200);
         } catch (\Exception $e) {
             return response()->json([
                 'status' => 'error',
@@ -297,9 +306,11 @@ class ReportesMaterialesController extends Controller
                 ->get();
 
             // Devolver los datos en JSON
-            return [
-                'rankingTiposMateriales' => $rankingTiposMateriales
-            ];
+            return response()->json([
+                'status' => 'success',
+                'data' => $rankingTiposMateriales,
+                'message' => 'Reporte 4 obtenido con exito.'
+            ], 200);
         }catch(\Exception $e){
             return response()->json([
                 'status' => 'error',
@@ -372,12 +383,17 @@ class ReportesMaterialesController extends Controller
                 ->select(DB::raw('AVG(DATEDIFF(solicitudes.updated_at, solicitudes.SOLICITUD_FECHA_HORA_INICIO_ASIGNADA)) as promedio_aprobacion_entrega'))
                 ->first();
 
-            // Devolver datos
-            return [
-                'promedioAtencion' => $promedioAtencion,
-                'promedioRevisionAprobacion' => $promedioRevisionAprobacion,
-                'promedioAprobacionEntrega' => $promedioAprobacionEntrega
-            ];
+            // Devolver datos en JSON con el status y la data
+
+            return response()->json([
+                'status' => 'success',
+                'data' => [
+                    'promedioAtencion' => $promedioAtencion,
+                    'promedioRevisionAprobacion' => $promedioRevisionAprobacion,
+                    'promedioAprobacionEntrega' => $promedioAprobacionEntrega
+                ],
+                'message' => 'Reporte 5 obtenido con exito.'
+            ], 200);
         } catch (\Exception $e) {
             return response()->json([
                 'status' => 'error',
