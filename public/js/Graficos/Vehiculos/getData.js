@@ -33,7 +33,6 @@ window.getData = {
                 })
             });
             const data = await response.json();
-            consolq.log(data);
             return data; // Retorna los datos recibidos
         } catch (error) {
             console.error('Error:', error);

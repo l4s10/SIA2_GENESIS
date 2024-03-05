@@ -95,6 +95,11 @@ class ReportesVehiculosController extends Controller
             $fechaFin = $request->input('fecha_fin');
             $oficinaId = Auth::user()->OFICINA_ID;
 
+            // Ajustar la fecha de fin para que sea hasta el final del día
+            if ($fechaFin) {
+                $fechaFin = date('Y-m-d', strtotime($fechaFin)) . ' 23:59:59';
+            }
+
             $rankingRevisores = RevisionSolicitud::whereNotNull('revisiones_solicitudes.SOLICITUD_VEHICULO_ID')
                 ->join('users', 'revisiones_solicitudes.USUARIO_id', '=', 'users.id')
                 ->where('users.OFICINA_ID', $oficinaId) // Aplicar filtro de OFICINA_ID
@@ -103,13 +108,16 @@ class ReportesVehiculosController extends Controller
                     return $query->whereBetween('revisiones_solicitudes.created_at', [$fechaInicio, $fechaFin]);
                 })
                 ->groupBy('users.id', 'users.USUARIO_NOMBRES', 'users.USUARIO_APELLIDOS')
-                ->select('users.id', DB::raw('CONCAT(users.USUARIO_NOMBRES, " ", users.USUARIO_APELLIDOS) as nombre_completo'), DB::raw('COUNT(DISTINCT revisiones_solicitudes.SOLICITUD_VEHICULO_ID) as cantidad'))
-                ->orderBy('cantidad', 'desc')
+                ->select('users.id', DB::raw('CONCAT(users.USUARIO_NOMBRES, " ", users.USUARIO_APELLIDOS) as nombre_completo'), DB::raw('COUNT(DISTINCT revisiones_solicitudes.SOLICITUD_VEHICULO_ID) as total_gestiones'))
+                ->orderBy('total_gestiones', 'desc')
                 ->get();
 
-            return [
-                'ranking' => $rankingRevisores,
-            ];
+            // Devolver la response en JSON con el status y la data
+            return response()->json([
+                'status' => 'success',
+                'data' => $rankingRevisores,
+                'message' => 'Reporte 1 obtenido con exito.'
+            ], 200);
         } catch (\Exception $e) {
             return response()->json([
                 'status' => 'error',
@@ -162,9 +170,12 @@ class ReportesVehiculosController extends Controller
             // Union ALL de los dos rankings
             $rankingDepartamentosUbicaciones = $rankingDepartamentos->merge($rankingUbicaciones);
 
-            return [
-                'solicitudesPorEntidad' => $rankingDepartamentosUbicaciones,
-            ];
+            // Devolver la response en JSON con el status y la data
+            return response()->json([
+                'status' => 'success',
+                'data' => $rankingDepartamentosUbicaciones,
+                'message' => 'Reporte 2 obtenido con exito.'
+            ], 200);
         } catch (\Exception $e) {
             return response()->json([
                 'status' => 'error',
@@ -193,21 +204,25 @@ class ReportesVehiculosController extends Controller
                 ->where('users.OFICINA_ID', $oficinaId);
 
             if ($fechaInicio && $fechaFin) {
-                $query->whereBetween('created_at', [$fechaInicio, $fechaFin]);
+                $query->whereBetween('solicitudes_vehiculos.created_at', [$fechaInicio, $fechaFin]);
             }
+
 
             $rankingSolicitudes = $query->groupBy('SOLICITUD_VEHICULO_ESTADO')
                 ->select('SOLICITUD_VEHICULO_ESTADO as SOLICITUD_ESTADO', DB::raw('COUNT(*) as total_solicitudes'))
                 ->orderBy('total_solicitudes', 'desc')
                 ->get();
 
-            return [
-                'rankingEstados' => $rankingSolicitudes,
-            ];
+            // Devolver la response en JSON con el status y la data
+            return response()->json([
+                'status' => 'success',
+                'data' => $rankingSolicitudes,
+                'message' => 'Reporte 3 obtenido con exito.'
+            ], 200);
         } catch (\Exception $e) {
             return response()->json([
                 'status' => 'error',
-                'message' => 'Error al obtener el ranking de solicitudes vehiculares: ',
+                'message' => 'Error al obtener el ranking de solicitudes vehiculares: '. $e->getMessage(),
             ], 500);
         }
     }
@@ -232,8 +247,9 @@ class ReportesVehiculosController extends Controller
                 ->where('users.OFICINA_ID', $oficinaId);
 
             if ($fechaInicio && $fechaFin) {
-                $query->whereBetween('created_at', [$fechaInicio, $fechaFin]);
+                $query->whereBetween('solicitudes_vehiculos.created_at', [$fechaInicio, $fechaFin]);
             }
+
 
             $rankingVehiculos = $query->join('vehiculos', 'solicitudes_vehiculos.VEHICULO_ID', '=', 'vehiculos.VEHICULO_ID')
                 ->groupBy('vehiculos.VEHICULO_PATENTE')
@@ -241,9 +257,12 @@ class ReportesVehiculosController extends Controller
                 ->orderBy('total_solicitudes', 'desc')
                 ->get();
 
-            return [
-                'rankingVehiculos' => $rankingVehiculos,
-            ];
+            // Devolver los datos en JSON
+            return response()->json([
+                'status' => 'success',
+                'data' => $rankingVehiculos,
+                'message' => 'Reporte 4 obtenido con exito.'
+            ], 200);
         } catch (\Exception $e) {
             return response()->json([
                 'status' => 'error',
@@ -252,35 +271,61 @@ class ReportesVehiculosController extends Controller
         }
     }
 
-    public function Grafico5() {
-        // Promedio de días desde 'INGRESADO' a 'EN REVISIÓN'
-        $promedioIngresadoARevision = DB::table('solicitudes_vehiculos as sv')
-            ->join(DB::raw('(SELECT SOLICITUD_VEHICULO_ID, MIN(created_at) as created_at FROM revisiones_solicitudes WHERE REVISION_SOLICITUD_OBSERVACION IS NOT NULL GROUP BY SOLICITUD_VEHICULO_ID) rs'), function($join) {
-                $join->on('sv.SOLICITUD_VEHICULO_ID', '=', 'rs.SOLICITUD_VEHICULO_ID');
-            })
-            ->select(DB::raw('AVG(DATEDIFF(rs.created_at, sv.created_at)) as promedio_dias_ingresado_a_revision'))
-            ->first();
+    public function Grafico5(Request $request)
+    {
+        try {
+            $fechaInicio = $request->input('fecha_inicio');
+            $fechaFin = $request->input('fecha_fin');
+            $oficinaId = Auth::user()->OFICINA_ID;
 
-        // Promedio de días desde 'INGRESADO' a 'POR RENDIR'
-        $promedioIngresadoARendir = DB::table('solicitudes_vehiculos as sv')
-            ->join(DB::raw('(SELECT SOLICITUD_VEHICULO_ID, MAX(created_at) as created_at FROM autorizaciones GROUP BY SOLICITUD_VEHICULO_ID) au'), function($join) {
-                $join->on('sv.SOLICITUD_VEHICULO_ID', '=', 'au.SOLICITUD_VEHICULO_ID');
-            })
-            ->select(DB::raw('AVG(DATEDIFF(au.created_at, sv.created_at)) as promedio_dias_ingresado_a_rendir'))
-            ->first();
+            // Promedio de días desde 'INGRESADO' a 'EN REVISIÓN'
+            $promedioIngresadoARevision = DB::table('solicitudes_vehiculos as sv')
+                ->join(DB::raw('(SELECT SOLICITUD_VEHICULO_ID, MIN(created_at) as created_at FROM revisiones_solicitudes WHERE REVISION_SOLICITUD_OBSERVACION IS NOT NULL GROUP BY SOLICITUD_VEHICULO_ID) rs'), function ($join) {
+                    $join->on('sv.SOLICITUD_VEHICULO_ID', '=', 'rs.SOLICITUD_VEHICULO_ID');
+                })
+                ->join('users', 'sv.USUARIO_id', '=', 'users.id')
+                ->where('users.OFICINA_ID', $oficinaId)
+                ->whereBetween('sv.created_at', [$fechaInicio, $fechaFin])
+                ->select(DB::raw('COALESCE(AVG(DATEDIFF(rs.created_at, sv.created_at)), 0) as promedio_dias_ingresado_a_revision'))
+                ->first();
 
-        // Promedio de días desde 'INGRESADO' a 'TERMINADO'
-        $promedioIngresadoATerminado = DB::table('solicitudes_vehiculos as sv')
-            ->join(DB::raw('(SELECT SOLICITUD_VEHICULO_ID, MAX(created_at) as created_at FROM rendiciones GROUP BY SOLICITUD_VEHICULO_ID) rn'), function($join) {
-                $join->on('sv.SOLICITUD_VEHICULO_ID', '=', 'rn.SOLICITUD_VEHICULO_ID');
-            })
-            ->select(DB::raw('AVG(DATEDIFF(rn.created_at, sv.created_at)) as promedio_dias_ingresado_a_terminado'))
-            ->first();
+            // Promedio de días desde 'INGRESADO' a 'POR RENDIR'
+            $promedioIngresadoARendir = DB::table('solicitudes_vehiculos as sv')
+                ->join(DB::raw('(SELECT SOLICITUD_VEHICULO_ID, MAX(created_at) as created_at FROM autorizaciones GROUP BY SOLICITUD_VEHICULO_ID) au'), function ($join) {
+                    $join->on('sv.SOLICITUD_VEHICULO_ID', '=', 'au.SOLICITUD_VEHICULO_ID');
+                })
+                ->join('users', 'sv.USUARIO_id', '=', 'users.id')
+                ->where('users.OFICINA_ID', $oficinaId)
+                ->whereBetween('sv.created_at', [$fechaInicio, $fechaFin])
+                ->select(DB::raw('COALESCE(AVG(DATEDIFF(au.created_at, sv.created_at)), 0) as promedio_dias_ingresado_a_rendir'))
+                ->first();
 
-        return [
-            'promedioAtencion' => $promedioIngresadoARevision ? $promedioIngresadoARevision->promedio_dias_ingresado_a_revision : null,
-            'promedioRevisionAprobacion' => $promedioIngresadoARendir ? $promedioIngresadoARendir->promedio_dias_ingresado_a_rendir : null,
-            'promedioAprobacionEntrega' => $promedioIngresadoATerminado ? $promedioIngresadoATerminado->promedio_dias_ingresado_a_terminado : null
-        ];
+            // Promedio de días desde 'INGRESADO' a 'TERMINADO'
+            $promedioIngresadoATerminado = DB::table('solicitudes_vehiculos as sv')
+                ->join(DB::raw('(SELECT SOLICITUD_VEHICULO_ID, MAX(created_at) as created_at FROM rendiciones GROUP BY SOLICITUD_VEHICULO_ID) rn'), function ($join) {
+                    $join->on('sv.SOLICITUD_VEHICULO_ID', '=', 'rn.SOLICITUD_VEHICULO_ID');
+                })
+                ->join('users', 'sv.USUARIO_id', '=', 'users.id')
+                ->where('users.OFICINA_ID', $oficinaId)
+                ->whereBetween('sv.created_at', [$fechaInicio, $fechaFin])
+                ->select(DB::raw('COALESCE(AVG(DATEDIFF(rn.created_at, sv.created_at)), 0) as promedio_dias_ingresado_a_terminado'))
+                ->first();
+
+            // Devolver como response
+            return response()->json([
+                'status' => 'success',
+                'data' => [
+                    'promedioAtencion' => $promedioIngresadoARevision ? $promedioIngresadoARevision->promedio_dias_ingresado_a_revision : 0,
+                    'promedioRevisionAprobacion' => $promedioIngresadoARendir ? $promedioIngresadoARendir->promedio_dias_ingresado_a_rendir : 0,
+                    'promedioAprobacionEntrega' => $promedioIngresadoATerminado ? $promedioIngresadoATerminado->promedio_dias_ingresado_a_terminado : 0
+                ],
+                'message' => 'Reporte 5 obtenido con exito.'
+            ], 200);
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Error al obtener el promedio de días de atención: ' . $e->getMessage(),
+            ], 500);
+        }
     }
 }

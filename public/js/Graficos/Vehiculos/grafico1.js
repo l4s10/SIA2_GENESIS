@@ -1,3 +1,4 @@
+// grafico1.js
 document.addEventListener('DOMContentLoaded', function() {
     const ctx1 = document.getElementById('grafico1').getContext('2d');
     const myChart = new Chart(ctx1, {
@@ -17,7 +18,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 legend: { display: true },
                 title: {
                     display: true,
-                    text: 'Gestionadores de solicitudes de vehículos',
+                    text: 'Gestionadores de solicitudes de Vehiculos',
                     padding: { top: 10, bottom: 30 }
                 }
             }
@@ -32,41 +33,75 @@ document.addEventListener('DOMContentLoaded', function() {
         return color;
     }
 
-    function updateChart(data) {
-        myChart.data.labels = data.grafico1.ranking.map(item => item.nombre_completo);
-        myChart.data.datasets[0].data = data.grafico1.ranking.map(item => item.cantidad); // Modificado para usar 'cantidad'
-        myChart.data.datasets[0].backgroundColor = data.grafico1.ranking.map(() => getRandomColor());
-        myChart.update();
-    }
 
-    window.getData.getInitialChartData()
+    const currentDate = new Date();
+    const firstDayOfMonth = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1);
+    const formattedFirstDay = formatDate(firstDayOfMonth);
+    const formattedCurrentDate = formatDate(currentDate);
+
+    // Llama a la funcion para consumir la data en la carga inicial (del mes actual)
+    window.getData.getFilteredChartData(formattedFirstDay, formattedCurrentDate)
         .then(data => {
             if (data.status === 'success') {
-                updateChart(data.data);
+                actualizarMensajeFecha(firstDayOfMonth, currentDate);
+                //Acceder a la data de la respuesta y actualizar el grafico con ella
+                const grafico1Data = data.data.grafico1.original.data;
+                myChart.data.labels = grafico1Data.map(item => item.nombre_completo);
+                myChart.data.datasets[0].data = grafico1Data.map(item => item.total_gestiones);
+                myChart.data.datasets[0].backgroundColor = grafico1Data.map(() => getRandomColor());
+                myChart.update();
             }
         })
         .catch(error => console.error('Error:', error));
 
+    // Funcion para formatear la fecha
+    function formatDate(date) {
+        const year = date.getFullYear();
+        const month = String(date.getMonth() + 1).padStart(2, '0');
+        const day = String(date.getDate()).padStart(2, '0');
+        return `${year}-${month}-${day}`;
+    }
+    // Función que actualiza el mensaje con las fechas de filtro
+    function actualizarMensajeFecha(fechaInicio, fechaFin) {
+        const elementoMensaje = document.getElementById('fecha-filtro-info');
+        //Mostrar mensaje con fecha formateada en español chile
+        return elementoMensaje.textContent = `Mostrando datos desde ${fechaInicio.toLocaleDateString('es-CL', { year: 'numeric', month: 'long', day: 'numeric' })} hasta ${fechaFin.toLocaleDateString('es-CL', { year: 'numeric', month: 'long', day: 'numeric' })}`;
+    }
+
+    // Cuando se haga click en el boton de actualizar, hace un fetch de los datos
     document.querySelector('#refresh-button').addEventListener('click', function() {
         const fechaInicio = document.querySelector('#start-date').value;
         const fechaFin = document.querySelector('#end-date').value;
 
-        Swal.fire({
-            title: 'Actualizando registros',
-            timer: 2000,
-            didOpen: () => { Swal.showLoading(); },
-        });
+        // Validar que las fechas no estén vacías
+        if (!fechaInicio || !fechaFin) {
+            return;
+        }
 
-        window.getData.getFilteredChartData(fechaInicio, fechaFin)
-            .then(data => {
-                Swal.close();
-                if (data.status === 'success') {
-                    updateChart(data.data);
-                }
+        fetch('/api/reportes/vehiculos/grafico-1', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Accept': 'application/json',
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+            },
+            body: JSON.stringify({
+                fecha_inicio: fechaInicio,
+                fecha_fin: fechaFin
             })
-            .catch(error => {
-                Swal.fire('Error', 'No se pudieron actualizar los datos.', 'error');
-                console.error('Error:', error);
-            });
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.status === 'success') {
+                actualizarMensajeFecha(new Date(fechaInicio), new Date(fechaFin));
+                // Asumiendo que tu gráfico se llama myChart
+                myChart.data.labels = data.data.map(item => item.nombre_completo);
+                myChart.data.datasets[0].data = data.data.map(item => item.total_gestiones);
+                myChart.data.datasets[0].backgroundColor = data.data.map(() => getRandomColor());
+                myChart.update();
+            }
+        })
+        .catch(error => console.error('Error:', error));
     });
+
 });
