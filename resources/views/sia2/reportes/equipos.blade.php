@@ -38,6 +38,13 @@
         </div>
     </div>
 
+    <!-- Contenedor para el mensaje -->
+    <div class="row">
+        <div class="col-md-12">
+            <h2 id="fecha-filtro-info" class="text-center"></h2>
+        </div>
+    </div>
+
     <div class="row">
         <div class="col-md-6">
             <div class="card">
@@ -90,35 +97,21 @@
     <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
 
-    {{-- <script>
-        // Inicializar Flatpickr
-        document.addEventListener('DOMContentLoaded', function() {
-            flatpickr('#start-date', {
-                minDate: '2019-01-01',
-                maxDate: 'today',
-                dateFormat: 'Y-m-d', // Formato visible al usuario
-                altFormat: 'd-m-Y', // Formato de envío al servidor
-                altInput: true, // Habilitar el campo de entrada alternativo
-                defaultDate: 'today'
-            });
-            flatpickr('#end-date', {
-                minDate: '2019-01-01',
-                maxDate: 'today',
-                dateFormat: 'Y-m-d', // Formato visible al usuario
-                altFormat: 'd-m-Y', // Formato de envío al servidor
-                altInput: true, // Habilitar el campo de entrada alternativo
-                defaultDate: 'today'
+    <script>
+        document.getElementById('refresh-button').addEventListener('click', function() {
+            Swal.fire({
+                didOpen: () => {
+                    Swal.showLoading()
+                },
+                title: 'Filtrando datos',
+                text: 'Espere un momento por favor...',
+                icon: 'info',
+                timer: 2000,
+                showConfirmButton: false,
+                allowOutsideClick: false
             });
         });
-    </script> --}}
-
-
-    {{-- @if(session('api_token'))
-    <script>
-        localStorage.setItem('api_token', '{{ session('api_token') }}');
-        console.log('API Token stored:', localStorage.getItem('api_token'));
     </script>
-    @endif --}}
 
     {{-- Inicializar calendarios --}}
     <script src="{{ asset('js/Components/fechasGraficos.js') }}"></script>

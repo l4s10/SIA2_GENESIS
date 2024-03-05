@@ -129,9 +129,12 @@ class ReportesEquiposController extends Controller
                 ->orderBy('total_gestiones', 'DESC')
                 ->get();
 
-            return [
-                'ranking' => $rankingGestionadores
-            ];
+            // Devolver la response en JSON con el status y la data
+            return response()->json([
+                'status' => 'success',
+                'data' => $rankingGestionadores,
+                'message' => 'Reporte 1 obtenido con exito.'
+            ], 200);
         } catch (\Exception $e) {
             return response()->json([
                 'status' => 'error',
@@ -167,7 +170,7 @@ class ReportesEquiposController extends Controller
             ->join('users as solicitantes', 'solicitudes.USUARIO_id', '=', 'solicitantes.id')
             ->where('solicitantes.OFICINA_ID', $oficinaId)
             ->when($fechaInicio && $fechaFin, function ($query) use ($fechaInicio, $fechaFin) {
-                return $query->whereBetween(DB::raw('solicitudes.created_at)'), [$fechaInicio, $fechaFin]);
+                return $query->whereBetween(DB::raw('solicitudes.created_at'), [$fechaInicio, $fechaFin]);
             })
             ->select('solicitudes.SOLICITUD_ID')
             ->distinct()
@@ -195,10 +198,12 @@ class ReportesEquiposController extends Controller
             // Combinar los resultados de departamentos y ubicaciones
             $solicitudesPorEntidad = $departamentosQuery->unionAll($ubicacionesQuery)->get();
 
-            // Devolver la data
-            return [
-                'solicitudesPorEntidad' => $solicitudesPorEntidad
-            ];
+            // Devolver la response en JSON con el status y la data
+            return response()->json([
+                'status' => 'success',
+                'data' => $solicitudesPorEntidad,
+                'message' => 'Reporte 2 obtenido con exito.'
+            ], 200);
         } catch (\Exception $e) {
             return response()->json([
                 'status' => 'error',
@@ -234,15 +239,18 @@ class ReportesEquiposController extends Controller
                 ->where('users.OFICINA_ID', '=', $oficinaId) // Filtrar por OFICINA_ID
                 ->select('solicitudes.SOLICITUD_ESTADO', DB::raw('COUNT(DISTINCT solicitudes.SOLICITUD_ID) as total_solicitudes'))
                 ->when($fechaInicio && $fechaFin, function ($query) use ($fechaInicio, $fechaFin) {
-                    return $query->whereBetween(DB::raw('solicitudes.created_at)'), [$fechaInicio, $fechaFin]);
+                    return $query->whereBetween(DB::raw('solicitudes.created_at'), [$fechaInicio, $fechaFin]);
                 })
                 ->groupBy('solicitudes.SOLICITUD_ESTADO')
                 ->orderBy('total_solicitudes', 'DESC')
                 ->get();
 
-            return [
-                'rankingEstados' => $rankingEstados
-            ];
+            // Devolver la response en JSON con el status y la data
+            return response()->json([
+                'status' => 'success',
+                'data' => $rankingEstados,
+                'message' => 'Reporte 3 obtenido con exito.'
+            ], 200);
         } catch (\Exception $e) {
             return response()->json([
                 'status' => 'error',
@@ -278,16 +286,18 @@ class ReportesEquiposController extends Controller
                 ->join('users', 'solicitudes.USUARIO_id', '=', 'users.id')
                 ->where('users.OFICINA_ID', $oficinaId)
                 ->when($fechaInicio && $fechaFin, function ($query) use ($fechaInicio, $fechaFin) {
-                    return $query->whereBetween(DB::raw('solicitudes.created_at)'), [$fechaInicio, $fechaFin]);
+                    return $query->whereBetween(DB::raw('solicitudes.created_at'), [$fechaInicio, $fechaFin]);
                 })
                 ->select('tipos_equipos.TIPO_EQUIPO_NOMBRE', DB::raw('COUNT(solicitudes_equipos.TIPO_EQUIPO_ID) as total_solicitudes'))
                 ->groupBy('tipos_equipos.TIPO_EQUIPO_NOMBRE')
                 ->orderBy('total_solicitudes', 'DESC')
                 ->get();
 
-            return [
-                'rankingTiposEquipos' => $rankingTiposEquipos
-            ];
+            return response()->json([
+                'status' => 'success',
+                'data' => $rankingTiposEquipos,
+                'message' => 'Reporte 4 obtenido con exito.'
+            ], 200);
         } catch (\Exception $e) {
             return response()->json([
                 'status' => 'error',
@@ -319,9 +329,9 @@ class ReportesEquiposController extends Controller
                 ->join('users', 'solicitudes.USUARIO_id', '=', 'users.id')
                 ->where('users.OFICINA_ID', $oficinaId)
                 ->when($fechaInicio && $fechaFin, function ($query) use ($fechaInicio, $fechaFin) {
-                    return $query->whereBetween(DB::raw('solicitudes.created_at)'), [$fechaInicio, $fechaFin]);
+                    return $query->whereBetween(DB::raw('solicitudes.created_at'), [$fechaInicio, $fechaFin]);
                 })
-                ->select(DB::raw('AVG(DATEDIFF(revisiones_solicitudes.created_at, solicitudes.created_at)) as promedio_atencion'))
+                ->select(DB::raw('AVG(DATEDIFF(revisiones_solicitudes.created_at, solicitudes.created_at)) as promedio_creacion_atencion'))
                 ->first();
 
             // Promedio atencion desde revision a aprobado/rechazado
@@ -342,7 +352,7 @@ class ReportesEquiposController extends Controller
                 ->where('solicitudes.SOLICITUD_ESTADO', 'APROBADO')
                 ->orWhere('solicitudes.SOLICITUD_ESTADO', 'RECHAZADO')
                 ->when($fechaInicio && $fechaFin, function ($query) use ($fechaInicio, $fechaFin) {
-                    return $query->whereBetween(DB::raw('solicitudes.created_at)'), [$fechaInicio, $fechaFin]);
+                    return $query->whereBetween(DB::raw('solicitudes.created_at'), [$fechaInicio, $fechaFin]);
                 })
                 ->select(DB::raw('AVG(DATEDIFF(solicitudes.SOLICITUD_FECHA_HORA_INICIO_ASIGNADA, revisiones_solicitudes.created_at)) as promedio_revision_aprobacion'))
                 ->first();
@@ -356,16 +366,20 @@ class ReportesEquiposController extends Controller
                 ->where('users.OFICINA_ID', $oficinaId)
                 ->where('solicitudes.SOLICITUD_ESTADO', 'TERMINADO')
                 ->when($fechaInicio && $fechaFin, function ($query) use ($fechaInicio, $fechaFin) {
-                    return $query->whereBetween(DB::raw('solicitudes.created_at)'), [$fechaInicio, $fechaFin]);
+                    return $query->whereBetween(DB::raw('solicitudes.created_at'), [$fechaInicio, $fechaFin]);
                 })
                 ->select(DB::raw('AVG(DATEDIFF(solicitudes.updated_at, solicitudes.SOLICITUD_FECHA_HORA_INICIO_ASIGNADA)) as promedio_aprobacion_entrega'))
                 ->first();
 
-            return [
-                'promedioAtencion' => $promedioAtencion,
-                'promedioRevisionAprobacion' => $promedioRevisionAprobacion,
-                'promedioAprobacionEntrega' => $promedioAprobacionEntrega
-            ];
+            return response()->json([
+                'status' => 'success',
+                'data' => [
+                    'promedioAtencion' => $promedioAtencion,
+                    'promedioRevisionAprobacion' => $promedioRevisionAprobacion,
+                    'promedioAprobacionEntrega' => $promedioAprobacionEntrega
+                ],
+                'message' => 'Reporte 5 obtenido con exito.'
+            ], 200);
         } catch (\Exception $e) {
             return response()->json([
                 'status' => 'error',

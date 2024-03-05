@@ -384,7 +384,6 @@ class ReportesMaterialesController extends Controller
                 ->first();
 
             // Devolver datos en JSON con el status y la data
-
             return response()->json([
                 'status' => 'success',
                 'data' => [
