@@ -5,7 +5,7 @@ document.addEventListener('DOMContentLoaded', function() {
         data: {
             labels: [],
             datasets: [{
-                label: 'Cantidad de solicitudes por sala',
+                label: 'Solicitudes por Sala',
                 data: [],
                 backgroundColor: [],
                 borderWidth: 1
@@ -17,7 +17,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 legend: { display: true },
                 title: {
                     display: true,
-                    text: 'Ranking de salas mas solicitados',
+                    text: 'Ranking de salas más solicitadas',
                     padding: { top: 10, bottom: 30 }
                 }
             },
@@ -39,42 +39,79 @@ document.addEventListener('DOMContentLoaded', function() {
         return color;
     }
 
-    function updateChart4(data) {
-        chart4.data.labels = data.grafico4.rankingSalasSolicitadas.map(item => item.SALA_NOMBRE);
-        chart4.data.datasets[0].data = data.grafico4.rankingSalasSolicitadas.map(item => item.total_solicitudes);
-        chart4.data.datasets[0].backgroundColor = data.grafico4.rankingSalasSolicitadas.map(() => getRandomColor());
-        chart4.update();
-    }
+    const currentDate = new Date();
+    const firstDayOfMonth = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1);
+    const formattedFirstDay = formatDate(firstDayOfMonth);
+    const formattedCurrentDate = formatDate(currentDate);
 
-    // Utiliza getData global para obtener y actualizar los datos del gráfico
-    window.getData.getInitialChartData()
+    // Llama a la funcion para consumir la data en la carga inicial (del mes actual)
+    window.getData.getFilteredChartData(formattedFirstDay, formattedCurrentDate)
         .then(data => {
             if (data.status === 'success') {
-                updateChart4(data.data); // Asegúrate de que data.data contenga la estructura correcta
+                const grafico4Data = data.data.grafico4.original.data;
+
+                chart4.data.labels = grafico4Data.map(item => item.SALA_NOMBRE);
+                chart4.data.datasets[0].data = grafico4Data.map(item => item.total_solicitudes);
+                chart4.data.datasets[0].backgroundColor = grafico4Data.map(() => getRandomColor());
+
+                chart4.update();
             }
         })
         .catch(error => console.error('Error:', error));
 
-    document.querySelector('#refresh-button').addEventListener('click', function() {
-        const fechaInicio = document.querySelector('#start-date').value;
-        const fechaFin = document.querySelector('#end-date').value;
+    // Funcion para formatear la fecha
+    function formatDate(date) {
+        const year = date.getFullYear();
+        const month = String(date.getMonth() + 1).padStart(2, '0');
+        const day = String(date.getDate()).padStart(2, '0');
+        return `${year}-${month}-${day}`;
+    }
 
-        Swal.fire({
-            title: 'Actualizando registros',
-            timer: 2000,
-            didOpen: () => { Swal.showLoading(); },
-        });
 
-        window.getData.getFilteredChartData(fechaInicio, fechaFin)
+    // Funcion para actualizar el grafico cuando se filtra por fechas despues de la carga inicial
+    function updateChart(data) {
+        const newData = data.map(item => ({
+            label: item.SALA_NOMBRE,
+            value: item.total_solicitudes,
+            color: getRandomColor() // Assuming you have a function to generate colors
+        }));
+        chart4.data.labels = newData.map(item => item.label);
+        chart4.data.datasets[0].data = newData.map(item => item.value);
+        chart4.data.datasets[0].backgroundColor = newData.map(item => item.color);
+        chart4.update();
+    }
+
+
+
+        // Cuando se haga click en el botón de actualizar, hace un fetch de los datos
+        document.querySelector('#refresh-button').addEventListener('click', function() {
+            const fechaInicio = document.querySelector('#start-date').value;
+            const fechaFin = document.querySelector('#end-date').value;
+
+            // Validar que las fechas no estén vacías
+            if (!fechaInicio || !fechaFin) {
+                return;
+            }
+
+            fetch('/api/reportes/salas/grafico-4', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                },
+                body: JSON.stringify({
+                    fecha_inicio: fechaInicio,
+                    fecha_fin: fechaFin
+                })
+            })
+            .then(response => response.json())
             .then(data => {
-                Swal.close();
                 if (data.status === 'success') {
-                    updateChart4(data.data);
+                    // Assumes updateChart is a function to update the chart with new data
+                    updateChart(data.data);
                 }
             })
-            .catch(error => {
-                Swal.fire('Error', 'No se pudieron actualizar los datos.', 'error');
-                console.error('Error:', error);
-            });
-    });
+            .catch(error => console.error('Error:', error));
+        });
 });

@@ -106,6 +106,11 @@ class ReportesSalasController extends Controller
             $fechaFin = $request->input('fecha_fin');
             $oficinaId = Auth::user()->OFICINA_ID; // Obtener el ID de la oficina del usuario autenticado
 
+            // Ajustar la fecha de fin para que sea hasta el final del día
+            if ($fechaFin) {
+                $fechaFin = date('Y-m-d', strtotime($fechaFin)) . ' 23:59:59';
+            }
+
             // Obtenemos los SOLICITUD_ID de las solicitudes de salas únicas que pertenecen a la oficina del usuario autenticado en base a fechas si se proporcionan.
             $solicitudesUnicas = SolicitudSala::query()
                 ->join('solicitudes', 'solicitudes_salas.SOLICITUD_ID', '=', 'solicitudes.SOLICITUD_ID')
@@ -132,9 +137,12 @@ class ReportesSalasController extends Controller
                 ->orderBy('total_gestiones', 'DESC')
                 ->get();
 
-            return [
-                'ranking' => $rankingGestionadores
-            ];
+            // Devolver la response en JSON con el status y la data
+            return response()->json([
+                'status' => 'success',
+                'data' => $rankingGestionadores,
+                'message' => 'Reporte 1 obtenido con exito.'
+            ], 200);
         }catch(\Exception $e){
             return response()->json([
                 'status' => 'error',
@@ -160,17 +168,22 @@ class ReportesSalasController extends Controller
             $fechaFin = $request->input('fecha_fin');
             $oficinaId = Auth::user()->OFICINA_ID; // Obtener el ID de la oficina del usuario autenticado
 
+            // Ajustar la fecha de fin para que sea hasta el final del día
+            if ($fechaFin) {
+                $fechaFin = date('Y-m-d', strtotime($fechaFin)) . ' 23:59:59';
+            }
+
             // Obtener los IDs de solicitudes únicos que cumplen con los criterios de fecha y oficina
             $solicitudesUnicas = SolicitudSala::query()
-            ->join('solicitudes', 'solicitudes_salas.SOLICITUD_ID', '=', 'solicitudes.SOLICITUD_ID')
-            ->join('users as solicitantes', 'solicitudes.USUARIO_id', '=', 'solicitantes.id')
-            ->where('solicitantes.OFICINA_ID', $oficinaId)
-            ->when($fechaInicio && $fechaFin, function ($query) use ($fechaInicio, $fechaFin) {
-                return $query->whereBetween('solicitudes.created_at', [$fechaInicio, $fechaFin]);
-            })
-            ->select('solicitudes.SOLICITUD_ID')
-            ->distinct()
-            ->pluck('SOLICITUD_ID');
+                ->join('solicitudes', 'solicitudes_salas.SOLICITUD_ID', '=', 'solicitudes.SOLICITUD_ID')
+                ->join('users as solicitantes', 'solicitudes.USUARIO_id', '=', 'solicitantes.id')
+                ->where('solicitantes.OFICINA_ID', $oficinaId)
+                ->when($fechaInicio && $fechaFin, function ($query) use ($fechaInicio, $fechaFin) {
+                    return $query->whereBetween('solicitudes.created_at', [$fechaInicio, $fechaFin]);
+                })
+                ->select('solicitudes.SOLICITUD_ID')
+                ->distinct()
+                ->pluck('SOLICITUD_ID');
 
 
             // Ahora, contamos las solicitudes únicas por departamento o ubicación
@@ -194,10 +207,12 @@ class ReportesSalasController extends Controller
             // Combinar los resultados de departamentos y ubicaciones
             $solicitudesPorEntidad = $departamentosQuery->unionAll($ubicacionesQuery)->get();
 
-            // Devolver la data
-            return [
-                'solicitudesPorEntidad' => $solicitudesPorEntidad
-            ];
+            // Devolver la response en JSON con el status y la data
+            return response()->json([
+                'status' => 'success',
+                'data' => $solicitudesPorEntidad,
+                'message' => 'Reporte 2 obtenido con exito.'
+            ], 200);
         } catch (\Exception $e) {
             return response()->json([
                 'status' => 'error',
@@ -226,6 +241,12 @@ class ReportesSalasController extends Controller
             $fechaFin = $request->input('fecha_fin');
             $oficinaId = Auth::user()->OFICINA_ID; // Obtener el ID de la oficina del usuario autenticado
 
+            // Ajustar la fecha de fin para que sea hasta el final del día
+            if ($fechaFin) {
+                $fechaFin = date('Y-m-d', strtotime($fechaFin)) . ' 23:59:59';
+            }
+
+
             $rankingEstados = SolicitudSala::query()
                 ->join('solicitudes', 'solicitudes_salas.SOLICITUD_ID', '=', 'solicitudes.SOLICITUD_ID')
                 ->join('users', 'solicitudes.USUARIO_id', '=', 'users.id') // Obtenemos el ID del usuario que hizo la solicitud para filtrar por oficina
@@ -238,9 +259,12 @@ class ReportesSalasController extends Controller
                 ->orderBy('total_solicitudes', 'DESC')
                 ->get();
 
-            return [
-                'rankingEstados' => $rankingEstados
-            ];
+            // Devolver la response en JSON con el status y la data
+            return response()->json([
+                'status' => 'success',
+                'data' => $rankingEstados,
+                'message' => 'Reporte 3 obtenido con exito.'
+            ], 200);
         } catch (\Exception $e) {
             return response()->json([
                 'status' => 'error',
@@ -266,6 +290,11 @@ class ReportesSalasController extends Controller
             $fechaFin = $request->input('fecha_fin');
             $oficinaId = Auth::user()->OFICINA_ID; // Obtener el ID de la oficina del usuario autenticado
 
+            // Ajustar la fecha de fin para que sea hasta el final del día
+            if ($fechaFin) {
+                $fechaFin = date('Y-m-d', strtotime($fechaFin)) . ' 23:59:59';
+            }
+
             $rankingSalas = SolicitudSala::query()
                 ->join('solicitudes', 'solicitudes_salas.SOLICITUD_ID', '=', 'solicitudes.SOLICITUD_ID')
                 ->join('salas', 'solicitudes_salas.SALA_ID', '=', 'salas.SALA_ID')
@@ -279,9 +308,12 @@ class ReportesSalasController extends Controller
                 ->orderBy('total_solicitudes', 'DESC')
                 ->get();
 
-            return [
-                'rankingSalasSolicitadas' => $rankingSalas
-            ];
+            // Devolver los datos en JSON
+            return response()->json([
+                'status' => 'success',
+                'data' => $rankingSalas,
+                'message' => 'Reporte 4 obtenido con exito.'
+            ], 200);
         } catch (\Exception $e) {
             return response()->json([
                 'status' => 'error',
@@ -306,6 +338,11 @@ class ReportesSalasController extends Controller
             $fechaFin = $request->input('fecha_fin');
             $oficinaId = Auth::user()->OFICINA_ID; // Obtener el ID de la oficina del usuario autenticado
 
+            // Ajustar la fecha de fin para que sea hasta el final del día
+            if ($fechaFin) {
+                $fechaFin = date('Y-m-d', strtotime($fechaFin)) . ' 23:59:59';
+            }
+
             // Realiza la consulta a la base de datos
             $promedioAtencion = SolicitudSala::query()
                 ->join('solicitudes', 'solicitudes_salas.SOLICITUD_ID', '=', 'solicitudes.SOLICITUD_ID')
@@ -315,7 +352,7 @@ class ReportesSalasController extends Controller
                 ->when($fechaInicio && $fechaFin, function ($query) use ($fechaInicio, $fechaFin) {
                     return $query->whereBetween('solicitudes.created_at', [$fechaInicio, $fechaFin]);
                 })
-                ->select(DB::raw('AVG(DATEDIFF(revisiones_solicitudes.created_at, solicitudes.created_at)) as promedio_atencion'))
+                ->select(DB::raw('AVG(DATEDIFF(revisiones_solicitudes.created_at, solicitudes.created_at)) as promedio_creacion_atencion'))
                 ->first();
 
             // Promedio atencion desde revision a "APROBADO"/"RECHAZADO"
@@ -355,11 +392,16 @@ class ReportesSalasController extends Controller
                 ->select(DB::raw('AVG(DATEDIFF(solicitudes.updated_at, solicitudes.SOLICITUD_FECHA_HORA_INICIO_ASIGNADA)) as promedio_aprobacion_entrega'))
                 ->first();
 
-            return [
-                'promedioAtencion' => $promedioAtencion,
-                'promedioRevisionAprobacion' => $promedioRevisionAprobacion,
-                'promedioAprobacionEntrega' => $promedioAprobacionEntrega
-            ];
+            // Devolver datos en JSON con el status y la data
+            return response()->json([
+                'status' => 'success',
+                'data' => [
+                    'promedioAtencion' => $promedioAtencion,
+                    'promedioRevisionAprobacion' => $promedioRevisionAprobacion,
+                    'promedioAprobacionEntrega' => $promedioAprobacionEntrega
+                ],
+                'message' => 'Reporte 5 obtenido con exito.'
+            ], 200);
         } catch (\Exception $e) {
             return response()->json([
                 'status' => 'error',
