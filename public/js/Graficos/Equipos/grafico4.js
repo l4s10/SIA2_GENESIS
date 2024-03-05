@@ -88,6 +88,11 @@ document.addEventListener('DOMContentLoaded', function() {
             const fechaInicio = document.querySelector('#start-date').value;
             const fechaFin = document.querySelector('#end-date').value;
 
+            if (!fechaInicio || !fechaFin) {
+                // console.log('Fechas no especificadas. Cancelando la petición.');
+                return;
+            }
+
             fetch('/api/reportes/equipos/grafico-4', {
                 method: 'POST',
                 headers: {

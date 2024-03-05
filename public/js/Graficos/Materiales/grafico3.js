@@ -89,6 +89,11 @@ document.addEventListener('DOMContentLoaded', function() {
             const fechaInicio = document.querySelector('#start-date').value;
             const fechaFin = document.querySelector('#end-date').value;
 
+            // Validar que las fechas no estén vacías
+            if (!fechaInicio || !fechaFin) {
+                return;
+            }
+
             fetch('/api/reportes/materiales/grafico-3', {
                 method: 'POST',
                 headers: {

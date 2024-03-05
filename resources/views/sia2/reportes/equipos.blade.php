@@ -23,11 +23,11 @@
                     <div class="row">
                         <div class="col-md-6">
                             <label for="start-date">Fecha de inicio:</label>
-                            <input type="date" id="start-date" name="start-date" class="form-control">
+                            <input type="date" id="start-date" name="start-date" class="form-control" required>
                         </div>
                         <div class="col-md-6">
                             <label for="end-date">Fecha de fin:</label>
-                            <input type="date" id="end-date" name="end-date" class="form-control">
+                            <input type="date" id="end-date" name="end-date" class="form-control" required>
                         </div>
                     </div>
                 </div>
@@ -99,6 +99,19 @@
 
     <script>
         document.getElementById('refresh-button').addEventListener('click', function() {
+            var startDate = document.getElementById('start-date').value;
+            var endDate = document.getElementById('end-date').value;
+
+            if (startDate === '' || endDate === '') {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: 'Por favor, ingrese ambas fechas.',
+                });
+                // y no hacer la petición
+                return;
+            }
+
             Swal.fire({
                 didOpen: () => {
                     Swal.showLoading()

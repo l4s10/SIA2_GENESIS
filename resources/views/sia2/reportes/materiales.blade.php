@@ -128,6 +128,19 @@
     {{-- Disparar sweetalert cuando se filtre --}}
     <script>
         document.getElementById('refresh-button').addEventListener('click', function() {
+            var startDate = document.getElementById('start-date').value;
+            var endDate = document.getElementById('end-date').value;
+
+            if (startDate === '' || endDate === '') {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: 'Por favor, ingrese ambas fechas.',
+                });
+                // y no hacer la petición
+                return;
+            }
+
             Swal.fire({
                 didOpen: () => {
                     Swal.showLoading()

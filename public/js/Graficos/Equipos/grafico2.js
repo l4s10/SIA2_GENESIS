@@ -65,6 +65,11 @@ document.addEventListener('DOMContentLoaded', function() {
         const fechaInicio = document.querySelector('#start-date').value;
         const fechaFin = document.querySelector('#end-date').value;
 
+        if (!fechaInicio || !fechaFin) {
+            // console.log('Fechas no especificadas. Cancelando la petición.');
+            return;
+        }
+
         // Consumir endpoint para el gráfico 2 de materiales
         fetch('/api/reportes/equipos/grafico-2', {
             method: 'POST',
