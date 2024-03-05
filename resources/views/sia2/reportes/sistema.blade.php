@@ -38,6 +38,13 @@
         </div>
     </div>
 
+    <!-- Contenedor para el mensaje -->
+    <div class="row">
+        <div class="col-md-12">
+            <h2 id="fecha-filtro-info" class="text-center"></h2>
+        </div>
+    </div>
+
     <div class="row">
         <div class="col-md-12">
             <div class="card">
@@ -58,6 +65,36 @@
 @endsection
 
 @section('js')
+    {{-- Disparar sweetalert cuando se filtre --}}
+    <script>
+        document.getElementById('refresh-button').addEventListener('click', function() {
+            var startDate = document.getElementById('start-date').value;
+            var endDate = document.getElementById('end-date').value;
+
+            if (startDate === '' || endDate === '') {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: 'Por favor, ingrese ambas fechas.',
+                });
+                // y no hacer la petición
+                return;
+            }
+
+            Swal.fire({
+                didOpen: () => {
+                    Swal.showLoading()
+                },
+                title: 'Filtrando datos',
+                text: 'Espere un momento por favor...',
+                icon: 'info',
+                timer: 2000,
+                showConfirmButton: false,
+                allowOutsideClick: false
+            });
+        });
+    </script>
+    
     <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>

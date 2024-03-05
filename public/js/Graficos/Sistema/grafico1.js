@@ -37,21 +37,90 @@ document.addEventListener('DOMContentLoaded', function() {
         return color;
     }
 
-
     function updateChart(data) {
-        const categorias = Object.keys(data.grafico1.rankingSolicitudes);
-        const cantidades = Object.values(data.grafico1.rankingSolicitudes);
-        chart.data.labels = categorias;
-        chart.data.datasets[0].data = cantidades;
-        chart.data.datasets[0].backgroundColor = categorias.map(() => getRandomColor());
+        // Obtiene las categorías y cantidades directamente de data
+        const categorias = Object.keys(data.data);
+        const cantidades = Object.values(data.data);
+
+        // Actualiza las propiedades del gráfico con los nuevos datos
+        chart.data.labels = categorias; // Actualiza las etiquetas (categorias)
+        chart.data.datasets[0].data = cantidades; // Actualiza las cantidades
+        chart.data.datasets[0].backgroundColor = cantidades.map(() => getRandomColor()); // Asigna colores aleatorios
+
+        // Actualiza el gráfico para reflejar los nuevos datos
         chart.update();
     }
 
-    window.getData.getInitialChartData()
+
+    const currentDate = new Date();
+    const firstDayOfMonth = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1);
+    const formattedFirstDay = formatDate(firstDayOfMonth);
+    const formattedCurrentDate = formatDate(currentDate);
+
+    // Llama a la funcion para consumir la data en la carga inicial (del mes actual)
+    window.getData.getFilteredChartData(formattedFirstDay, formattedCurrentDate)
         .then(data => {
             if (data.status === 'success') {
-                updateChart(data.data);
+                actualizarMensajeFecha(firstDayOfMonth, currentDate);
+                // Utilizar directamente 'data.data.grafico1.original.data' para la actualización
+                const categorias = Object.keys(data.data.grafico1.original.data);
+                const cantidades = Object.values(data.data.grafico1.original.data);
+                chart.data.labels = categorias;
+                chart.data.datasets[0].data = cantidades;
+                chart.data.datasets[0].backgroundColor = categorias.map(() => getRandomColor());
+                chart.update();
             }
         })
         .catch(error => console.error('Error:', error));
+
+    // Funcion para formatear la fecha
+    function formatDate(date) {
+        const year = date.getFullYear();
+        const month = String(date.getMonth() + 1).padStart(2, '0');
+        const day = String(date.getDate()).padStart(2, '0');
+        return `${year}-${month}-${day}`;
+    }
+    // Función que actualiza el mensaje con las fechas de filtro
+    function actualizarMensajeFecha(fechaInicio, fechaFin) {
+        const elementoMensaje = document.getElementById('fecha-filtro-info');
+        //Mostrar mensaje con fecha formateada en español chile
+        return elementoMensaje.textContent = `Mostrando datos desde ${fechaInicio.toLocaleDateString('es-CL', { year: 'numeric', month: 'long', day: 'numeric' })} hasta ${fechaFin.toLocaleDateString('es-CL', { year: 'numeric', month: 'long', day: 'numeric' })}`;
+    }
+
+    // Agregar evento al botón de filtro
+        // Cuando se haga click en el boton de actualizar, hace un fetch de los datos
+    document.querySelector('#refresh-button').addEventListener('click', function() {
+        const fechaInicio = document.querySelector('#start-date').value;
+        const fechaFin = document.querySelector('#end-date').value;
+
+        // Validar que las fechas no estén vacías
+        if (!fechaInicio || !fechaFin) {
+            return;
+        }
+
+        fetch('/api/reportes/sistema/grafico-1', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Accept': 'application/json',
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+            },
+            body: JSON.stringify({
+                fecha_inicio: fechaInicio,
+                fecha_fin: fechaFin
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.status === 'success') {
+                actualizarMensajeFecha(new Date(fechaInicio), new Date(fechaFin));
+                updateChart(data);
+            }
+        })
+        .catch(error => console.error('Error:', error));
+    });
+
+
+
+
 });

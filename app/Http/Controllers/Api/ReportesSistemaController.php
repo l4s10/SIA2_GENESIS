@@ -88,6 +88,11 @@ class ReportesSistemaController extends Controller
             $fechaFin = $request->input('fecha_fin');
             $oficinaId = Auth::user()->OFICINA_ID;
 
+            // Ajustar la fecha de fin para que sea hasta el final del día
+            if ($fechaFin) {
+                $fechaFin = date('Y-m-d', strtotime($fechaFin)) . ' 23:59:59';
+            }
+
             // Inicializar el ranking
             $ranking = [];
 
@@ -155,10 +160,12 @@ class ReportesSistemaController extends Controller
             // Ordenar el ranking por cantidad (opcional)
             arsort($ranking);
 
-            // Devolver el ranking
-            return [
-                'rankingSolicitudes' => $ranking
-            ];
+            //Devolver como response json
+            return response()->json([
+                'status' => 'success',
+                'data' => $ranking,
+                'message' => 'Ranking de solicitudes obtenido correctamente.',
+            ], 200);
         } catch (\Exception $e) {
             return response()->json([
                 'status' => 'error',
