@@ -4,6 +4,36 @@
 
 @section('content_header')
     <h1>Listado de solicitudes de equipos</h1>
+    @role('ADMINISTRADOR')
+    <div class="alert alert-info alert1" role="alert">
+    <div><strong>Bienvenido Administrador:</strong> Acceso total al módulo, se dispone las opciones para administrar, modificar, eliminar, las solicitudes de reservas de equipos.<div>
+    </div>
+    @endrole
+    @role('REQUIRENTE')
+    <div class="alert alert-info" role="alert">
+    <div><strong>Bienvenido Requirente:</strong> En este módulo usted podrá verificar el estado de sus solicitudes de Reserva de Equipos.<div>
+    </div>
+    @endrole
+    @role('SERVICIOS')
+    <div class="alert alert-info" role="alert">
+    <div><strong>Bienvenido Servicio:</strong> En este módulo usted podrá verificar el estado de sus solicitudes de Reserva de Equipos.<div>
+    </div>
+    @endrole
+    @role('INFORMATICA')
+    <div class="alert alert-info" role="alert">
+    <div><strong>Bienvenido Informatica:</strong> En este módulo usted podrá administrar, modificar, las solicitudes de Reservas de Equipos.<div>
+    </div>
+    @endrole
+    @role('JURIDICO')
+    <div class="alert alert-info" role="alert">
+    <div><strong>Bienvenido Juridico:</strong> En este módulo usted podrá verificar el estado de sus solicitudes de Reserva de Equipos.<div>
+    </div>
+    @endrole
+    @role('FUNCIONARIO')
+    <div class="alert alert-info" role="alert">
+    <div><strong>Bienvenido Funcionario:</strong> En este módulo usted podrá verificar el estado de sus solicitudes de Reserva de Equipos.<div>
+    </div>
+    @endrole
     {{-- Logica de roles --}}
 @stop
 
@@ -122,6 +152,21 @@
         background-color: #d9d9d9;
         }
 </style>
+    
+    
+    <!-- Color mensajes usuario -->
+    <style>
+        .alert {
+            opacity: 0.7; /* Ajusta la opacidad del texto */
+            background-color: #99CCFF;
+            color:     #000000;
+        }
+        .alert1 {
+            opacity: 0.7; /* Ajusta la opacidad del texto  */
+            background-color: #FF8C40;
+            color: #000000;
+        }
+    </style>
 
 
 @stop

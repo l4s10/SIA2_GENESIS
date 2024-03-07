@@ -5,6 +5,31 @@
 @section('content_header')
     <h1>Listado de Salas</h1>
     {{-- roles --}}
+    @role('ADMINISTRADOR')
+    <div class="alert alert-info alert1" role="alert">
+    <div><strong>Bienvenido Administrador:</strong> En esta tabla se muestran todas las salas registradas en el sistema.<div>
+    </div>
+    @endrole
+    @role('SERVICIOS')
+    <div class="alert alert-info" role="alert">
+    <div><strong>Bienvenido Servicio:</strong> Aqui iria el texto donde le corresponde el rol SERVICIO.<div>
+    </div>
+    @endrole
+    @role('INFORMATICA')
+    <div class="alert alert-info" role="alert">
+    <div><strong>Bienvenido Informatica:</strong> En esta tabla se muestran todas las salas registradas en el sistema.<div>
+    </div>
+    @endrole
+    @role('JURIDICO')
+    <div class="alert alert-info" role="alert">
+    <div><strong>Bienvenido Juridico:</strong> Aqui iria el texto donde le corresponde el rol JURIDICO.<div>
+    </div>
+    @endrole
+    @role('FUNCIONARIO')
+    <div class="alert alert-info" role="alert">
+    <div><strong>Bienvenido Funcionario:</strong> Aqui iria el texto donde le corresponde el rol FUNCIONARIO.<div>
+    </div>
+    @endrole
 @stop
 
 @section('content')
@@ -103,6 +128,20 @@
         .estado-desabilitado {
         color: #000000;
         background-color: #F7F70B;
+        }
+    </style>
+        
+    <!-- Color mensajes usuario -->
+    <style>
+        .alert {
+            opacity: 0.7; /* Ajusta la opacidad del texto */
+            background-color: #99CCFF;
+            color:     #000000;
+        }
+        .alert1 {
+            opacity: 0.7; /* Ajusta la opacidad del texto  */
+            background-color: #FF8C40;
+            color: #000000;
         }
     </style>
 @stop

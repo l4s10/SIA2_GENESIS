@@ -4,6 +4,36 @@
 
 @section('content_header')
     <h1>Listado de solicitudes de vehículos</h1>
+    @role('ADMINISTRADOR')
+    <div class="alert alert-info alert1" role="alert">
+    <div><strong>Bienvenido Administrador:</strong> Acceso total al modulo.<div>
+    </div>
+    @endrole
+    @role('REQUIRENTE')
+    <div class="alert alert-info alert1" role="alert">
+    <div><strong>Bienvenido Requirente:</strong> En este módulo usted podrá administrar, modificar, asignar conductor y enviar a autorizar las solicitudes de vehículos.<div>
+    </div>
+    @endrole
+    @role('SERVICIOS')
+    <div class="alert alert-info" role="alert">
+    <div><strong>Bienvenido Servicio:</strong> En este módulo usted podrá administrar, modificar, asignar conductor y enviar a autorizar las solicitudes de vehículos.<div>
+    </div>
+    @endrole
+    @role('INFORMATICA')
+    <div class="alert alert-info" role="alert">
+    <div><strong>Bienvenido Informatica:</strong> En este módulo usted podrá verificar el estado de sus solicitudes y obtener la hoja de salida de vehículos totalmente autorizada y tramitada.<div>
+    </div>
+    @endrole
+    @role('JURIDICO')
+    <div class="alert alert-info" role="alert">
+    <div><strong>Bienvenido Juridico:</strong> En este módulo usted podrá verificar el estado de sus solicitudes y obtener la hoja de salida de vehículos totalmente autorizada y tramitada.<div>
+    </div>
+    @endrole
+    @role('FUNCIONARIO')
+    <div class="alert alert-info" role="alert">
+    <div><strong>Bienvenido Funcionario:</strong> En este módulo usted podrá verificar el estado de sus solicitudes y obtener la hoja de salida de vehículos totalmente autorizada y tramitada.<div>
+    </div>
+    @endrole
 @stop
 
 @section('content')
@@ -138,6 +168,19 @@
 
 </style>
 
+    <!-- Color mensajes usuario -->
+    <style>
+        .alert {
+            opacity: 0.7; /* Ajusta la opacidad del texto */
+            background-color: #99CCFF;
+            color:     #000000;
+        }
+        .alert1 {
+            opacity: 0.7; /* Ajusta la opacidad del texto  */
+            background-color: #FF8C40;
+            color: #000000;
+        }
+    </style>
 
 
     

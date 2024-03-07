@@ -5,6 +5,16 @@
 @section('content_header')
     <h1>Listado de Materiales</h1>
     {{-- Lógica de roles --}}
+    @role('ADMINISTRADOR')
+    <div class="alert alert-info alert1" role="alert">
+    <div><strong>Bienvenido Administrador:</strong> En este módulo usted podrá administrar, consultar, modificar (ingresos y egresos), del inventario, este módulo cuenta con un módulo de historial para consultar los movimientos de este.<div>
+    </div>
+    @endrole
+    @role('SERVICIOS')
+    <div class="alert alert-info" role="alert">
+    <div><strong>Bienvenido Servicio:</strong> En este módulo usted podrá administrar, consultar, modificar (ingresos y egresos), del inventario, este módulo cuenta con un módulo de historial para consultar los movimientos de este.<div>
+    </div>
+    @endrole
     {{-- ... --}}
 @stop
 
@@ -103,6 +113,20 @@
         }
         .estado-critico {
         color: #F70B0B;
+        }
+    </style>
+        
+    <!-- Color mensajes usuario -->
+    <style>
+        .alert {
+            opacity: 0.7; /* Ajusta la opacidad del texto */
+            background-color: #99CCFF;
+            color:     #000000;
+        }
+        .alert1 {
+            opacity: 0.7; /* Ajusta la opacidad del texto  */
+            background-color: #FF8C40;
+            color: #000000;
         }
     </style>
 @stop
