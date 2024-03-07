@@ -427,9 +427,7 @@ class ReportesReparacionesController extends Controller
             // Retornar como response JSON
             return response()->json([
                 'status' => 'success',
-                'data' => [
-                    'data' => $mantenimientosPorEntidad,
-                ],
+                'data' => $mantenimientosPorEntidad,
                 'message' => 'Solicitudes de mantenimiento por departamento y ubicación obtenidas correctamente desde la fecha ' . $fechaInicio->format('d-m-Y H:i:s') . ' hasta la fecha ' . $fechaFin->format('d-m-Y H:i:s')
             ], 200);
         } catch (\Exception $e) {
