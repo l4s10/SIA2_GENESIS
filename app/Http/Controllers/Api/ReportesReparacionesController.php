@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
+use Carbon\Carbon;
 
 // Importar el modelo de Solicitudes de Reparacion
 use App\Models\SolicitudReparacion;
@@ -24,15 +25,15 @@ class ReportesReparacionesController extends Controller
     {
         try{
             // Cargar los datos de los graficos
-            $grafico1 = $this->reparacionesPorCategoria(new Request());
-            $grafico2 = $this->mantencionesPorCategoria(new Request());
-            $grafico3 = $this->rankingEstadosReparacionesFisicas(new Request());
-            $grafico4 = $this->rankingEstadosMantenimientos(new Request());
-            $grafico5 = $this->solicitudesReparacionesPorDepartamentoUbicacion(new Request());
-            $grafico6 = $this->solicitudesMantenimientoPorDepartamentoUbicacion(new Request());
-            $grafico7 = $this->vehiculosConMasReparaciones(new Request());
-            $grafico8 = $this->gestionadoresSolicitudesVehiculos(new Request());
-            $grafico9 = $this->gestionadoresSolicitudesInmuebles(new Request());
+            $grafico1 = $this->Grafico1(new Request());
+            $grafico2 = $this->Grafico2(new Request());
+            $grafico3 = $this->Grafico3(new Request());
+            $grafico4 = $this->Grafico4(new Request());
+            $grafico5 = $this->Grafico5(new Request());
+            $grafico6 = $this->Grafico6(new Request());
+            $grafico7 = $this->Grafico7(new Request());
+            $grafico8 = $this->Grafico8(new Request());
+            $grafico9 = $this->Grafico9(new Request());
 
             // Devolver los datos de los graficos
             return response()->json([
@@ -70,15 +71,15 @@ class ReportesReparacionesController extends Controller
     {
         try{
             // Filtrar los datos de los gráficos por el rango de fechas especificado
-            $grafico1 = $this->reparacionesPorCategoria($request);
-            $grafico2 = $this->mantencionesPorCategoria($request);
-            $grafico3 = $this->rankingEstadosReparacionesFisicas($request);
-            $grafico4 = $this->rankingEstadosMantenimientos($request);
-            $grafico5 = $this->solicitudesReparacionesPorDepartamentoUbicacion($request);
-            $grafico6 = $this->solicitudesMantenimientoPorDepartamentoUbicacion($request);
-            $grafico7 = $this->vehiculosConMasReparaciones($request);
-            $grafico8 = $this->gestionadoresSolicitudesVehiculos($request);
-            $grafico9 = $this->gestionadoresSolicitudesInmuebles($request);
+            $grafico1 = $this->Grafico1($request);
+            $grafico2 = $this->Grafico2($request);
+            $grafico3 = $this->Grafico3($request);
+            $grafico4 = $this->Grafico4($request);
+            $grafico5 = $this->Grafico5($request);
+            $grafico6 = $this->Grafico6($request);
+            $grafico7 = $this->Grafico7($request);
+            $grafico8 = $this->Grafico8($request);
+            $grafico9 = $this->Grafico9($request);
 
 
             // Devolver los datos de los gráficos filtrados
@@ -111,13 +112,23 @@ class ReportesReparacionesController extends Controller
      * Este método obtiene la cantidad de reparaciones realizadas por cada categoría de reparación. (AIRE ACONDICIONADO, INFRAESTRUCTURA, MOVILIARIO, OTRO, MANTENCION CORRECTIVA, MANTENCION PREVENTIVA)
      * De las anteriores solo necesitamos las primeras 4.
     */
-    public function reparacionesPorCategoria(Request $request)
+    public function Grafico1(Request $request)
     {
         try{
-            $fechaInicio = $request->input('fecha_inicio');
-            $fechaFin = $request->input('fecha_fin');
+            // Obtener y formatear fechas de inicio y fin
+            $fechaInicioInput = $request->input('fecha_inicio');
+            $fechaFinInput = $request->input('fecha_fin');
+
+            //?? VALIDACIONES DE INPUT
+            // Si no se proporciona fecha de inicio, usar el primer día del mes actual
+            $fechaInicio = $fechaInicioInput ? Carbon::createFromFormat('Y-m-d', $fechaInicioInput)->startOfDay() : Carbon::now()->startOfMonth()->startOfDay();
+            // Si no se proporciona fecha de fin, usar el día actual
+            $fechaFin = $fechaFinInput ? Carbon::createFromFormat('Y-m-d', $fechaFinInput)->endOfDay() : Carbon::now()->endOfDay();
+            //?? VALIDACION REGIONAL
+            // Obtener el ID de la oficina del usuario autenticado para filtrar por regional
             $oficinaId = Auth::user()->OFICINA_ID;
 
+            // Categorías de reparaciones sobre las que se evaluará la cantidad de reparaciones
             $categorias = ['AIRE ACONDICIONADO', 'INFRAESTRUCTURA', 'MOVILIARIO', 'OTRO'];
 
             $reparacionesPorCategoria = SolicitudReparacion::join('categorias_reparaciones', 'solicitudes_reparaciones.CATEGORIA_REPARACION_ID', '=', 'categorias_reparaciones.CATEGORIA_REPARACION_ID')
@@ -132,7 +143,12 @@ class ReportesReparacionesController extends Controller
                 ->orderBy('cantidad', 'DESC')
                 ->get();
 
-            return ['reparacionesPorCategoria' => $reparacionesPorCategoria];
+            // Devolver como response JSON
+            return response()->json([
+                'status' => 'success',
+                'data' => $reparacionesPorCategoria,
+                'message' => 'Cantidad de reparaciones por categoria obtenida correctamente desde la fecha ' . $fechaInicio->format('d-m-Y H:i:s') . ' hasta la fecha ' . $fechaFin->format('d-m-Y H:i:s')
+            ], 200);
         } catch (\Exception $e) {
             return response()->json([
                 'status' => 'error',
@@ -147,11 +163,20 @@ class ReportesReparacionesController extends Controller
      * Este método obtiene la cantidad de mantenciones realizadas por cada categoría de reparación. (MANTENCION CORRECTIVA, MANTENCION PREVENTIVA)
      *
      */
-    public function mantencionesPorCategoria(Request $request)
+    public function Grafico2(Request $request)
     {
         try{
-            $fechaInicio = $request->input('fecha_inicio');
-            $fechaFin = $request->input('fecha_fin');
+            // Obtener y formatear fechas de inicio y fin
+            $fechaInicioInput = $request->input('fecha_inicio');
+            $fechaFinInput = $request->input('fecha_fin');
+
+            //?? VALIDACIONES DE INPUT
+            // Si no se proporciona fecha de inicio, usar el primer día del mes actual
+            $fechaInicio = $fechaInicioInput ? Carbon::createFromFormat('Y-m-d', $fechaInicioInput)->startOfDay() : Carbon::now()->startOfMonth()->startOfDay();
+            // Si no se proporciona fecha de fin, usar el día actual
+            $fechaFin = $fechaFinInput ? Carbon::createFromFormat('Y-m-d', $fechaFinInput)->endOfDay() : Carbon::now()->endOfDay();
+            //?? VALIDACION REGIONAL
+            // Obtener el ID de la oficina del usuario autenticado para filtrar por regional
             $oficinaId = Auth::user()->OFICINA_ID;
 
             $categorias = ['MANTENCION CORRECTIVA', 'MANTENCION PREVENTIVA'];
@@ -168,7 +193,12 @@ class ReportesReparacionesController extends Controller
                 ->orderBy('cantidad', 'DESC')
                 ->get();
 
-            return ['mantencionesPorCategoria' => $mantencionesPorCategoria];
+            // Devolver como response JSON
+            return response()->json([
+                'status' => 'success',
+                'data' => $mantencionesPorCategoria,
+                'message' => 'Cantidad de mantenciones por categoria obtenida correctamente desde la fecha ' . $fechaInicio->format('d-m-Y H:i:s') . ' hasta la fecha ' . $fechaFin->format('d-m-Y H:i:s')
+            ], 200);
         } catch (\Exception $e) {
             return response()->json([
                 'status' => 'error',
@@ -178,12 +208,21 @@ class ReportesReparacionesController extends Controller
     }
 
 
-    public function rankingEstadosReparacionesFisicas(Request $request)
+    public function Grafico3(Request $request)
     {
         try {
-            $fechaInicio = $request->input('fecha_inicio');
-            $fechaFin = $request->input('fecha_fin');
-            $oficinaId = Auth::user()->OFICINA_ID; // Obtener el ID de la oficina del usuario autenticado
+            // Obtener y formatear fechas de inicio y fin
+            $fechaInicioInput = $request->input('fecha_inicio');
+            $fechaFinInput = $request->input('fecha_fin');
+
+            //?? VALIDACIONES DE INPUT
+            // Si no se proporciona fecha de inicio, usar el primer día del mes actual
+            $fechaInicio = $fechaInicioInput ? Carbon::createFromFormat('Y-m-d', $fechaInicioInput)->startOfDay() : Carbon::now()->startOfMonth()->startOfDay();
+            // Si no se proporciona fecha de fin, usar el día actual
+            $fechaFin = $fechaFinInput ? Carbon::createFromFormat('Y-m-d', $fechaFinInput)->endOfDay() : Carbon::now()->endOfDay();
+            //?? VALIDACION REGIONAL
+            // Obtener el ID de la oficina del usuario autenticado para filtrar por regional
+            $oficinaId = Auth::user()->OFICINA_ID;
 
             // Tipos de categorías para reparaciones físicas
             $categorias = ['AIRE ACONDICIONADO', 'INFRAESTRUCTURA', 'MOVILIARIO', 'OTRO'];
@@ -201,9 +240,12 @@ class ReportesReparacionesController extends Controller
                 ->orderBy('cantidad', 'DESC')
                 ->get();
 
-            return [
-                'rankingEstadosReparacionesFisicas' => $ranking,
-            ];
+            // Devolver como response JSON
+            return response()->json([
+                'status' => 'success',
+                'data' => $ranking,
+                'message' => 'Ranking de estados para reparaciones físicas obtenido correctamente desde la fecha ' . $fechaInicio->format('d-m-Y H:i:s') . ' hasta la fecha ' . $fechaFin->format('d-m-Y H:i:s')
+            ], 200);
         } catch (\Exception $e) {
             return response()->json([
                 'status' => 'error',
@@ -214,12 +256,21 @@ class ReportesReparacionesController extends Controller
 
 
 
-    public function rankingEstadosMantenimientos(Request $request)
+    public function Grafico4(Request $request)
     {
         try {
-            $fechaInicio = $request->input('fecha_inicio');
-            $fechaFin = $request->input('fecha_fin');
-            $oficinaId = Auth::user()->OFICINA_ID; // Obtener el ID de la oficina del usuario autenticado
+            // Obtener y formatear fechas de inicio y fin
+            $fechaInicioInput = $request->input('fecha_inicio');
+            $fechaFinInput = $request->input('fecha_fin');
+
+            //?? VALIDACIONES DE INPUT
+            // Si no se proporciona fecha de inicio, usar el primer día del mes actual
+            $fechaInicio = $fechaInicioInput ? Carbon::createFromFormat('Y-m-d', $fechaInicioInput)->startOfDay() : Carbon::now()->startOfMonth()->startOfDay();
+            // Si no se proporciona fecha de fin, usar el día actual
+            $fechaFin = $fechaFinInput ? Carbon::createFromFormat('Y-m-d', $fechaFinInput)->endOfDay() : Carbon::now()->endOfDay();
+            //?? VALIDACION REGIONAL
+            // Obtener el ID de la oficina del usuario autenticado para filtrar por regional
+            $oficinaId = Auth::user()->OFICINA_ID;
 
             // Tipos de categorías para mantenimientos
             $categorias = ['MANTENCION CORRECTIVA', 'MANTENCION PREVENTIVA'];
@@ -237,9 +288,12 @@ class ReportesReparacionesController extends Controller
                 ->orderBy('cantidad', 'DESC')
                 ->get();
 
-            return [
-                'rankingEstadosMantenimientos' => $ranking,
-            ];
+            // Devolver como response JSON
+            return response()->json([
+                'status' => 'success',
+                'data' => $ranking,
+                'message' => 'Ranking de estados para mantenimientos obtenido correctamente desde la fecha ' . $fechaInicio->format('d-m-Y H:i:s') . ' hasta la fecha ' . $fechaFin->format('d-m-Y H:i:s')
+            ], 200);
         } catch (\Exception $e) {
             return response()->json([
                 'status' => 'error',
@@ -248,11 +302,20 @@ class ReportesReparacionesController extends Controller
         }
     }
 
-    public function solicitudesReparacionesPorDepartamentoUbicacion(Request $request)
+    public function Grafico5(Request $request)
     {
         try {
-            $fechaInicio = $request->input('fecha_inicio');
-            $fechaFin = $request->input('fecha_fin');
+            // Obtener y formatear fechas de inicio y fin
+            $fechaInicioInput = $request->input('fecha_inicio');
+            $fechaFinInput = $request->input('fecha_fin');
+
+            //?? VALIDACIONES DE INPUT
+            // Si no se proporciona fecha de inicio, usar el primer día del mes actual
+            $fechaInicio = $fechaInicioInput ? Carbon::createFromFormat('Y-m-d', $fechaInicioInput)->startOfDay() : Carbon::now()->startOfMonth()->startOfDay();
+            // Si no se proporciona fecha de fin, usar el día actual
+            $fechaFin = $fechaFinInput ? Carbon::createFromFormat('Y-m-d', $fechaFinInput)->endOfDay() : Carbon::now()->endOfDay();
+            //?? VALIDACION REGIONAL
+            // Obtener el ID de la oficina del usuario autenticado para filtrar por regional
             $oficinaId = Auth::user()->OFICINA_ID;
 
             // Tipos de categorías para reparaciones físicas
@@ -294,10 +357,12 @@ class ReportesReparacionesController extends Controller
             // Unir los resultados de las dos consultas anteriores (merge)
             $solicitudesPorEntidad = $solicitudesPorDepartamento->merge($solicitudesPorUbicacion);
 
-            // Retornar las solicitudes filtradas por departamento y ubicación, teniendo en cuenta las categorías específicas
-            return [
-                'solicitudesPorEntidad' => $solicitudesPorEntidad,
-            ];
+            // Retornar las solicitudes por departamento y ubicación
+            return response()->json([
+                'status' => 'success',
+                'data' => $solicitudesPorEntidad,
+                'message' => 'Solicitudes de reparaciones por departamento y ubicación obtenidas correctamente desde la fecha ' . $fechaInicio->format('d-m-Y H:i:s') . ' hasta la fecha ' . $fechaFin->format('d-m-Y H:i:s')
+            ], 200);
         } catch (\Exception $e) {
             return response()->json([
                 'status' => 'error',
@@ -307,11 +372,20 @@ class ReportesReparacionesController extends Controller
     }
 
 
-    public function solicitudesMantenimientoPorDepartamentoUbicacion(Request $request)
+    public function Grafico6(Request $request)
     {
         try {
-            $fechaInicio = $request->input('fecha_inicio');
-            $fechaFin = $request->input('fecha_fin');
+            // Obtener y formatear fechas de inicio y fin
+            $fechaInicioInput = $request->input('fecha_inicio');
+            $fechaFinInput = $request->input('fecha_fin');
+
+            //?? VALIDACIONES DE INPUT
+            // Si no se proporciona fecha de inicio, usar el primer día del mes actual
+            $fechaInicio = $fechaInicioInput ? Carbon::createFromFormat('Y-m-d', $fechaInicioInput)->startOfDay() : Carbon::now()->startOfMonth()->startOfDay();
+            // Si no se proporciona fecha de fin, usar el día actual
+            $fechaFin = $fechaFinInput ? Carbon::createFromFormat('Y-m-d', $fechaFinInput)->endOfDay() : Carbon::now()->endOfDay();
+            //?? VALIDACION REGIONAL
+            // Obtener el ID de la oficina del usuario autenticado para filtrar por regional
             $oficinaId = Auth::user()->OFICINA_ID;
 
             // Tipos de categorías para mantenimientos
@@ -350,10 +424,14 @@ class ReportesReparacionesController extends Controller
             // Unir los resultados de las dos consultas anteriores (merge)
             $mantenimientosPorEntidad = $mantenimientosPorDepartamento->merge($mantenimientosPorUbicacion);
 
-            // Retornar las solicitudes de mantenimiento por departamento y ubicación
-            return[
-                'solicitudesPorEntidad' => $mantenimientosPorEntidad,
-            ];
+            // Retornar como response JSON
+            return response()->json([
+                'status' => 'success',
+                'data' => [
+                    'data' => $mantenimientosPorEntidad,
+                ],
+                'message' => 'Solicitudes de mantenimiento por departamento y ubicación obtenidas correctamente desde la fecha ' . $fechaInicio->format('d-m-Y H:i:s') . ' hasta la fecha ' . $fechaFin->format('d-m-Y H:i:s')
+            ], 200);
         } catch (\Exception $e) {
             return response()->json([
                 'status' => 'error',
@@ -362,11 +440,20 @@ class ReportesReparacionesController extends Controller
         }
     }
 
-    public function vehiculosConMasReparaciones(Request $request)
+    public function Grafico7(Request $request)
     {
         try {
-            $fechaInicio = $request->input('fecha_inicio');
-            $fechaFin = $request->input('fecha_fin');
+            // Obtener y formatear fechas de inicio y fin
+            $fechaInicioInput = $request->input('fecha_inicio');
+            $fechaFinInput = $request->input('fecha_fin');
+
+            //?? VALIDACIONES DE INPUT
+            // Si no se proporciona fecha de inicio, usar el primer día del mes actual
+            $fechaInicio = $fechaInicioInput ? Carbon::createFromFormat('Y-m-d', $fechaInicioInput)->startOfDay() : Carbon::now()->startOfMonth()->startOfDay();
+            // Si no se proporciona fecha de fin, usar el día actual
+            $fechaFin = $fechaFinInput ? Carbon::createFromFormat('Y-m-d', $fechaFinInput)->endOfDay() : Carbon::now()->endOfDay();
+            //?? VALIDACION REGIONAL
+            // Obtener el ID de la oficina del usuario autenticado para filtrar por regional
             $oficinaId = Auth::user()->OFICINA_ID;
 
             $vehiculosConMasReparaciones = SolicitudReparacion::join('vehiculos', 'solicitudes_reparaciones.VEHICULO_ID', '=', 'vehiculos.VEHICULO_ID')
@@ -381,9 +468,12 @@ class ReportesReparacionesController extends Controller
                 ->orderBy('cantidad', 'DESC')
                 ->get();
 
-            return [
-                'vehiculosConMasReparaciones' => $vehiculosConMasReparaciones,
-            ];
+            // Devolver como response JSON
+            return response()->json([
+                'status' => 'success',
+                'data' => $vehiculosConMasReparaciones,
+                'message' => 'Vehículos con más reparaciones obtenidos correctamente desde la fecha ' . $fechaInicio->format('d-m-Y H:i:s') . ' hasta la fecha ' . $fechaFin->format('d-m-Y H:i:s')
+            ], 200);
         } catch (\Exception $e) {
             return response()->json([
                 'status' => 'error',
@@ -392,11 +482,20 @@ class ReportesReparacionesController extends Controller
         }
     }
 
-    public function gestionadoresSolicitudesVehiculos(Request $request)
+    public function Grafico8(Request $request)
     {
         try {
-            $fechaInicio = $request->input('fecha_inicio');
-            $fechaFin = $request->input('fecha_fin');
+            // Obtener y formatear fechas de inicio y fin
+            $fechaInicioInput = $request->input('fecha_inicio');
+            $fechaFinInput = $request->input('fecha_fin');
+
+            //?? VALIDACIONES DE INPUT
+            // Si no se proporciona fecha de inicio, usar el primer día del mes actual
+            $fechaInicio = $fechaInicioInput ? Carbon::createFromFormat('Y-m-d', $fechaInicioInput)->startOfDay() : Carbon::now()->startOfMonth()->startOfDay();
+            // Si no se proporciona fecha de fin, usar el día actual
+            $fechaFin = $fechaFinInput ? Carbon::createFromFormat('Y-m-d', $fechaFinInput)->endOfDay() : Carbon::now()->endOfDay();
+            //?? VALIDACION REGIONAL
+            // Obtener el ID de la oficina del usuario autenticado para filtrar por regional
             $oficinaId = Auth::user()->OFICINA_ID;
 
             $gestionadores = RevisionSolicitud::join('users', 'revisiones_solicitudes.USUARIO_id', '=', 'users.id')
@@ -415,7 +514,12 @@ class ReportesReparacionesController extends Controller
                 ->orderBy('total_gestiones', 'DESC')
                 ->get();
 
-            return ['gestionadoresSolicitudesVehiculos' => $gestionadores];
+            // Devolver como response JSON
+            return response()->json([
+                'status' => 'success',
+                'data' => $gestionadores,
+                'message' => 'Gestionadores de solicitudes de vehículos obtenidos correctamente desde la fecha ' . $fechaInicio->format('d-m-Y H:i:s') . ' hasta la fecha ' . $fechaFin->format('d-m-Y H:i:s')
+            ], 200);
         } catch (\Exception $e) {
             return response()->json([
                 'status' => 'error',
@@ -425,11 +529,20 @@ class ReportesReparacionesController extends Controller
     }
 
 
-    public function gestionadoresSolicitudesInmuebles(Request $request)
+    public function Grafico9(Request $request)
     {
         try {
-            $fechaInicio = $request->input('fecha_inicio');
-            $fechaFin = $request->input('fecha_fin');
+            // Obtener y formatear fechas de inicio y fin
+            $fechaInicioInput = $request->input('fecha_inicio');
+            $fechaFinInput = $request->input('fecha_fin');
+
+            //?? VALIDACIONES DE INPUT
+            // Si no se proporciona fecha de inicio, usar el primer día del mes actual
+            $fechaInicio = $fechaInicioInput ? Carbon::createFromFormat('Y-m-d', $fechaInicioInput)->startOfDay() : Carbon::now()->startOfMonth()->startOfDay();
+            // Si no se proporciona fecha de fin, usar el día actual
+            $fechaFin = $fechaFinInput ? Carbon::createFromFormat('Y-m-d', $fechaFinInput)->endOfDay() : Carbon::now()->endOfDay();
+            //?? VALIDACION REGIONAL
+            // Obtener el ID de la oficina del usuario autenticado para filtrar por regional
             $oficinaId = Auth::user()->OFICINA_ID;
 
             $gestionadores = RevisionSolicitud::join('users', 'revisiones_solicitudes.USUARIO_id', '=', 'users.id')
@@ -448,7 +561,12 @@ class ReportesReparacionesController extends Controller
                 ->orderBy('total_gestiones', 'DESC')
                 ->get();
 
-            return ['gestionadoresSolicitudesInmuebles' => $gestionadores];
+            // Devolver como response JSON
+            return response()->json([
+                'status' => 'success',
+                'data' => $gestionadores,
+                'message' => 'Gestionadores de solicitudes de inmuebles obtenidos correctamente desde la fecha ' . $fechaInicio->format('d-m-Y H:i:s') . ' hasta la fecha ' . $fechaFin->format('d-m-Y H:i:s')
+            ], 200);
         } catch (\Exception $e) {
             return response()->json([
                 'status' => 'error',
