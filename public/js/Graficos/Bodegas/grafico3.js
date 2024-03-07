@@ -101,6 +101,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     'Accept': 'application/json',
                     'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
                 },
+                credentials: 'include',
                 body: JSON.stringify({
                     fecha_inicio: fechaInicio,
                     fecha_fin: fechaFin
@@ -109,7 +110,6 @@ document.addEventListener('DOMContentLoaded', function() {
             .then(response => response.json())
             .then(data => {
                 if (data.status === 'success') {
-                    // Assumes updateChart is a function to update the chart with new data
                     updateChart(data.data);
                 }
             })

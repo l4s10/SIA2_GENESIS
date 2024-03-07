@@ -41,9 +41,22 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     const currentDate = new Date();
+    // Configura la fecha actual para que sea el final del día
+    currentDate.setHours(23, 59, 59, 999);
+    //El primer dia del mes actual
     const firstDayOfMonth = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1);
+    // Asegurándose de que el primer día del mes comience a las 00:00:00.000
+    firstDayOfMonth.setHours(0, 0, 0, 0);
     const formattedFirstDay = formatDate(firstDayOfMonth);
     const formattedCurrentDate = formatDate(currentDate);
+
+    // Funcion para formatear la fecha en la primera carga (obtener mes y dia actual y primer dia del mes)
+    function formatDate(date) {
+        const year = date.getFullYear();
+        const month = String(date.getMonth() + 1).padStart(2, '0');
+        const day = String(date.getDate()).padStart(2, '0');
+        return `${year}-${month}-${day}`;
+    }
 
     // Llama a la funcion para consumir la data en la carga inicial (del mes actual)
     window.getData.getFilteredChartData(formattedFirstDay, formattedCurrentDate)
@@ -62,14 +75,6 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         })
         .catch(error => console.error('Error:', error));
-
-    // Funcion para formatear la fecha
-    function formatDate(date) {
-        const year = date.getFullYear();
-        const month = String(date.getMonth() + 1).padStart(2, '0');
-        const day = String(date.getDate()).padStart(2, '0');
-        return `${year}-${month}-${day}`;
-    }
 
     // Funcion para actualizar el grafico cuando se filtra por fechas despues de la carga inicial
     function updateChart(data) {
@@ -101,6 +106,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     'Accept': 'application/json',
                     'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
                 },
+                credentials: 'include',
                 body: JSON.stringify({
                     fecha_inicio: fechaInicio,
                     fecha_fin: fechaFin

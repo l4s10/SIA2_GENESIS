@@ -1,9 +1,9 @@
 @extends('adminlte::page')
 
-@section('title', 'Reportes de Salas')
+@section('title', 'Reportes de Reparaciones/Mantenciones')
 
 @section('content_header')
-    <h1>Reportes de Salas</h1>
+    <h1>Reportes de reparaciones y mantenciones</h1>
 @endsection
 
 @section('content')

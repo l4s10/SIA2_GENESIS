@@ -89,6 +89,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     'Accept': 'application/json',
                     'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
                 },
+                credentials: 'include',
                 body: JSON.stringify({
                     fecha_inicio: fechaInicio,
                     fecha_fin: fechaFin
