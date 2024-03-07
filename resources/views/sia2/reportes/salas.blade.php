@@ -4,6 +4,7 @@
 
 @section('content_header')
     <h1>Reportes de Salas</h1>
+
 @endsection
 
 @section('content')
@@ -38,10 +39,12 @@
         </div>
     </div>
 
-    <!-- Contenedor para el mensaje -->
+    {{-- Contenedor para las alertas de mensajes --}}
     <div class="row">
-        <div class="col-md-12">
-            <h2 id="fecha-filtro-info" class="text-center"></h2>
+        <div class="col-12">
+            <div id="filter-message" class="alert alert-info text-center" role="alert">
+                <!-- El mensaje de fechas filtradas se mostrará aquí -->
+            </div>
         </div>
     </div>
 
@@ -97,38 +100,12 @@
     <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
 
-    {{-- Disparar sweetalert cuando se filtre --}}
-    <script>
-        document.getElementById('refresh-button').addEventListener('click', function() {
-            var startDate = document.getElementById('start-date').value;
-            var endDate = document.getElementById('end-date').value;
-
-            if (startDate === '' || endDate === '') {
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Error',
-                    text: 'Por favor, ingrese ambas fechas.',
-                });
-                // y no hacer la petición
-                return;
-            }
-
-            Swal.fire({
-                didOpen: () => {
-                    Swal.showLoading()
-                },
-                title: 'Filtrando datos',
-                text: 'Espere un momento por favor...',
-                icon: 'info',
-                timer: 2000,
-                showConfirmButton: false,
-                allowOutsideClick: false
-            });
-        });
-    </script>
 
     {{-- Inicializar calendarios --}}
     <script src="{{ asset('js/Components/fechasGraficos.js') }}"></script>
+    {{-- Importamos la logica del boton y el mensaje de filtro --}}
+    <script src="{{asset('js/Components/graficoAlertaMensaje.js')}}"></script>
+
 
     {{-- Importar el archivo JS para obtener los datos --}}
     <script src="{{ asset('js/Graficos/Salas/getData.js') }}"></script>
@@ -143,5 +120,6 @@
     <script src="{{ asset('js/Graficos/Salas/grafico4.js') }}"></script>
     {{-- Importamos el archivo JS para el grafico 5 --}}
     <script src="{{ asset('js/Graficos/Salas/grafico5.js') }}"></script>
+
 
 @endsection

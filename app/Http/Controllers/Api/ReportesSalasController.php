@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
+use Carbon\Carbon;
 // Importacion de modelos necesarios
 use App\Models\Solicitud;
 use App\Models\SolicitudSala;
@@ -102,14 +103,18 @@ class ReportesSalasController extends Controller
     public function Grafico1(Request $request)
     {
         try{
-            $fechaInicio = $request->input('fecha_inicio');
-            $fechaFin = $request->input('fecha_fin');
-            $oficinaId = Auth::user()->OFICINA_ID; // Obtener el ID de la oficina del usuario autenticado
+            // Obtener y formatear fechas de inicio y fin
+            $fechaInicioInput = $request->input('fecha_inicio');
+            $fechaFinInput = $request->input('fecha_fin');
 
-            // Ajustar la fecha de fin para que sea hasta el final del día
-            if ($fechaFin) {
-                $fechaFin = date('Y-m-d', strtotime($fechaFin)) . ' 23:59:59';
-            }
+            //?? VALIDACIONES DE INPUT
+            // Si no se proporciona fecha de inicio, usar el primer día del mes actual
+            $fechaInicio = $fechaInicioInput ? Carbon::createFromFormat('Y-m-d', $fechaInicioInput)->startOfDay() : Carbon::now()->startOfMonth()->startOfDay();
+            // Si no se proporciona fecha de fin, usar el día actual
+            $fechaFin = $fechaFinInput ? Carbon::createFromFormat('Y-m-d', $fechaFinInput)->endOfDay() : Carbon::now()->endOfDay();
+            //?? VALIDACION REGIONAL
+            // Obtener el ID de la oficina del usuario autenticado para filtrar por regional
+            $oficinaId = Auth::user()->OFICINA_ID;
 
             // Obtenemos los SOLICITUD_ID de las solicitudes de salas únicas que pertenecen a la oficina del usuario autenticado en base a fechas si se proporcionan.
             $solicitudesUnicas = SolicitudSala::query()
@@ -141,7 +146,7 @@ class ReportesSalasController extends Controller
             return response()->json([
                 'status' => 'success',
                 'data' => $rankingGestionadores,
-                'message' => 'Reporte 1 obtenido con exito.'
+                'message' => 'Reporte de ranking de gestionadores obtenido con exito la fecha ' . $fechaInicio->format('d-m-Y H:i:s') . ' hasta la fecha ' . $fechaFin->format('d-m-Y H:i:s') . '.'
             ], 200);
         }catch(\Exception $e){
             return response()->json([
@@ -163,15 +168,18 @@ class ReportesSalasController extends Controller
     public function Grafico2(Request $request)
     {
         try {
-            // Opcionalmente recibidos desde el request
-            $fechaInicio = $request->input('fecha_inicio');
-            $fechaFin = $request->input('fecha_fin');
-            $oficinaId = Auth::user()->OFICINA_ID; // Obtener el ID de la oficina del usuario autenticado
+            // Obtener y formatear fechas de inicio y fin
+            $fechaInicioInput = $request->input('fecha_inicio');
+            $fechaFinInput = $request->input('fecha_fin');
 
-            // Ajustar la fecha de fin para que sea hasta el final del día
-            if ($fechaFin) {
-                $fechaFin = date('Y-m-d', strtotime($fechaFin)) . ' 23:59:59';
-            }
+            //?? VALIDACIONES DE INPUT
+            // Si no se proporciona fecha de inicio, usar el primer día del mes actual
+            $fechaInicio = $fechaInicioInput ? Carbon::createFromFormat('Y-m-d', $fechaInicioInput)->startOfDay() : Carbon::now()->startOfMonth()->startOfDay();
+            // Si no se proporciona fecha de fin, usar el día actual
+            $fechaFin = $fechaFinInput ? Carbon::createFromFormat('Y-m-d', $fechaFinInput)->endOfDay() : Carbon::now()->endOfDay();
+            //?? VALIDACION REGIONAL
+            // Obtener el ID de la oficina del usuario autenticado para filtrar por regional
+            $oficinaId = Auth::user()->OFICINA_ID;
 
             // Obtener los IDs de solicitudes únicos que cumplen con los criterios de fecha y oficina
             $solicitudesUnicas = SolicitudSala::query()
@@ -211,7 +219,7 @@ class ReportesSalasController extends Controller
             return response()->json([
                 'status' => 'success',
                 'data' => $solicitudesPorEntidad,
-                'message' => 'Reporte 2 obtenido con exito.'
+                'message' => 'Reporte de solicitudes por entidad obtenido con exito la fecha ' . $fechaInicio->format('d-m-Y H:i:s') . ' hasta la fecha ' . $fechaFin->format('d-m-Y H:i:s') . '.'
             ], 200);
         } catch (\Exception $e) {
             return response()->json([
@@ -236,15 +244,18 @@ class ReportesSalasController extends Controller
     public function Grafico3(Request $request)
     {
         try {
-            // Opcionalmente recibidos desde el request
-            $fechaInicio = $request->input('fecha_inicio');
-            $fechaFin = $request->input('fecha_fin');
-            $oficinaId = Auth::user()->OFICINA_ID; // Obtener el ID de la oficina del usuario autenticado
+            // Obtener y formatear fechas de inicio y fin
+            $fechaInicioInput = $request->input('fecha_inicio');
+            $fechaFinInput = $request->input('fecha_fin');
 
-            // Ajustar la fecha de fin para que sea hasta el final del día
-            if ($fechaFin) {
-                $fechaFin = date('Y-m-d', strtotime($fechaFin)) . ' 23:59:59';
-            }
+            //?? VALIDACIONES DE INPUT
+            // Si no se proporciona fecha de inicio, usar el primer día del mes actual
+            $fechaInicio = $fechaInicioInput ? Carbon::createFromFormat('Y-m-d', $fechaInicioInput)->startOfDay() : Carbon::now()->startOfMonth()->startOfDay();
+            // Si no se proporciona fecha de fin, usar el día actual
+            $fechaFin = $fechaFinInput ? Carbon::createFromFormat('Y-m-d', $fechaFinInput)->endOfDay() : Carbon::now()->endOfDay();
+            //?? VALIDACION REGIONAL
+            // Obtener el ID de la oficina del usuario autenticado para filtrar por regional
+            $oficinaId = Auth::user()->OFICINA_ID;
 
 
             $rankingEstados = SolicitudSala::query()
@@ -263,7 +274,7 @@ class ReportesSalasController extends Controller
             return response()->json([
                 'status' => 'success',
                 'data' => $rankingEstados,
-                'message' => 'Reporte 3 obtenido con exito.'
+                'message' => 'Reporte de ranking de estados obtenido con exito la fecha ' . $fechaInicio->format('d-m-Y H:i:s') . ' hasta la fecha ' . $fechaFin->format('d-m-Y H:i:s') . '.'
             ], 200);
         } catch (\Exception $e) {
             return response()->json([
@@ -285,15 +296,18 @@ class ReportesSalasController extends Controller
     public function Grafico4(Request $request)
     {
         try {
-            // Opcionalmente recibidos desde el request
-            $fechaInicio = $request->input('fecha_inicio');
-            $fechaFin = $request->input('fecha_fin');
-            $oficinaId = Auth::user()->OFICINA_ID; // Obtener el ID de la oficina del usuario autenticado
+            // Obtener y formatear fechas de inicio y fin
+            $fechaInicioInput = $request->input('fecha_inicio');
+            $fechaFinInput = $request->input('fecha_fin');
 
-            // Ajustar la fecha de fin para que sea hasta el final del día
-            if ($fechaFin) {
-                $fechaFin = date('Y-m-d', strtotime($fechaFin)) . ' 23:59:59';
-            }
+            //?? VALIDACIONES DE INPUT
+            // Si no se proporciona fecha de inicio, usar el primer día del mes actual
+            $fechaInicio = $fechaInicioInput ? Carbon::createFromFormat('Y-m-d', $fechaInicioInput)->startOfDay() : Carbon::now()->startOfMonth()->startOfDay();
+            // Si no se proporciona fecha de fin, usar el día actual
+            $fechaFin = $fechaFinInput ? Carbon::createFromFormat('Y-m-d', $fechaFinInput)->endOfDay() : Carbon::now()->endOfDay();
+            //?? VALIDACION REGIONAL
+            // Obtener el ID de la oficina del usuario autenticado para filtrar por regional
+            $oficinaId = Auth::user()->OFICINA_ID;
 
             $rankingSalas = SolicitudSala::query()
                 ->join('solicitudes', 'solicitudes_salas.SOLICITUD_ID', '=', 'solicitudes.SOLICITUD_ID')
@@ -312,7 +326,7 @@ class ReportesSalasController extends Controller
             return response()->json([
                 'status' => 'success',
                 'data' => $rankingSalas,
-                'message' => 'Reporte 4 obtenido con exito.'
+                'message' => 'Reporte de ranking de salas obtenido con exito la fecha ' . $fechaInicio->format('d-m-Y H:i:s') . ' hasta la fecha ' . $fechaFin->format('d-m-Y H:i:s') . '.'
             ], 200);
         } catch (\Exception $e) {
             return response()->json([
@@ -334,14 +348,18 @@ class ReportesSalasController extends Controller
     public function Grafico5(Request $request)
     {
         try {
-            $fechaInicio = $request->input('fecha_inicio');
-            $fechaFin = $request->input('fecha_fin');
-            $oficinaId = Auth::user()->OFICINA_ID; // Obtener el ID de la oficina del usuario autenticado
+            // Obtener y formatear fechas de inicio y fin
+            $fechaInicioInput = $request->input('fecha_inicio');
+            $fechaFinInput = $request->input('fecha_fin');
 
-            // Ajustar la fecha de fin para que sea hasta el final del día
-            if ($fechaFin) {
-                $fechaFin = date('Y-m-d', strtotime($fechaFin)) . ' 23:59:59';
-            }
+            //?? VALIDACIONES DE INPUT
+            // Si no se proporciona fecha de inicio, usar el primer día del mes actual
+            $fechaInicio = $fechaInicioInput ? Carbon::createFromFormat('Y-m-d', $fechaInicioInput)->startOfDay() : Carbon::now()->startOfMonth()->startOfDay();
+            // Si no se proporciona fecha de fin, usar el día actual
+            $fechaFin = $fechaFinInput ? Carbon::createFromFormat('Y-m-d', $fechaFinInput)->endOfDay() : Carbon::now()->endOfDay();
+            //?? VALIDACION REGIONAL
+            // Obtener el ID de la oficina del usuario autenticado para filtrar por regional
+            $oficinaId = Auth::user()->OFICINA_ID;
 
             // Realiza la consulta a la base de datos
             $promedioAtencion = SolicitudSala::query()
@@ -400,7 +418,7 @@ class ReportesSalasController extends Controller
                     'promedioRevisionAprobacion' => $promedioRevisionAprobacion,
                     'promedioAprobacionEntrega' => $promedioAprobacionEntrega
                 ],
-                'message' => 'Reporte 5 obtenido con exito.'
+                'message' => 'Reporte de promedio de atención obtenido con exito desde la fecha ' . $fechaInicio->format('d-m-Y H:i:s') . ' hasta la fecha ' . $fechaFin->format('d-m-Y H:i:s') . '.'
             ], 200);
         } catch (\Exception $e) {
             return response()->json([

@@ -43,8 +43,6 @@ document.addEventListener('DOMContentLoaded', function() {
     window.getData.getFilteredChartData(formattedFirstDay, formattedCurrentDate)
         .then(data => {
             if (data.status === 'success') {
-                actualizarMensajeFecha(firstDayOfMonth, currentDate);
-                //Acceder a la data de la respuesta y actualizar el grafico con ella
                 const grafico1Data = data.data.grafico1.original.data;
                 myChart.data.labels = grafico1Data.map(item => item.nombre_completo);
                 myChart.data.datasets[0].data = grafico1Data.map(item => item.total_gestiones);
@@ -61,22 +59,12 @@ document.addEventListener('DOMContentLoaded', function() {
         const day = String(date.getDate()).padStart(2, '0');
         return `${year}-${month}-${day}`;
     }
-    // Función que actualiza el mensaje con las fechas de filtro
-    function actualizarMensajeFecha(fechaInicio, fechaFin) {
-        const elementoMensaje = document.getElementById('fecha-filtro-info');
-        //Mostrar mensaje con fecha formateada en español chile
-        return elementoMensaje.textContent = `Mostrando datos desde ${fechaInicio.toLocaleDateString('es-CL', { year: 'numeric', month: 'long', day: 'numeric' })} hasta ${fechaFin.toLocaleDateString('es-CL', { year: 'numeric', month: 'long', day: 'numeric' })}`;
-    }
+
 
     // Cuando se haga click en el boton de actualizar, hace un fetch de los datos
     document.querySelector('#refresh-button').addEventListener('click', function() {
         const fechaInicio = document.querySelector('#start-date').value;
         const fechaFin = document.querySelector('#end-date').value;
-
-        // Validar que las fechas no estén vacías
-        if (!fechaInicio || !fechaFin) {
-            return;
-        }
 
         fetch('/api/reportes/salas/grafico-1', {
             method: 'POST',
@@ -85,6 +73,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 'Accept': 'application/json',
                 'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
             },
+            credentials: 'include',
             body: JSON.stringify({
                 fecha_inicio: fechaInicio,
                 fecha_fin: fechaFin
@@ -93,12 +82,12 @@ document.addEventListener('DOMContentLoaded', function() {
         .then(response => response.json())
         .then(data => {
             if (data.status === 'success') {
-                actualizarMensajeFecha(new Date(fechaInicio), new Date(fechaFin));
-                // Asumiendo que tu gráfico se llama myChart
                 myChart.data.labels = data.data.map(item => item.nombre_completo);
                 myChart.data.datasets[0].data = data.data.map(item => item.total_gestiones);
                 myChart.data.datasets[0].backgroundColor = data.data.map(() => getRandomColor());
                 myChart.update();
+            }else{
+                throw new Error(`HTTP error! Status: ${response.status}`);
             }
         })
         .catch(error => console.error('Error:', error));
