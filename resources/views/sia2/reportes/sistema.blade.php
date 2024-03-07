@@ -38,10 +38,12 @@
         </div>
     </div>
 
-    <!-- Contenedor para el mensaje -->
+    {{-- Contenedor para las alertas de mensajes --}}
     <div class="row">
-        <div class="col-md-12">
-            <h2 id="fecha-filtro-info" class="text-center"></h2>
+        <div class="col-12">
+            <div id="filter-message" class="alert alert-info text-center" role="alert">
+                <!-- El mensaje de fechas filtradas se mostrará aquí -->
+            </div>
         </div>
     </div>
 
@@ -94,7 +96,7 @@
             });
         });
     </script>
-    
+
     <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
@@ -102,7 +104,9 @@
 
     {{-- Inicializar calendarios --}}
     <script src="{{ asset('js/Components/fechasGraficos.js') }}"></script>
-
+    {{-- Importamos la logica del boton y el mensaje de filtro --}}
+    <script src="{{asset('js/Components/graficoAlertaMensaje.js')}}"></script>
+    
     {{-- Importar el archivo JS para obtener los datos --}}
     <script src="{{ asset('js/Graficos/Sistema/getData.js') }}"></script>
 

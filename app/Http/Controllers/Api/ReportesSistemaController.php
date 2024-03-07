@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
+use Carbon\Carbon;
 
 class ReportesSistemaController extends Controller
 {
@@ -54,6 +55,7 @@ class ReportesSistemaController extends Controller
                 'data' => [
                     'grafico1' => $grafico1,
                 ],
+                'message' => 'Datos generales obtenidos correctamente.',
             ], 200);
         }catch(\Exception $e){
             return response()->json([
@@ -84,14 +86,18 @@ class ReportesSistemaController extends Controller
     public function rankingSolicitudes(Request $request)
     {
         try {
-            $fechaInicio = $request->input('fecha_inicio');
-            $fechaFin = $request->input('fecha_fin');
-            $oficinaId = Auth::user()->OFICINA_ID;
+            // Obtener y formatear fechas de inicio y fin
+            $fechaInicioInput = $request->input('fecha_inicio');
+            $fechaFinInput = $request->input('fecha_fin');
 
-            // Ajustar la fecha de fin para que sea hasta el final del día
-            if ($fechaFin) {
-                $fechaFin = date('Y-m-d', strtotime($fechaFin)) . ' 23:59:59';
-            }
+            //?? VALIDACIONES DE INPUT
+            // Si no se proporciona fecha de inicio, usar el primer día del mes actual
+            $fechaInicio = $fechaInicioInput ? Carbon::createFromFormat('Y-m-d', $fechaInicioInput)->startOfDay() : Carbon::now()->startOfMonth()->startOfDay();
+            // Si no se proporciona fecha de fin, usar el día actual
+            $fechaFin = $fechaFinInput ? Carbon::createFromFormat('Y-m-d', $fechaFinInput)->endOfDay() : Carbon::now()->endOfDay();
+            //?? VALIDACION REGIONAL
+            // Obtener el ID de la oficina del usuario autenticado para filtrar por regional
+            $oficinaId = Auth::user()->OFICINA_ID;
 
             // Inicializar el ranking
             $ranking = [];
@@ -164,7 +170,7 @@ class ReportesSistemaController extends Controller
             return response()->json([
                 'status' => 'success',
                 'data' => $ranking,
-                'message' => 'Ranking de solicitudes obtenido correctamente.',
+                'message' => 'Ranking de solicitudes obtenido correctamente desde la fecha ' . $fechaInicio->format('d-m-Y H:i:s') . ' hasta la fecha ' . $fechaFin->format('d-m-Y H:i:s') . '.'
             ], 200);
         } catch (\Exception $e) {
             return response()->json([

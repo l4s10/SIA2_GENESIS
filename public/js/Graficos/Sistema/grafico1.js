@@ -61,7 +61,6 @@ document.addEventListener('DOMContentLoaded', function() {
     window.getData.getFilteredChartData(formattedFirstDay, formattedCurrentDate)
         .then(data => {
             if (data.status === 'success') {
-                actualizarMensajeFecha(firstDayOfMonth, currentDate);
                 // Utilizar directamente 'data.data.grafico1.original.data' para la actualización
                 const categorias = Object.keys(data.data.grafico1.original.data);
                 const cantidades = Object.values(data.data.grafico1.original.data);
@@ -79,12 +78,6 @@ document.addEventListener('DOMContentLoaded', function() {
         const month = String(date.getMonth() + 1).padStart(2, '0');
         const day = String(date.getDate()).padStart(2, '0');
         return `${year}-${month}-${day}`;
-    }
-    // Función que actualiza el mensaje con las fechas de filtro
-    function actualizarMensajeFecha(fechaInicio, fechaFin) {
-        const elementoMensaje = document.getElementById('fecha-filtro-info');
-        //Mostrar mensaje con fecha formateada en español chile
-        return elementoMensaje.textContent = `Mostrando datos desde ${fechaInicio.toLocaleDateString('es-CL', { year: 'numeric', month: 'long', day: 'numeric' })} hasta ${fechaFin.toLocaleDateString('es-CL', { year: 'numeric', month: 'long', day: 'numeric' })}`;
     }
 
     // Agregar evento al botón de filtro
@@ -113,7 +106,6 @@ document.addEventListener('DOMContentLoaded', function() {
         .then(response => response.json())
         .then(data => {
             if (data.status === 'success') {
-                actualizarMensajeFecha(new Date(fechaInicio), new Date(fechaFin));
                 updateChart(data);
             }
         })
