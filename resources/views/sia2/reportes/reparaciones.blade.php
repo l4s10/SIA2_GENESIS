@@ -38,6 +38,15 @@
         </div>
     </div>
 
+    {{-- Contenedor para las alertas de mensajes --}}
+    <div class="row">
+        <div class="col-12">
+            <div id="filter-message" class="alert alert-info text-center" role="alert">
+                <!-- El mensaje de fechas filtradas se mostrará aquí -->
+            </div>
+        </div>
+    </div>
+
     <div class="row">
         <div class="col-md-6">
             <div class="card">
@@ -141,5 +150,7 @@
     <script src="{{ asset('js/Graficos/Reparaciones/grafico5_mantenciones.js') }}"></script>
     {{-- Importar el archivo JS para el gráfico 9 --}}
     <script src="{{ asset('js/Graficos/Reparaciones/grafico4_reparaciones.js') }}"></script>
-    {{-- Importar el archivo JS para el gráfico 10 --}}
+    {{-- Importamos la logica del boton y el mensaje de filtro --}}
+    <script src="{{asset('js/Components/graficoAlertaMensaje.js')}}"></script>
+
 @endsection
