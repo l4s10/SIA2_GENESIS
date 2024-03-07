@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
+use Carbon\Carbon;
 // Modelos
 use App\Models\SolicitudVehicular;
 use App\Models\RevisionSolicitud;
@@ -91,14 +92,18 @@ class ReportesVehiculosController extends Controller
     public function Grafico1(Request $request)
     {
         try {
-            $fechaInicio = $request->input('fecha_inicio');
-            $fechaFin = $request->input('fecha_fin');
-            $oficinaId = Auth::user()->OFICINA_ID;
+            // Obtener y formatear fechas de inicio y fin
+            $fechaInicioInput = $request->input('fecha_inicio');
+            $fechaFinInput = $request->input('fecha_fin');
 
-            // Ajustar la fecha de fin para que sea hasta el final del día
-            if ($fechaFin) {
-                $fechaFin = date('Y-m-d', strtotime($fechaFin)) . ' 23:59:59';
-            }
+            //?? VALIDACIONES DE INPUT
+            // Si no se proporciona fecha de inicio, usar el primer día del mes actual
+            $fechaInicio = $fechaInicioInput ? Carbon::createFromFormat('Y-m-d', $fechaInicioInput)->startOfDay() : Carbon::now()->startOfMonth()->startOfDay();
+            // Si no se proporciona fecha de fin, usar el día actual
+            $fechaFin = $fechaFinInput ? Carbon::createFromFormat('Y-m-d', $fechaFinInput)->endOfDay() : Carbon::now()->endOfDay();
+            //?? VALIDACION REGIONAL
+            // Obtener el ID de la oficina del usuario autenticado para filtrar por regional
+            $oficinaId = Auth::user()->OFICINA_ID;
 
             $rankingRevisores = RevisionSolicitud::whereNotNull('revisiones_solicitudes.SOLICITUD_VEHICULO_ID')
                 ->join('users', 'revisiones_solicitudes.USUARIO_id', '=', 'users.id')
@@ -116,7 +121,7 @@ class ReportesVehiculosController extends Controller
             return response()->json([
                 'status' => 'success',
                 'data' => $rankingRevisores,
-                'message' => 'Reporte 1 obtenido con exito.'
+                'message' => 'Reporte de revisores obtenido con exito desde la fecha ' . $fechaInicio->format('d-m-Y H:i:s') . ' hasta la fecha ' . $fechaFin->format('d-m-Y H:i:s') . '.'
             ], 200);
         } catch (\Exception $e) {
             return response()->json([
@@ -135,8 +140,17 @@ class ReportesVehiculosController extends Controller
     public function Grafico2(Request $request)
     {
         try {
-            $fechaInicio = $request->input('fecha_inicio');
-            $fechaFin = $request->input('fecha_fin');
+            // Obtener y formatear fechas de inicio y fin
+            $fechaInicioInput = $request->input('fecha_inicio');
+            $fechaFinInput = $request->input('fecha_fin');
+
+            //?? VALIDACIONES DE INPUT
+            // Si no se proporciona fecha de inicio, usar el primer día del mes actual
+            $fechaInicio = $fechaInicioInput ? Carbon::createFromFormat('Y-m-d', $fechaInicioInput)->startOfDay() : Carbon::now()->startOfMonth()->startOfDay();
+            // Si no se proporciona fecha de fin, usar el día actual
+            $fechaFin = $fechaFinInput ? Carbon::createFromFormat('Y-m-d', $fechaFinInput)->endOfDay() : Carbon::now()->endOfDay();
+            //?? VALIDACION REGIONAL
+            // Obtener el ID de la oficina del usuario autenticado para filtrar por regional
             $oficinaId = Auth::user()->OFICINA_ID;
 
             $queryDepartamentos = SolicitudVehicular::query();
@@ -174,7 +188,7 @@ class ReportesVehiculosController extends Controller
             return response()->json([
                 'status' => 'success',
                 'data' => $rankingDepartamentosUbicaciones,
-                'message' => 'Reporte 2 obtenido con exito.'
+                'message' => 'Reporte de departamentos y ubicaciones obtenido con exito desde la fecha ' . $fechaInicio->format('d-m-Y H:i:s') . ' hasta la fecha ' . $fechaFin->format('d-m-Y H:i:s') . '.'
             ], 200);
         } catch (\Exception $e) {
             return response()->json([
@@ -194,8 +208,17 @@ class ReportesVehiculosController extends Controller
     public function Grafico3(Request $request)
     {
         try {
-            $fechaInicio = $request->input('fecha_inicio');
-            $fechaFin = $request->input('fecha_fin');
+            // Obtener y formatear fechas de inicio y fin
+            $fechaInicioInput = $request->input('fecha_inicio');
+            $fechaFinInput = $request->input('fecha_fin');
+
+            //?? VALIDACIONES DE INPUT
+            // Si no se proporciona fecha de inicio, usar el primer día del mes actual
+            $fechaInicio = $fechaInicioInput ? Carbon::createFromFormat('Y-m-d', $fechaInicioInput)->startOfDay() : Carbon::now()->startOfMonth()->startOfDay();
+            // Si no se proporciona fecha de fin, usar el día actual
+            $fechaFin = $fechaFinInput ? Carbon::createFromFormat('Y-m-d', $fechaFinInput)->endOfDay() : Carbon::now()->endOfDay();
+            //?? VALIDACION REGIONAL
+            // Obtener el ID de la oficina del usuario autenticado para filtrar por regional
             $oficinaId = Auth::user()->OFICINA_ID;
 
             $query = SolicitudVehicular::query();
@@ -217,7 +240,7 @@ class ReportesVehiculosController extends Controller
             return response()->json([
                 'status' => 'success',
                 'data' => $rankingSolicitudes,
-                'message' => 'Reporte 3 obtenido con exito.'
+                'message' => 'Reporte de estados de solicitudes de vehículos obtenido con exito desde la fecha ' . $fechaInicio->format('d-m-Y H:i:s') . ' hasta la fecha ' . $fechaFin->format('d-m-Y H:i:s') . '.'
             ], 200);
         } catch (\Exception $e) {
             return response()->json([
@@ -237,8 +260,17 @@ class ReportesVehiculosController extends Controller
     public function Grafico4(Request $request)
     {
         try {
-            $fechaInicio = $request->input('fecha_inicio');
-            $fechaFin = $request->input('fecha_fin');
+            // Obtener y formatear fechas de inicio y fin
+            $fechaInicioInput = $request->input('fecha_inicio');
+            $fechaFinInput = $request->input('fecha_fin');
+
+            //?? VALIDACIONES DE INPUT
+            // Si no se proporciona fecha de inicio, usar el primer día del mes actual
+            $fechaInicio = $fechaInicioInput ? Carbon::createFromFormat('Y-m-d', $fechaInicioInput)->startOfDay() : Carbon::now()->startOfMonth()->startOfDay();
+            // Si no se proporciona fecha de fin, usar el día actual
+            $fechaFin = $fechaFinInput ? Carbon::createFromFormat('Y-m-d', $fechaFinInput)->endOfDay() : Carbon::now()->endOfDay();
+            //?? VALIDACION REGIONAL
+            // Obtener el ID de la oficina del usuario autenticado para filtrar por regional
             $oficinaId = Auth::user()->OFICINA_ID;
 
             $query = SolicitudVehicular::query();
@@ -261,7 +293,7 @@ class ReportesVehiculosController extends Controller
             return response()->json([
                 'status' => 'success',
                 'data' => $rankingVehiculos,
-                'message' => 'Reporte 4 obtenido con exito.'
+                'message' => 'Reporte de vehículos asignados obtenido con exito desde la fecha ' . $fechaInicio->format('d-m-Y H:i:s') . ' hasta la fecha ' . $fechaFin->format('d-m-Y H:i:s') . '.'
             ], 200);
         } catch (\Exception $e) {
             return response()->json([
@@ -274,8 +306,17 @@ class ReportesVehiculosController extends Controller
     public function Grafico5(Request $request)
     {
         try {
-            $fechaInicio = $request->input('fecha_inicio');
-            $fechaFin = $request->input('fecha_fin');
+            // Obtener y formatear fechas de inicio y fin
+            $fechaInicioInput = $request->input('fecha_inicio');
+            $fechaFinInput = $request->input('fecha_fin');
+
+            //?? VALIDACIONES DE INPUT
+            // Si no se proporciona fecha de inicio, usar el primer día del mes actual
+            $fechaInicio = $fechaInicioInput ? Carbon::createFromFormat('Y-m-d', $fechaInicioInput)->startOfDay() : Carbon::now()->startOfMonth()->startOfDay();
+            // Si no se proporciona fecha de fin, usar el día actual
+            $fechaFin = $fechaFinInput ? Carbon::createFromFormat('Y-m-d', $fechaFinInput)->endOfDay() : Carbon::now()->endOfDay();
+            //?? VALIDACION REGIONAL
+            // Obtener el ID de la oficina del usuario autenticado para filtrar por regional
             $oficinaId = Auth::user()->OFICINA_ID;
 
             // Promedio de días desde 'INGRESADO' a 'EN REVISIÓN'
@@ -319,7 +360,7 @@ class ReportesVehiculosController extends Controller
                     'promedioRevisionAprobacion' => $promedioIngresadoARendir ? $promedioIngresadoARendir->promedio_dias_ingresado_a_rendir : 0,
                     'promedioAprobacionEntrega' => $promedioIngresadoATerminado ? $promedioIngresadoATerminado->promedio_dias_ingresado_a_terminado : 0
                 ],
-                'message' => 'Reporte 5 obtenido con exito.'
+                'message' => 'Reporte de promedios de días de atención obtenido con exito desde la fecha ' . $fechaInicio->format('d-m-Y H:i:s') . ' hasta la fecha ' . $fechaFin->format('d-m-Y H:i:s') . '.'
             ], 200);
         } catch (\Exception $e) {
             return response()->json([

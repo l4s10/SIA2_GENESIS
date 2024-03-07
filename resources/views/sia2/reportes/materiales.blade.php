@@ -112,6 +112,8 @@
 
     {{-- Inicializar calendarios --}}
     <script src="{{ asset('js/Components/fechasGraficos.js') }}"></script>
+    {{-- Importamos la logica del boton y el mensaje de filtro --}}
+    <script src="{{asset('js/Components/graficoAlertaMensaje.js')}}"></script>
 
     {{-- Importar el archivo JS para obtener los datos --}}
     <script src="{{ asset('js/Graficos/Materiales/getData.js') }}"></script>
@@ -126,8 +128,6 @@
     <script src="{{ asset('js/Graficos/Materiales/grafico4.js') }}"></script>
     {{-- Importamos el archivo JS para el grafico 5 --}}
     <script src="{{ asset('js/Graficos/Materiales/grafico5.js') }}"></script>
-    {{-- Importamos la logica del boton y el mensaje de filtro --}}
-    <script src="{{asset('js/Components/graficoAlertaMensaje.js')}}"></script>
 
     <!-- Scrip para inicizaliar el mapa -->
     <script>
