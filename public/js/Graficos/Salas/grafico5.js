@@ -1,5 +1,7 @@
 document.addEventListener('DOMContentLoaded', function() {
+    // Obtiene el contexto del canvas
     const ctx5 = document.getElementById('grafico5').getContext('2d');
+    // Configuración del gráfico
     const chart5 = new Chart(ctx5, {
         type: 'line', // Cambia según necesites
         data: {
@@ -30,29 +32,6 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 
-    const currentDate = new Date();
-    const firstDayOfMonth = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1);
-    const formattedFirstDay = formatDate(firstDayOfMonth);
-    const formattedCurrentDate = formatDate(currentDate);
-
-    // Luego, cuando recibas la respuesta del servidor:
-    window.getData.getFilteredChartData(formattedFirstDay, formattedCurrentDate)
-    .then(response => {
-        if (response.status === 'success') {
-            const promedios = [
-                response.data.grafico5.original.data.promedioAtencion.promedio_creacion_atencion || 0,
-                response.data.grafico5.original.data.promedioRevisionAprobacion.promedio_revision_aprobacion || 0,
-                response.data.grafico5.original.data.promedioAprobacionEntrega.promedio_aprobacion_entrega || 0
-            ].map(Number); // Asegúrate de convertir a número
-
-            // Aquí actualizas el gráfico con los nuevos datos
-            chart5.data.datasets[0].data = promedios;
-            chart5.update();
-        }
-    })
-    .catch(error => console.error('Error:', error));
-
-
     // Funcion para formatear la fecha
     function formatDate(date) {
         const year = date.getFullYear();
@@ -61,6 +40,7 @@ document.addEventListener('DOMContentLoaded', function() {
         return `${year}-${month}-${day}`;
     }
 
+    // Función para actualizar el gráfico con los datos obtenidos
     function updateChart(data) {
         // Asegúrate de acceder correctamente a cada valor promedio
         const promedioCreacionAtencion = data.data.promedioAtencion.promedio_creacion_atencion || 0;
@@ -72,17 +52,15 @@ document.addEventListener('DOMContentLoaded', function() {
         chart5.update();
     }
 
-        // Cuando se haga click en el botón de actualizar, hace un fetch de los datos
-        document.querySelector('#refresh-button').addEventListener('click', function() {
-            const fechaInicio = document.querySelector('#start-date').value;
-            const fechaFin = document.querySelector('#end-date').value;
+    // Función para realizar la petición y actualizar el gráfico
+    async function fetchDataAndUpdateChart() {
+        try {
+            const currentDate = new Date();
+            const firstDayOfMonth = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1);
+            const formattedFirstDay = formatDate(firstDayOfMonth);
+            const formattedCurrentDate = formatDate(currentDate);
 
-            // Validar que las fechas no estén vacías
-            if (!fechaInicio || !fechaFin) {
-                return;
-            }
-
-            fetch('/api/reportes/salas/grafico-5', {
+            await fetch('/api/reportes/salas/grafico-5', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -91,8 +69,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 },
                 credentials: 'include',
                 body: JSON.stringify({
-                    fecha_inicio: fechaInicio,
-                    fecha_fin: fechaFin
+                    fecha_inicio: formattedFirstDay,
+                    fecha_fin: formattedCurrentDate
                 })
             })
             .then(response => response.json())
@@ -101,6 +79,42 @@ document.addEventListener('DOMContentLoaded', function() {
                     updateChart(data);
                 }
             })
-            .catch(error => console.error('Error:', error));
-        });
+        } catch (error) {
+            console.error('Error al hacer la petición:', error);
+        }
+    }
+
+    // Cuando se haga click en el botón de actualizar, hace un fetch de los datos
+    document.querySelector('#refresh-button').addEventListener('click', function() {
+        const fechaInicio = document.querySelector('#start-date').value;
+        const fechaFin = document.querySelector('#end-date').value;
+
+        // Validar que las fechas no estén vacías
+        if (!fechaInicio || !fechaFin) {
+            return;
+        }
+
+        fetch('/api/reportes/salas/grafico-5', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Accept': 'application/json',
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+            },
+            body: JSON.stringify({
+                fecha_inicio: fechaInicio,
+                fecha_fin: fechaFin
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.status === 'success') {
+                updateChart(data);
+            }
+        })
+        .catch(error => console.error('Error:', error));
+    });
+
+    // Llama a la función para hacer la petición y actualizar el gráfico
+    fetchDataAndUpdateChart();
 });

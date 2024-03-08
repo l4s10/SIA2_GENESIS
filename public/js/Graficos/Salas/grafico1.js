@@ -1,6 +1,8 @@
 // grafico1.js
 document.addEventListener('DOMContentLoaded', function() {
+    // Obtiene el contexto del canvas
     const ctx1 = document.getElementById('grafico1').getContext('2d');
+    // Configuración del gráfico
     const myChart = new Chart(ctx1, {
         type: 'pie',
         data: {
@@ -25,6 +27,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 
+    // Función para obtener un color aleatorio
     function getRandomColor() {
         let color = '#';
         for (let i = 0; i < 6; i++) {
@@ -32,25 +35,6 @@ document.addEventListener('DOMContentLoaded', function() {
         }
         return color;
     }
-
-
-    const currentDate = new Date();
-    const firstDayOfMonth = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1);
-    const formattedFirstDay = formatDate(firstDayOfMonth);
-    const formattedCurrentDate = formatDate(currentDate);
-
-    // Llama a la funcion para consumir la data en la carga inicial (del mes actual)
-    window.getData.getFilteredChartData(formattedFirstDay, formattedCurrentDate)
-        .then(data => {
-            if (data.status === 'success') {
-                const grafico1Data = data.data.grafico1.original.data;
-                myChart.data.labels = grafico1Data.map(item => item.nombre_completo);
-                myChart.data.datasets[0].data = grafico1Data.map(item => item.total_gestiones);
-                myChart.data.datasets[0].backgroundColor = grafico1Data.map(() => getRandomColor());
-                myChart.update();
-            }
-        })
-        .catch(error => console.error('Error:', error));
 
     // Funcion para formatear la fecha
     function formatDate(date) {
@@ -60,11 +44,59 @@ document.addEventListener('DOMContentLoaded', function() {
         return `${year}-${month}-${day}`;
     }
 
+    // Función para actualizar el gráfico con los datos obtenidos de la API
+    function updateChart(data) {
+        if (Array.isArray(data.data)) {
+            myChart.data.labels = data.data.map(item => item.nombre_completo);
+            myChart.data.datasets[0].data = data.data.map(item => item.total_gestiones);
+            myChart.data.datasets[0].backgroundColor = data.data.map(() => getRandomColor());
+            myChart.update();
+        } else {
+            console.error('Error: data.data no es un array');
+        }
+    }
 
-    // Cuando se haga click en el boton de actualizar, hace un fetch de los datos
+    // Función para realizar la petición y actualizar el gráfico
+    async function fetchDataAndUpdateChart() {
+        try {
+            const currentDate = new Date();
+            const firstDayOfMonth = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1);
+            const formattedFirstDay = formatDate(firstDayOfMonth);
+            const formattedCurrentDate = formatDate(currentDate);
+
+            await fetch('/api/reportes/salas/grafico-1', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                },
+                credentials: 'include',
+                body: JSON.stringify({
+                    fecha_inicio: formattedFirstDay,
+                    fecha_fin: formattedCurrentDate
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    updateChart(data);
+                }
+            })
+        } catch (error) {
+            console.error('Error al hacer la petición:', error);
+        }
+    }
+
+    // Cuando se haga click en el botón de actualizar, hace un fetch de los datos
     document.querySelector('#refresh-button').addEventListener('click', function() {
         const fechaInicio = document.querySelector('#start-date').value;
         const fechaFin = document.querySelector('#end-date').value;
+
+        // Validar que las fechas no estén vacías
+        if (!fechaInicio || !fechaFin) {
+            return;
+        }
 
         fetch('/api/reportes/salas/grafico-1', {
             method: 'POST',
@@ -82,15 +114,15 @@ document.addEventListener('DOMContentLoaded', function() {
         .then(response => response.json())
         .then(data => {
             if (data.status === 'success') {
-                myChart.data.labels = data.data.map(item => item.nombre_completo);
-                myChart.data.datasets[0].data = data.data.map(item => item.total_gestiones);
-                myChart.data.datasets[0].backgroundColor = data.data.map(() => getRandomColor());
-                myChart.update();
-            }else{
-                throw new Error(`HTTP error! Status: ${response.status}`);
+                updateChart(data);
             }
         })
         .catch(error => console.error('Error:', error));
     });
 
+    // Llama a la función para que se ejecute al cargar la página
+    fetchDataAndUpdateChart();
+
+    // Llama a la función para que se ejecute cada 5 minutos
+    //setInterval(fetchDataAndUpdateChart, 300000);
 });
