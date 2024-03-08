@@ -26,6 +26,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 
+    // Función para obtener un color aleatorio
     function getRandomColor() {
         let color = '#';
         for (let i = 0; i < 6; i++) {
