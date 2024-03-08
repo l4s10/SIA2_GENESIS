@@ -99,12 +99,12 @@
     <div class="row">
         <div class="col-md-6">
             <div class="card">
-                <canvas id="graficoGestionadoresSolicitudesMantenciones"></canvas>
+                <canvas id="graficoGestionadoresSolicitudesInmuebles"></canvas>
             </div>
         </div>
         <div class="col-md-6">
             <div class="card">
-                <canvas id="graficoGestionadoresSolicitudesInmuebles"></canvas>
+                <canvas id="graficoGestionadoresSolicitudesMantenciones"></canvas>
             </div>
         </div>
     </div>

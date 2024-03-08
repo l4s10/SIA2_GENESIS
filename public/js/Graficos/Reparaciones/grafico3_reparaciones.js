@@ -32,47 +32,92 @@ document.addEventListener('DOMContentLoaded', function() {
         return color;
     }
 
-    function updateChart(data) {
-        const newData = data.grafico5.solicitudesPorEntidad.map(item => ({
-            label: item.entidad,
-            value: item.cantidad, // Corregido de item.total_solicitudes a item.cantidad
-            color: getRandomColor()
-        }));
-        myChart2.data.labels = newData.map(item => item.label);
-        myChart2.data.datasets[0].data = newData.map(item => item.value);
-        myChart2.data.datasets[0].backgroundColor = newData.map(item => item.color);
-        myChart2.update();
+    // Funcion para formatear la fecha
+    function formatDate(date) {
+        const year = date.getFullYear();
+        const month = String(date.getMonth() + 1).padStart(2, '0');
+        const day = String(date.getDate()).padStart(2, '0');
+        return `${year}-${month}-${day}`;
     }
 
-    // Utiliza getData global para obtener y actualizar los datos del gráfico
-    window.getData.getInitialChartData()
-        .then(data => {
-            if (data.status === 'success') {
-                updateChart(data.data); // Asegúrate de que data.data contenga la estructura correcta
-            }
-        })
-        .catch(error => console.error('Error:', error));
+    // Función para actualizar el gráfico con los datos obtenidos de la API
+    function updateChart(data) {
+        if (Array.isArray(data.data)) {
+            myChart2.data.labels = data.data.map(item => item.entidad);
+            myChart2.data.datasets[0].data = data.data.map(item => item.cantidad);
+            myChart2.data.datasets[0].backgroundColor = data.data.map(() => getRandomColor());
+            myChart2.update();
+        } else {
+            console.error('Error: data.data no es un array');
+        }
+    }
+
+    // Función para realizar la petición y actualizar el gráfico
+    async function fetchDataAndUpdateChart() {
+        try {
+            const currentDate = new Date();
+            const firstDayOfMonth = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1);
+            const formattedFirstDay = formatDate(firstDayOfMonth);
+            const formattedCurrentDate = formatDate(currentDate);
+
+            await fetch('/api/reportes/reparaciones/grafico-5', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                },
+                credentials: 'include',
+                body: JSON.stringify({
+                    fecha_inicio: formattedFirstDay,
+                    fecha_fin: formattedCurrentDate
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    updateChart(data);
+                }
+            })
+        } catch (error) {
+            console.error('Error al hacer la petición:', error);
+        }
+    }
+
+    // Llama a la función para que se ejecute al cargar la página
+    fetchDataAndUpdateChart();
+
+    // Llama a la función para que se ejecute cada 5 minutos
+    //setInterval(fetchDataAndUpdateChart, 300000);
 
     document.querySelector('#refresh-button').addEventListener('click', function() {
         const fechaInicio = document.querySelector('#start-date').value;
         const fechaFin = document.querySelector('#end-date').value;
 
-        Swal.fire({
-            title: 'Actualizando registros',
-            timer: 2000,
-            didOpen: () => { Swal.showLoading(); }
-        });
+        // Validar que las fechas no estén vacías
+        if (!fechaInicio || !fechaFin) {
+            return;
+        }
 
-        window.getData.getFilteredChartData(fechaInicio, fechaFin)
-            .then(data => {
-                Swal.close();
-                if (data.status === 'success') {
-                    updateChart(data.data); // Asegúrate de que data.data contenga la estructura correcta
-                }
+        fetch('/api/reportes/reparaciones/grafico-5', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Accept': 'application/json',
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+            },
+            credentials: 'include',
+            body: JSON.stringify({
+                fecha_inicio: fechaInicio,
+                fecha_fin: fechaFin
             })
-            .catch(error => {
-                Swal.fire('Error', 'No se pudieron actualizar los datos.', 'error');
-                console.error('Error:', error);
-            });
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.status === 'success') {
+                updateChart(data);
+            }
+        })
+        .catch(error => console.error('Error:', error));
     });
 });
