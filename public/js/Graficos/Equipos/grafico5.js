@@ -1,5 +1,7 @@
 document.addEventListener('DOMContentLoaded', function() {
+    // Obtiene el contexto del canvas
     const ctx5 = document.getElementById('grafico5').getContext('2d');
+    // Configuración del gráfico
     const chart5 = new Chart(ctx5, {
         type: 'line', // Cambia según necesites
         data: {
