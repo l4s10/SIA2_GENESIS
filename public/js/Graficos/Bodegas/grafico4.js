@@ -1,5 +1,7 @@
 document.addEventListener('DOMContentLoaded', function() {
+    // Obtiene el contexto del canvas
     const ctx4 = document.getElementById('grafico4').getContext('2d');
+    // Configuración del gráfico
     const chart4 = new Chart(ctx4, {
         type: 'bar',
         data: {
@@ -31,6 +33,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 
+    // Función para obtener un color aleatorio
     function getRandomColor() {
         let color = '#';
         for (let i = 0; i < 6; i++) {
@@ -38,26 +41,6 @@ document.addEventListener('DOMContentLoaded', function() {
         }
         return color;
     }
-
-    const currentDate = new Date();
-    const firstDayOfMonth = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1);
-    const formattedFirstDay = formatDate(firstDayOfMonth);
-    const formattedCurrentDate = formatDate(currentDate);
-
-    // Llama a la funcion para consumir la data en la carga inicial (del mes actual)
-    window.getData.getFilteredChartData(formattedFirstDay, formattedCurrentDate)
-        .then(data => {
-            if (data.status === 'success') {
-                const grafico4Data = data.data.grafico4.original.data;
-
-                chart4.data.labels = grafico4Data.map(item => item.BODEGA_NOMBRE);
-                chart4.data.datasets[0].data = grafico4Data.map(item => item.total_solicitudes);
-                chart4.data.datasets[0].backgroundColor = grafico4Data.map(() => getRandomColor());
-
-                chart4.update();
-            }
-        })
-        .catch(error => console.error('Error:', error));
 
     // Funcion para formatear la fecha
     function formatDate(date) {
@@ -67,33 +50,27 @@ document.addEventListener('DOMContentLoaded', function() {
         return `${year}-${month}-${day}`;
     }
 
-
-    // Funcion para actualizar el grafico cuando se filtra por fechas despues de la carga inicial
+    // Función para actualizar el gráfico con los datos obtenidos
     function updateChart(data) {
-        const newData = data.map(item => ({
-            label: item.BODEGA_NOMBRE,
-            value: item.total_solicitudes,
-            color: getRandomColor() // Assuming you have a function to generate colors
-        }));
-        chart4.data.labels = newData.map(item => item.label);
-        chart4.data.datasets[0].data = newData.map(item => item.value);
-        chart4.data.datasets[0].backgroundColor = newData.map(item => item.color);
-        chart4.update();
+        if (Array.isArray(data.data)) {
+            chart4.data.labels = data.data.map(item => item.BODEGA_NOMBRE);
+            chart4.data.datasets[0].data = data.data.map(item => item.total_solicitudes);
+            chart4.data.datasets[0].backgroundColor = data.data.map(() => getRandomColor());
+            chart4.update();
+        } else {
+            console.error('Error: data.data no es un array');
+        }
     }
 
+    // Función para realizar la petición y actualizar el gráfico
+    async function fetchDataAndUpdateChart() {
+        try {
+            const currentDate = new Date();
+            const firstDayOfMonth = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1);
+            const formattedFirstDay = formatDate(firstDayOfMonth);
+            const formattedCurrentDate = formatDate(currentDate);
 
-
-        // Cuando se haga click en el botón de actualizar, hace un fetch de los datos
-        document.querySelector('#refresh-button').addEventListener('click', function() {
-            const fechaInicio = document.querySelector('#start-date').value;
-            const fechaFin = document.querySelector('#end-date').value;
-
-            // Validar que las fechas no estén vacías
-            if (!fechaInicio || !fechaFin) {
-                return;
-            }
-
-            fetch('/api/reportes/materiales/grafico-4', {
+            await fetch('/api/reportes/bodegas/grafico-4', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -102,16 +79,55 @@ document.addEventListener('DOMContentLoaded', function() {
                 },
                 credentials: 'include',
                 body: JSON.stringify({
-                    fecha_inicio: fechaInicio,
-                    fecha_fin: fechaFin
+                    fecha_inicio: formattedFirstDay,
+                    fecha_fin: formattedCurrentDate
                 })
             })
             .then(response => response.json())
             .then(data => {
                 if (data.status === 'success') {
-                    updateChart(data.data);
+                    updateChart(data);
                 }
             })
-            .catch(error => console.error('Error:', error));
-        });
+        } catch (error) {
+            console.error('Error al hacer la petición:', error);
+        }
+    }
+
+    // Cuando se haga click en el boton de actualizar, hace un fetch de los datos
+    document.querySelector('#refresh-button').addEventListener('click', function() {
+        const fechaInicio = document.querySelector('#start-date').value;
+        const fechaFin = document.querySelector('#end-date').value;
+
+        // Validar que las fechas no estén vacías
+        if (!fechaInicio || !fechaFin) {
+            return;
+        }
+
+        fetch('/api/reportes/bodegas/grafico-4', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Accept': 'application/json',
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+            },
+            credentials: 'include',
+            body: JSON.stringify({
+                fecha_inicio: fechaInicio,
+                fecha_fin: fechaFin
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.status === 'success') {
+                updateChart(data);
+            }
+        })
+        .catch(error => console.error('Error:', error));
+    });
+
+    // Llama a fetchDataAndUpdateChart para obtener los datos iniciales y actualizar el gráfico.
+    fetchDataAndUpdateChart();
+    // Opcional: Inicia la actualización cada cierto tiempo si es necesario
+    // setInterval(fetchDataAndUpdateChart, 5000);
 });

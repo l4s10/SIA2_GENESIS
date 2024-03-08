@@ -1,5 +1,7 @@
 document.addEventListener('DOMContentLoaded', function() {
+    // Obtiene el contexto del canvas
     const ctx2 = document.getElementById('grafico2').getContext('2d');
+    // Configuración del gráfico
     const myChart2 = new Chart(ctx2, {
         type: 'pie',
         data: {
@@ -24,6 +26,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 
+    // Función para obtener un color aleatorio
     function getRandomColor() {
         let color = '#';
         for (let i = 0; i < 6; i++) {
@@ -31,25 +34,6 @@ document.addEventListener('DOMContentLoaded', function() {
         }
         return color;
     }
-
-    const currentDate = new Date();
-    const firstDayOfMonth = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1);
-    const formattedFirstDay = formatDate(firstDayOfMonth);
-    const formattedCurrentDate = formatDate(currentDate);
-
-    // Llama a la funcion para consumir la data en la carga inicial (del mes actual)
-    window.getData.getFilteredChartData(formattedFirstDay, formattedCurrentDate)
-        .then(data => {
-            if (data.status === 'success') {
-                //Acceder a la data de la respuesta y actualizar el grafico con ella
-                const grafico2Data = data.data.grafico2.original.data;
-                myChart2.data.labels = grafico2Data.map(item => item.entidad);
-                myChart2.data.datasets[0].data = grafico2Data.map(item => item.total_solicitudes);
-                myChart2.data.datasets[0].backgroundColor = grafico2Data.map(() => getRandomColor());
-                myChart2.update();
-            }
-        })
-        .catch(error => console.error('Error:', error));
 
     // Funcion para formatear la fecha
     function formatDate(date) {
@@ -59,8 +43,51 @@ document.addEventListener('DOMContentLoaded', function() {
         return `${year}-${month}-${day}`;
     }
 
+    // Función para actualizar el gráfico con los datos obtenidos de la API
+    function updateChart(data) {
+        if (Array.isArray(data.data)) {
+            myChart2.data.labels = data.data.map(item => item.entidad);
+            myChart2.data.datasets[0].data = data.data.map(item => item.total_solicitudes);
+            myChart2.data.datasets[0].backgroundColor = data.data.map(() => getRandomColor());
+            myChart2.update();
+        } else {
+            console.error('Error: data.data no es un array');
+        }
+    }
 
-    // Cuando se haga click en el botón de actualizar, hace un fetch de los datos
+    // Función para realizar la petición y actualizar el gráfico (CARGA INICIAL)
+    async function fetchDataAndUpdateChart() {
+        try {
+            const currentDate = new Date();
+            const firstDayOfMonth = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1);
+            const formattedFirstDay = formatDate(firstDayOfMonth);
+            const formattedCurrentDate = formatDate(currentDate);
+
+            await fetch('/api/reportes/bodegas/grafico-2', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                },
+                credentials: 'include',
+                body: JSON.stringify({
+                    fecha_inicio: formattedFirstDay,
+                    fecha_fin: formattedCurrentDate
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    updateChart(data);
+                }
+            })
+        } catch (error) {
+            console.error('Error al hacer la petición:', error);
+        }
+    }
+
+    // Función para actualizar el gráfico con los datos obtenidos (CARGA FILTRADA)
     document.querySelector('#refresh-button').addEventListener('click', function() {
         const fechaInicio = document.querySelector('#start-date').value;
         const fechaFin = document.querySelector('#end-date').value;
@@ -70,7 +97,6 @@ document.addEventListener('DOMContentLoaded', function() {
             return;
         }
 
-        // Consumir endpoint para el gráfico 2 de materiales
         fetch('/api/reportes/bodegas/grafico-2', {
             method: 'POST',
             headers: {
@@ -87,13 +113,15 @@ document.addEventListener('DOMContentLoaded', function() {
         .then(response => response.json())
         .then(data => {
             if (data.status === 'success') {
-                myChart2.data.labels = data.data.map(item => item.entidad);
-                myChart2.data.datasets[0].data = data.data.map(item => item.total_solicitudes);
-                myChart2.data.datasets[0].backgroundColor = data.data.map(() => getRandomColor());
-                myChart2.update();
+                updateChart(data);
             }
         })
         .catch(error => console.error('Error:', error));
     });
 
+    // Llama a la función para que se ejecute al cargar la página
+    fetchDataAndUpdateChart();
+
+    // Llama a la función para que se ejecute cada 5 minutos
+    //setInterval(fetchDataAndUpdateChart, 300000);
 });
