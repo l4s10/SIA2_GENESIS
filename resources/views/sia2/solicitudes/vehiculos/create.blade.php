@@ -5,7 +5,31 @@
 @section('content_header')
     <h1>Solicitud Vehicular</h1>
     <br>
-    <br>
+    @role('ADMINISTRADOR')
+    <div class="alert alert-info alert1" role="alert">
+        <div><strong>Bienvenido Administrador:</strong> En esta pantalla usted podrá verificar las reservas de vehículos, ya programadas, en caso de mayor información, consulte al Departamento de Administración.</div>
+    </div>
+    @endrole
+    @role('SERVICIOS')
+    <div class="alert alert-info" role="alert">
+        <div><strong>Bienvenido Servicio:</strong> En esta pantalla usted podrá verificar las reservas de vehículos, ya programadas, en caso de mayor información, consulte al Departamento de Administración.</div>
+    </div>
+    @endrole
+    @role('INFORMATICA')
+    <div class="alert alert-info" role="alert">
+        <div><strong>Bienvenido Informatica:</strong> En esta pantalla usted podrá verificar las reservas de vehículos, ya programadas, en caso de mayor información, consulte al Departamento de Administración.</div>
+    </div>
+    @endrole
+    @role('JURIDICO')
+    <div class="alert alert-info" role="alert">
+        <div><strong>Bienvenido Juridico:</strong> En esta pantalla usted podrá verificar las reservas de vehículos, ya programadas, en caso de mayor información, consulte al Departamento de Administración.</div>
+    </div>
+    @endrole
+    @role('FUNCIONARIO')
+    <div class="alert alert-info" role="alert">
+        <div><strong>Bienvenido Funcionario:</strong> En esta pantalla usted podrá verificar las reservas de vehículos, ya programadas, en caso de mayor información, consulte al Departamento de Administración.</div>
+    </div>
+    @endrole
 
 @stop
 
@@ -317,6 +341,20 @@
         border-color: red !important;
     }
 </style>
+
+    <!-- Color mensajes usuario -->
+    <style>
+        .alert {
+            opacity: 0.7; /* Ajusta la opacidad del texto */
+            background-color: #99CCFF;
+            color:     #000000;
+        }
+        .alert1 {
+            opacity: 0.7; /* Ajusta la opacidad del texto  */
+            background-color: #FF8C40;
+            color: #000000;
+        }
+    </style>
 @stop
 
 @section('js')

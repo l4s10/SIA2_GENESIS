@@ -55,7 +55,10 @@
                         <td>{{ $auditoria->MOVIMIENTO_TITULAR }}</td>
                         <td>{{ $auditoria->MOVIMIENTO_OBJETO }}</td>
                         <td>{{ $auditoria->MOVIMIENTO_TIPO_OBJETO }}</td>
-                        <td>{{ $auditoria->MOVIMIENTO_TIPO }}</td>
+                        <td><span class="badge rounded-pill estado-{{ strtolower(str_replace(' ', '-', $auditoria->MOVIMIENTO_TIPO)) }}">
+                        {{ $auditoria->MOVIMIENTO_TIPO }}
+                        </span>
+                        </td>
                         <td>{{ $auditoria->MOVIMIENTO_STOCK_PREVIO }}</td>
                         <td>{{ $auditoria->MOVIMIENTO_CANTIDAD_A_MODIFICAR }}</td>
                         <td>{{ $auditoria->MOVIMIENTO_STOCK_RESULTANTE }}</td>
@@ -84,6 +87,17 @@
         .botoneditar{
             background-color: #1aa16b;
             color: #fff;
+        }
+        
+        /*Colores de los estados*/
+        .estado-resta {
+        color: #FFFFFF;
+        background-color: #F70B0B;
+        }
+
+        .estado-ingreso {
+        color: #ffffff;
+        background-color: #0CB009;
         }
     </style>
 @stop

@@ -5,6 +5,21 @@
 @section('content_header')
     <h1>Listado de Equipos</h1>
     {{-- Lógica de roles --}}
+    @role('ADMINISTRADOR')
+    <div class="alert alert-info alert1" role="alert">
+        <div><strong>Bienvenido Administrador:</strong> Acceso total al modulo.<div>
+    </div>
+    @endrole
+    @role('SERVICIOS')
+    <div class="alert alert-info" role="alert">
+        <div><strong>Bienvenido Servicio:</strong> En esta tabla se muestra todos los equipos ya sea <strong>DISPONIBLES/ NO DISPONIBLES</strong> del sistema.<div>
+    </div>
+    @endrole
+    @role('INFORMATICA')
+    <div class="alert alert-info" role="alert">
+        <div><strong>Bienvenido Informatica:</strong> En esta tabla se muestra todos los equipos ya sea <strong>DISPONIBLES/ NO DISPONIBLES</strong> del sistema.<div>
+    </div>
+    @endrole
     {{-- ... --}}
 @stop
 
@@ -95,6 +110,20 @@
         .botoneditar {
             background-color: #1aa16b;
             color: #fff;
+        }
+    </style>
+    
+    <!-- Color mensajes usuario -->
+    <style>
+        .alert {
+            opacity: 0.7; /* Ajusta la opacidad del texto */
+            background-color: #99CCFF;
+            color:     #000000;
+        }
+        .alert1 {
+            opacity: 0.7; /* Ajusta la opacidad del texto  */
+            background-color: #FF8C40;
+            color: #000000;
         }
     </style>
 @stop

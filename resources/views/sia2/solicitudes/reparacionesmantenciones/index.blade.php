@@ -4,6 +4,31 @@
 
 @section('content_header')
     <h1>Listado de solicitudes de reparaciones y mantenciones</h1>
+    @role('ADMINISTRADOR')
+    <div class="alert alert-info alert1" role="alert">
+    <div><strong>Bienvenido Administrador:</strong> Acceso total al modulo.<div>
+    </div>
+    @endrole
+    @role('SERVICIOS')
+    <div class="alert alert-info" role="alert">
+    <div><strong>Bienvenido Servicio:</strong> Aquí encontrarás todas las herramientas y opciones que necesitas para gestionar y coordinar las tareas de mantenimiento y reparación de manera eficiente.<div>
+    </div>
+    @endrole
+    @role('INFORMATICA')
+    <div class="alert alert-info" role="alert">
+    <div><strong>Bienvenido Informatica:</strong> Aquí encontrarás todas las herramientas y opciones que necesitas para gestionar y coordinar las tareas de mantenimiento y reparación de manera eficiente.<div>
+    </div>
+    @endrole
+    @role('JURIDICO')
+    <div class="alert alert-info" role="alert">
+    <div><strong>Bienvenido Juridico:</strong> Aquí encontrarás todas las herramientas y opciones que necesitas para gestionar y coordinar las tareas de mantenimiento y reparación de manera eficiente.<div>
+    </div>
+    @endrole
+    @role('FUNCIONARIO')
+    <div class="alert alert-info" role="alert">
+    <div><strong>Bienvenido Funcionario:</strong> Aquí encontrarás todas las herramientas y opciones que necesitas para gestionar y coordinar las tareas de mantenimiento y reparación de manera eficiente.<div>
+    </div>
+    @endrole
     {{-- Logica de roles --}}
 @stop
 
@@ -122,6 +147,20 @@
         background-color: #d9d9d9;
         }
 </style>
+
+    <!-- Color mensajes usuario -->
+    <style>
+        .alert {
+            opacity: 0.7; /* Ajusta la opacidad del texto */
+            background-color: #99CCFF;
+            color:     #000000;
+        }
+        .alert1 {
+            opacity: 0.7; /* Ajusta la opacidad del texto  */
+            background-color: #FF8C40;
+            color: #000000;
+        }
+    </style>
 @stop
 
 @section('js')

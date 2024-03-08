@@ -5,6 +5,15 @@
 
 @section('content_header')
     <h1>Crear Solicitud</h1>
+    @role('ADMINISTRADOR')
+    <div class="alert alert-info alert1" role="alert">
+        <div>Bienvenido al módulo de <strong>solicitud de reservas de equipos</strong>. En este módulo, usted podrá pedir a través del carro de compras los distintos materiales catalogados. En caso de requerir otro material, favor contactar al Departamento de Administración.</div>
+    </div>
+    @else
+    <div class="alert alert-info" role="alert">
+        <div>Bienvenido al módulo de <strong>solicitud de reservas de equipos</strong>. En el presente módulo usted podrá reserva de equipos, según sea el caso el Departamento de Administración analizará los antecedentes, y podrá aceptar o rechazar la solicitud.</div>
+    </div>
+    @endrole
 @stop
 
 @section('content')
@@ -156,6 +165,21 @@
             color: #fff;
         }
     </style>
+    
+    <!-- Color mensajes usuario -->
+    <style>
+        .alert {
+            opacity: 0.7; /* Ajusta la opacidad del texto */
+            background-color: #99CCFF;
+            color:     #000000;
+        }
+        .alert1 {
+            opacity: 0.7; /* Ajusta la opacidad del texto  */
+            background-color: #FF8C40;
+            color: #000000;
+        }
+    </style>
+
 @stop
 
 @section('js')

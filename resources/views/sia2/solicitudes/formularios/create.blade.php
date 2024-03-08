@@ -5,9 +5,38 @@
 
 @section('content_header')
     <h1>Crear Solicitud</h1>
+    @role('ADMINISTRADOR')
+    <div class="alert alert-info alert1" role="alert">
+    <div><strong>Bienvenido Administrador:</strong> Acceso total al modulo.<div>
+    </div>
+    @endrole
+    @role('SERVICIOS')
+    <div class="alert alert-info" role="alert">
+    <div><strong>Bienvenido Servicio:</strong> En el presente módulo usted podrá solicitar formularios.<div>
+    </div>
+    @endrole
+    @role('INFORMATICA')
+    <div class="alert alert-info" role="alert">
+    <div><strong>Bienvenido Informatica:</strong> En el presente módulo usted podrá solicitar formularios.<div>
+    </div>
+    @endrole
+    @role('JURIDICO')
+    <div class="alert alert-info" role="alert">
+    <div><strong>Bienvenido Juridico:</strong> En el presente módulo usted podrá solicitar formularios.<div>
+    </div>
+    @endrole
+    @role('FUNCIONARIO')
+    <div class="alert alert-info" role="alert">
+    <div><strong>Bienvenido Funcionario:</strong> En el presente módulo usted podrá solicitar formularios, según sea el caso el Departamento de Administración analizará los antecedentes, y podrá aceptar o rechazar la solicitud.<div>
+    </div>
+    @endrole
 @stop
 
 @section('content')
+<div class="verde">
+    <div><i class="fas fa-seedling"></i>Cuidemos el medio ambiente <i class="fas fa-seedling"></i>. Recuerde que se debe priorizar los formularios con uso cero papel.</div>
+</div>
+    <br>
     @if (session('success'))
         <script>
             document.addEventListener('DOMContentLoaded', () => {
@@ -155,6 +184,39 @@
         .botoneditar{
             background-color: #1aa16b;
             color: #fff;
+        }
+    </style>
+
+    <!-- Color mensajes usuario -->
+    <style>
+        .alert {
+            opacity: 0.7; /* Ajusta la opacidad del texto */
+            background-color: #99CCFF;
+            color:     #000000;
+        }
+        .alert1 {
+            opacity: 0.7; /* Ajusta la opacidad del texto  */
+            background-color: #FF8C40;
+            color: #000000;
+        }
+        
+        .verde {
+            display: flex;
+            justify-content: center;
+            height: 6vh; /* Ajusta la altura como desees */
+            align-items: center;
+            padding: 10px;
+            background-color: #40C47C;
+            color: #FFFFFF;
+            border-radius: 10px;
+            font-size: 16px; /* Tamaño de fuente */
+            text-align: center; /* Alineación del texto */
+            overflow: hidden;
+        }
+
+        .verde i {
+            margin: 0 5px; /* Espacio entre los íconos y el texto */
+            margin-right: 10px;
         }
     </style>
 @stop

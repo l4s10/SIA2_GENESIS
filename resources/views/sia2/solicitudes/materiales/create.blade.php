@@ -4,6 +4,15 @@
 
 @section('content_header')
     <h1>Crear Solicitud</h1>
+    @role('ADMINISTRADOR')
+    <div class="alert alert-info alert1" role="alert">
+        <div>Bienvenido al módulo de <strong>solicitud de materiales</strong>. En este módulo, usted podrá pedir a través del carro de compras los distintos materiales catalogados. En caso de requerir otro material, favor contactar al Departamento de Administración.</div>
+    </div>
+    @else
+    <div class="alert alert-info" role="alert">
+        <div>Bienvenido al módulo de <strong>solicitud de materiales</strong>. En este módulo, usted podrá pedir a través del carro de compras los distintos materiales catalogados. En caso de requerir otro material, favor contactar al Departamento de Administración.</div>
+    </div>
+    @endrole
 @stop
 
 @section('content')
@@ -156,6 +165,21 @@
             background-color: #1aa16b;
             color: #fff;
         }
+    </style>
+    
+    <!-- Color mensajes usuario -->
+    <style>
+            .alert {
+            opacity: 0.7; /* Ajusta la opacidad del texto */
+            background-color: #99CCFF;
+            color:     #000000;
+            }
+            .alert1 {
+                opacity: 0.7;
+                /* Ajusta la opacidad del texto  */
+                background-color: #FF8C40;
+                color: #000000;
+            }
     </style>
 @stop
 

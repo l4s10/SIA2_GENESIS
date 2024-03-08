@@ -5,6 +5,16 @@
 @section('content_header')
     <h1>Listado de Vehículos</h1>
     {{-- Lógica de roles --}}
+    @role('ADMINISTRADOR')
+    <div class="alert alert-info alert1" role="alert">
+    <div><strong>Bienvenido Administrador:</strong> En este módulo usted podrá registrar, visualizar, modificar o eliminar los vehículos del sistema.<div>
+    </div>
+    @endrole
+    @role('SERVICIOS')
+    <div class="alert alert-info" role="alert">
+    <div><strong>Bienvenido Servicio:</strong>  En este módulo usted podrá registrar, visualizar, modificar o eliminar los vehículos del sistema.<div>
+    </div>
+    @endrole
     {{-- ... --}}
 @stop
 
@@ -127,6 +137,20 @@
             background-color: #F70B0B;
         }
 
+    </style>
+            
+    <!-- Color mensajes usuario -->
+    <style>
+        .alert {
+            opacity: 0.7; /* Ajusta la opacidad del texto */
+            background-color: #99CCFF;
+            color:     #000000;
+        }
+        .alert1 {
+            opacity: 0.7; /* Ajusta la opacidad del texto  */
+            background-color: #FF8C40;
+            color: #000000;
+        }
     </style>
 @stop
 
