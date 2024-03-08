@@ -54,7 +54,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
-    // Función para realizar la petición y actualizar el gráfico
+    // Función para realizar la petición y actualizar el gráfico (CARGA INICIAL)
     async function fetchDataAndUpdateChart() {
         try {
             const currentDate = new Date();
@@ -86,6 +86,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
+    // Función para actualizar el gráfico con los datos obtenidos (CARGA FILTRADA)
     document.querySelector('#refresh-button').addEventListener('click', function() {
         const fechaInicio = document.querySelector('#start-date').value;
         const fechaFin = document.querySelector('#end-date').value;
