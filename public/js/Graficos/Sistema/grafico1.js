@@ -1,5 +1,7 @@
 document.addEventListener('DOMContentLoaded', function() {
+    // Obtiene el contexto del canvas
     const ctx = document.getElementById('graficoRankingSolicitudes').getContext('2d');
+    // Configuración del gráfico
     const chart = new Chart(ctx, {
         type: 'bar', // O el tipo de gráfico que prefieras
         data: {
@@ -29,6 +31,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 
+    // Función para obtener un color aleatorio
     function getRandomColor() {
         let color = '#';
         for (let i = 0; i < 6; i++) {
@@ -36,6 +39,15 @@ document.addEventListener('DOMContentLoaded', function() {
         }
         return color;
     }
+
+    // Funcion para formatear la fecha
+    function formatDate(date) {
+        const year = date.getFullYear();
+        const month = String(date.getMonth() + 1).padStart(2, '0');
+        const day = String(date.getDate()).padStart(2, '0');
+        return `${year}-${month}-${day}`;
+    }
+
 
     function updateChart(data) {
         // Obtiene las categorías y cantidades directamente de data
@@ -51,37 +63,39 @@ document.addEventListener('DOMContentLoaded', function() {
         chart.update();
     }
 
+    // Función para realizar la petición y actualizar el gráfico
+    async function fetchDataAndUpdateChart() {
+        try {
+            const currentDate = new Date();
+            const firstDayOfMonth = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1);
+            const formattedFirstDay = formatDate(firstDayOfMonth);
+            const formattedCurrentDate = formatDate(currentDate);
 
-    const currentDate = new Date();
-    const firstDayOfMonth = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1);
-    const formattedFirstDay = formatDate(firstDayOfMonth);
-    const formattedCurrentDate = formatDate(currentDate);
-
-    // Llama a la funcion para consumir la data en la carga inicial (del mes actual)
-    window.getData.getFilteredChartData(formattedFirstDay, formattedCurrentDate)
-        .then(data => {
-            if (data.status === 'success') {
-                // Utilizar directamente 'data.data.grafico1.original.data' para la actualización
-                const categorias = Object.keys(data.data.grafico1.original.data);
-                const cantidades = Object.values(data.data.grafico1.original.data);
-                chart.data.labels = categorias;
-                chart.data.datasets[0].data = cantidades;
-                chart.data.datasets[0].backgroundColor = categorias.map(() => getRandomColor());
-                chart.update();
-            }
-        })
-        .catch(error => console.error('Error:', error));
-
-    // Funcion para formatear la fecha
-    function formatDate(date) {
-        const year = date.getFullYear();
-        const month = String(date.getMonth() + 1).padStart(2, '0');
-        const day = String(date.getDate()).padStart(2, '0');
-        return `${year}-${month}-${day}`;
+            await fetch('/api/reportes/sistema/grafico-1', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                },
+                credentials: 'include',
+                body: JSON.stringify({
+                    fecha_inicio: formattedFirstDay,
+                    fecha_fin: formattedCurrentDate
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    updateChart(data);
+                }
+            })
+        } catch (error) {
+            console.error('Error al hacer la petición:', error);
+        }
     }
 
-    // Agregar evento al botón de filtro
-        // Cuando se haga click en el boton de actualizar, hace un fetch de los datos
+    // Cuando se haga click en el boton de actualizar, hace un fetch de los datos
     document.querySelector('#refresh-button').addEventListener('click', function() {
         const fechaInicio = document.querySelector('#start-date').value;
         const fechaFin = document.querySelector('#end-date').value;
@@ -112,7 +126,6 @@ document.addEventListener('DOMContentLoaded', function() {
         .catch(error => console.error('Error:', error));
     });
 
-
-
-
+    // Llama a la función para obtener los datos y actualizar el gráfico
+    fetchDataAndUpdateChart();
 });
