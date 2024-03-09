@@ -9,6 +9,9 @@ use Illuminate\Support\Facades\Validator;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Exception; // Libreria faltante
 
+use Carbon\Carbon;
+use Dompdf\Dompdf;
+
 use App\Models\Equipo;
 use App\Models\TipoEquipo;
 use App\Models\Movimiento;
@@ -351,4 +354,35 @@ class EquipoController extends Controller
             return redirect()->route('equipos.index')->with('error', 'Error al eliminar el equipo');
         }
     }
+
+    // Exportable Auditoria de Equipos para PDF
+    public function exportAuditoriaPdf()
+    {
+        $responsable = Auth::user()->USUARIO_NOMBRES.' '.Auth::user()->USUARIO_APELLIDOS . ' - ' . Auth::user()->USUARIO_RUT;
+        $direccion = Auth::user()->oficina->OFICINA_NOMBRE;
+        
+        // Obtener los movimientos que representan las auditorías (ajusta la consulta según sea necesario)
+        $auditorias = Movimiento::where('MOVIMIENTO_OBJETO', 'LIKE', 'EQUIPO: %')->get();
+    
+        $fecha = now()->setTimezone('America/Santiago')->format('d/m/Y H:i');
+        $fechaParaNombreArchivo = str_replace(['/', ':', ' '], '-', $fecha);
+        $imagePath = public_path('img/logosii.jpg');
+        $imagePath2 = public_path('img/fondo_sii_intranet.jpg');
+    
+        // Renderizar la vista del PDF con los datos de las auditorías
+        $html = view('sia2.auditorias.equipoauditoriapdf', compact('auditorias', 'fecha', 'imagePath', 'imagePath2', 'responsable', 'direccion'))->render();
+    
+        $dompdf = new Dompdf();
+        $dompdf->loadHtml($html);
+    
+        $dompdf->setPaper('A4', 'portrait');
+        $dompdf->render();
+    
+        // Nombre del archivo para el PDF
+        $nombreArchivo = "Reporte_Movimiento_Equipo_" . $fechaParaNombreArchivo . ".pdf";
+    
+        // Descargar el PDF
+        $dompdf->stream($nombreArchivo, ["Attachment" => false]);
+    }
+
 }

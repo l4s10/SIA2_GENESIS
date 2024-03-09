@@ -33,6 +33,10 @@
     @endif
 
     <div class="table-responsive">
+        {{-- Boton para exportar a PDF --}}
+                <a href="{{ route('exportar-equipo-auditoria-pdf') }}" class="btn btn-primary" target="_blank">
+                    <i class="fa-solid fa-file-pdf"></i> Exportar PDF
+                </a>
         <table id="auditorias" class="table table-bordered mt-4">
             <thead>
                 <tr class="tablacolor">
@@ -45,7 +49,6 @@
                     <th scope="col">Cantidad resultante</th>
                     <th scope="col">Detalle</th>
                     <th scope="col">Fecha de movimiento</th>
-                    <th scope="col">Acciones</th>
                 </tr>
             </thead>
 
@@ -63,10 +66,7 @@
                         <td>{{ $auditoria->MOVIMIENTO_CANTIDAD_A_MODIFICAR }}</td>
                         <td>{{ $auditoria->MOVIMIENTO_STOCK_RESULTANTE }}</td>
                         <td>{{ $auditoria->MOVIMIENTO_DETALLE }}</td>
-                        <td>{{date_format($auditoria->created_at, 'd-m-Y H:i')}}</td>
-                        <td>
-                            Exportar
-                        </td>
+                        <td>{{date_format($auditoria->created_at, 'd-m-Y H:i:s')}}</td>
                     </tr>
                 @endforeach
             </tbody>
@@ -113,9 +113,7 @@
             // Inicialización de DataTables
             $('#auditorias').DataTable({
                 "lengthMenu": [[5, 10, 50, -1], [5, 10, 50, "All"]],
-                "columnDefs": [
-                    { "orderable": false, "targets": 9 }
-                ],
+                "order": [[8, "desc"]],
                 "language": {
                     "url": "https://cdn.datatables.net/plug-ins/1.11.3/i18n/es_es.json"
                 },
