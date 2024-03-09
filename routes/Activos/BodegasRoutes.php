@@ -3,8 +3,8 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Activos\Bodega\BodegaController;
 
-// Grupo de middleware para roles ADMINISTRADOR o SERVICIOS
-Route::middleware(['role:ADMINISTRADOR|SERVICIOS'])->group(function () {
+// Grupo de middleware para roles ADMINISTRADOR o INFORMATICA
+Route::middleware(['role:ADMINISTRADOR|INFORMATICA'])->group(function () {
     // Prefix para las rutas de bodegas
     Route::prefix('bodegas')->group(function () {
         Route::get('/', [BodegaController::class, 'index'])
