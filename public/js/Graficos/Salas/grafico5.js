@@ -18,7 +18,11 @@ document.addEventListener('DOMContentLoaded', function() {
             responsive: true,
             scales: {
                 y: {
-                    beginAtZero: true
+                    beginAtZero: true,
+                    title: {
+                        display: true,
+                        text: 'Promedio de Respuesta (días)'
+                    },
                 }
             },
             plugins: {

@@ -51,6 +51,9 @@
         <div class="col-md-12">
             <div class="card">
                 <canvas id="graficoRankingSolicitudes"></canvas>
+                <div class="card-footer">
+                    <button id="download-jpeg-button" class="btn descagargrafico"><i class="fa-solid fa-download"></i></button>
+                </div>
             </div>
         </div>
     </div>
@@ -61,6 +64,10 @@
     <style>/* Estilos personalizados si es necesario */
         .guardar {
             background-color: #e6500a;
+            color: #fff;
+        }
+        .descagargrafico{
+            background-color: #00B050;
             color: #fff;
         }
     </style>
@@ -98,6 +105,7 @@
     </script>
 
     <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
@@ -113,4 +121,27 @@
     {{-- Importar el archivo JS para el gráfico 1 --}}
     <script src="{{ asset('js/Graficos/Sistema/grafico1.js') }}"></script>
 
+    <!-- Scrip para la descargar de los graficos -->
+    <script>
+        // Agrega un controlador de eventos al botón de descarga en formato JPEG
+            const downloadJPEGButton = document.getElementById('download-jpeg-button');
+            downloadJPEGButton.addEventListener('click', function () {
+                // Selecciona el elemento del gráfico que deseas capturar
+                const chartContainer = document.getElementById('graficoRankingSolicitudes');
+
+            // Utiliza html2canvas para capturar el gráfico como una imagen
+            html2canvas(chartContainer).then(function (canvas) {
+                // Convierte el canvas a una imagen en formato JPEG
+                const imageDataURL = canvas.toDataURL('image/jpeg');
+
+                // Crea un enlace de descarga
+                const link = document.createElement('a');
+                link.href = imageDataURL;
+                link.download = 'Grafico.jpg'; // Cambia el nombre del archivo según tu preferencia
+
+                // Haz clic en el enlace para iniciar la descarga
+                link.click();
+            });
+        });
+    </script>
 @endsection

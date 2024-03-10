@@ -67,8 +67,8 @@
             <div class="card">
                 <canvas id="grafico3"></canvas>
                 <div class="card-footer">
-                    <button id="viewLargeChart" class="btn btn-primary"><i class="fa-solid fa-maximize"></i></button>
-                    <button id="download-jpeg-button" class="btn btn-primary"><i class="fa-solid fa-download"></i></button>
+                    <button id="viewLargeChart" class="btn vergrafico"><i class="fa-solid fa-maximize"></i></button>
+                    <button id="download-jpeg-button" class="btn descagargrafico"><i class="fa-solid fa-download"></i></button>
                 </div>
             </div>
         </div>
@@ -77,8 +77,8 @@
             <div class="card">
                 <canvas id="grafico4"></canvas>
                 <div class="card-footer">
-                    <button id="viewLargeChart1" class="btn btn-primary"><i class="fa-solid fa-maximize"></i></button>
-                    <button id="download-jpeg-button-1" class="btn btn-primary"><i class="fa-solid fa-download"></i></button>
+                    <button id="viewLargeChart1" class="btn vergrafico"><i class="fa-solid fa-maximize"></i></button>
+                    <button id="download-jpeg-button-1" class="btn descagargrafico"><i class="fa-solid fa-download"></i></button>
                 </div>
             </div>
         </div>
@@ -115,9 +115,18 @@
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="crossorigin=""/>
     <link rel="stylesheet" href="https://unpkg.com/leaflet-routing-machine@latest/dist/leaflet-routing-machine.css" />
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+    
     <style>/* Estilos personalizados si es necesario */
         .guardar {
             background-color: #e6500a;
+            color: #fff;
+        }
+        .vergrafico{
+            background-color: #0F69B4;
+            color: #fff;
+        }
+        .descagargrafico{
+            background-color: #00B050;
             color: #fff;
         }
     </style>
