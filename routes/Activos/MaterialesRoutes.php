@@ -10,6 +10,9 @@ Route::middleware(['role:ADMINISTRADOR|SERVICIOS'])->group(function () {
         Route::get('/', [MaterialController::class, 'index'])
             ->name('materiales.index')
             ->middleware('can:ver_activos');
+        Route::get('/getFilteredData', [MaterialController::class, 'getFilteredData'])
+            ->name('materiales.search')
+            ->middleware('can:ver_activos');
         Route::get('/create', [MaterialController::class, 'create'])
             ->name('materiales.create')
             ->middleware('can:crear_activo');
