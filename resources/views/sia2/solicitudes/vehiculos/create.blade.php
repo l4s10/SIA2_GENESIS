@@ -156,17 +156,31 @@
             {{-- BOTONES PARA AGREGAR O ELIMINAR PASAJEROS/CONDUCTOR  (NO TOCAR) --}}
             <div id="pasajeros" style="display: none;">
             </div>
-            <div class="col">
-                <div class="row">
-                    <button id="agregarPasajeroBtn" class="btn" style="background-color: #00B050; color: #fff;" type="button">
-                        <i class="fas fa-plus"></i> Agregar Pasajero
-                    </button>
-
-                    <button id="eliminarPasajeroBtn" class="btn" style="background-color: #E22C2C; color: #fff;">
-                        <i class="fas fa-minus"></i> Eliminar Pasajero
-                    </button>
+            <div class="row">
+                <div class="col-md-3">
+             
                 </div>
+                <div class="col-md-6">
+                    <div class="row">
+                        <div class="col-md-6 text-end">
+                            <button id="eliminarPasajeroBtn" type="button" class="btn btn-custom" style="background-color: #FF6600; color: #fff;">
+                                <i class="fa-solid fa-user-minus"></i> Eliminar Pasajero
+                            </button>
+                            
+                        </div>
+                        <div class="col-md-6">
+                            <button id="agregarPasajeroBtn" type="button" class="btn btn-custom" style="background-color: #00B050; color: #fff;">
+                                <i class="fa-solid fa-user-plus"></i> Agregar Pasajero
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                   
+                </div>
+                
             </div>
+                
 
 
             {{-- DATOS DE SALIDA --}}
@@ -253,23 +267,21 @@
             <br><br><br>
             <div class="row">
                 <div class="col-md-3">
-                    <!-- Botón Cancelar -->
-                    <a href="{{ route('solicitudesvehiculos.index') }}" class="btn btn-cancelar"><i class="fa-solid fa-hand-point-left"></i> Cancelar</a>
+                    
                 </div>
                 <div class="col-md-3">
-                    
+                    <!-- Botón Cancelar -->
+                    <a href="{{ route('solicitudesvehiculos.index') }}" class="btn btn-cancelar"> Cancelar</a>
                 </div>
                 <div class="col-md-6">
                     <div class="row">
 
                         <div class="col-md-6">
-                            <!-- Botón Guardar esta Revisión -->
-                          
+                          <button type="submit"   class="btn btn-custom"  style="background-color: #0f69B4; color: white;" > Enviar Solicitud</button>
 
                         </div>
                         <div class="col-md-6 text-end">
-                            <!-- Botón Terminar Revisiones -->
-                            <button type="submit"   class="btn btn-custom"  style="background-color: #00B050; color: white;" ><i class="fa-solid fa-clipboard-check"></i> Crear Solicitud</button>
+                            
 
                         </div>
                     </div>
@@ -322,7 +334,7 @@
 
     .btn-cancelar {
         width: 100%;
-        background-color: #6c757d;
+        background-color: #FF6600;
         color: white; 
     }  
 </style>
