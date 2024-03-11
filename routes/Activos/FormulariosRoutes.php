@@ -11,6 +11,10 @@ Route::middleware(['role:ADMINISTRADOR|SERVICIOS'])->group(function () {
             ->name('formularios.index')
             ->middleware('can:ver_activos');
 
+        Route::get('/getFilteredData', [FormularioController::class, 'getFilteredData'])
+            ->name('formularios.search')
+            ->middleware('can:ver_activos');
+
         Route::get('/create', [FormularioController::class, 'create'])
             ->name('formularios.create')
             ->middleware('can:crear_activo');
