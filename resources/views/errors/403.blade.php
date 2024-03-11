@@ -21,6 +21,6 @@
 
 @section('css')
     <style>
-        /* Estilos personalizados según la guía de usabilidad de tu empresa */
+        /* Estilos personalizados según la guía de usabilidad */
     </style>
 @endsection

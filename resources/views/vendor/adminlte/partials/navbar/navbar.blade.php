@@ -1,6 +1,9 @@
 <?php
+    // Obtener el usuario actual
+    $user = auth()->user();
+
     // Obtener los roles del usuario actual
-    $roles = auth()->user()->getRoleNames();
+    $roles = $user ? $user->getRoleNames() : [];
 
     // Definir los colores por defecto para cada tipo de usuario
     $colors = [
@@ -23,9 +26,9 @@
     {{ config('adminlte.classes_topnav_nav', 'navbar-expand') }}
     @role('ADMINISTRADOR')
     navbar-primary
-    @elseif(request()->user()->hasRole('SERVICIOS'))
+    @elseif(request()->user() && request()->user()->hasRole('SERVICIOS'))
     navbar-success
-    @elseif(request()->user()->hasAnyRole(['INFORMATICA', 'JURIDICO']))
+    @elseif(request()->user() && request()->user()->hasAnyRole(['INFORMATICA', 'JURIDICO']))
     navbar-danger
     @else
     navbar-warning
