@@ -20,6 +20,8 @@ use App\Models\Material;
 use App\Models\TipoMaterial;
 use App\Models\Movimiento;
 use App\Models\Oficina;
+use App\Models\Ubicacion;
+use App\Models\User;
 
 
 class MaterialController extends Controller
@@ -216,8 +218,12 @@ class MaterialController extends Controller
             $tiposMateriales = TipoMaterial::where('OFICINA_ID', $oficinaIdUsuario)->get();
             // Obtener la información de la oficina del usuario
             $oficina = Oficina::where('OFICINA_ID', $oficinaIdUsuario)->firstOrFail();
+            // Obtener ubicaciones del sistema
+            $ubicaciones = Ubicacion::all();
+            // Obtener usuarios del sistema...
+            $usuarios = User::all();
 
-            return view('sia2.activos.modmateriales.materiales.edit', compact('material', 'tiposMateriales', 'oficina'));
+            return view('sia2.activos.modmateriales.materiales.edit', compact('material', 'tiposMateriales', 'oficina', 'ubicaciones', 'usuarios'));
         } catch (ModelNotFoundException $e) {
             // Manejar excepción de modelo no encontrado
             return redirect()->route('materiales.index')->with('error', 'Ocurrió un error inesperado.');
@@ -255,7 +261,7 @@ class MaterialController extends Controller
                                             }
                                         },
                                     ],
-                'DETALLE_MOVIMIENTO' => 'required|string|max:1000',
+                // 'DETALLE_MOVIMIENTO' => 'required|string|max:1000',
                 'TIPO_MOVIMIENTO' => 'required|string|max:10',
             ], [
                 'TIPO_MATERIAL_ID.required' => 'El campo "Tipo de Material" es obligatorio.',
@@ -308,6 +314,39 @@ class MaterialController extends Controller
                 'MATERIAL_STOCK' => $stockResultante,
             ]);
 
+            // Variables para almacenar los valores de los campos dinámicos
+            $detalleMovimiento = '';
+
+            switch ($request->TIPO_MOVIMIENTO) {
+                case 'INGRESO':
+                    // Aquí concatenas la información para el detalle de movimiento para un ingreso
+                    // Formatear el detalle y dar formato
+                    $detalleMovimiento = strtoupper("Proveedor: {$request->input('PROVEEDOR')}, ".
+                    "Numero de Factura: {$request->input('NUMERO_FACTURA')}, ".
+                    "Codigo Libro Adquisiciones: {$request->input('COD_LIBRO_ADQUISICIONES')}, ".
+                    "Numero Res. Exenta de Compra: {$request->input('NUM_RES_EXCENTO_COMPRA')}, ".
+                    "Numero de Orden de Compra: {$request->input('NUM_ORDEN_COMPRA')}.");
+                    break;
+                // ...
+
+                case 'TRASLADO':
+                    // Aquí concatenas la información para el detalle de movimiento para un traslado
+                    $ubicacion = Ubicacion::find($request->UBICACION_ID);
+                    $fechaMemoConductor = Carbon::parse($request->FECHA_MEMO_CONDUCTOR)->format('d-m-Y');
+                    $detalleMovimiento = "Traslado a ubicación: {$ubicacion->UBICACION_NOMBRE}, Fecha memo conductor: {$fechaMemoConductor}, Correo electrónico solicitante: {$request->CORREO_ELECTRONICO_SOLICITANTE}.";
+                    break;
+                case 'MERMA':
+                    // Aquí concatenas la información para el detalle de movimiento para una merma
+                    $fechaAutorizacion = Carbon::parse($request->FECHA_AUTORIZACION)->format('d-m-Y');
+                    $detalleMovimiento = "Merma autorizada por: {$request->NOMBRE_JEFE_AUTORIZA}, Fecha de autorización: {$fechaAutorizacion}.";
+                    break;
+                case 'OTRO':
+                    // Manejar caso de ingreso, si es necesario
+                    $detalleMovimiento = strtoupper($request->input('DETALLE_MOVIMIENTO'));
+                    break;
+                // Agrega casos adicionales según sea necesario
+            }
+
             // Crear un nuevo movimiento asociado al material modificado
             Movimiento::create([
                 'USUARIO_id' => Auth::user()->id,
@@ -319,7 +358,7 @@ class MaterialController extends Controller
                 'MOVIMIENTO_STOCK_PREVIO' => $request->MATERIAL_STOCK,
                 'MOVIMIENTO_CANTIDAD_A_MODIFICAR' => $request->STOCK_NUEVO,
                 'MOVIMIENTO_STOCK_RESULTANTE' => $stockResultante,
-                'MOVIMIENTO_DETALLE' => strtoupper($request->input('DETALLE_MOVIMIENTO'))
+                'MOVIMIENTO_DETALLE' => $detalleMovimiento
             ]);
 
             return redirect()->route('materiales.index')->with('success', 'Material actualizado exitosamente.');
