@@ -7,7 +7,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
-use Exception; 
+use Exception;
 
 use App\Models\Bodega;
 use App\Models\Oficina;
@@ -35,6 +35,31 @@ class BodegaController extends Controller
             // Retornar a la pagina previa con un session error
             return back()->with('error', 'Error cargando las bodegas');
         }
+    }
+
+    /**
+     * Get filtered data for bodegas.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\View\View
+     */
+    public function getFilteredData(Request $request)
+    {
+        $oficinaId = Auth::user()->OFICINA_ID;
+
+        $query = Bodega::where('OFICINA_ID', $oficinaId);
+
+        if ($request->filled('BODEGA_NOMBRE')) {
+            $query->where('BODEGA_NOMBRE', 'like', '%' . $request->BODEGA_NOMBRE . '%');
+        }
+
+        if ($request->filled('BODEGA_ESTADO')) {
+            $query->where('BODEGA_ESTADO', $request->BODEGA_ESTADO);
+        }
+
+        $bodegas = $query->get();
+
+        return view('sia2.activos.modbodegas.index', compact('bodegas'));
     }
 
     /**
@@ -155,8 +180,8 @@ class BodegaController extends Controller
                 'BODEGA_ESTADO.max' => 'El campo "Estado" no debe exceder los 40 caracteres.',
             ]);
 
-  
-            
+
+
             // Agregar regla de validación única compuesta
             $validator->after(function ($validator) use ($request, $id) {
                 $exists = Bodega::where([
@@ -206,6 +231,6 @@ class BodegaController extends Controller
         } catch (Exception $e) {
             // Manejar otras excepciones
             return redirect()->route('bodegas.index')->with('error', 'Ocurrió un error inesperado al eliminar la bodega.');
-        }   
+        }
     }
 }

@@ -49,22 +49,77 @@
             });
         </script>
     @endif
-    {{-- Enlace para exportar PDF --}}
-        {{--<a href="{{ route('materiales.exportar-pdf') }}" class="btn btn-primary" target="_blank">
-            <i class="fa-solid fa-file-pdf"></i> Exportar PDF
-        </a>--}}
+
+    <a class="btn agregar mb-3" href="{{ route('equipos.create') }}"><i class="fa-solid fa-plus"></i> Agregar Equipo</a>
+    <a class="btn btn-secondary mb-3" href="{{route('tiposequipos.index')}}"><i class="fa-solid fa-eye"></i> Ver tipos de Equipos</a>
+
+    {{-- Acordeón para filtrar equipos --}}
+    <div class="accordion" id="accordionFiltrarEquipos">
+        <div class="card">
+            <div class="card-header" id="headingFiltrarEquipos">
+                <h2 class="mb-0">
+                    <button class="btn btn-link btn-block text-left collapsed" type="button" data-toggle="collapse" data-target="#collapseFiltrarEquipos" aria-expanded="false" aria-controls="collapseFiltrarEquipos">
+                        Filtrar Equipos
+                    </button>
+                </h2>
+            </div>
+            <div id="collapseFiltrarEquipos" class="collapse" aria-labelledby="headingFiltrarEquipos" data-parent="#accordionFiltrarEquipos">
+                <div class="card-body">
+                    <form action="{{ route('equipos.search') }}" method="GET">
+                        <div class="form-row">
+                            <div class="form-group col-md-3">
+                                <label for="TIPO_EQUIPO_ID">Tipo de Equipo</label>
+                                <select id="TIPO_EQUIPO_ID" name="TIPO_EQUIPO_ID" class="form-control">
+                                    <option value="">Seleccione un tipo</option>
+                                    @foreach($tiposEquipos as $tipo)
+                                        <option value="{{ $tipo->TIPO_EQUIPO_ID }}">{{ $tipo->TIPO_EQUIPO_NOMBRE }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                            <div class="form-group col-md-3">
+                                <label for="EQUIPO_MARCA">Marca</label>
+                                <input type="text" class="form-control" id="EQUIPO_MARCA" name="EQUIPO_MARCA" placeholder="Marca del equipo">
+                            </div>
+                            <div class="form-group col-md-3">
+                                <label for="EQUIPO_MODELO">Modelo</label>
+                                <input type="text" class="form-control" id="EQUIPO_MODELO" name="EQUIPO_MODELO" placeholder="Modelo del equipo">
+                            </div>
+                            <div class="form-group col-md-3">
+                                <label for="EQUIPO_ESTADO">Estado</label>
+                                <select id="EQUIPO_ESTADO" name="EQUIPO_ESTADO" class="form-control">
+                                    <option value="">Seleccione un estado</option>
+                                    <option value="DISPONIBLE">DISPONIBLE</option>
+                                    <option value="PRESTADO">PRESTADO</option>
+                                    <option value="NO DISPONIBLE">NO DISPONIBLE</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group col-md-6">
+                                <label for="STOCK_MIN">Stock Mínimo</label>
+                                <input type="number" class="form-control" id="STOCK_MIN" name="STOCK_MIN" placeholder="Stock mínimo">
+                            </div>
+                            <div class="form-group col-md-6">
+                                <label for="STOCK_MAX">Stock Máximo</label>
+                                <input type="number" class="form-control" id="STOCK_MAX" name="STOCK_MAX" placeholder="Stock máximo">
+                            </div>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Filtrar</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
 
     {{-- Tabla de Equipos --}}
     <div class="table-responsive">
-        <a class="btn agregar mb-3" href="{{ route('equipos.create') }}"><i class="fa-solid fa-plus"></i> Agregar Equipo</a>
-        <a class="btn btn-secondary mb-3" href="{{route('tiposequipos.index')}}"><i class="fa-solid fa-eye"></i> Ver tipos de Equipos</a>
-
         <table id="equipos" class="table table-bordered mt-4">
             <thead class="tablacolor">
                 <tr>
                     <th scope="col">Tipo equipo</th>
                     <th scope="col">Modelo equipo</th>
                     <th scope="col">Marca equipo</th>
+                    <th scope="col">Estado equipo</th>
                     <th scope="col">Stock</th>
                     <th scope="col">Acciones</th>
                 </tr>
@@ -75,6 +130,7 @@
                         <td>{{$equipo->tipoEquipo->TIPO_EQUIPO_NOMBRE }}</td>
                         <td>{{$equipo->EQUIPO_MODELO}}</td>
                         <td>{{$equipo->EQUIPO_MARCA}}</td>
+                        <td>{{$equipo->EQUIPO_ESTADO}}</td>
                         <td>{{ $equipo->EQUIPO_STOCK }}</td>
                         <td>
                             <div class="d-flex justify-content-center">
@@ -112,7 +168,7 @@
             color: #fff;
         }
     </style>
-    
+
     <!-- Color mensajes usuario -->
     <style>
         .alert {

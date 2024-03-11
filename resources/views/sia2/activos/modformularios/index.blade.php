@@ -62,6 +62,42 @@
     {{-- Boton para agregar --}}
     <a class="btn agregar mb-3" href="{{ route('formularios.create') }}"> <i class="fa-solid fa-plus"></i> Agregar formulario</a>
 
+    {{-- Acordeón para filtrar formularios --}}
+    <div class="accordion" id="accordionFiltrarFormularios">
+        <div class="card">
+            <div class="card-header" id="headingFiltrarFormularios">
+                <h2 class="mb-0">
+                    <button class="btn btn-link btn-block text-left collapsed" type="button" data-toggle="collapse" data-target="#collapseFiltrarFormularios" aria-expanded="false" aria-controls="collapseFiltrarFormularios">
+                        Filtrar Formularios
+                    </button>
+                </h2>
+            </div>
+            <div id="collapseFiltrarFormularios" class="collapse" aria-labelledby="headingFiltrarFormularios" data-parent="#accordionFiltrarFormularios">
+                <div class="card-body">
+                    <form action="{{ route('formularios.search') }}" method="GET">
+                        <div class="form-row">
+                            <div class="form-group col-md-6">
+                                <label for="FORMULARIO_NOMBRE">Nombre del Formulario</label>
+                                <input type="text" class="form-control" id="FORMULARIO_NOMBRE" name="FORMULARIO_NOMBRE" placeholder="Nombre">
+                            </div>
+                            <div class="form-group col-md-6">
+                                <label for="FORMULARIO_TIPO">Tipo de Formulario</label>
+                                <select id="FORMULARIO_TIPO" name="FORMULARIO_TIPO" class="form-control">
+                                    <option value="">Seleccione un tipo</option>
+                                    <option value="TIPO A">TIPO A</option>
+                                    <option value="TIPO B">TIPO B</option>
+                                    <option value="TIPO C">TIPO C</option>
+                                </select>
+                            </div>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Filtrar</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
     {{-- Tabla de Formularios --}}
     <div class="table-responsive">
         <table id="formularios" class="table table-bordered mt-4">
@@ -112,7 +148,7 @@
             color: #fff;
         }
     </style>
-                
+
     <!-- Color mensajes usuario -->
     <style>
         .alert {

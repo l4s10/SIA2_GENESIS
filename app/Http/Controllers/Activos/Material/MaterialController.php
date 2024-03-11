@@ -22,8 +22,6 @@ use App\Models\Movimiento;
 use App\Models\Oficina;
 
 
-
-
 class MaterialController extends Controller
 {
     public function index()
@@ -32,18 +30,52 @@ class MaterialController extends Controller
         try
         {
            // Obtener OFICINA_ID del usuario actual
-            $oficinaIdUsuario = Auth::user()->OFICINA_ID;
+            $oficinaId = Auth::user()->OFICINA_ID;
 
             // Obtener materiales basados en la OFICINA_ID del usuario
-            $materiales = Material::where('OFICINA_ID', $oficinaIdUsuario)->get();
+            $materiales = Material::where('OFICINA_ID', $oficinaId)->get();
 
-            return view('sia2.activos.modmateriales.materiales.index', compact('materiales'));;
+            // Obtener los tipos de materiales asociados a la oficina del usuario
+            $tiposMateriales = TipoMaterial::where('OFICINA_ID', $oficinaId)->get();
+
+            return view('sia2.activos.modmateriales.materiales.index', compact('materiales', 'tiposMateriales'));
         }
         catch (Exception $e)
         {
             // Retornar a la pagina previa con un session error
             return back()->with('error', 'Error cargando los materiales');
         }
+    }
+
+    public function getFilteredData(Request $request)
+    {
+        // Obtener ID de la oficina del usuario autenticado
+        $oficinaId = Auth::user()->OFICINA_ID;
+
+        // Iniciar la consulta filtrando por la oficina del usuario autenticado
+        $query = Material::where('OFICINA_ID', $oficinaId);
+
+        // Aplicar filtros adicionales si existen
+        if ($request->filled('TIPO_MATERIAL_ID')) {
+            $query->where('TIPO_MATERIAL_ID', $request->TIPO_MATERIAL_ID);
+        }
+
+        if ($request->filled('MATERIAL_NOMBRE')) {
+            $query->where('MATERIAL_NOMBRE', 'like', '%' . $request->MATERIAL_NOMBRE . '%');
+        }
+
+        if ($request->filled('STOCK_MIN') && $request->filled('STOCK_MAX')) {
+            $query->whereBetween('MATERIAL_STOCK', [$request->STOCK_MIN, $request->STOCK_MAX]);
+        }
+
+        // Realizar la consulta y obtener los resultados
+        $materiales = $query->with('tipoMaterial')->get();
+
+        // Obtener los tipos de materiales asociados a la oficina del usuario
+        $tiposMateriales = TipoMaterial::where('OFICINA_ID', $oficinaId)->get();
+
+        // Retornar a la vista con los materiales filtrados
+        return view('sia2.activos.modmateriales.materiales.index', compact('materiales', 'tiposMateriales'));
     }
 
     public function create()
@@ -219,7 +251,7 @@ class MaterialController extends Controller
                     'MATERIAL_NOMBRE' => $request->input('MATERIAL_NOMBRE'),
                     'TIPO_MATERIAL_ID' => $request->input('TIPO_MATERIAL_ID'),
                 ])->exists();
-            
+
                 if ($exists) {
                     $validator->errors()->add('MATERIAL_NOMBRE', 'Este nombre de material con el tipo de material especificado, ya existen en su dirección regional.');
                     $validator->errors()->add('TIPO_MATERIAL_ID', 'Este tipo de material con el nombre de material especificado, ya existen en su dirección regional.');

@@ -32,6 +32,31 @@ class FormularioController extends Controller
     }
 
     /**
+     * Retrieves filtered data for the formularios.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\View\View
+     */
+    public function getFilteredData(Request $request)
+    {
+        $oficinaId = Auth::user()->OFICINA_ID;
+
+        $query = Formulario::where('OFICINA_ID', $oficinaId);
+
+        if ($request->filled('FORMULARIO_NOMBRE')) {
+            $query->where('FORMULARIO_NOMBRE', 'like', '%' . $request->FORMULARIO_NOMBRE . '%');
+        }
+
+        if ($request->filled('FORMULARIO_TIPO')) {
+            $query->where('FORMULARIO_TIPO', $request->FORMULARIO_TIPO);
+        }
+
+        $formularios = $query->get();
+
+        return view('sia2.activos.modformularios.index', compact('formularios'));
+    }
+
+    /**
      * Show the form for creating a new resource.
      */
     public function create()
@@ -70,14 +95,14 @@ class FormularioController extends Controller
                     'FORMULARIO_NOMBRE' => $request->input('FORMULARIO_NOMBRE'),
                     'FORMULARIO_TIPO' => $request->input('FORMULARIO_TIPO'),
                 ])->exists();
-            
+
                 if ($exists) {
                     $validator->errors()->add('FORMULARIO_NOMBRE', 'Este formulario ya existe en su dirección regional con este tipo.');
                     $validator->errors()->add('FORMULARIO_TIPO', 'Este tipo de formulario ya existe en su dirección regional para el nombre ingresado.');
                 }
             });
 
-            
+
             // Validacion y redireccion con mensajes de error
             if ($validator->fails())
             {
@@ -159,7 +184,7 @@ class FormularioController extends Controller
                     'FORMULARIO_NOMBRE' => $request->input('FORMULARIO_NOMBRE'),
                     'FORMULARIO_TIPO' => $request->input('FORMULARIO_TIPO'),
                 ])->where('FORMULARIO_ID', '!=', $id)->exists();
-            
+
                 if ($exists) {
                     $validator->errors()->add('FORMULARIO_NOMBRE', 'Este formulario ya existe en su dirección regional con este tipo.');
                     $validator->errors()->add('FORMULARIO_TIPO', 'Este tipo de formulario ya existe en su dirección regional para el nombre ingresado.');
@@ -167,7 +192,7 @@ class FormularioController extends Controller
             });
 
 
-            
+
             // Validacion y redireccion con mensajes de error
             if ($validator->fails())
             {

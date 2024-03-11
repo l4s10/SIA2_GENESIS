@@ -7,7 +7,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
-use Exception; 
+use Exception;
 
 use App\Models\Vehiculo;
 use App\Models\TipoVehiculo;
@@ -39,11 +39,79 @@ class VehiculoController extends Controller
                         ->whereNull('VEHICULOS.UBICACION_ID');
                 })
                 ->get();
-            return view('sia2.activos.modvehiculos.index', compact('vehiculos'));
+
+            // Cargar en base a OFICINA_ID del usuario
+            $tiposVehiculos = TipoVehiculo::where('OFICINA_ID', Auth::user()->OFICINA_ID)->get();
+            $ubicaciones = Ubicacion::where('OFICINA_ID', Auth::user()->OFICINA_ID)->get();
+            $departamentos = Departamento::where('OFICINA_ID', Auth::user()->OFICINA_ID)->get();
+
+            return view('sia2.activos.modvehiculos.index', compact('vehiculos', 'tiposVehiculos', 'ubicaciones', 'departamentos'));
         } catch (Exception $e) {
             // Retornar a la pagina previa con un session error
             return back()->with('error', 'Error cargando los vehículos');
         }
+    }
+
+    public function getFilteredData(Request $request)
+    {
+        $query = Vehiculo::query();
+
+        if ($request->filled('VEHICULO_PATENTE')) {
+            $query->where('VEHICULO_PATENTE', 'like', '%' . $request->VEHICULO_PATENTE . '%');
+        }
+
+        if ($request->filled('VEHICULO_MARCA')) {
+            $query->where('VEHICULO_MARCA', $request->VEHICULO_MARCA);
+        }
+
+        if ($request->filled('VEHICULO_MODELO')) {
+            $query->where('VEHICULO_MODELO', $request->VEHICULO_MODELO);
+        }
+
+        if ($request->filled('VEHICULO_ANO')) {
+            $query->where('VEHICULO_ANO', $request->VEHICULO_ANO);
+        }
+
+        if ($request->filled('VEHICULO_ESTADO')) {
+            $query->where('VEHICULO_ESTADO', $request->VEHICULO_ESTADO);
+        }
+
+        if ($request->filled('VEHICULO_KILOMETRAJE')) {
+            $query->where('VEHICULO_KILOMETRAJE', '>=', $request->VEHICULO_KILOMETRAJE);
+        }
+
+        if ($request->filled('VEHICULO_NIVEL_ESTANQUE')) {
+            $query->where('VEHICULO_NIVEL_ESTANQUE', $request->VEHICULO_NIVEL_ESTANQUE);
+        }
+
+        if ($request->filled('TIPO_VEHICULO_ID')) {
+            $query->where('TIPO_VEHICULO_ID', $request->TIPO_VEHICULO_ID);
+        }
+
+        // Filtro inclusivo para UBICACION_ID y DEPARTAMENTO_ID
+        if ($request->filled('UBICACION_ID') && $request->filled('DEPARTAMENTO_ID')) {
+            $query->where(function ($query) use ($request) {
+                $query->where('UBICACION_ID', $request->UBICACION_ID)
+                    ->orWhere('DEPARTAMENTO_ID', $request->DEPARTAMENTO_ID);
+            });
+        } else {
+            if ($request->filled('UBICACION_ID')) {
+                $query->where('UBICACION_ID', $request->UBICACION_ID);
+            }
+
+            if ($request->filled('DEPARTAMENTO_ID')) {
+                $query->where('DEPARTAMENTO_ID', $request->DEPARTAMENTO_ID);
+            }
+        }
+
+        $vehiculos = $query->get();
+
+        // Cargar en base a OFICINA_ID del usuario
+        $tiposVehiculos = TipoVehiculo::where('OFICINA_ID', Auth::user()->OFICINA_ID)->get();
+        $ubicaciones = Ubicacion::where('OFICINA_ID', Auth::user()->OFICINA_ID)->get();
+        $departamentos = Departamento::where('OFICINA_ID', Auth::user()->OFICINA_ID)->get();
+
+        return view('sia2.activos.modvehiculos.index', compact('vehiculos', 'tiposVehiculos', 'ubicaciones', 'departamentos'));
     }
 
     public function create()
@@ -74,7 +142,7 @@ class VehiculoController extends Controller
     {
 
         try {
-            
+
             // Reglas de validación y mensajes respectivos
             $validator = Validator::make($request->all(), [
                 'VEHICULO_PATENTE' => 'required|string|max:7|unique:vehiculos,VEHICULO_PATENTE|regex:/^[A-Z0-9]{4}-[A-Z0-9]{2}$/i',
@@ -111,7 +179,7 @@ class VehiculoController extends Controller
                 'VEHICULO_KILOMETRAJE.required' => 'El campo Kilometraje es obligatorio.',
                 'VEHICULO_KILOMETRAJE.integer' => 'El campo Kilometraje debe ser un número entero.',
                 'VEHICULO_KILOMETRAJE.min' => 'El Kilometraje no puede ser negativo.',
-                'VEHICULO_KILOMETRAJE.max' => 'El Kilometraje no puede exceder 400.000 kilómetros.',  
+                'VEHICULO_KILOMETRAJE.max' => 'El Kilometraje no puede exceder 400.000 kilómetros.',
                 'VEHICULO_NIVEL_ESTANQUE.required' => 'El campo Nivel Estanque es obligatorio.',
                 'VEHICULO_NIVEL_ESTANQUE.string' => 'El campo Nivel Estanque debe ser una cadena de texto.',
                 'VEHICULO_NIVEL_ESTANQUE.max' => 'El campo Nivel Estanque no debe exceder los :max caracteres.',
@@ -125,7 +193,7 @@ class VehiculoController extends Controller
                     'VEHICULO_MARCA' => $request->input('VEHICULO_MARCA'),
                     'VEHICULO_MODELO' => $request->input('VEHICULO_MODELO'),
                 ])->exists();
-            
+
                 if ($exists1) {
                     $validator->errors()->add('TIPO_VEHICULO_ID', 'Este tipo ya existe para la patente, ubicación, marca y modelo del vehículo seleccionados.');
                     $validator->errors()->add('VEHICULO_PATENTE', 'Esta patente ya existe para el tipo, ubicación, marca y modelo del vehículo seleccionados.');
@@ -133,7 +201,7 @@ class VehiculoController extends Controller
                     $validator->errors()->add('VEHICULO_MARCA', 'Esta marca de vehiculo ya existe para la patente, tipo, ubicación y modelo del vehículo seleccionados.');
                     $validator->errors()->add('VEHICULO_MODELO', 'Este modelo de vehículo ya existe para el tipo, patente, ubicación y marca del vehículo seleccionados.');
                 }
-            
+
                 $exists2 = Vehiculo::where([
                     'TIPO_VEHICULO_ID' => $request->input('TIPO_VEHICULO_ID'),
                     'VEHICULO_PATENTE' => $request->input('VEHICULO_PATENTE'),
@@ -141,7 +209,7 @@ class VehiculoController extends Controller
                     'VEHICULO_MARCA' => $request->input('VEHICULO_MARCA'),
                     'VEHICULO_MODELO' => $request->input('VEHICULO_MODELO'),
                 ])->exists();
-            
+
                 if ($exists2) {
                     $validator->errors()->add('TIPO_VEHICULO_ID', 'Este tipo ya existe para la patente, departamento, marca y modelo del vehículo seleccionados.');
                     $validator->errors()->add('VEHICULO_PATENTE', 'Esta patente ya existe para el tipo, departamento, marca y modelo del vehículo seleccionados.');
@@ -150,14 +218,14 @@ class VehiculoController extends Controller
                     $validator->errors()->add('VEHICULO_MODELO', 'Este modelo de vehículo ya existe para el tipo, patente, departamento y marca del vehículo seleccionados.');
                 }
             });
-            
-            
+
+
             // Validar y redirigir mensaje al blade, si falla
             if ($validator->fails()) {
                 return redirect()->back()->withErrors($validator)->withInput();
             }
 
-            // Segunda validación. Buscar si la ubicación o el departamento seleccionado en el blade existe 
+            // Segunda validación. Buscar si la ubicación o el departamento seleccionado en el blade existe
             $ubicacionExists = Ubicacion::find($request->input('DEPENDENCIA_ID'));
             $departamentoExists = Departamento::find($request->input('DEPENDENCIA_ID'));
 
@@ -183,7 +251,7 @@ class VehiculoController extends Controller
 
 
             if ($vehiculo) {
-                return redirect()->route('vehiculos.index')->with('success', 'Vehículo creado exitosamente.');                
+                return redirect()->route('vehiculos.index')->with('success', 'Vehículo creado exitosamente.');
             } else {
                 session()->flash('error', 'Error al crear el vehículo');
             }
@@ -193,7 +261,7 @@ class VehiculoController extends Controller
         }
     }
 
-    
+
     public function edit(string $id)
     {
         try {
@@ -226,7 +294,7 @@ class VehiculoController extends Controller
         try {
             // Obtener el vehículo a actualizar
             $vehiculo = Vehiculo::findOrFail($id);
-            
+
             // Reglas de validación y mensajes respectivos
             $validator = Validator::make($request->all(), [
                 'VEHICULO_PATENTE' => 'required|string|max:7|regex:/^[A-Z0-9]{4}-[A-Z0-9]{2}$/i|unique:vehiculos,VEHICULO_PATENTE,' . $id . ',VEHICULO_ID',
@@ -263,7 +331,7 @@ class VehiculoController extends Controller
                 'VEHICULO_KILOMETRAJE.required' => 'El campo Kilometraje es obligatorio.',
                 'VEHICULO_KILOMETRAJE.integer' => 'El campo Kilometraje debe ser un número entero.',
                 'VEHICULO_KILOMETRAJE.min' => 'El Kilometraje no puede ser negativo.',
-                'VEHICULO_KILOMETRAJE.max' => 'El Kilometraje no puede exceder 400.000 kilómetros.', 
+                'VEHICULO_KILOMETRAJE.max' => 'El Kilometraje no puede exceder 400.000 kilómetros.',
                 'VEHICULO_NIVEL_ESTANQUE.required' => 'El campo Nivel Estanque es obligatorio.',
                 'VEHICULO_NIVEL_ESTANQUE.string' => 'El campo Nivel Estanque debe ser una cadena de texto.',
                 'VEHICULO_NIVEL_ESTANQUE.max' => 'El campo Nivel Estanque no debe exceder los :max caracteres.',
@@ -277,7 +345,7 @@ class VehiculoController extends Controller
                     'VEHICULO_MARCA' => $request->input('VEHICULO_MARCA'),
                     'VEHICULO_MODELO' => $request->input('VEHICULO_MODELO'),
                 ])->where('VEHICULO_ID', '!=', $id)->exists();
-            
+
                 if ($exists1) {
                     $validator->errors()->add('TIPO_VEHICULO_ID', 'Este tipo ya existe para la patente, ubicación, marca y modelo del vehículo seleccionados.');
                     $validator->errors()->add('VEHICULO_PATENTE', 'Esta patente ya existe para el tipo, ubicación, marca y modelo del vehículo seleccionados.');
@@ -285,7 +353,7 @@ class VehiculoController extends Controller
                     $validator->errors()->add('VEHICULO_MARCA', 'Esta marca de vehiculo ya existe para la patente, tipo, ubicación y modelo del vehículo seleccionados.');
                     $validator->errors()->add('VEHICULO_MODELO', 'Este modelo de vehículo ya existe para el tipo, patente, ubicación y marca del vehículo seleccionados.');
                 }
-            
+
                 $exists2 = Vehiculo::where([
                     'TIPO_VEHICULO_ID' => $request->input('TIPO_VEHICULO_ID'),
                     'VEHICULO_PATENTE' => $request->input('VEHICULO_PATENTE'),
@@ -293,7 +361,7 @@ class VehiculoController extends Controller
                     'VEHICULO_MARCA' => $request->input('VEHICULO_MARCA'),
                     'VEHICULO_MODELO' => $request->input('VEHICULO_MODELO'),
                 ])->where('VEHICULO_ID', '!=', $id)->exists();
-            
+
                 if ($exists2) {
                     $validator->errors()->add('TIPO_VEHICULO_ID', 'Este tipo ya existe para la patente, departamento, marca y modelo del vehículo seleccionados.');
                     $validator->errors()->add('VEHICULO_PATENTE', 'Esta patente ya existe para el tipo, departamento, marca y modelo del vehículo seleccionados.');
@@ -302,15 +370,15 @@ class VehiculoController extends Controller
                     $validator->errors()->add('VEHICULO_MODELO', 'Este modelo de vehículo ya existe para el tipo, patente, departamento y marca del vehículo seleccionados.');
                 }
             });
-            
-            
+
+
 
             // Validar y redirigir mensaje al blade, si falla
             if ($validator->fails()) {
                 return redirect()->back()->withErrors($validator)->withInput();
             }
 
-            // Segunda validación. Buscar si la ubicación o el departamento seleccionado en el blade existe 
+            // Segunda validación. Buscar si la ubicación o el departamento seleccionado en el blade existe
             $ubicacionExists = Ubicacion::find($request->input('DEPENDENCIA_ID'));
             $departamentoExists = Departamento::find($request->input('DEPENDENCIA_ID'));
 

@@ -44,9 +44,106 @@
         </script>
     @endif
 
+    <a class="btn agregar mb-4" href="{{ route('vehiculos.create') }}"><i class="fa-solid fa-plus"></i> Agregar Vehículo</a>
+
+    {{-- Acordeón para filtrar vehículos --}}
+    <div class="accordion" id="accordionFiltrarVehiculos">
+        <div class="card">
+            <div class="card-header" id="headingFiltrarVehiculos">
+                <h2 class="mb-0">
+                    <button class="btn btn-link btn-block text-left collapsed" type="button" data-toggle="collapse" data-target="#collapseFiltrarVehiculos" aria-expanded="false" aria-controls="collapseFiltrarVehiculos">
+                        Filtrar Vehículos
+                    </button>
+                </h2>
+            </div>
+            <div id="collapseFiltrarVehiculos" class="collapse" aria-labelledby="headingFiltrarVehiculos" data-parent="#accordionFiltrarVehiculos">
+                <div class="card-body">
+                    <form action="{{ route('vehiculos.search') }}" method="GET">
+                        <div class="form-row">
+                            <div class="form-group col-md-4">
+                                <label for="VEHICULO_PATENTE">Patente</label>
+                                <input type="text" class="form-control" id="VEHICULO_PATENTE" name="VEHICULO_PATENTE" placeholder="Patente">
+                            </div>
+                            <div class="form-group col-md-4">
+                                <label for="VEHICULO_MARCA">Marca</label>
+                                <input type="text" class="form-control" id="VEHICULO_MARCA" name="VEHICULO_MARCA" placeholder="Marca">
+                            </div>
+                            <div class="form-group col-md-4">
+                                <label for="VEHICULO_MODELO">Modelo</label>
+                                <input type="text" class="form-control" id="VEHICULO_MODELO" name="VEHICULO_MODELO" placeholder="Modelo">
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group col-md-3">
+                                <label for="VEHICULO_ANO">Año</label>
+                                <input type="text" class="form-control" id="VEHICULO_ANO" name="VEHICULO_ANO" placeholder="Año">
+                            </div>
+                            <div class="form-group col-md-3">
+                                <label for="VEHICULO_ESTADO">Estado</label>
+                                <select class="form-control" id="VEHICULO_ESTADO" name="VEHICULO_ESTADO">
+                                    <option value="">Seleccione un estado</option>
+                                    <option value="DISPONIBLE">DISPONIBLE</option>
+                                    <option value="OCUPADO">OCUPADO</option>
+                                </select>
+                            </div>
+                            <div class="form-group col-md-3">
+                                <label for="VEHICULO_KILOMETRAJE">Kilometraje</label>
+                                <input type="number" class="form-control" id="VEHICULO_KILOMETRAJE" name="VEHICULO_KILOMETRAJE" placeholder="Kilometraje">
+                            </div>
+                            <div class="form-group col-md-3">
+                                <label for="VEHICULO_NIVEL_ESTANQUE">Nivel de Estanque</label>
+                                <select class="form-control" id="VEHICULO_NIVEL_ESTANQUE" name="VEHICULO_NIVEL_ESTANQUE">
+                                    <option value="">Seleccione un nivel</option>
+                                    <option value="VACIO">VACIO</option>
+                                    <option value="BAJO">BAJO</option>
+                                    <option value="MEDIO BAJO">MEDIO BAJO</option>
+                                    <option value="MEDIO">MEDIO</option>
+                                    <option value="MEDIO LLENO">MEDIO LLENO</option>
+                                    <option value="LLENO">LLENO</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group col-md-4">
+                                <label for="TIPO_VEHICULO_ID">Tipo de Vehículo</label>
+                                <select class="form-control" id="TIPO_VEHICULO_ID" name="TIPO_VEHICULO_ID">
+                                    <option value="">Seleccione un tipo</option>
+                                    {{-- Itera sobre los tipos de vehículos disponibles --}}
+                                    @foreach ($tiposVehiculos as $tipoVehiculo)
+                                        <option value="{{ $tipoVehiculo->TIPO_VEHICULO_ID }}">{{ $tipoVehiculo->TIPO_VEHICULO_NOMBRE }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                            <div class="form-group col-md-4">
+                                <label for="UBICACION_ID">Ubicación</label>
+                                <select class="form-control" id="UBICACION_ID" name="UBICACION_ID">
+                                    <option value="">Seleccione una ubicación</option>
+                                    {{-- Itera sobre las ubicaciones disponibles --}}
+                                    @foreach ($ubicaciones as $ubicacion)
+                                        <option value="{{ $ubicacion->UBICACION_ID }}">{{ $ubicacion->UBICACION_NOMBRE }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                            <div class="form-group col-md-4">
+                                <label for="DEPARTAMENTO_ID">Departamento</label>
+                                <select class="form-control" id="DEPARTAMENTO_ID" name="DEPARTAMENTO_ID">
+                                    <option value="">Seleccione un departamento</option>
+                                    {{-- Itera sobre los departamentos disponibles --}}
+                                    @foreach ($departamentos as $departamento)
+                                        <option value="{{ $departamento->DEPARTAMENTO_ID }}">{{ $departamento->DEPARTAMENTO_NOMBRE }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Filtrar</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
     {{-- Tabla de Vehículos --}}
     <div class="table-responsive">
-        <a class="btn agregar" href="{{ route('vehiculos.create') }}"><i class="fa-solid fa-plus"></i> Agregar Vehículo</a>
         <table id="vehiculos" class="table table-bordered mt-4">
             <thead class="tablacolor">
                 <tr>
@@ -89,7 +186,7 @@
                                 Sin Ubicación/Departamento Asociado {{-- Si no cumple ninguna de las condiciones anteriores --}}
                             @endif
                         </td>
-                        
+
                         <td>
                             <div class="d-flex justify-content-center">
                                 <a href="{{ route('vehiculos.edit', $vehiculo->VEHICULO_ID) }}" class="btn botoneditar">
@@ -112,7 +209,6 @@
 @stop
 
 @section('css')
-    <link rel="stylesheet" href="/css/admin_custom.css">
     <style>/* Estilos personalizados si es necesario */
         .tablacolor {
             background-color: #0064a0; /* Color de fondo personalizado */
@@ -138,7 +234,7 @@
         }
 
     </style>
-            
+
     <!-- Color mensajes usuario -->
     <style>
         .alert {

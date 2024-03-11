@@ -43,24 +43,74 @@
             });
         </script>
     @endif
-        {{-- Enlace para exportar PDF --}}
-        {{--<a href="{{ route('materiales.exportar-pdf') }}" class="btn btn-primary" target="_blank">
-            <i class="fa-solid fa-file-pdf"></i> Exportar PDF
-        </a>--}}
+
+    <a class="btn agregar" href="{{ route('materiales.create') }}"><i class="fa-solid fa-plus"></i> Agregar Material</a>
+    <a class="btn btn-secondary" href="{{route('tiposmateriales.index')}}"><i class="fa-solid fa-eye"></i> Ver tipos de materiales</a>
+    {{-- Boton para exportar a EXCEL --}}
+    <a href="{{ route('exportar-materiales-excel') }}" class="btn btn-success">
+        <i class="fa-solid fa-file-excel"></i> Exportar Excel
+    </a>
+    {{-- Boton para exportar a PDF --}}
+    <a href="{{ route('exportar-materiales-pdf') }}" class="btn btn-primary" target="_blank">
+        <i class="fa-solid fa-file-pdf"></i> Exportar PDF
+    </a>
+    
+    {{-- Acordeón para filtrar materiales --}}
+    <div class="accordion" id="accordionFiltrarMateriales">
+        <div class="card my-4">
+            <div class="card-header" id="headingOne">
+                <h2 class="mb-0">
+                    <button class="btn btn-link btn-block text-left" type="button" data-toggle="collapse" data-target="#collapseOne" aria-expanded="false" aria-controls="collapseOne">
+                        Filtrar Materiales
+                    </button>
+                </h2>
+            </div>
+
+            <div id="collapseOne" class="collapse" aria-labelledby="headingOne" data-parent="#accordionFiltrarMateriales">
+                <div class="card-body">
+                    <form action="{{ route('materiales.search') }}" method="GET">
+                        <div class="row">
+                            <div class="col-md-3">
+                                <div class="form-group">
+                                    <label for="TIPO_MATERIAL_ID">Tipo de Material</label>
+                                    <select class="form-control" id="TIPO_MATERIAL_ID" name="TIPO_MATERIAL_ID">
+                                        {{-- Opción para no seleccionar un tipo específico --}}
+                                        <option value="">Seleccione un tipo</option>
+                                        {{-- Suponiendo que tienes una colección $tiposMateriales disponible --}}
+                                        @foreach($tiposMateriales as $tipo)
+                                            <option value="{{ $tipo->TIPO_MATERIAL_ID }}">{{ $tipo->TIPO_MATERIAL_NOMBRE }}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="form-group">
+                                    <label for="MATERIAL_NOMBRE">Nombre del Material</label>
+                                    <input type="text" class="form-control" id="MATERIAL_NOMBRE" name="MATERIAL_NOMBRE" placeholder="Ingrese nombre">
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="form-group">
+                                    <label for="STOCK_MIN">Stock Mínimo</label>
+                                    <input type="number" class="form-control" id="STOCK_MIN" name="STOCK_MIN" placeholder="Stock mínimo">
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="form-group">
+                                    <label for="STOCK_MAX">Stock Máximo</label>
+                                    <input type="number" class="form-control" id="STOCK_MAX" name="STOCK_MAX" placeholder="Stock máximo">
+                                </div>
+                            </div>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Filtrar</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
 
         {{-- Tabla de Materiales --}}
         <div class="table-responsive">
-            <a class="btn agregar" href="{{ route('materiales.create') }}"><i class="fa-solid fa-plus"></i> Agregar Material</a>
-            <a class="btn btn-secondary" href="{{route('tiposmateriales.index')}}"><i class="fa-solid fa-eye"></i> Ver tipos de materiales</a>
-            {{-- Boton para exportar a EXCEL --}}
-            <a href="{{ route('exportar-materiales-excel') }}" class="btn btn-success">
-                <i class="fa-solid fa-file-excel"></i> Exportar Excel
-            </a>
-            {{-- Boton para exportar a PDF --}}
-            <a href="{{ route('exportar-materiales-pdf') }}" class="btn btn-primary" target="_blank">
-                <i class="fa-solid fa-file-pdf"></i> Exportar PDF
-            </a>
-
             <table id="materiales" class="table table-bordered mt-4">
                 <thead class="tablacolor">
                     <tr>
@@ -115,7 +165,7 @@
         color: #F70B0B;
         }
     </style>
-        
+
     <!-- Color mensajes usuario -->
     <style>
         .alert {
