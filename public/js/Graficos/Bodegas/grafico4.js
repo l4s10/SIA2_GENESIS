@@ -16,17 +16,50 @@ document.addEventListener('DOMContentLoaded', function() {
         options: {
             responsive: true,
             plugins: {
-                legend: { display: true },
+                legend: {
+                    display: true,
+                    labels: {
+                        generateLabels: function (chart) {
+                            const data = chart.data;
+                            if (data.labels.length && data.datasets.length) {
+                                return data.labels.map(function (label, index) {
+                                    const dataset = data.datasets[0];
+                                    const backgroundColor = dataset.backgroundColor[index];
+                                    return {
+                                        text: label,
+                                        fillStyle: backgroundColor,
+                                        hidden: false,
+                                        lineCap: 'round',
+                                        lineDash: [],
+                                        lineDashOffset: 0,
+                                        lineJoin: 'round',
+                                        lineWidth: 1,
+                                        strokeStyle: backgroundColor,
+                                        pointStyle: 'circle',
+                                        rotation: 0
+                                    };
+                                });
+                            }
+                            return [];
+                        }
+                    }
+                },
                 title: {
                     display: true,
-                    text: 'Ranking de bodegas más solicitados',
+                    text: 'Ranking de bodegas más solicitadas',
                     padding: { top: 10, bottom: 30 }
                 }
             },
             scales: {
                 y: {
                     beginAtZero: true,
-                    ticks: { precision: 0 }
+                    title: {
+                        display: true,
+                        text: 'Cantidad'
+                    },
+                    ticks: {
+                        precision: 0
+                    }
                 }
             },
             barThickness: 65,

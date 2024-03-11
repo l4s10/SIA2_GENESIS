@@ -14,7 +14,34 @@ document.addEventListener('DOMContentLoaded', function() {
         options: {
             responsive: true,
             plugins: {
-                legend: { display: true },
+                legend: {
+                    display: true,
+                    labels: {
+                        generateLabels: function (chart) {
+                            const data = chart.data;
+                            if (data.labels.length && data.datasets.length) {
+                                return data.labels.map(function (label, index) {
+                                    const dataset = data.datasets[0];
+                                    const backgroundColor = dataset.backgroundColor[index];
+                                    return {
+                                        text: label,
+                                        fillStyle: backgroundColor,
+                                        hidden: false,
+                                        lineCap: 'round',
+                                        lineDash: [],
+                                        lineDashOffset: 0,
+                                        lineJoin: 'round',
+                                        lineWidth: 1,
+                                        strokeStyle: backgroundColor,
+                                        pointStyle: 'circle',
+                                        rotation: 0
+                                    };
+                                });
+                            }
+                            return [];
+                        }
+                    }
+                },
                 title: {
                     display: true,
                     text: 'Reparaciones por Categoría',
@@ -23,7 +50,14 @@ document.addEventListener('DOMContentLoaded', function() {
             },
             scales: {
                 y: {
-                    beginAtZero: true
+                    beginAtZero: true,
+                    title: {
+                        display: true,
+                        text: 'Cantidad'
+                    },
+                    ticks: {
+                        precision: 0
+                    }
                 }
             }
         }

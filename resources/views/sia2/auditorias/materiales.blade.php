@@ -33,6 +33,10 @@
     @endif
 
     <div class="table-responsive">
+        {{-- Boton para exportar a PDF --}}
+                <a href="{{ route('exportar-material-auditoria-pdf') }}" class="btn btn-primary" target="_blank">
+                    <i class="fa-solid fa-file-pdf"></i> Exportar PDF
+                </a>
         <table id="auditorias" class="table table-bordered mt-4">
             <thead>
                 <tr class="tablacolor">

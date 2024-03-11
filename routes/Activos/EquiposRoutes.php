@@ -66,3 +66,6 @@ Route::prefix('equipos')->group(function () {
         ->name('equipos.destroy')
         ->middleware('can:eliminar_activo');
 });
+
+// Ruta para exportar auditoria a PDF
+Route::get('equipos/exportables/pdf/auditoria', [EquipoController::class, 'exportAuditoriaPdf'])->name('exportar-equipo-auditoria-pdf');

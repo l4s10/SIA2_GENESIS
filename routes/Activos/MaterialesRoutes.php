@@ -57,3 +57,6 @@ Route::get('materiales/exportables/excel', [MaterialController::class, 'exportEx
 
 // Ruta para exportar a PDF
 Route::get('materiales/exportables/pdf', [MaterialController::class, 'exportPdf'])->name('exportar-materiales-pdf');
+
+// Ruta para exportar auditoria a PDF
+Route::get('materiales/exportables/pdf/auditoria', [MaterialController::class, 'exportAuditoriaPdf'])->name('exportar-material-auditoria-pdf');
