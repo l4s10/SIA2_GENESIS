@@ -126,7 +126,13 @@ class EquipoController extends Controller
                 'EQUIPO_MARCA' => 'required|string|max:128',
                 'EQUIPO_MODELO' => 'required|string|max:128',
                 'EQUIPO_ESTADO' => 'required|string|max:40',
-                'DETALLE_MOVIMIENTO' => 'required|string|max:1000',
+                'PROVEEDOR' => 'required|string|max:255',
+                'NUMERO_FACTURA' => 'required|integer|between:0,1000000',
+                'COD_LIBRO_ADQUISICIONES' => 'required|string|max:255',
+                'NUM_RES_EXCENTO_COMPRA' => 'required|integer|between:0,1000000',
+                'NUM_ORDEN_COMPRA' => 'required|integer|between:0,1000000',
+
+                // 'DETALLE_MOVIMIENTO' => 'required|string|max:1000',
             ], [
                 'TIPO_EQUIPO_ID.required' => 'El campo Tipo de Equipo es obligatorio.',
                 'TIPO_EQUIPO_ID.exists' => 'El Tipo de Equipo seleccionado no es válido.',
@@ -142,9 +148,25 @@ class EquipoController extends Controller
                 'EQUIPO_ESTADO.required' => 'El campo Estado es obligatorio.',
                 'EQUIPO_ESTADO.string' => 'El campo Estado debe ser una cadena de texto.',
                 'EQUIPO_ESTADO.max' => 'El campo Estado no debe exceder los :max caracteres.',
-                'DETALLE_MOVIMIENTO.required' => 'El campo Detalle de Movimiento es obligatorio.',
-                'DETALLE_MOVIMIENTO.string' => 'El campo Detalle de Movimiento debe ser una cadena de texto.',
-                'DETALLE_MOVIMIENTO.max' => 'El campo Detalle de Movimiento no debe exceder los :max caracteres.',
+                'PROVEEDOR.required' => 'El campo Proveedor es obligatorio.',
+                'PROVEEDOR.string' => 'El campo Proveedor debe ser una cadena de texto.',
+                'PROVEEDOR.max' => 'El campo Proveedor no debe exceder los :max caracteres.',
+                'NUMERO_FACTURA.required' => 'El campo Número de Factura es obligatorio.',
+                'NUMERO_FACTURA.integer' => 'El campo Número de Factura debe ser un número entero.',
+                'NUMERO_FACTURA.between' => 'El campo Número de Factura debe estar entre :min y :max.',
+                'COD_LIBRO_ADQUISICIONES.required' => 'El campo Código Libro de Adquisiciones es obligatorio.',
+                'COD_LIBRO_ADQUISICIONES.string' => 'El campo Código Libro de Adquisiciones debe ser una cadena de texto.',
+                'COD_LIBRO_ADQUISICIONES.max' => 'El campo Código Libro de Adquisiciones no debe exceder los :max caracteres.',
+                'NUM_RES_EXCENTO_COMPRA.required' => 'El campo Número Resolución Exenta de Compra es obligatorio.',
+                'NUM_RES_EXCENTO_COMPRA.integer' => 'El campo Número Resolución Exenta de Compra debe ser un número entero.',
+                'NUM_RES_EXCENTO_COMPRA.between' => 'El campo Número Resolución Exenta de Compra debe estar entre :min y :max.',
+                'NUM_ORDEN_COMPRA.required' => 'El campo Número de Orden de Compra es obligatorio.',
+                'NUM_ORDEN_COMPRA.integer' => 'El campo Número de Orden de Compra debe ser un número entero.',
+                'NUM_ORDEN_COMPRA.between' => 'El campo Número de Orden de Compra debe estar entre :min y :max.',
+
+                // 'DETALLE_MOVIMIENTO.required' => 'El campo Detalle de Movimiento es obligatorio.',
+                // 'DETALLE_MOVIMIENTO.string' => 'El campo Detalle de Movimiento debe ser una cadena de texto.',
+                // 'DETALLE_MOVIMIENTO.max' => 'El campo Detalle de Movimiento no debe exceder los :max caracteres.',
             ]);
 
             $validator->after(function ($validator) use ($request) {
@@ -177,6 +199,12 @@ class EquipoController extends Controller
             ]);
 
             if ($equipo) {
+                // Formatear el detalle y dar formato
+                $detalleMovimiento = strtoupper("Proveedor: {$request->input('PROVEEDOR')}, ".
+                                    "Numero de Factura: {$request->input('NUMERO_FACTURA')}, ".
+                                    "Codigo Libro Adquisiciones: {$request->input('COD_LIBRO_ADQUISICIONES')}, ".
+                                    "Numero Res. Exenta de Compra: {$request->input('NUM_RES_EXCENTO_COMPRA')}, ".
+                                    "Numero de Orden de Compra: {$request->input('NUM_ORDEN_COMPRA')}.");
                 // Crear un nuevo movimiento asociado al equipo creado
                 Movimiento::create([
                     'USUARIO_id' => Auth::user()->id,
@@ -188,7 +216,7 @@ class EquipoController extends Controller
                     'MOVIMIENTO_STOCK_PREVIO' => 0,
                     'MOVIMIENTO_CANTIDAD_A_MODIFICAR' => $equipo->EQUIPO_STOCK,
                     'MOVIMIENTO_STOCK_RESULTANTE' => $equipo->EQUIPO_STOCK,
-                    'MOVIMIENTO_DETALLE' => strtoupper($request->input('DETALLE_MOVIMIENTO'))
+                    'MOVIMIENTO_DETALLE' => strtoupper($detalleMovimiento)
                 ]);
 
                 // Redireccionar a la vista index

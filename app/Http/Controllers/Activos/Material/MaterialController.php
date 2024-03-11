@@ -106,7 +106,13 @@ class MaterialController extends Controller
                 'TIPO_MATERIAL_ID' => 'required|exists:tipos_materiales,TIPO_MATERIAL_ID',
                 'MATERIAL_NOMBRE' => 'required|string|max:40',
                 'MATERIAL_STOCK' => 'required|integer|between:0,1000',
-                'DETALLE_MOVIMIENTO' => 'required|string|max:1000'
+                'PROVEEDOR' => 'required|string|max:255',
+                'NUMERO_FACTURA' => 'required|integer|between:0,1000000',
+                'COD_LIBRO_ADQUISICIONES' => 'required|string|max:255',
+                'NUM_RES_EXCENTO_COMPRA' => 'required|integer|between:0,1000000',
+                'NUM_ORDEN_COMPRA' => 'required|integer|between:0,1000000',
+
+                // 'DETALLE_MOVIMIENTO' => 'required|string|max:1000'
             ],[
                 'TIPO_MATERIAL_ID.required' => 'El campo Tipo Material es obligatorio.',
                 'TIPO_MATERIAL_ID.exists' => 'El Tipo de Material seleccionado no es válido.',
@@ -119,6 +125,25 @@ class MaterialController extends Controller
                 'DETALLE_MOVIMIENTO.required' => 'El campo Detalle de Movimiento es obligatorio.',
                 'DETALLE_MOVIMIENTO.string' => 'El campo Detalle de Movimiento debe ser una cadena de texto.',
                 'DETALLE_MOVIMIENTO.max' => 'El campo Detalle de Movimiento no debe exceder los :max caracteres.',
+                'PROVEEDOR.required' => 'El campo Proveedor es obligatorio.',
+                'PROVEEDOR.string' => 'El campo Proveedor debe ser una cadena de texto.',
+                'PROVEEDOR.max' => 'El campo Proveedor no debe exceder los :max caracteres.',
+                'NUMERO_FACTURA.required' => 'El campo Número de Factura es obligatorio.',
+                'NUMERO_FACTURA.integer' => 'El campo Número de Factura debe ser un número entero.',
+                'NUMERO_FACTURA.between' => 'El campo Número de Factura debe estar entre :min y :max.',
+                'COD_LIBRO_ADQUISICIONES.required' => 'El campo Código Libro de Adquisiciones es obligatorio.',
+                'COD_LIBRO_ADQUISICIONES.string' => 'El campo Código Libro de Adquisiciones debe ser una cadena de texto.',
+                'COD_LIBRO_ADQUISICIONES.max' => 'El campo Código Libro de Adquisiciones no debe exceder los :max caracteres.',
+                'NUM_RES_EXCENTO_COMPRA.required' => 'El campo Número Resolución Exenta de Compra es obligatorio.',
+                'NUM_RES_EXCENTO_COMPRA.integer' => 'El campo Número Resolución Exenta de Compra debe ser un número entero.',
+                'NUM_RES_EXCENTO_COMPRA.between' => 'El campo Número Resolución Exenta de Compra debe estar entre :min y :max.',
+                'NUM_ORDEN_COMPRA.required' => 'El campo Número de Orden de Compra es obligatorio.',
+                'NUM_ORDEN_COMPRA.integer' => 'El campo Número de Orden de Compra debe ser un número entero.',
+                'NUM_ORDEN_COMPRA.between' => 'El campo Número de Orden de Compra debe estar entre :min y :max.',
+
+                // 'DETALLE_MOVIMIENTO.required' => 'El campo Detalle de Movimiento es obligatorio.',
+                // 'DETALLE_MOVIMIENTO.string' => 'El campo Detalle de Movimiento debe ser una cadena de texto.',
+                // 'DETALLE_MOVIMIENTO.max' => 'El campo Detalle de Movimiento no debe exceder los :max caracteres.',
             ]);
 
 
@@ -150,6 +175,12 @@ class MaterialController extends Controller
             ]);
 
             if ($material) {
+                // Formatear el detalle y dar formato
+                $detalleMovimiento = strtoupper("Proveedor: {$request->input('PROVEEDOR')}, ".
+                                    "Numero de Factura: {$request->input('NUMERO_FACTURA')}, ".
+                                    "Codigo Libro Adquisiciones: {$request->input('COD_LIBRO_ADQUISICIONES')}, ".
+                                    "Numero Res. Exenta de Compra: {$request->input('NUM_RES_EXCENTO_COMPRA')}, ".
+                                    "Numero de Orden de Compra: {$request->input('NUM_ORDEN_COMPRA')}.");
                 // Crear un nuevo movimiento asociado al material creado
                 Movimiento::create([
                     'USUARIO_id' => Auth::user()->id,
@@ -161,7 +192,7 @@ class MaterialController extends Controller
                     'MOVIMIENTO_STOCK_PREVIO' => 0,
                     'MOVIMIENTO_CANTIDAD_A_MODIFICAR' => $material->MATERIAL_STOCK,
                     'MOVIMIENTO_STOCK_RESULTANTE' => $material->MATERIAL_STOCK,
-                    'MOVIMIENTO_DETALLE' => strtoupper($request->input('DETALLE_MOVIMIENTO'))
+                    'MOVIMIENTO_DETALLE' => $detalleMovimiento
                 ]);
 
                 return redirect()->route('materiales.index')->with('success', 'Material creado exitosamente.');
@@ -402,29 +433,29 @@ class MaterialController extends Controller
     {
         $responsable = Auth::user()->USUARIO_NOMBRES.' '.Auth::user()->USUARIO_APELLIDOS . ' - ' . Auth::user()->USUARIO_RUT;
         $direccion = Auth::user()->oficina->OFICINA_NOMBRE;
-        
+
         // Obtener los movimientos que representan las auditorías (ajusta la consulta según sea necesario)
         $auditorias = Movimiento::where('MOVIMIENTO_OBJETO', 'LIKE', 'MATERIAL: %')->get();
-    
+
         $fecha = now()->setTimezone('America/Santiago')->format('d/m/Y H:i');
         $fechaParaNombreArchivo = str_replace(['/', ':', ' '], '-', $fecha);
         $imagePath = public_path('img/logosii.jpg');
         $imagePath2 = public_path('img/fondo_sii_intranet.jpg');
-    
+
         // Renderizar la vista del PDF con los datos de las auditorías
         $html = view('sia2.auditorias.materialesauditoriapdf', compact('auditorias', 'fecha', 'imagePath', 'imagePath2', 'responsable', 'direccion'))->render();
-    
+
         $dompdf = new Dompdf();
         $dompdf->loadHtml($html);
-    
+
         $dompdf->setPaper('A4', 'portrait');
         $dompdf->render();
-    
+
         // Nombre del archivo para el PDF
         $nombreArchivo = "Reporte_Movimiento_Material_" . $fechaParaNombreArchivo . ".pdf";
-    
+
         // Descargar el PDF
         $dompdf->stream($nombreArchivo, ["Attachment" => false]);
     }
-    
+
 }
