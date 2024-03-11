@@ -38,6 +38,35 @@ class SalaController extends Controller
     }
 
     /**
+     * Get filtered data for salas.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Contracts\View\View
+     */
+    public function getFilteredData(Request $request)
+    {
+        $oficinaId = Auth::user()->OFICINA_ID;
+
+        $query = Sala::where('OFICINA_ID', $oficinaId);
+
+        if ($request->filled('SALA_NOMBRE')) {
+            $query->where('SALA_NOMBRE', 'like', '%' . $request->SALA_NOMBRE . '%');
+        }
+
+        if ($request->filled('SALA_CAPACIDAD')) {
+            $query->where('SALA_CAPACIDAD', '>=', $request->SALA_CAPACIDAD);
+        }
+
+        if ($request->filled('SALA_ESTADO')) {
+            $query->where('SALA_ESTADO', $request->SALA_ESTADO);
+        }
+
+        $salas = $query->get();
+
+        return view('sia2.activos.modsalas.index', compact('salas'));
+    }
+
+    /**
      * Show the form for creating a new resource.
      */
     public function create()
@@ -215,6 +244,6 @@ class SalaController extends Controller
         } catch (Exception $e) {
             // Manejar otras excepciones
             return redirect()->route('salas.index')->with('error', 'Ocurrió un error inesperado al eliminar la sala.');
-        }   
+        }
     }
 }

@@ -11,6 +11,10 @@ Route::middleware(['role:ADMINISTRADOR|INFORMATICA'])->group(function () {
             ->name('salas.index')
             ->middleware('can:ver_activos');
 
+        Route::get('/getFilterdData', [SalaController::class, 'getFilteredData'])
+            ->name('salas.search')
+            ->middleware('can:ver_activos');
+
         Route::get('/create', [SalaController::class, 'create'])
             ->name('salas.create')
             ->middleware('can:crear_activo');

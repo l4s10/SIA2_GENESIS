@@ -57,8 +57,50 @@
             });
         </script>
     @endif
+
     {{-- Botones de acceso rapido --}}
     <a class="btn agregar mb-3" href="{{ route('salas.create') }}"><i class="fa-solid fa-plus"></i> Agregar Sala</a>
+
+    {{-- Acordeón para filtrar salas --}}
+    <div class="accordion" id="accordionFiltrarSalas">
+        <div class="card">
+            <div class="card-header" id="headingFiltrarSalas">
+                <h2 class="mb-0">
+                    <button class="btn btn-link btn-block text-left collapsed" type="button" data-toggle="collapse" data-target="#collapseFiltrarSalas" aria-expanded="false" aria-controls="collapseFiltrarSalas">
+                        Filtrar Salas
+                    </button>
+                </h2>
+            </div>
+            <div id="collapseFiltrarSalas" class="collapse" aria-labelledby="headingFiltrarSalas" data-parent="#accordionFiltrarSalas">
+                <div class="card-body">
+                    <form action="{{ route('salas.search') }}" method="GET">
+                        <div class="form-row">
+                            <div class="form-group col-md-4">
+                                <label for="SALA_NOMBRE">Nombre de la Sala</label>
+                                <input type="text" class="form-control" id="SALA_NOMBRE" name="SALA_NOMBRE" placeholder="Nombre">
+                            </div>
+                            <div class="form-group col-md-4">
+                                <label for="SALA_CAPACIDAD">Capacidad Mínima</label>
+                                <input type="number" class="form-control" id="SALA_CAPACIDAD" name="SALA_CAPACIDAD" placeholder="Capacidad">
+                            </div>
+                            <div class="form-group col-md-4">
+                                <label for="SALA_ESTADO">Estado</label>
+                                <select id="SALA_ESTADO" name="SALA_ESTADO" class="form-control">
+                                    <option value="">Seleccione un estado</option>
+                                    <option value="DISPONIBLE">DISPONIBLE</option>
+                                    <option value="OCUPADO">OCUPADO</option>
+                                    <option value="DESHABILITADO">DESHABILITADO</option>
+                                </select>
+                            </div>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Filtrar</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
     {{-- Tabla de contenido --}}
     <div class="table-responsive">
         <table id="salas" class="table table-bordered mt-4">
@@ -130,7 +172,7 @@
         background-color: #F7F70B;
         }
     </style>
-        
+
     <!-- Color mensajes usuario -->
     <style>
         .alert {
