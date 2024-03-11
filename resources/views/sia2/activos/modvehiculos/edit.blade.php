@@ -127,6 +127,7 @@
                         <label for="VEHICULO_NIVEL_ESTANQUE" class="form-label"><i class="fa-solid fa-gas-pump"></i> Nivel de Estanque</label>
                         <select id="VEHICULO_NIVEL_ESTANQUE" name="VEHICULO_NIVEL_ESTANQUE" class="form-control" tabindex="9" required>
                             <option disabled value="">-- Seleccione un nivel de estanque --</option>
+                            <option value="VACIO" {{ $vehiculo->VEHICULO_NIVEL_ESTANQUE === 'VACIO' ? 'selected' : '' }}>VACIO</option>
                             <option value="BAJO" {{ $vehiculo->VEHICULO_NIVEL_ESTANQUE === 'BAJO' ? 'selected' : '' }}>BAJO</option>
                             <option value="MEDIO BAJO" {{ $vehiculo->VEHICULO_NIVEL_ESTANQUE === 'MEDIO BAJO' ? 'selected' : '' }}>MEDIO BAJO</option>
                             <option value="MEDIO" {{ $vehiculo->VEHICULO_NIVEL_ESTANQUE === 'MEDIO' ? 'selected' : '' }}>MEDIO</option>

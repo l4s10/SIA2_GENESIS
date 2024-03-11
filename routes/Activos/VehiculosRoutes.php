@@ -11,6 +11,10 @@ Route::middleware(['role:ADMINISTRADOR|SERVICIOS'])->group(function () {
             ->name('vehiculos.index')
             ->middleware('can:ver_activos');
 
+        Route::get('/getFilteredData', [VehiculoController::class, 'getFilteredData'])
+            ->name('vehiculos.search')
+            ->middleware('can:ver_activos');
+
         Route::get('/create', [VehiculoController::class, 'create'])
             ->name('vehiculos.create')
             ->middleware('can:crear_activo');
