@@ -25,16 +25,59 @@ class EquipoController extends Controller
     {
         try {
             // Obtiene la OFICINA_ID del usuario actual
-            $oficinaIdUsuario = Auth::user()->OFICINA_ID;
+            $oficinaId = Auth::user()->OFICINA_ID;
             // Función que lista equipos basados en la OFICINA_ID del usuario
-            $equipos = Equipo::where('OFICINA_ID', $oficinaIdUsuario)->get();
+            $equipos = Equipo::where('OFICINA_ID', $oficinaId)->get();
+            // Obtener los tipos de equipo para el filtro
+            $tiposEquipos = TipoEquipo::where('OFICINA_ID', $oficinaId)->get();
 
             // Retorna la vista con los equipos
-            return view('sia2.activos.modequipos.equipos.index', compact('equipos'));
+            return view('sia2.activos.modequipos.equipos.index', compact('equipos', 'tiposEquipos'));
         } catch (\Exception $e) {
             // Maneja la excepción y muestra un mensaje de error
             return back()->with('error', 'Error cargando los equipos: ');
         }
+    }
+
+    /**
+     * Get filtered data for the equipment.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Contracts\View\View
+     */
+    public function getFilteredData(Request $request)
+    {
+        $oficinaId = Auth::user()->OFICINA_ID;
+
+        $query = Equipo::where('OFICINA_ID', $oficinaId);
+
+        if ($request->filled('TIPO_EQUIPO_ID')) {
+            $query->where('TIPO_EQUIPO_ID', $request->TIPO_EQUIPO_ID);
+        }
+
+        if ($request->filled('EQUIPO_MARCA')) {
+            $query->where('EQUIPO_MARCA', 'like', '%' . $request->EQUIPO_MARCA . '%');
+        }
+
+        if ($request->filled('EQUIPO_MODELO')) {
+            $query->where('EQUIPO_MODELO', 'like', '%' . $request->EQUIPO_MODELO . '%');
+        }
+
+        if ($request->filled('EQUIPO_ESTADO')) {
+            $query->where('EQUIPO_ESTADO', $request->EQUIPO_ESTADO);
+        }
+
+        // Filtro por stock si ambos campos son proporcionados
+        if ($request->filled('STOCK_MIN') && $request->filled('STOCK_MAX')) {
+            $query->whereBetween('EQUIPO_STOCK', [$request->STOCK_MIN, $request->STOCK_MAX]);
+        }
+
+        $equipos = $query->with('tipoEquipo')->get();
+
+        // Obtener los tipos de equipo para el filtro
+        $tiposEquipos = TipoEquipo::where('OFICINA_ID', $oficinaId)->get();
+
+        return view('sia2.activos.modequipos.equipos.index', compact('equipos', 'tiposEquipos'));
     }
 
     /**
@@ -107,7 +150,7 @@ class EquipoController extends Controller
                     'EQUIPO_MARCA' => $request->input('EQUIPO_MARCA'),
                     'EQUIPO_MODELO' => $request->input('EQUIPO_MODELO'),
                 ])->exists();
-            
+
                 if ($exists) {
                     $validator->errors()->add('EQUIPO_MARCA', 'Esta marca de equipo con el modelo de equipo especificado, ya existen en su dirección regional.');
                     $validator->errors()->add('EQUIPO_MODELO', 'Este modelo de equipo con la marca de equipo especificada, ya existen en su dirección regional.');
@@ -257,7 +300,7 @@ class EquipoController extends Controller
                     'EQUIPO_MARCA' => $request->input('EQUIPO_MARCA'),
                     'EQUIPO_MODELO' => $request->input('EQUIPO_MODELO'),
                 ])->where('EQUIPO_ID', '!=', $id)->exists();
-            
+
                 if ($exists) {
                     $validator->errors()->add('EQUIPO_MARCA', 'Esta marca de equipo con el modelo de equipo especificado, ya existen en su dirección regional.');
                     $validator->errors()->add('EQUIPO_MODELO', 'Este modelo de equipo con la marca de equipo especificada, ya existen en su dirección regional.');
@@ -300,7 +343,7 @@ class EquipoController extends Controller
                 'MOVIMIENTO_STOCK_RESULTANTE' => $stockResultante,
                 'MOVIMIENTO_DETALLE' => strtoupper($request->input('DETALLE_MOVIMIENTO'))
             ]);
-            
+
             //retornar a la vista index
             return redirect()->route('equipos.index')->with('success', 'Equipo actualizado correctamente');
         } catch (ModelNotFoundException $e) {

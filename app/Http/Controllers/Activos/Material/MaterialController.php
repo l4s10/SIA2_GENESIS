@@ -72,10 +72,7 @@ class MaterialController extends Controller
         $materiales = $query->with('tipoMaterial')->get();
 
         // Obtener los tipos de materiales asociados a la oficina del usuario
-        // Asegúrate de tener una lógica similar o una relación definida para obtener solo los tipos de materiales relevantes
-        $tiposMateriales = TipoMaterial::whereHas('materiales', function ($q) use ($oficinaId) {
-            $q->where('OFICINA_ID', $oficinaId);
-        })->get();
+        $tiposMateriales = TipoMaterial::where('OFICINA_ID', $oficinaId)->get();
 
         // Retornar a la vista con los materiales filtrados
         return view('sia2.activos.modmateriales.materiales.index', compact('materiales', 'tiposMateriales'));

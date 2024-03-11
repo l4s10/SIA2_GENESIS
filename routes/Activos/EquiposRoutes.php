@@ -44,6 +44,11 @@ Route::middleware(['role:ADMINISTRADOR|INFORMATICA'])->group(function () {
             ->name('equipos.index')
             ->middleware('can:ver_activos');
 
+        Route::get('/getFilteredData', [EquipoController::class, 'getFilteredData'])
+            ->name('equipos.search')
+            ->middleware('can:ver_activos');
+
+
         Route::get('/create', [EquipoController::class, 'create'])
             ->name('equipos.create')
             ->middleware('can:crear_activo');
