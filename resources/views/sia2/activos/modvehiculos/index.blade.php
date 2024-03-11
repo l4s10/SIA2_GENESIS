@@ -44,7 +44,7 @@
         </script>
     @endif
 
-    <a class="btn agregar" href="{{ route('vehiculos.create') }}"><i class="fa-solid fa-plus"></i> Agregar Vehículo</a>
+    <a class="btn agregar mb-4" href="{{ route('vehiculos.create') }}"><i class="fa-solid fa-plus"></i> Agregar Vehículo</a>
 
     {{-- Acordeón para filtrar vehículos --}}
     <div class="accordion" id="accordionFiltrarVehiculos">
@@ -209,7 +209,6 @@
 @stop
 
 @section('css')
-    <link rel="stylesheet" href="/css/admin_custom.css">
     <style>/* Estilos personalizados si es necesario */
         .tablacolor {
             background-color: #0064a0; /* Color de fondo personalizado */
