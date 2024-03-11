@@ -57,8 +57,45 @@
             });
         </script>
     @endif
+
     {{-- Botones de acceso rapido --}}
     <a class="btn agregar mb-3" href="{{ route('bodegas.create') }}"><i class="fa-solid fa-plus"></i> Agregar Bodega</a>
+
+    {{-- Acordeón para filtrar bodegas --}}
+    <div class="accordion" id="accordionFiltrarBodegas">
+        <div class="card">
+            <div class="card-header" id="headingFiltrarBodegas">
+                <h2 class="mb-0">
+                    <button class="btn btn-link btn-block text-left collapsed" type="button" data-toggle="collapse" data-target="#collapseFiltrarBodegas" aria-expanded="false" aria-controls="collapseFiltrarBodegas">
+                        Filtrar Bodegas
+                    </button>
+                </h2>
+            </div>
+            <div id="collapseFiltrarBodegas" class="collapse" aria-labelledby="headingFiltrarBodegas" data-parent="#accordionFiltrarBodegas">
+                <div class="card-body">
+                    <form action="{{ route('bodegas.search') }}" method="GET">
+                        <div class="form-row">
+                            <div class="form-group col-md-6">
+                                <label for="BODEGA_NOMBRE">Nombre de la Bodega</label>
+                                <input type="text" class="form-control" id="BODEGA_NOMBRE" name="BODEGA_NOMBRE" placeholder="Nombre">
+                            </div>
+                            <div class="form-group col-md-6">
+                                <label for="BODEGA_ESTADO">Estado</label>
+                                <select id="BODEGA_ESTADO" name="BODEGA_ESTADO" class="form-control">
+                                    <option value="">Seleccione un estado</option>
+                                    <option value="DISPONIBLE">DISPONIBLE</option>
+                                    <option value="NO DISPONIBLE">NO DISPONIBLE</option>
+                                    <option value="DESHABILITADO">DESHABILITADO</option>
+                                </select>
+                            </div>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Filtrar</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
     {{-- Tabla de contenido --}}
     <div class="table-responsive">
         <table id="bodegas" class="table table-bordered mt-4">
@@ -128,7 +165,7 @@
         background-color: #F7F70B;
     }
     </style>
-            
+
     <!-- Color mensajes usuario -->
     <style>
         .alert {

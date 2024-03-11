@@ -11,6 +11,10 @@ Route::middleware(['role:ADMINISTRADOR|INFORMATICA'])->group(function () {
             ->name('bodegas.index')
             ->middleware('can:ver_activos');
 
+        Route::get('/getFilteredData', [BodegaController::class, 'getFilteredData'])
+            ->name('bodegas.search')
+            ->middleware('can:ver_activos');
+
         Route::get('/create', [BodegaController::class, 'create'])
             ->name('bodegas.create')
             ->middleware('can:crear_activo');
