@@ -8,9 +8,9 @@ use Illuminate\Support\Facades\Auth;
 use Exception;
 
 // Importar modelos
-use App\Models\User as Usuario; //Importamos user pero en este contexto lo llamamos Usuario.
+use App\Models\User; //Importamos user pero en este contexto lo llamamos Usuario.
 
-class UsuariosController extends Controller
+class UsuarioController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -20,7 +20,7 @@ class UsuariosController extends Controller
         //try-catch para manejar errores
         try {
             // Listar todos los usuarios que esten dentro de la misma direccion regional que el usuario logueado.
-            $usuarios = Usuario::where('OFICINA_ID', Auth::user()->OFICINA_ID)->get();
+            $usuarios = User::where('OFICINA_ID', Auth::user()->OFICINA_ID)->get();
 
             // Retornar vista con usuarios
             return view('sia2.panel.usuarios.index', compact('usuarios'));
