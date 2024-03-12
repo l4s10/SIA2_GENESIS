@@ -52,19 +52,17 @@
                 </tr>
             </thead>
             <tbody>
+                {{-- Modificación: Botones para abrir modal en lugar de formulario directo --}}
                 @foreach($materiales as $material)
-                    <tr>
-                        <td>{{ $material->tipoMaterial->TIPO_MATERIAL_NOMBRE }}</td>
-                        <td>{{ $material->MATERIAL_NOMBRE }}</td>
-                        <td>
-                            <form action="{{ route('materiales.addToCart', $material->MATERIAL_ID) }}" method="POST">
-                                @csrf
-                                <button type="submit" class="btn botoneditar">
-                                    <i class="fa-solid fa-plus"></i> Agregar al Carrito
-                                </button>
-                            </form>
-                        </td>
-                    </tr>
+                <tr>
+                    <td>{{ $material->tipoMaterial->TIPO_MATERIAL_NOMBRE }}</td>
+                    <td>{{ $material->MATERIAL_NOMBRE }}</td>
+                    <td>
+                        <button type="button" class="btn botoneditar" data-material-id="{{ $material->MATERIAL_ID }}" data-form-action="{{ route('materiales.addToCart', $material->MATERIAL_ID) }}">
+                            <i class="fa-solid fa-plus"></i> Agregar al Carrito
+                        </button>
+                    </td>
+                </tr>
                 @endforeach
             </tbody>
         </table>
@@ -97,6 +95,29 @@
                 @endforeach
             </tbody>
         </table>
+
+        {{-- Modal para cantidad personalizada --}}
+        <div class="modal fade" id="cantidadModal" tabindex="-1" data-bs-backdrop="static" aria-labelledby="cantidadModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                <h5 class="modal-title" id="cantidadModalLabel">Agregar material</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                </div>
+                <form id="formAgregarCarrito" method="POST">
+                @csrf
+                <div class="modal-body">
+                    <input type="number" name="cantidad" class="form-control" required min="1" value="1">
+                    <input type="hidden" name="material_id" id="material_id">
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-primary">Agregar al Carrito</button>
+                </div>
+                </form>
+            </div>
+            </div>
+        </div>
 
         {{-- Formulario de Solicitud --}}
         <form action="{{ route('solicitudes.materiales.store') }}" method="POST">
@@ -166,7 +187,7 @@
             color: #fff;
         }
     </style>
-    
+
     <!-- Color mensajes usuario -->
     <style>
             .alert {
@@ -207,6 +228,19 @@
                 "language": {
                     "url": "https://cdn.datatables.net/plug-ins/1.11.3/i18n/es_es.json"
                 },
+            });
+        });
+    </script>
+
+    <script>
+        document.querySelectorAll('.botoneditar').forEach(button => {
+            button.addEventListener('click', function(event) {
+                event.preventDefault();
+                const materialId = this.getAttribute('data-material-id');
+                document.getElementById('material_id').value = materialId;
+                const formAction = this.getAttribute('data-form-action');
+                document.getElementById('formAgregarCarrito').action = formAction;
+                new bootstrap.Modal(document.getElementById('cantidadModal')).show();
             });
         });
     </script>

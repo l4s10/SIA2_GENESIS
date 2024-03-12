@@ -406,12 +406,24 @@ class MaterialController extends Controller
         }
     }
 
-    public function addToCart(Material $material)
+    public function addToCart(Request $request, Material $material)
     {
-        // Creamos la instancia del carrito de formularios
+        $cantidadSolicitada = $request->input('cantidad', 1);
+        $stockMaterial = $material->MATERIAL_STOCK; // Asegúrate de tener una propiedad o método que te dé el stock actual
+
+        // Obtén la cantidad ya en el carrito para este material
+        $cantidadEnCarrito = Cart::instance('carrito_materiales')->search(function ($cartItem) use ($material) {
+            return $cartItem->id === $material->MATERIAL_ID;
+        })->sum('qty');
+
+        // Verifica si la cantidad solicitada supera el stock disponible considerando lo que ya está en el carrito
+        if (($cantidadSolicitada + $cantidadEnCarrito) > $stockMaterial) {
+            return redirect()->back()->with('error', 'La cantidad solicitada supera el stock disponible.');
+        }
+
+        // Agrega el material al carrito con la cantidad solicitada
         $carritoMateriales = Cart::instance('carrito_materiales');
-        // Agregar el material al carrito con una cantidad predeterminada (puedes ajustarlo según tus necesidades)
-        $carritoMateriales->add($material, 1);
+        $carritoMateriales->add($material, $cantidadSolicitada);
 
         return redirect()->back()->with('success', 'Material agregado al carrito exitosamente');
     }

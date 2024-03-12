@@ -255,13 +255,17 @@ class SolicitudMaterialesController extends Controller
             'autorizar.*' => 'required|numeric|min:0', // Ensures that all values in the array are numeric and non-negative
         ], [
             // Error messages
-            'required' => 'The :attribute field is required.',
-            'date' => 'The :attribute field must be a date.',
-            'after' => 'The :attribute field must be a date after the requested start date.',
-            'string' => 'The :attribute field must be a string.',
-            'in' => 'The :attribute field must be one of the values: INGRESADO, EN REVISION, APROBADO, RECHAZADO, TERMINADO',
-            'numeric' => 'The :attribute field must be a number.',
-            'min' => 'The :attribute field must be a non-negative number.'
+            'SOLICITUD_FECHA_HORA_INICIO_ASIGNADA.required' => 'La fecha de inicio asignada es requerida.',
+            'SOLICITUD_FECHA_HORA_INICIO_ASIGNADA.date' => 'La fecha de inicio asignada debe ser una fecha.',
+            'SOLICITUD_FECHA_HORA_TERMINO_ASIGNADA.required' => 'La fecha de término asignada es requerida.',
+            'SOLICITUD_FECHA_HORA_TERMINO_ASIGNADA.date' => 'La fecha de término asignada debe ser una fecha.',
+            'SOLICITUD_FECHA_HORA_TERMINO_ASIGNADA.after' => 'La fecha de término asignada debe ser una fecha posterior a la fecha de inicio asignada.',
+            'REVISION_SOLICITUD_OBSERVACION.required' => 'Indique el motivo de la revisión.',
+            'REVISION_SOLICITUD_OBSERVACION.string' => 'El campo Observación debe ser una cadena de caracteres.',
+            'REVISION_SOLICITUD_OBSERVACION.max' => 'El campo Observación no debe exceder los 255 caracteres.',
+            'autorizar.*.required' => 'La Cantidad Autorizada es requerida.',
+            'autorizar.*.numeric' => 'La Cantidad Autorizada debe ser un número.',
+            'autorizar.*.min' => 'La Cantidad Autorizada no puede ser negativa.',
         ]);
 
         return $validator;
@@ -286,15 +290,15 @@ class SolicitudMaterialesController extends Controller
 
         ], [
             // Error messages
-            'REVISION_SOLICITUD_OBSERVACION.required' => 'Indicate the reason for the rejection.',
-            'REVISION_SOLICITUD_OBSERVACION.string' => 'The Observation field must be a string.',
-            'REVISION_SOLICITUD_OBSERVACION.max' => 'The Observation field must not exceed 255 characters.',
-            'SOLICITUD_FECHA_HORA_INICIO_ASIGNADA.date' => 'The Start Date Assigned field must be a date.',
-            'SOLICITUD_FECHA_HORA_TERMINO_ASIGNADA.date' => 'The End Date Assigned field must be a date.',
-            'SOLICITUD_FECHA_HORA_TERMINO_ASIGNADA.after' => 'The End Date Assigned field must be a date after the requested start date.',
-            'autorizar.*.nullable' => 'The Authorized Quantity field must be null or a number.',
-            'autorizar.*.numeric' => 'The Authorized Quantity field must be a number.',
-            'autorizar.*.min' => 'The Authorized Quantity field cannot be negative.',
+            'REVISION_SOLICITUD_OBSERVACION.required' => 'Indique el motivo del rechazo.',
+            'REVISION_SOLICITUD_OBSERVACION.string' => 'El campo Observación debe ser una cadena de caracteres.',
+            'REVISION_SOLICITUD_OBSERVACION.max' => 'El campo Observación no debe exceder los 255 caracteres.',
+            'SOLICITUD_FECHA_HORA_INICIO_ASIGNADA.date' => 'La fecha de inicio asignada debe ser una fecha.',
+            'SOLICITUD_FECHA_HORA_TERMINO_ASIGNADA.date' => 'La fecha de término asignada debe ser una fecha.',
+            'SOLICITUD_FECHA_HORA_TERMINO_ASIGNADA.after' => 'La fecha de término asignada debe ser una fecha posterior a la fecha de inicio asignada.',
+            'autorizar.*.nullable' => 'La Cantidad Autorizada debe ser nula o un número.',
+            'autorizar.*.numeric' => 'La Cantidad Autorizada debe ser un número.',
+            'autorizar.*.min' => 'La Cantidad Autorizada no puede ser negativa.',
         ]);
 
         return $validator;
@@ -422,7 +426,7 @@ class SolicitudMaterialesController extends Controller
             }
         } catch (Exception $e) {
             // Considera loguear el error para depuración
-            return redirect()->back()->with('error', 'Error al autorizar los equipos, vuelva a intentarlo más tarde.');
+            return redirect()->back()->with('error', 'Error al autorizar los materiales, vuelva a intentarlo más tarde.');
         }
     }
 
