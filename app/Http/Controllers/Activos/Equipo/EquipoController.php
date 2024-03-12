@@ -16,7 +16,8 @@ use App\Models\Equipo;
 use App\Models\TipoEquipo;
 use App\Models\Movimiento;
 use App\Models\Oficina;
-
+use App\Models\Ubicacion;
+use App\Models\User;
 
 
 class EquipoController extends Controller
@@ -254,9 +255,13 @@ class EquipoController extends Controller
             $tiposEquipos = TipoEquipo::where('OFICINA_ID', $oficinaIdUsuario)->get();
             // Obtener la información de la oficina del usuario
             $oficina = Oficina::where('OFICINA_ID', $oficinaIdUsuario)->firstOrFail();
+            // Obtener ubicaciones del sistema
+            $ubicaciones = Ubicacion::all();
+            // Obtener usuarios del sistema...
+            $usuarios = User::all();
 
             // Retornar la vista con los datos
-            return view('sia2.activos.modequipos.equipos.edit', compact('equipo', 'tiposEquipos', 'oficina'));
+            return view('sia2.activos.modequipos.equipos.edit', compact('equipo', 'tiposEquipos', 'oficina', 'ubicaciones', 'usuarios'));
         } catch (ModelNotFoundException $e) {
             // Manejo de excepciones cuando no encuentra el modelo
             return redirect()->route('equipos.index')->with('error', 'No se encontró el equipo');
@@ -297,7 +302,7 @@ class EquipoController extends Controller
                 'EQUIPO_MARCA' => 'required|string|max:128',
                 'EQUIPO_MODELO' => 'required|string|max:128',
                 'EQUIPO_ESTADO' => 'required|string|max:40',
-                'DETALLE_MOVIMIENTO' => 'required|string|max:1000',
+                // 'DETALLE_MOVIMIENTO' => 'required|string|max:1000',
                 'TIPO_MOVIMIENTO' => 'required|string|max:10',
             ], [
                 'TIPO_EQUIPO_ID.required' => 'El campo "Tipo de Equipo" es obligatorio.',
@@ -360,19 +365,51 @@ class EquipoController extends Controller
                 'EQUIPO_STOCK' => $stockResultante
             ]);
 
+            // Variables para almacenar los valores de los campos dinámicos
+            $detalleMovimiento = '';
+
+            switch ($request->TIPO_MOVIMIENTO) {
+                case 'INGRESO':
+                    // Aquí concatenas la información para el detalle de movimiento para un ingreso
+                    // Formatear el detalle y dar formato
+                    $detalleMovimiento = strtoupper("Proveedor: {$request->input('PROVEEDOR')}, ".
+                    "Numero de Factura: {$request->input('NUMERO_FACTURA')}, ".
+                    "Codigo Libro Adquisiciones: {$request->input('COD_LIBRO_ADQUISICIONES')}, ".
+                    "Numero Res. Exenta de Compra: {$request->input('NUM_RES_EXCENTO_COMPRA')}, ".
+                    "Numero de Orden de Compra: {$request->input('NUM_ORDEN_COMPRA')}.");
+                    break;
+                // ...
+
+                case 'TRASLADO':
+                    // Aquí concatenas la información para el detalle de movimiento para un traslado
+                    $ubicacion = Ubicacion::find($request->UBICACION_ID);
+                    $fechaMemoConductor = Carbon::parse($request->FECHA_MEMO_CONDUCTOR)->format('d-m-Y');
+                    $detalleMovimiento = "Traslado a ubicación: {$ubicacion->UBICACION_NOMBRE}, Fecha memo conductor: {$fechaMemoConductor}, Correo electrónico solicitante: {$request->CORREO_ELECTRONICO_SOLICITANTE}.";
+                    break;
+                case 'MERMA':
+                    // Aquí concatenas la información para el detalle de movimiento para una merma
+                    $fechaAutorizacion = Carbon::parse($request->FECHA_AUTORIZACION)->format('d-m-Y');
+                    $detalleMovimiento = "Merma autorizada por: {$request->NOMBRE_JEFE_AUTORIZA}, Fecha de autorización: {$fechaAutorizacion}.";
+                    break;
+                case 'OTRO':
+                    // Manejar caso de ingreso, si es necesario
+                    $detalleMovimiento = strtoupper($request->input('DETALLE_MOVIMIENTO'));
+                    break;
+                // Agrega casos adicionales según sea necesario
+            }
 
             // Crear un nuevo movimiento asociado al equipo modificado
-            $movimiento = Movimiento::create([
+            Movimiento::create([
                 'USUARIO_id' => Auth::user()->id,
                 'EQUIPO_ID' => $equipo->EQUIPO_ID,
                 'MOVIMIENTO_TITULAR' => (Auth::user()->USUARIO_NOMBRES.' '.Auth::user()->USUARIO_APELLIDOS),
                 'MOVIMIENTO_OBJETO' => 'EQUIPO: ' . $equipo->EQUIPO_MODELO,
                 'MOVIMIENTO_TIPO_OBJETO' => $equipo->tipoEquipo->TIPO_EQUIPO_NOMBRE,
                 'MOVIMIENTO_TIPO' => $request->TIPO_MOVIMIENTO,
-                'MOVIMIENTO_STOCK_PREVIO' => $equipo->EQUIPO_STOCK,
+                'MOVIMIENTO_STOCK_PREVIO' => $request->EQUIPO_STOCK,
                 'MOVIMIENTO_CANTIDAD_A_MODIFICAR' => $request->STOCK_NUEVO,
                 'MOVIMIENTO_STOCK_RESULTANTE' => $stockResultante,
-                'MOVIMIENTO_DETALLE' => strtoupper($request->input('DETALLE_MOVIMIENTO'))
+                'MOVIMIENTO_DETALLE' => $detalleMovimiento
             ]);
 
             //retornar a la vista index

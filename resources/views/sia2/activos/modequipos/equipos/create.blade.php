@@ -147,7 +147,6 @@
 @stop
 
 @section('css')
-    {{-- <link rel="stylesheet" href="/css/admin_custom.css"> --}}
     <style>/* Estilos personalizados si es necesario */
         .guardar {
             background-color: #e6500a;
@@ -157,6 +156,4 @@
 @stop
 
 @section('js')
-    <!-- CONEXION FONT-AWESOME CON TOOLKIT -->
-    {{-- <script src="https://kit.fontawesome.com/742a59c628.js" crossorigin="anonymous"></script> --}}
 @stop
