@@ -35,7 +35,16 @@ class ReportesController extends Controller
     }
 
     public function Sistema(){
-        return view('sia2.reportes.sistema');
+        //Obtener todas las regiones
+        $regiones = \App\Models\Region::all();
+        //Obtener todas las oficinas
+        $oficinas = \App\Models\Oficina::all();
+        //Obtener todos los departamentos
+        $departamentos = \App\Models\Departamento::all();
+        //Obtener todos las ubicaciones
+        $ubicaciones = \App\Models\Ubicacion::all();
+
+        return view('sia2.reportes.sistema', compact('regiones', 'oficinas', 'departamentos', 'ubicaciones'));
     }
 
     public function Vehiculos(){

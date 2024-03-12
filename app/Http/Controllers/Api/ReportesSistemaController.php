@@ -10,6 +10,9 @@ use Carbon\Carbon;
 
 // Modelos gays
 use App\Models\User;
+use App\Models\Oficina;
+use App\Models\Ubicacion;
+use App\Models\Departamento;
 
 class ReportesSistemaController extends Controller
 {
@@ -201,6 +204,12 @@ class ReportesSistemaController extends Controller
         return $nombreFormateado;
     }
 
+    /**
+     * Get the distribution of users by gender within a specified date range.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function getDistribucionPorGenero(Request $request)
     {
         try {
@@ -234,5 +243,72 @@ class ReportesSistemaController extends Controller
         }
     }
 
+    public function filtrarUsuarios(Request $request)
+    {
+        try {
+            $query = User::query();
 
+            // Ejemplo simple de conteo
+            $conteoMasculinos = $query->clone()->where('USUARIO_SEXO', 'MASCULINO')->count();
+            $conteoFemeninos = $query->where('USUARIO_SEXO', 'FEMENINO')->count();
+
+            return response()->json([
+                'masculinos' => $conteoMasculinos,
+                'femeninos' => $conteoFemeninos,
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Error al filtrar usuarios: ' . $e->getMessage(),
+            ], 500);
+        }
+    }
+
+    public function getTotalsPorUbicacion($ubicacionId)
+    {
+        $ubicacion = Ubicacion::find($ubicacionId);
+
+        if (!$ubicacion) {
+            return response()->json(['error' => 'Ubicación no encontrada'], 404);
+        }
+
+        if($ubicacion instanceof \Illuminate\Database\Eloquent\Collection){
+            return response()->json(['error' => 'Esperaba un modelo de ubicación, pero se obtuvo una colección.'], 500);
+        }
+
+        $hombres = User::where('UBICACION_ID', $ubicacion->UBICACION_ID)->where('USUARIO_SEXO', 'MASCULINO')->count();
+        $mujeres = User::where('UBICACION_ID', $ubicacion->UBICACION_ID)->where('USUARIO_SEXO', 'FEMENINO')->count();
+        $total = $hombres + $mujeres;
+
+        return response()->json([
+            'ubicacion' => $ubicacion->UBICACION_NOMBRE,
+            'hombres' => $hombres,
+            'mujeres' => $mujeres,
+            'total' => $total
+        ]);
+    }
+
+    public function getTotalsPorDepartamento($departamentoId)
+    {
+        $departamento = Departamento::find($departamentoId);
+
+        if (!$departamento) {
+            return response()->json(['error' => 'Departamento no encontrado'], 404);
+        }
+
+        if($departamento instanceof \Illuminate\Database\Eloquent\Collection){
+            return response()->json(['error' => 'Esperaba un modelo de departamento, pero se obtuvo una colección.'], 500);
+        }
+
+        $hombres = User::where('DEPARTAMENTO_ID', $departamento->DEPARTAMENTO_ID)->where('USUARIO_SEXO', 'MASCULINO')->count();
+        $mujeres = User::where('DEPARTAMENTO_ID', $departamento->DEPARTAMENTO_ID)->where('USUARIO_SEXO', 'FEMENINO')->count();
+        $total = $hombres + $mujeres;
+
+        return response()->json([
+            'departamento' => $departamento->DEPARTAMENTO_NOMBRE,
+            'hombres' => $hombres,
+            'mujeres' => $mujeres,
+            'total' => $total
+        ]);
+    }
 }

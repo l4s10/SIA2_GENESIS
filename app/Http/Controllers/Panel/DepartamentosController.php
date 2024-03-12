@@ -105,4 +105,13 @@ class DepartamentosController extends Controller
     {
         //
     }
+
+    //!! Método para obtener departamentos por oficina (TABLA DE CONTINGENCIA -- NO BORRAR!!)
+    public function getDepartamentos($direccionId)
+    {
+        // Asume que tienes un modelo Ubicacion que tiene una relación con Direcciones
+        $departamentos = Departamento::where('OFICINA_ID', $direccionId)->get();
+
+        return response()->json($departamentos);
+    }
 }

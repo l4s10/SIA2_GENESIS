@@ -104,4 +104,13 @@ class UbicacionesController extends Controller
     {
         //
     }
+
+    //!! Método para obtener ubicaciones por oficina (TABLA DE CONTINGENCIA -- NO BORRAR!!)
+    public function getUbicaciones($direccionId)
+    {
+        // Asume que tienes un modelo Ubicacion que tiene una relación con Direcciones
+        $ubicaciones = Ubicacion::where('OFICINA_ID', $direccionId)->get();
+
+        return response()->json($ubicaciones);
+    }
 }
