@@ -48,7 +48,7 @@
     </div>
 
     <div class="row">
-        <div class="col-md-12">
+        <div class="col-sm-12">
             <div class="card">
                 <canvas id="graficoRankingSolicitudes"></canvas>
                 <div class="card-footer">
@@ -56,7 +56,19 @@
                 </div>
             </div>
         </div>
+        <div class="col-sm-12">
+            <div class="card">
+                <canvas id="graficoDistribucionGenero"></canvas>
+                <div class="card-footer">
+                    <button id="download-jpeg-button" class="btn descagargrafico"><i class="fa-solid fa-download"></i></button>
+                </div>
+            </div>
+        </div>
     </div>
+
+    {{-- Tabla de contingencia --}}
+    {{-- Objetivo a traves de filtros (REGION_ID, OFICINA_ID, UBICACION_ID/DEPARTAMENTO_ID) -> USUARIOS MASCULINOS Y FEMENINOS POR UBICACION/DEPARTAMETO DE ESA OFICINA CONTENIDA EN ESA REGION --}}
+    
 @endsection
 
 @section('css')
@@ -114,12 +126,15 @@
     <script src="{{ asset('js/Components/fechasGraficos.js') }}"></script>
     {{-- Importamos la logica del boton y el mensaje de filtro --}}
     <script src="{{asset('js/Components/graficoAlertaMensaje.js')}}"></script>
-    
+
     {{-- Importar el archivo JS para obtener los datos --}}
     <script src="{{ asset('js/Graficos/Sistema/getData.js') }}"></script>
 
     {{-- Importar el archivo JS para el gráfico 1 --}}
     <script src="{{ asset('js/Graficos/Sistema/grafico1.js') }}"></script>
+
+    {{-- Importar el archivo JS para el gráfico 2 --}}
+    <script src="{{ asset('js/Graficos/Sistema/grafico2.js') }}"></script>
 
     <!-- Scrip para la descargar de los graficos -->
     <script>

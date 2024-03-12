@@ -11,3 +11,5 @@ Route::middleware('auth:sanctum')->get('/reportes/sistema/get-graficos', [Report
 Route::middleware('auth:sanctum')->post('/reportes/sistema/filtrar-general', [ReportesSistemaController::class, 'filtrarGeneral']);
 
 Route::middleware('auth:sanctum')->post('/reportes/sistema/grafico-1', [ReportesSistemaController::class, 'rankingSolicitudes']);
+
+Route::middleware('auth:sanctum')->post('/reportes/sistema/grafico-2', [ReportesSistemaController::class, 'getDistribucionPorGenero']);

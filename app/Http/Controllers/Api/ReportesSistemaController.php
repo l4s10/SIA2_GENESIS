@@ -8,6 +8,9 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 use Carbon\Carbon;
 
+// Modelos gays
+use App\Models\User;
+
 class ReportesSistemaController extends Controller
 {
     /**
@@ -196,6 +199,39 @@ class ReportesSistemaController extends Controller
         $nombreFormateado = ucwords($nombreSinEspacios);
 
         return $nombreFormateado;
+    }
+
+    public function getDistribucionPorGenero(Request $request)
+    {
+        try {
+            $fechaInicioInput = $request->input('fecha_inicio');
+            $fechaFinInput = $request->input('fecha_fin');
+
+            $fechaInicio = $fechaInicioInput ? Carbon::createFromFormat('Y-m-d', $fechaInicioInput)->startOfDay() : Carbon::now()->startOfMonth()->startOfDay();
+            $fechaFin = $fechaFinInput ? Carbon::createFromFormat('Y-m-d', $fechaFinInput)->endOfDay() : Carbon::now()->endOfDay();
+
+            $oficinaId = Auth::user()->OFICINA_ID;
+
+            $distribucion = User::where('OFICINA_ID', $oficinaId)
+                                ->whereBetween('USUARIO_FECHA_INGRESO', [$fechaInicio, $fechaFin])
+                                ->groupBy('USUARIO_SEXO')
+                                ->selectRaw('USUARIO_SEXO as sexo, COUNT(*) as total')
+                                ->get();
+
+            $totalUsuarios = $distribucion->sum('total');
+
+            return response()->json([
+                'status' => 'success',
+                'data' => $distribucion,
+                'total' => $totalUsuarios,
+                'message' => "Distribución de género de los funcionarios obtenida con éxito desde las fechas " . $fechaInicio->format('d-m-Y H:i:s') . " hasta " . $fechaFin->format('d-m-Y H:i:s') . "."
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Error al obtener la distribución de género: ' . $e->getMessage(),
+            ], 500);
+        }
     }
 
 
