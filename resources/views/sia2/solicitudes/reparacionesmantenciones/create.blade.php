@@ -125,8 +125,10 @@
                 <input type="text" class="form-control" id="SOLICITUD_ESTADO" name="SOLICITUD_ESTADO" value="🟠INGRESADO" readonly>
             </div>
 
+
+            <button href="{{ route('solicitudes.formularios.index') }}" class="btn btn-secondary "><i class="fa-solid fa-hand-point-left"></i> Cancelar</button>
             {{-- Botón de envío --}}
-            <button type="submit" class="btn agregar"><i class="fa-solid fa-plus"></i> Crear Solicitud</button>
+            <button type="submit" class="btn agregar"><i class="fa-solid fa-clipboard-check"></i> Crear Solicitud</button>
         </form>
 
 @stop

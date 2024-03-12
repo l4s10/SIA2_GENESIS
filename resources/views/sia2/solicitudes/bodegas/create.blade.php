@@ -99,8 +99,8 @@
             </div>
         </div>
         {{-- Boton para enviar y volver --}}
-        <a href="{{ route('solicitudes.bodegas.index') }}" class="btn btn-danger"><i class="fa-solid fa-reply"></i> Volver</a>
-        <button type="submit" class="btn agregar"><i class="fa-solid fa-plus"></i> Crear Solicitud</button>
+        <a href="{{ route('solicitudes.bodegas.index') }}" class="btn btn-secondary"><i class="fa-solid fa-hand-point-left"></i> Cancelar</a>
+        <button type="submit" class="btn agregar"><i class="fa-solid fa-clipboard-check"></i> Crear Solicitud</button>
     </form>
 @stop
 

@@ -138,8 +138,9 @@
             </div>
         </div>
         {{-- Boton de envio y volver --}}
-        <a href="{{ route('solicitudes.equipos.index') }}" class="btn btn-danger mt-4"><i class="fa-solid fa-arrow-rotate-left"></i> Volver</a>
-        <button type="submit" class="btn agregar mt-4"><i class="fa-solid fa-plus"></i> Crear Solicitud</button>
+
+        <a href="{{ route('solicitudes.equipos.index') }}" class="btn btn-secondary"><i class="fa-solid fa-hand-point-left"></i> Cancelar</a>
+        <button type="submit" class="btn agregar"><i class="fa-solid fa-clipboard-check"></i> Crear Solicitud</button>
     </form>
 @stop
 
