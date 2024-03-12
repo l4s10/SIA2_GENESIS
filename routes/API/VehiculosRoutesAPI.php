@@ -20,3 +20,7 @@ Route::middleware('auth:sanctum')->post('/reportes/vehiculos/grafico-3', [Report
 Route::middleware('auth:sanctum')->post('/reportes/vehiculos/grafico-4', [ReportesVehiculosController::class, 'Grafico4']);
 
 Route::middleware('auth:sanctum')->post('/reportes/vehiculos/grafico-5', [ReportesVehiculosController::class, 'Grafico5']);
+
+
+// Ruta para georeferenciacion
+Route::middleware('auth:sanctum')->get('/reportes/vehiculos/georeferenciacion', [ReportesVehiculosController::class, 'georeferenciacion']);

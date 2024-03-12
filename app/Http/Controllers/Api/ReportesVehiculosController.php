@@ -369,4 +369,57 @@ class ReportesVehiculosController extends Controller
             ], 500);
         }
     }
+
+    public function georeferenciacion(){
+        try{
+            $solicitudes = SolicitudVehicular::where('SOLICITUD_VEHICULO_ESTADO', 'POR RENDIR')
+                ->join('users', 'solicitudes_vehiculos.USUARIO_id', '=', 'users.id')
+                ->where('users.OFICINA_ID', Auth::user()->OFICINA_ID)
+                ->get();
+
+            $comunas = $solicitudes->pluck('COMUNA_ID')->unique();
+
+            $comunasNombres = DB::table('comunas')
+                            ->whereIn('COMUNA_ID', $comunas)
+                            ->pluck('COMUNA_NOMBRE')
+                            ->toArray();
+
+            $comunasGeoJSON = json_decode(file_get_contents(public_path('json/comunasbiobio.geojson')), true);
+
+            $comunasNombresNormalizados = array_map([$this, 'normalizar'], $comunasNombres);
+
+            $comunasFiltradas = collect($comunasGeoJSON['features'])->filter(function ($comunaGeoJSON) use ($comunasNombresNormalizados) {
+                $nombreGeoJSONNormalizado = $this->normalizar($comunaGeoJSON['properties']['comuna']);
+
+                foreach ($comunasNombresNormalizados as $nombreComuna) {
+                    if (strpos($nombreGeoJSONNormalizado, $nombreComuna) !== false) {
+                        return true;
+                    }
+                }
+                return false;
+            })->map(function ($comunaGeoJSON) {
+                return [
+                    'comuna' => $comunaGeoJSON['properties']['comuna'],
+                    'coordinates' => $comunaGeoJSON['geometry']['coordinates'],
+                ];
+            })->values()->all();
+
+            // Aquí puedes devolver $comunasFiltradas como necesites, por ejemplo, pasándolas a una vista o devolviéndolas como JSON.
+            return response()->json($comunasFiltradas);
+
+        }catch(\Exception $e){
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Error al obtener la georeferenciacion: ' . $e->getMessage(),
+            ], 500);
+        }
+    }
+
+    private function normalizar($string)
+    {
+        $original = ['Á', 'É', 'Í', 'Ó', 'Ú', 'á', 'é', 'í', 'ó', 'ú', 'Ñ', 'ñ'];
+        $reemplazo = ['A', 'E', 'I', 'O', 'U', 'a', 'e', 'i', 'o', 'u', 'N', 'n'];
+        return str_replace($original, $reemplazo, strtolower($string));
+    }
+
 }

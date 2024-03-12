@@ -116,7 +116,7 @@
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="crossorigin=""/>
     <link rel="stylesheet" href="https://unpkg.com/leaflet-routing-machine@latest/dist/leaflet-routing-machine.css" />
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
-    
+
     <style>/* Estilos personalizados si es necesario */
         .guardar {
             background-color: #e6500a;
@@ -157,7 +157,7 @@
             .card-footer .btn.descagargrafico {
                 display: none;
             }
-            
+
             /* Oculta los botones de descarga de los gráficos */
             .card-footer .btn.vergrafico {
                 display: none;
@@ -172,7 +172,7 @@
                 display: flex;
                 flex-wrap: wrap;
             }
-            
+
             .col-md-6 {
                 width: 50%; /* Divide el ancho de la columna en dos */
             }
@@ -247,34 +247,44 @@
                         attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
                     }).addTo(map);
 
-                    // Carga el archivo GeoJSON y agrega las comunas como marcadores en el mapa
-                    fetch('json/comunasbiobio.geojson')
+                    // devuelve las comunas y coordenadas
+                    fetch('/api/reportes/vehiculos/georeferenciacion', {
+                        method: 'GET',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Accept': 'application/json',
+                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                        },
+                    })
                         .then(response => response.json())
-                        .then(data => {
-                            L.geoJSON(data, {
-                                pointToLayer: function (feature, latlng) {
-                                    return L.marker(latlng).bindPopup(feature.properties.comuna);
-                                }
-                            }).addTo(map);
+                        .then(comunas => {
+                            comunas.forEach(comuna => {
+                                // Crea un marcador para cada comuna en las coordenadas recibidas
+                                var marker = L.marker(comuna.coordinates.reverse()).addTo(map);
+                                marker.bindPopup(comuna.comuna);
+
+                                // Configura el enrutamiento desde Concepción a esta comuna
+                                L.Routing.control({
+                                    waypoints: [
+                                        L.latLng(-36.8261, -73.0498), // Concepción
+                                        L.latLng(comuna.coordinates)  // Coordenadas de destino
+                                    ],
+                                    language: 'es',
+                                    lineOptions: {
+                                        styles: [
+                                            { color: 'blue', opacity: 0.6, weight: 4 },
+                                        ]
+                                    },
+                                    createMarker: function() { return null; }, // Evita la creación de marcadores adicionales por Routing
+                                    show: true, // Oculta la lista de instrucciones de ruta
+                                }).addTo(map);
+                            });
                         })
                         .catch(error => {
-                            console.error('Error al cargar el archivo GeoJSON:', error);
+                            console.error('Error al cargar los datos:', error);
                         });
-
-                    // Agregar el control de enrutamiento
-                    L.Routing.control({
-                        waypoints: [
-                            L.latLng(-36.8261, -73.0498),  // Coordenadas de Concepción
-                            L.latLng(-36.7167, -73.1167)   // Coordenadas de Talcahuano
-                        ],
-                        language: 'es',
-                        lineOptions: {
-                            styles: [
-                                { color: 'red', opacity: 0.6, weight: 4 },
-                            ]
-                        }
-                    }).addTo(map);
                 }
+
                 mapOpenButton.addEventListener('click', toggleMap);
             });
     </script>
@@ -327,7 +337,7 @@
                 // Haz clic en el enlace para iniciar la descarga
                 link.click();
             });
-        });            
+        });
             const downloadJPEGButton1 = document.getElementById('download-jpeg-button-1');
             downloadJPEGButton1.addEventListener('click', function () {
                 const chartContainer1 = document.getElementById('grafico4');
