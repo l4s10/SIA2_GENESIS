@@ -47,11 +47,11 @@
     <a class="btn agregar" href="{{ route('materiales.create') }}"><i class="fa-solid fa-plus"></i> Agregar Material</a>
     <a class="btn btn-secondary" href="{{route('tiposmateriales.index')}}"><i class="fa-solid fa-eye"></i> Ver tipos de materiales</a>
     {{-- Boton para exportar a EXCEL --}}
-    <a href="{{ route('exportar-materiales-excel') }}" class="btn btn-success">
+    <a href="{{ route('exportar-materiales-excel') }}" class="btn pdf">
         <i class="fa-solid fa-file-excel"></i> Exportar Excel
     </a>
     {{-- Boton para exportar a PDF --}}
-    <a href="{{ route('exportar-materiales-pdf') }}" class="btn btn-primary" target="_blank">
+    <a href="{{ route('exportar-materiales-pdf') }}" class="btn pdf" target="_blank">
         <i class="fa-solid fa-file-pdf"></i> Exportar PDF
     </a>
     
@@ -163,6 +163,10 @@
         }
         .estado-critico {
         color: #F70B0B;
+        }
+        .pdf{
+            background-color: #00B050;
+            color: #fff;
         }
     </style>
 

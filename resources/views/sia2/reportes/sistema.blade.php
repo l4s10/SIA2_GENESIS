@@ -32,7 +32,8 @@
                     </div>
                 </div>
                 <div class="card-footer">
-                    <button id="refresh-button" class="btn guardar">Actualizar</button>
+                    <button id="refresh-button" class="btn guardar"><i class="fa-solid fa-rotate-right"></i> Actualizar</button>
+                    <button id="print-button" class="btn pdf"><i class="fa-solid fa-print"></i> / <i class="fa-solid fa-file-pdf"></i></button>
                 </div>
             </div>
         </div>
@@ -41,7 +42,7 @@
     {{-- Contenedor para las alertas de mensajes --}}
     <div class="row">
         <div class="col-12">
-            <div id="filter-message" class="alert alert-info text-center" role="alert">
+            <div id="filter-message" class="alert alert-color text-center" role="alert">
                 <!-- El mensaje de fechas filtradas se mostrará aquí -->
             </div>
         </div>
@@ -137,6 +138,63 @@
             background-color: #00B050;
             color: #fff;
         }
+        .pdf{
+            background-color: #00B050;
+            color: #fff;
+        }
+        .alert-color{
+            background-color: #CEE7F6;
+            color: #000;
+        }
+    </style>
+
+    <!-- Estilos de la forma imprimir y descargar Pdf -->
+    <style>
+        @media print {
+            /* Oculta el contenedor del formulario de filtrado */
+            .accordion {
+                display: none;
+            }
+
+            /* Oculta el mensaje de filtro */
+            #filter-message {
+                display: none;
+            }
+
+            /* Oculta los botones de descarga de los gráficos */
+            .card-footer .btn.descagargrafico  {
+                display: none;
+            }
+
+            /* Oculta los botones de descarga de los gráficos */
+            .card-footer .btn.vergrafico {
+                display: none;
+            }
+
+            /* Oculta el botón  */
+            .imprimir-ocultar {
+                display: none;
+            }
+            /* Establece un diseño de cuadrícula para organizar los gráficos */
+            .row {
+                display: flex;
+                flex-wrap: wrap;
+            }
+
+            .col-md-6 {
+                width: 50%; /* Divide el ancho de la columna en dos */
+            }
+
+            .card {
+                width: 100%; /* Ajusta el ancho de la tarjeta */
+            }
+
+            /* Ajusta el tamaño de los gráficos para que se ajusten a la cuadrícula */
+            .card canvas {
+                width: 100%;
+                height: auto;
+            }
+        }
     </style>
 @endsection
 
@@ -191,7 +249,18 @@
     {{-- Importar el archivo JS para el gráfico 2 --}}
     <script src="{{ asset('js/Graficos/Sistema/grafico2.js') }}"></script>
 
-    <!-- Scrip para la descargar de los graficos -->
+    <!-- Script para Imprimir/Descargar Pdf -->
+        <script>
+            document.addEventListener('DOMContentLoaded', function () {
+                const printButton = document.getElementById('print-button');
+                printButton.addEventListener('click', function () {
+                    window.print();
+                });
+            });
+        </script>
+
+
+    <!-- Script para la descargar de los graficos -->
     <script>
         // Agrega un controlador de eventos al botón de descarga en formato JPEG
             const downloadJPEGButton = document.getElementById('download-jpeg-button');

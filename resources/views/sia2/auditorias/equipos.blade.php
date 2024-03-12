@@ -34,7 +34,7 @@
 
     <div class="table-responsive">
         {{-- Boton para exportar a PDF --}}
-                <a href="{{ route('exportar-equipo-auditoria-pdf') }}" class="btn btn-primary" target="_blank">
+                <a href="{{ route('exportar-equipo-auditoria-pdf') }}" class="btn pdf" target="_blank">
                     <i class="fa-solid fa-file-pdf"></i> Exportar PDF
                 </a>
         <table id="auditorias" class="table table-bordered mt-4">
@@ -103,6 +103,10 @@
         .estado-ingreso {
         color: #ffffff;
         background-color: #0CB009;
+        }
+        .pdf{
+            background-color: #00B050;
+            color: #fff;
         }
     </style>
 @stop
