@@ -60,9 +60,6 @@
         <div class="col-sm-12">
             <div class="card">
                 <canvas id="graficoDistribucionGenero"></canvas>
-                <div class="card-footer">
-                    <button id="download-jpeg-button" class="btn descagargrafico"><i class="fa-solid fa-download"></i></button>
-                </div>
             </div>
         </div>
     </div>
@@ -146,6 +143,15 @@
             background-color: #CEE7F6;
             color: #000;
         }
+        
+        #graficoDistribucionGenero {
+            width: 80%; /* Ajusta el ancho del gráfico según sea necesario */
+            max-width: 400px; /* Establece un ancho máximo si es necesario */
+            height: auto; /* Ajusta automáticamente la altura para mantener la relación de aspecto */
+            margin: 0 auto; /* Centra horizontalmente el gráfico dentro de su contenedor */
+            display: block; /* Asegura que el gráfico sea un elemento de bloque */
+        }
+
     </style>
 
     <!-- Estilos de la forma imprimir y descargar Pdf -->
