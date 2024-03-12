@@ -250,15 +250,14 @@
     <script src="{{ asset('js/Graficos/Sistema/grafico2.js') }}"></script>
 
     <!-- Script para Imprimir/Descargar Pdf -->
-        <script>
-            document.addEventListener('DOMContentLoaded', function () {
-                const printButton = document.getElementById('print-button');
-                printButton.addEventListener('click', function () {
-                    window.print();
-                });
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const printButton = document.getElementById('print-button');
+            printButton.addEventListener('click', function () {
+                window.print();
             });
-        </script>
-
+        });
+    </script>
 
     <!-- Script para la descargar de los graficos -->
     <script>
