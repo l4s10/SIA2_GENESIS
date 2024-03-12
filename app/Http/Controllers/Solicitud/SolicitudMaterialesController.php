@@ -154,94 +154,192 @@ class SolicitudMaterialesController extends Controller
 
     /**
      * Update the specified resource in storage.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  string  $id
+     * @return \Illuminate\Http\RedirectResponse
      */
     public function update(Request $request, string $id)
     {
-        // try-catch
-        try{
-            // Obtener la solicitud
+        try {
             $solicitud = Solicitud::has('materiales')->findOrFail($id);
 
-             // Determinar la acción basada en el botón presionado
             switch ($request->input('action')) {
                 case 'guardar':
-                    // Lógica para guardar cambios
-                    $solicitud->update(['SOLICITUD_ESTADO' => 'EN REVISION']);
-                break;
-
-                case 'finalizar_revision':
-                    // Lógica para finalizar la revisión
-                    $solicitud->update(['SOLICITUD_ESTADO' => 'AUTORIZADO']);
-                break;
-
-                case 'rechazar':
-                    // verificar al menos que haya una observacion (motivo del rechazo) con validator
-                    $validator = Validator::make($request->all(),[
-                        'REVISION_SOLICITUD_OBSERVACION' => 'required|string|max:255',
-                    ], [
-                        //Mensajes de error
-                        'REVISION_SOLICITUD_OBSERVACION.required' => 'Indique el motivo del rechazo.',
-                        'REVISION_SOLICITUD_OBSERVACION.string' => 'El campo Observación debe ser una cadena de caracteres.',
-                    ]);
-                    // Si la validación falla, se redirecciona al formulario con los errores
+                    $validator = $this->validateGuardar($request);
                     if ($validator->fails()) {
                         return redirect()->back()->withErrors($validator)->withInput();
                     }
-                    // Lógica para rechazar la solicitud
-                    $solicitud->update(['SOLICITUD_ESTADO' => 'RECHAZADO']);
-                    // Guardar la observacion del rechazo
-                    $this->createRevisionSolicitud($request, $solicitud);
-                    // redireccionar a la vista de solicitudes con un mensaje de éxito
-                    return redirect()->route('solicitudes.materiales.index')->with('success', 'Solicitud rechazada exitosamente');
-                break;
+                    $this->updateSolicitud($request, $solicitud, 'EN REVISION');
+                    break;
 
-                // default:
-                    // Lógica por defecto o para casos no contemplados
-                    // break;
-            }
-            // Valida los datos del formulario de solicitud de equipos.
-            $validator = Validator::make($request->all(),[
-                // 'SOLICITUD_ESTADO' => 'required|string|max:255|in:INGRESADO,EN REVISION,APROBADO,RECHAZADO,TERMINADO',
-                'SOLICITUD_FECHA_HORA_INICIO_ASIGNADA' => 'required|date',
-                'SOLICITUD_FECHA_HORA_TERMINO_ASIGNADA' => 'required|date|after:SOLICITUD_FECHA_HORA_INICIO_ASIGNADA',
+                case 'finalizar_revision':
+                    $validator = $this->validateFinalizarRevision($request);
+                    if ($validator->fails()) {
+                        return redirect()->back()->withErrors($validator)->withInput();
+                    }
+                    $this->updateSolicitud($request, $solicitud, 'AUTORIZADO');
+                    $this->autorizarMateriales($request, $solicitud);
+                    break;
 
-                'REVISION_SOLICITUD_OBSERVACION' => 'required|string|max:255',
-                'autorizar.*' => 'required|numeric|min:0', // Asegura que todos los valores en el array sean numéricos y no negativos
-            ], [
-                //Mensajes de error
-                'required' => 'El campo :attribute es requerido.',
-                'date' => 'El campo :attribute debe ser una fecha.',
-                'after' => 'El campo :attribute debe ser una fecha posterior a la fecha de inicio solicitada.',
-                'string' => 'El campo :attribute debe ser una cadena de caracteres.',
-                'in' => 'El campo :attribute debe ser uno de los valores: INGRESADO, EN REVISION, APROBADO, RECHAZADO, TERMINADO',
-                'numeric' => 'El campo :attribute debe ser un número.',
-                'min' => 'El campo :attribute debe ser un número no negativo.'
-            ]);
+                case 'rechazar':
+                        $validator = $this->validateRechazar($request);
+                        if ($validator->fails()) {
+                            return redirect()->back()->withErrors($validator)->withInput();
+                        }
+                        $this->updateSolicitud($request, $solicitud, 'RECHAZADO');
+                        $this->createRevisionSolicitud($request, $solicitud);
+                        return $this->redirectSuccess('Solicitud rechazada exitosamente');
+                    break;
 
-            // Si la validación falla, redirige al formulario con los errores y el input antiguo
-            if ($validator->fails()) {
-                return redirect()->back()->withErrors($validator)->withInput();
+                default:
+                    // Lógica por defecto si se requiere
+                    break;
             }
 
-            // Actualizar la solicitud
-            $solicitud->update([
-                // 'SOLICITUD_ESTADO' => $request->input('SOLICITUD_ESTADO'),
-                'SOLICITUD_FECHA_HORA_INICIO_ASIGNADA' => $request->input('SOLICITUD_FECHA_HORA_INICIO_ASIGNADA'),
-                'SOLICITUD_FECHA_HORA_TERMINO_ASIGNADA' => $request->input('SOLICITUD_FECHA_HORA_TERMINO_ASIGNADA'),
-            ]);
-
-            // Autorizar los materiales si corresponde
-            $this->autorizarMateriales($request, $solicitud);
-
-            // crear la reviison de la solicitud
             $this->createRevisionSolicitud($request, $solicitud);
-
-            // Redireccion a la vista index de solicitud de materiales, con el mensaje de exito.
-            return redirect()->route('solicitudes.materiales.index')->with('success', 'Solicitud actualizada exitosamente');
-        }catch(Exception $e){
-            // Manejo de excepciones
-            return redirect()->route('solicitudes.materiales.index')->with('error', 'Error al validar los datos.');
+            return $this->redirectSuccess('Solicitud actualizada exitosamente');
+        } catch (Exception $e) {
+            return $this->redirectError('Error al validar los datos.');
         }
+    }
+
+    /**
+     * Validates the 'guardar' action of the solicitud.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Contracts\Validation\Validator
+     */
+    private function validateGuardar($request)
+    {
+        // Code for validating 'guardar'
+        // Validates at least one observation of the solicitud, optionally the assignment dates and authorized quantities of the materials (ONLY IF ENTERED)
+        $validator = Validator::make($request->all(),[
+            'REVISION_SOLICITUD_OBSERVACION' => 'required|string|max:255',
+            'SOLICITUD_FECHA_HORA_INICIO_ASIGNADA' => 'required|date',
+            'SOLICITUD_FECHA_HORA_TERMINO_ASIGNADA' => 'required|date|after:SOLICITUD_FECHA_HORA_INICIO_ASIGNADA',
+            'autorizar.*' => 'nullable|numeric|min:0',
+        ], [
+            // Error messages
+            'REVISION_SOLICITUD_OBSERVACION.required' => 'Indicate the reason for the revision.',
+            'REVISION_SOLICITUD_OBSERVACION.string' => 'The Observation field must be a string.',
+            'REVISION_SOLICITUD_OBSERVACION.max' => 'The Observation field must not exceed 255 characters.',
+            'SOLICITUD_FECHA_HORA_INICIO_ASIGNADA.required' => 'The Start Date Assigned field is required.',
+            'SOLICITUD_FECHA_HORA_INICIO_ASIGNADA.date' => 'The Start Date Assigned field must be a date.',
+            'SOLICITUD_FECHA_HORA_TERMINO_ASIGNADA.required' => 'The End Date Assigned field is required.',
+            'SOLICITUD_FECHA_HORA_TERMINO_ASIGNADA.date' => 'The End Date Assigned field must be a date.',
+            'SOLICITUD_FECHA_HORA_TERMINO_ASIGNADA.after' => 'The End Date Assigned field must be a date after the requested start date.',
+            'autorizar.*.nullable' => 'The Authorized Quantity field must be null or a number.',
+            'autorizar.*.numeric' => 'The Authorized Quantity field must be a number.',
+            'autorizar.*.min' => 'The Authorized Quantity field cannot be negative.',
+        ]);
+
+        return $validator;
+    }
+
+    /**
+     * Validates the 'finalizar_revision' action of the solicitud.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Contracts\Validation\Validator
+     */
+    private function validateFinalizarRevision($request)
+    {
+        // Code for validating 'finalizar_revision'
+        $validator = Validator::make($request->all(),[
+            // 'SOLICITUD_ESTADO' => 'required|string|max:255|in:INGRESADO,EN REVISION,APROBADO,RECHAZADO,TERMINADO',
+            'SOLICITUD_FECHA_HORA_INICIO_ASIGNADA' => 'required|date',
+            'SOLICITUD_FECHA_HORA_TERMINO_ASIGNADA' => 'required|date|after:SOLICITUD_FECHA_HORA_INICIO_ASIGNADA',
+
+            'REVISION_SOLICITUD_OBSERVACION' => 'required|string|max:255',
+            'autorizar.*' => 'required|numeric|min:0', // Ensures that all values in the array are numeric and non-negative
+        ], [
+            // Error messages
+            'required' => 'The :attribute field is required.',
+            'date' => 'The :attribute field must be a date.',
+            'after' => 'The :attribute field must be a date after the requested start date.',
+            'string' => 'The :attribute field must be a string.',
+            'in' => 'The :attribute field must be one of the values: INGRESADO, EN REVISION, APROBADO, RECHAZADO, TERMINADO',
+            'numeric' => 'The :attribute field must be a number.',
+            'min' => 'The :attribute field must be a non-negative number.'
+        ]);
+
+        return $validator;
+    }
+
+    /**
+     * Validates the 'rechazar' action of the solicitud.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Contracts\Validation\Validator
+     */
+    private function validateRechazar($request)
+    {
+        // Code for validating 'rechazar'
+        // Should return true or false depending on the validation result
+        // Verify at least one observation (reason for rejection) with validator
+        $validator = Validator::make($request->all(),[
+            'REVISION_SOLICITUD_OBSERVACION' => 'required|string|max:255',
+            'SOLICITUD_FECHA_HORA_INICIO_ASIGNADA' => 'nullable|date',
+            'SOLICITUD_FECHA_HORA_TERMINO_ASIGNADA' => 'nullable|date|after:SOLICITUD_FECHA_HORA_INICIO_ASIGNADA',
+            'autorizar.*' => 'nullable|numeric|min:0',
+
+        ], [
+            // Error messages
+            'REVISION_SOLICITUD_OBSERVACION.required' => 'Indicate the reason for the rejection.',
+            'REVISION_SOLICITUD_OBSERVACION.string' => 'The Observation field must be a string.',
+            'REVISION_SOLICITUD_OBSERVACION.max' => 'The Observation field must not exceed 255 characters.',
+            'SOLICITUD_FECHA_HORA_INICIO_ASIGNADA.date' => 'The Start Date Assigned field must be a date.',
+            'SOLICITUD_FECHA_HORA_TERMINO_ASIGNADA.date' => 'The End Date Assigned field must be a date.',
+            'SOLICITUD_FECHA_HORA_TERMINO_ASIGNADA.after' => 'The End Date Assigned field must be a date after the requested start date.',
+            'autorizar.*.nullable' => 'The Authorized Quantity field must be null or a number.',
+            'autorizar.*.numeric' => 'The Authorized Quantity field must be a number.',
+            'autorizar.*.min' => 'The Authorized Quantity field cannot be negative.',
+        ]);
+
+        return $validator;
+    }
+
+    /**
+     * Updates the solicitud (request) with the given data and state.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  \App\Models\Solicitud  $solicitud
+     * @param  string  $estado
+     * @return void
+     */
+    private function updateSolicitud($request, $solicitud, $estado)
+    {
+        // Common logic for updating the solicitud
+        $solicitud->update([
+            'SOLICITUD_ESTADO' => $estado,
+            'SOLICITUD_FECHA_HORA_INICIO_ASIGNADA' => $request->input('SOLICITUD_FECHA_HORA_INICIO_ASIGNADA'),
+            'SOLICITUD_FECHA_HORA_TERMINO_ASIGNADA' => $request->input('SOLICITUD_FECHA_HORA_TERMINO_ASIGNADA'),
+        ]);
+    }
+
+    /**
+     * Redirects to the index page for materials requests with a success message.
+     *
+     * @param string $message The success message to be displayed.
+     * @return \Illuminate\Http\RedirectResponse The redirect response to the index page with the success message.
+     */
+    private function redirectSuccess($message)
+    {
+        // Redirigir con mensaje de éxito
+        return redirect()->route('solicitudes.materiales.index')->with('success', $message);
+    }
+
+    /**
+     * Redirects to the index page of the materials request with an error message.
+     *
+     * @param string $message The error message to be displayed.
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    private function redirectError($message)
+    {
+        // Redirigir con mensaje de error
+        return redirect()->route('solicitudes.materiales.index')->with('error', $message);
     }
 
     /**
