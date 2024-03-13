@@ -23,7 +23,7 @@
         <div class="mb-3 form-group">
             <label for="REGION_ID"><i class="fa-solid fa-book-bookmark"></i> Región asociada:</label>
             <select name="REGION_ID" id="REGION_ID" class="form-control @error('REGION_ID') is-invalid @enderror" required>
-                <option value="" disabled selected>Selecciona una región</option>
+                <option value="" disabled selected>-- Seleccione una región --</option>
                 @foreach($regiones as $region)
                     <option value="{{ $region->REGION_ID }}" {{ old('REGION_ID') == $region->REGION_ID ? 'selected' : '' }}>{{ $region->REGION_NOMBRE }}</option>
                 @endforeach
