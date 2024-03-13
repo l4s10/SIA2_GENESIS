@@ -102,7 +102,7 @@
             <div class="modal-content">
                 <div class="modal-header">
                 <h5 class="modal-title" id="cantidadModalLabel">Agregar material</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                {{-- <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button> --}}
                 </div>
                 <form id="formAgregarCarrito" method="POST">
                 @csrf
