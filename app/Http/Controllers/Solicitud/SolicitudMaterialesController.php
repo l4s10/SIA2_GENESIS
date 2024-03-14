@@ -106,7 +106,7 @@ class SolicitudMaterialesController extends Controller
                     // Agrega el material a la solicitud con la cantidad del carrito
                     $solicitud->materiales()->attach($material, [
                         'SOLICITUD_MATERIAL_CANTIDAD' => $cartItem->qty,
-                        'SOLICITUD_EQUIPOS_CANTIDAD_AUTORIZADA' => 0 // Valor predeterminado
+                        'SOLICITUD_MATERIAL_CANTIDAD_AUTORIZADA' => 0 // Valor predeterminado
                     ]);
                 }
                 // Limpia el carrito después de agregar los materiales a la solicitud
