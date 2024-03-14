@@ -373,28 +373,28 @@ class ReportesSalasController extends Controller
                 ->select(DB::raw('AVG(DATEDIFF(revisiones_solicitudes.created_at, solicitudes.created_at)) as promedio_creacion_atencion'))
                 ->first();
 
-            // Promedio atencion desde revision a "APROBADO"/"RECHAZADO"
-            // Filtrar solicitudes de salas en estado "APROBADO" o "RECHAZADO"
-            // Comparar fechas: fecha de creacion de la ULTIMA revisiones_solicitudes con la fecha de aprobacion/rechazo de la solicitud persé
+            // Promedio atencion desde revision a aprobado/rechazado
+            // Filtrar solicitudes equipos en estado "APROBADO" o "RECHAZADO"
+            // Comparar fechas: fecha de creacion de la PRIMERA revisiones_solicitudes con la fecha de aprobacion/rechazo de la solicitud persé
             $promedioRevisionAprobacion = SolicitudSala::query()
-                ->join('solicitudes', 'solicitudes_salas.SOLICITUD_ID', '=', 'solicitudes.SOLICITUD_ID')
-                ->join('revisiones_solicitudes', function ($join) {
-                    $join->on('solicitudes.SOLICITUD_ID', '=', 'revisiones_solicitudes.SOLICITUD_ID')
-                        ->where('revisiones_solicitudes.created_at', function ($subquery) {
-                            $subquery->select(DB::raw('MAX(created_at)'))
-                                ->from('revisiones_solicitudes')
-                                ->whereColumn('revisiones_solicitudes.SOLICITUD_ID', '=', 'solicitudes.SOLICITUD_ID');
-                        });
-                })
-                ->join('users', 'solicitudes.USUARIO_id', '=', 'users.id')
-                ->where('users.OFICINA_ID', $oficinaId)
-                ->where('solicitudes.SOLICITUD_ESTADO', 'APROBADO')
-                ->orWhere('solicitudes.SOLICITUD_ESTADO', 'RECHAZADO')
-                ->when($fechaInicio && $fechaFin, function ($query) use ($fechaInicio, $fechaFin) {
-                    return $query->whereBetween('solicitudes.created_at', [$fechaInicio, $fechaFin]);
-                })
-                ->select(DB::raw('AVG(DATEDIFF(solicitudes.SOLICITUD_FECHA_HORA_INICIO_ASIGNADA, revisiones_solicitudes.created_at)) as promedio_revision_aprobacion'))
-                ->first();
+            ->join('solicitudes', 'solicitudes_salas.SOLICITUD_ID', '=', 'solicitudes.SOLICITUD_ID')
+            ->join('revisiones_solicitudes', function ($join) {
+                $join->on('solicitudes.SOLICITUD_ID', '=', 'revisiones_solicitudes.SOLICITUD_ID')
+                    ->where('revisiones_solicitudes.created_at', function ($subquery) {
+                        $subquery->select(DB::raw('MIN(created_at)')) // Usamos MIN para obtener la primera revisión
+                            ->from('revisiones_solicitudes')
+                            ->whereColumn('revisiones_solicitudes.SOLICITUD_ID', '=', 'solicitudes.SOLICITUD_ID')
+                            ->groupBy('revisiones_solicitudes.SOLICITUD_ID'); // Asegurarse de agrupar por ID de solicitud para obtener el mínimo correcto
+                    });
+            })
+            ->join('users', 'solicitudes.USUARIO_id', '=', 'users.id')
+            ->where('users.OFICINA_ID', $oficinaId)
+            ->whereIn('solicitudes.SOLICITUD_ESTADO', ['APROBADO', 'RECHAZADO'])
+            ->when($fechaInicio && $fechaFin, function ($query) use ($fechaInicio, $fechaFin) {
+                return $query->whereBetween(DB::raw('DATE(solicitudes.created_at)'), [$fechaInicio, $fechaFin]);
+            })
+            ->select(DB::raw('AVG(DATEDIFF(solicitudes.updated_at, revisiones_solicitudes.created_at)) as promedio_revision_aprobacion'))
+            ->first();
 
             // Promedio atencion desde a"APROBADO"/"RECHAZADO" a "TERMINADO"
             // Filtrar solicitudes materiales en estado "TERMINADO"
