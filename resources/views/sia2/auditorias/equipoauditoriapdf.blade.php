@@ -26,9 +26,17 @@
         th {
             background-color: #0064a0;
         }
+
         thead {
-        color: #fff;
+            color: #fff;
+            font-size: 12px; /* Tamaño de fuente más pequeño */
         }
+
+        /* Estilo para el cuerpo de la tabla */
+        tbody {
+            font-size: 12px;
+        }
+
         .background {
         background-position: center;
         background-image: url('data:image/jpg;base64,{!! base64_encode(file_get_contents($imagePath2)) !!}') ;
@@ -62,23 +70,29 @@
         <table>
             <thead>
                 <tr>
+                    <th>Titular</th>
                     <th>Objeto</th>
                     <th>Tipo de objeto</th>
                     <th>Tipo de movimiento</th>
                     <th>Cantidad previa</th>
                     <th>Cantidad a modificar</th>
                     <th>Cantidad resultante</th>
+                    <th>Detalle</th>
+                    <th>Fecha de movimiento</th>
                 </tr>
             </thead>
             <tbody>
                 @foreach ($auditorias as $auditoria)
                     <tr>
+                        <td>{{ $auditoria->MOVIMIENTO_TITULAR }}</td>
                         <td>{{ $auditoria->MOVIMIENTO_OBJETO }}</td>
                         <td>{{ $auditoria->MOVIMIENTO_TIPO_OBJETO }}</td>
                         <td>{{ $auditoria->MOVIMIENTO_TIPO }}</td>
                         <td>{{ $auditoria->MOVIMIENTO_STOCK_PREVIO }}</td>
                         <td>{{ $auditoria->MOVIMIENTO_CANTIDAD_A_MODIFICAR }}</td>
                         <td>{{ $auditoria->MOVIMIENTO_STOCK_RESULTANTE }}</td>
+                        <td>{{ $auditoria->MOVIMIENTO_DETALLE }}</td>
+                        <td>{{date_format($auditoria->created_at, 'd-m-Y H:i:s')}}</td>
                     </tr>
                 @endforeach
             </tbody>
