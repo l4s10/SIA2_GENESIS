@@ -44,7 +44,7 @@
                 <div class="col-md-4">
                     <div class="form-group">
                         <label for="USUARIO_RUT"><i class="fa-solid fa-id-card"></i> Rut</label>
-                        <input type="text" name="USUARIO_RUT" id="USUARIO_RUT" class="form-control" placeholder="Ej: 12345678-9 (sin puntos y con guión)" value="{{ old('USUARIO_RUT') }}" required>
+                        <input type="text" name="USUARIO_RUT" id="USUARIO_RUT" class="form-control @error('USUARIO_RUT') is-invalid @enderror" placeholder="Ej: 12345678-9" value="{{ old('USUARIO_RUT') }}" required>
 
                         @error('USUARIO_RUT')
                             <span class="invalid-feedback" role="alert">
@@ -185,6 +185,7 @@
                         </optgroup>
                     </select>
                 </div>
+                <input type="hidden" name="tipo_dependencia" id="tipo_dependencia" value="">
             </div>
 
             {{-- Datos de asociación --}}
@@ -252,7 +253,7 @@
                     <div class="form-group">
                         <label for="ESCALAFON_ID"><i class="fa-solid fa-layer-group"></i> Escalafón</label>
                         <select name="ESCALAFON_ID" id="ESCALAFON_ID" class="form-control @error('ESCALAFON_ID') is-invalid @enderror" required>
-                            <option value="" style="text-align: center;" selected disabled>-- Seleccione un escalafon --</option>
+                            <option value="" style="text-align: center;" selected disabled>-- Seleccione un escalafón --</option>
                             @foreach($escalafones as $escalafon)
                                 <option value="{{ $escalafon->ESCALAFON_ID }}" data-oficina="{{ $escalafon->OFICINA_ID }}">{{ $escalafon->ESCALAFON_NOMBRE }}</option>
                             @endforeach
@@ -273,7 +274,7 @@
                     <div class="form-group">
                         <label for="CARGO_ID"><i class="fa-solid fa-person-circle-check"></i> Cargo</label>
                         <select name="CARGO_ID" id="CARGO_ID" class="form-control" required>
-                            <option value="" style="text-align: center;" disabled selected>-- Selecciona un cargo --</option>
+                            <option value="" style="text-align: center;" disabled selected>-- Seleccione un cargo --</option>
                             @foreach ($cargos as $cargo)
                                 <option value="{{$cargo->CARGO_ID}}" data-oficina="{{ $cargo->OFICINA_ID }}" >{{$cargo->CARGO_NOMBRE}}</option>
                             @endforeach
@@ -333,7 +334,7 @@
                     <div class="form-group">
                         <label for="role"><i class="fa-solid fa-address-book"></i> Rol en sistema</label>
                         <select name="role" id="role" class="form-control" required>
-                            <option value="" style="text-align: center;" disabled selected>-- Selecciona un rol --</option>
+                            <option value="" style="text-align: center;" disabled selected>-- Seleccione un rol --</option>
                             @foreach ($roles as $role)
                                 <option value="{{ $role->id }}">{{ $role->name }}</option>
                             @endforeach
@@ -367,49 +368,57 @@
             const selectores = document.querySelectorAll('#dependencia, #GRUPO_ID, #GRADO_ID, #ESCALAFON_ID, #CARGO_ID');
             const opcionesOriginales = {};
             
+            // Almacenar las opciones originales de cada selector
             selectores.forEach(selector => {
                 opcionesOriginales[selector.id] = Array.from(selector.querySelectorAll('optgroup, option'));
                 selector.disabled = true;
             });
             
-            const oficinaSelector = document.getElementById('oficina');
-            oficinaSelector.addEventListener('change', function() {
-                const selectedOficina = this.value;
-                if (selectedOficina !== '') {
+            const selectorOficina = document.getElementById('oficina');
+            selectorOficina.addEventListener('change', function() {
+                const oficinaSeleccionada = this.value;
+                if (oficinaSeleccionada !== '') {
+                    // Habilitar todos los selectores
                     selectores.forEach(selector => {
                         selector.disabled = false;
                     });
     
+                    // Filtrar las opciones de cada selector según la oficina seleccionada
                     selectores.forEach(selector => {
-                        const filteredOptions = [];
-                        const addedGroups = new Set();
-                        const uniqueOptions = new Set(); // Conjunto global para evitar duplicados en todo el selector
-                        opcionesOriginales[selector.id].forEach(option => {
-                            if (option.tagName.toLowerCase() === 'optgroup') {
-                                const clonedGroup = option.cloneNode(false);
-                                const filteredGroupOptions = Array.from(option.querySelectorAll('option')).filter(opt => opt.dataset.oficina === selectedOficina || opt.dataset.oficina === undefined);
-                                if (filteredGroupOptions.length > 0 && !addedGroups.has(clonedGroup.label)) {
-                                    filteredGroupOptions.forEach(filteredOption => {
-                                        if (!uniqueOptions.has(filteredOption.value)) {
-                                            clonedGroup.appendChild(filteredOption.cloneNode(true));
-                                            uniqueOptions.add(filteredOption.value);
+                        const opcionesFiltradas = [];
+                        const gruposAñadidos = new Set();
+                        const opcionesÚnicas = new Set(); // Conjunto global para evitar duplicados en todo el selector
+                        opcionesOriginales[selector.id].forEach(opcion => {
+                            if (opcion.tagName.toLowerCase() === 'optgroup') {
+                                // Clonar grupos de opciones
+                                const grupoClonado = opcion.cloneNode(false);
+                                // Filtrar opciones dentro del grupo según la oficina seleccionada
+                                const opcionesGrupoFiltradas = Array.from(opcion.querySelectorAll('option')).filter(opt => opt.dataset.oficina === oficinaSeleccionada || opt.dataset.oficina === undefined);
+                                if (opcionesGrupoFiltradas.length > 0 && !gruposAñadidos.has(grupoClonado.label)) {
+                                    opcionesGrupoFiltradas.forEach(opcionFiltrada => {
+                                        if (!opcionesÚnicas.has(opcionFiltrada.value)) {
+                                            grupoClonado.appendChild(opcionFiltrada.cloneNode(true));
+                                            opcionesÚnicas.add(opcionFiltrada.value);
                                         }
                                     });
-                                    filteredOptions.push(clonedGroup);
-                                    addedGroups.add(clonedGroup.label);
+                                    opcionesFiltradas.push(grupoClonado);
+                                    gruposAñadidos.add(grupoClonado.label);
                                 }
                             } else {
-                                if (option.dataset.oficina === selectedOficina || option.dataset.oficina === undefined) {
-                                    if (!uniqueOptions.has(option.value)) {
-                                        filteredOptions.push(option.cloneNode(true));
-                                        uniqueOptions.add(option.value);
+                                // Filtrar opciones individuales según la oficina seleccionada
+                                if (opcion.dataset.oficina === oficinaSeleccionada || opcion.dataset.oficina === undefined) {
+                                    if (!opcionesÚnicas.has(opcion.value)) {
+                                        opcionesFiltradas.push(opcion.cloneNode(true));
+                                        opcionesÚnicas.add(opcion.value);
                                     }
                                 }
                             }
                         });
-                        actualizarOpciones(selector, filteredOptions);
+                        // Actualizar las opciones del selector
+                        actualizarOpciones(selector, opcionesFiltradas);
                     });
                 } else {
+                    // Si no se selecciona ninguna oficina, deshabilitar todos los selectores y restaurar las opciones originales
                     selectores.forEach(selector => {
                         selector.disabled = true;
                         actualizarOpciones(selector, opcionesOriginales[selector.id]);
@@ -418,13 +427,28 @@
             });
         });
     
-        function actualizarOpciones(selector, options) {
+        // Función para actualizar las opciones de un selector
+        function actualizarOpciones(selector, opciones) {
             selector.innerHTML = '';
-            options.forEach(option => {
-                selector.appendChild(option);
+            opciones.forEach(opcion => {
+                selector.appendChild(opcion);
             });
         }
     </script>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            var selectDependencia = document.getElementById("dependencia");
+            var hiddenTipoDependencia = document.getElementById("tipo_dependencia");
+
+            selectDependencia.addEventListener("change", function() {
+                var tipoDependencia = selectDependencia.options[selectDependencia.selectedIndex].parentNode.label;
+                hiddenTipoDependencia.value = tipoDependencia;
+            });
+        });
+    </script>
+    
+    
     
     
     

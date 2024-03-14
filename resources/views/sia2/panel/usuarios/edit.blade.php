@@ -5,23 +5,24 @@
 
 <!-- CABECERA DE LA PAGINA -->
 @section('content_header')
-    <h1>Editar funcionario</h1>
+    <h1>Editar Funcionario</h1>
 @stop
 
 @section('content')
     <div class="container">
-        <form action="{{ route('funcionarios.update', $funcionario->id) }}" method="post">
+        <form action="{{ route('panel.usuarios.update', $usuario->id) }}" method="post">
             @csrf
             @method('PUT')
 
             {{-- Datos de la persona --}}
-            <h4>Datos de la persona</h4>
+            <br>
+            <h4>Datos de Personales</h4>
             <div class="row">
-                <div class="col">
+                <div class="col-md-4">
                     <div class="form-group">
-                        <label for="NOMBRES"><i class="fa-solid fa-address-card"></i> Nombres</label>
-                        <input type="text" name="NOMBRES" id="NOMBRES" class="form-control @error('nombres') is-invalid @enderror" placeholder="Nombres" value="{{ $funcionario->NOMBRES }}" required autofocus>
-                        @error('NOMBRES')
+                        <label for="USUARIO_NOMBRES"><i class="fa-solid fa-id-card"></i> Nombres</label>
+                        <input type="text" name="USUARIO_NOMBRES" id="USUARIO_NOMBRES" class="form-control @error('USUARIO_NOMBRES') is-invalid @enderror" placeholder="Ej: Primer nombre Segundo nombre" value="{{ $usuario->USUARIO_NOMBRES }}" required autofocus>
+                        @error('USUARIO_NOMBRES')
                             <span class="invalid-feedback" role="alert">
                                 <strong>{{ $message }}</strong>
                             </span>
@@ -29,11 +30,23 @@
                     </div>
                 </div>
 
-                <div class="col">
+                <div class="col-md-4">
                     <div class="form-group">
-                        <label for="APELLIDOS"><i class="fa-solid fa-address-card"></i> Apellidos</label>
-                        <input type="text" name="APELLIDOS" id="APELLIDOS" class="form-control @error('APELLIDOS') is-invalid @enderror" placeholder="Apellido Paterno Apellido Materno" value="{{ $funcionario->APELLIDOS }}" required autofocus>
-                        @error('APELLIDOS')
+                        <label for="USUARIO_APELLIDOS"><i class="fa-solid fa-id-card"></i> Apellidos</label>
+                        <input type="text" name="USUARIO_APELLIDOS" id="USUARIO_APELLIDOS" class="form-control @error('USUARIO_APELLIDOS') is-invalid @enderror" placeholder="Ej: Apellido Paterno Apellido Materno" value="{{ $usuario->USUARIO_APELLIDOS }}" required autofocus>
+                        @error('USUARIO_APELLIDOS')
+                            <span class="invalid-feedback" role="alert">
+                                <strong>{{ $message }}</strong>
+                            </span>
+                        @enderror
+                    </div>
+                </div>
+
+                <div class="col-md-4">
+                    <div class="form-group">
+                        <label for="USUARIO_RUT"><i class="fa-solid fa-id-card"></i> Rut</label>
+                        <input type="text" name="USUARIO_RUT" id="USUARIO_RUT" class="form-control @error('USUARIO_RUT') is-invalid @enderror" placeholder="Ej: 12345678-9" value="{{ $usuario->USUARIO_RUT }}" required>
+                        @error('USUARIO_RUT')
                             <span class="invalid-feedback" role="alert">
                                 <strong>{{ $message }}</strong>
                             </span>
@@ -44,10 +57,40 @@
 
             {{-- Correo electrónico --}}
             <div class="row">
-                <div class="col">
+                <div class="col-md-3">
+                    {{-- Fecha de nacimiento field --}}
+                    <div class="form-group">
+                        <label for="USUARIO_FECHA_NAC"><i class="fa-solid fa-calendar-days"></i> Fecha de nacimiento</label>
+                        <input type="date" id="USUARIO_FECHA_NAC" name="USUARIO_FECHA_NAC" class="form-control @error('USUARIO_FECHA_NAC') is-invalid @enderror" value="{{ $usuario->USUARIO_FECHA_NAC }}" required style="text-align: center;">
+                        @error('USUARIO_FECHA_NAC')
+                            <span class="invalid-feedback" role="alert">
+                                <strong>{{ $message }}</strong>
+                            </span>
+                        @enderror
+                    </div>
+                </div>
+
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <label for="USUARIO_SEXO"><i class="fa-solid fa-person-half-dress"></i> Sexo</label>
+                        <select name="USUARIO_SEXO" class="form-control @error('USUARIO_SEXO') is-invalid @enderror" required>
+                            <option value="" style="text-align: center;" selected disabled>{{ __('-- Seleccione una opción --') }}</option>
+                            <option value="FEMENINO" {{ $usuario->USUARIO_SEXO == 'FEMENINO' ? 'selected' : '' }}>{{ __('FEMENINO') }}</option>
+                            <option value="MASCULINO" {{ $usuario->USUARIO_SEXO == 'MASCULINO' ? 'selected' : '' }}>{{ __('MASCULINO') }}</option>
+                            <option value="OTRO" {{ $usuario->USUARIO_SEXO == 'OTRO' ? 'selected' : '' }}>{{ __('OTRO') }}</option>
+                        </select>
+                        @error('USUARIO_SEXO')
+                            <span class="invalid-feedback" role="alert">
+                                <strong>{{ $message }}</strong>
+                            </span>
+                        @enderror
+                    </div>
+                </div>
+
+                <div class="col-md-3">
                     <div class="form-group">
                         <label for="email"><i class="fa-solid fa-envelope"></i> Email</label>
-                        <input type="email" name="email" id="email" class="form-control @error('email') is-invalid @enderror" value="{{ $funcionario->email }}" placeholder="funcionario@sii.cl" required>
+                        <input type="email" name="email" id="email" class="form-control @error('email') is-invalid @enderror" value="{{ $usuario->email }}" required>
                         @error('email')
                             <span class="invalid-feedback" role="alert">
                                 <strong>{{ $message }}</strong>
@@ -55,40 +98,13 @@
                         @enderror
                     </div>
                 </div>
-                <div class="col">
-                    <div class="form-group">
-                        <label for="RUT"><i class="fa-solid fa-id-card"></i> RUT</label>
-                        <input type="text" name="RUT" id="RUT" class="form-control" placeholder="RUT (sin puntos con guión)" value="{{ $funcionario->RUT }}" required>
-                        @error('RUT')
-                            <span class="invalid-feedback" role="alert">
-                                <strong>{{ $message }}</strong>
-                            </span>
-                        @enderror
-                    </div>
-                </div>
-            </div>
 
-            <div class="row">
-                <div class="col">
-                    {{-- Fecha de nacimiento field --}}
-                    <div class="form-group">
-                        <label for="FECHA_NAC"><i class="fa-solid fa-calendar-days"></i> Fecha de nacimiento</label>
-                        <input type="date" id="FECHA_NAC" name="FECHA_NAC" class="form-control @error('FECHA_NAC') is-invalid @enderror"
-                            value="{{ $funcionario->FECHA_NAC }}" placeholder="{{ __('Fecha de Nacimiento') }}" required autofocus>
-                        @error('FECHA_NAC')
-                            <span class="invalid-feedback" role="alert">
-                                <strong>{{ $message }}</strong>
-                            </span>
-                        @enderror
-                    </div>
-                </div>
-                <div class="col">
+                <div class="col-md-3">
                     {{-- Fecha de ingreso a la empresa field --}}
                     <div class="form-group">
-                        <label for="FECHA_INGRESO"><i class="fa-solid fa-calendar-days"></i> Fecha ingreso</label>
-                        <input type="date" id="FECHA_INGRESO" name="FECHA_INGRESO" class="form-control @error('FECHA_INGRESO') is-invalid @enderror"
-                            value="{{ $funcionario->FECHA_INGRESO }}" placeholder="{{ __('Fecha de Ingreso a la Empresa') }}" required autofocus>
-                        @error('FECHA_INGRESO')
+                        <label for="USUARIO_FECHA_INGRESO"><i class="fa-solid fa-calendar-days"></i> Fecha de ingreso al SII</label>
+                        <input type="date" id="USUARIO_FECHA_INGRESO" name="USUARIO_FECHA_INGRESO" class="form-control @error('USUARIO_FECHA_INGRESO') is-invalid @enderror" value="{{ $usuario->USUARIO_FECHA_INGRESO }}" required style="text-align: center;">
+                        @error('USUARIO_FECHA_INGRESO')
                             <span class="invalid-feedback" role="alert">
                                 <strong>{{ $message }}</strong>
                             </span>
@@ -97,192 +113,132 @@
                 </div>
             </div>
 
-            <div class="row">
-                <div class="col">
-                    {{-- Fono field --}}
-                    <div class="form-group">
-                        <label for="FONO"><i class="fa-solid fa-phone"></i> Fono</label>
-                        <input type="text" name="FONO" class="form-control @error('FONO') is-invalid @enderror"
-                            value="{{ $funcionario->FONO }}" placeholder="{{ __('Fono') }}" required autofocus>
-                        @error('FONO')
-                            <span class="invalid-feedback" role="alert">
-                                <strong>{{ $message }}</strong>
-                            </span>
-                        @enderror
-                    </div>
-                </div>
-                <div class="col">
-                    {{-- Anexo field --}}
-                    <div class="form-group">
-                        <label for="ANEXO"><i class="fa-regular fa-id-badge"></i> Anexo</label>
-                        <input type="text" name="ANEXO" class="form-control @error('ANEXO') is-invalid @enderror"
-                            value="{{ $funcionario->ANEXO }}" placeholder="{{ __('Anexo') }}" required autofocus>
-                        @error('ANEXO')
-                            <span class="invalid-feedback" role="alert">
-                                <strong>{{ $message }}</strong>
-                            </span>
-                        @enderror
-                    </div>
-                </div>
-            </div>
 
-            {{-- Sexo field --}}
-            <div class="form-group">
-                <label for="ID_SEXO"><i class="fa-solid fa-person-half-dress"></i> Sexo</label>
-                <select name="ID_SEXO" class="form-control @error('ID_SEXO') is-invalid @enderror" required>
-                    <option value="" disabled>Seleccione un sexo</option>
-                    @foreach ($sexos as $sexo)
-                        <option value="{{ $sexo->ID_SEXO }}" {{ $funcionario->ID_SEXO == $sexo->ID_SEXO ? 'selected' : '' }}>{{ $sexo->SEXO }}</option>
-                    @endforeach
-                </select>
-                @error('ID_SEXO')
-                    <span class="invalid-feedback" role="alert">
-                        <strong>{{ $message }}</strong>
-                    </span>
-                @enderror
-            </div>
             <br>
             {{-- Contraseña y confirmación de contraseña --}}
-            <h4>Configuración de la cuenta</h4>
+            <h4>Contraseña</h4>
             <div class="row">
                 <div class="col">
                     <div class="form-group">
-                        <label for="password"><i class="fa-solid fa-key"></i> Contraseña</label>
-                        <input type="password" name="password" id="password" class="form-control" placeholder="Contraseña (dejar en blanco si no desea cambiar)">
-                        @error('password')
-                            <span class="invalid-feedback" role="alert">
-                                <strong>{{ $message }}</strong>
-                            </span>
-                        @enderror
+                        <label for="password"><i class="fa-solid fa-key"></i> Nueva Contraseña</label>
+                        <input type="password" name="password" id="password" class="form-control" placeholder="Nueva Contraseña">
                     </div>
                 </div>
                 <div class="col">
                     <div class="form-group">
-                        <label for="password_confirmation"><i class="fa-solid fa-key"></i> Confirmar contraseña</label>
-                        <input type="password" name="password_confirmation" id="password_confirmation" class="form-control" placeholder="Confirmar contraseña (dejar en blanco si no desea cambiar)">
-                        @error('password_confirmation')
-                            <span class="invalid-feedback" role="alert">
-                                <strong>{{ $message }}</strong>
-                            </span>
-                        @enderror
+                        <label for="password_confirmation"><i class="fa-solid fa-key"></i> Confirmar nueva contraseña</label>
+                        <input type="password" name="password_confirmation" id="password_confirmation" class="form-control" placeholder="Confirmar nueva contraseña">
                     </div>
                 </div>
             </div>
-            {{-- !!ROL --}}
-            <div class="form-group">
-                <label for="role"><i class="fa-solid fa-address-book"></i> Rol en sistema</label>
-                <select name="role" id="role" class="form-control">
-                    @foreach ($roles as $role)
-                        <option value="{{ $role->id }}" {{ $funcionario->hasRole($role->name) ? 'selected' : '' }}>{{ $role->name }}</option>
-                    @endforeach
-                </select>
-            </div>
-            <br>
 
-            {{-- Ubicación --}}
-            <h4>Ubicación</h4>
+
+            {{-- !!REGION Y DIRECCION REGIONAL --}}
+            <br>
+            <h4>Dependencia Regional</h4>
             <div class="row">
-                <div class="col-md-4">
-                    <label for=""><i class="fa-solid fa-map-location-dot"></i> Región </label>
-                    <select id="region-select" class="form-control" name="ID_REGION" required>
-                        <option value="" >Selecciona una región</option>
-                        @foreach ($regiones as $region)
-                            <option value="{{ $region->ID_REGION }}" {{ $funcionario->ID_REGION == $region->ID_REGION ? 'selected' : '' }}>{{ $region->REGION }}</option>
+                <div class="form-group col-md-6">
+                    <label for="oficina"><i class="fa-solid fa-street-view"></i> Dirección regional:</label>
+                    <select id="oficina" name="oficina" class="form-control oficina" required>
+                        <option style="text-align: center;" value="">-- Seleccione una opción --</option>
+                        @foreach($oficinas as $oficina)
+                            <option value="{{ $oficina->OFICINA_ID }}" data-oficina="{{ $oficina->OFICINA_ID }}" {{ isset($usuario->oficina) && $usuario->oficina->OFICINA_ID == $oficina->OFICINA_ID ? 'selected' : '' }}>
+                                {{ $oficina->OFICINA_NOMBRE }}
+                            </option>
                         @endforeach
                     </select>
                 </div>
-            
-                <div class="col-md-4">
-                    <label for=""><i class="fa-solid fa-location-dot"></i> Jurisdicción</label>
-                    <select id="direccion-select" class="form-control" name="ID_DIRECCION" required>
-                        <option value="" >Selecciona una dirección regional</option>
-                        @if($funcionario->ubicacion && $funcionario->ubicacion->direccion)
-                            <option value="{{ $funcionario->ubicacion->direccion->ID_DIRECCION }}" selected>{{ $funcionario->ubicacion->direccion->DIRECCION }}</option>
-                        @endif
+                <div class="form-group col-md-6">
+                    <label for="dependencia"><i class="fa-solid fa-building-user"></i> Ubicación o departamento:</label>
+                    <select id="dependencia" name="dependencia" class="form-control dependencia" required>
+                        <option style="text-align: center;" value="">-- Seleccione una opción --</option>
+                        <optgroup label="Ubicaciones">
+                            @foreach($ubicaciones as $ubicacion)
+                                <option value="{{ $ubicacion->UBICACION_ID }}" data-oficina="{{ $ubicacion->OFICINA_ID }}" {{ isset($usuario->ubicacion) && $usuario->ubicacion->UBICACION_ID == $ubicacion->UBICACION_ID ? 'selected' : '' }}>
+                                    {{ $ubicacion->UBICACION_NOMBRE }}
+                                </option>
+                            @endforeach
+                        </optgroup>
+                        <optgroup label="Departamentos">
+                            @foreach($departamentos as $departamento)
+                                <option value="{{ $departamento->DEPARTAMENTO_ID }}" data-oficina="{{ $departamento->OFICINA_ID }}" {{ isset($usuario->departamento) && $usuario->departamento->DEPARTAMENTO_ID == $departamento->DEPARTAMENTO_ID ? 'selected' : '' }}>
+                                    {{ $departamento->DEPARTAMENTO_NOMBRE }}
+                                </option>
+                            @endforeach
+                        </optgroup>
                     </select>
                 </div>
-            
-                <div class="col-md-4">
-                    <label for=""><i class="fa-solid fa-street-view"></i> Ubicación/Departamento </label>
-                    <select id="ubicacion-select" class="form-control" name="ID_UBICACION" required>
-                        <option value="" >Selecciona una ubicación</option>
-                        @foreach ($ubicaciones as $ubicacion)
-                            <option value="{{ $ubicacion->ID_UBICACION }}" {{ $funcionario->ID_UBICACION == $ubicacion->ID_UBICACION ? 'selected' : '' }}>{{ $ubicacion->UBICACION }}</option>
-                        @endforeach
-                    </select>
-                </div>
-            </div>
-            <br>
+                <input type="hidden" name="tipo_dependencia" id="tipo_dependencia" value="">
 
-            {{-- !!Grupo --}}
+            </div>
+
+            {{-- Datos de asociación --}}
+            <br>
+            <h4>Datos de Asociación</h4>
             <div class="row">
-                <div class="col">
+                <div class="col-md-3">
                     {{-- Grupo field --}}
                     <div class="form-group">
-                        <label for="ID_GRUPO"><i class="fa-solid fa-user-group"></i> Grupo</label>
-                        <select name="ID_GRUPO" id="ID_GRUPO" class="form-control @error('ID_GRUPO') is-invalid @enderror" required autofocus>
-                            <option value="" >Seleccione un grupo</option>
+                        <label for="GRUPO_ID"><i class="fa-solid fa-user-group"></i> Grupo</label>
+                        <select name="GRUPO_ID" id="GRUPO_ID" class="form-control @error('GRUPO_ID') is-invalid @enderror" required autofocus>
+                            <option value="" style="text-align: center;" disabled selected>-- Seleccione un grupo --</option>
                             @foreach ($grupos as $grupo)
-                                <option value="{{ $grupo->ID_GRUPO }}" {{ $funcionario->ID_GRUPO == $grupo->ID_GRUPO ? 'selected' : '' }}>{{ $grupo->GRUPO }}</option>
+                                <option value="{{ $grupo->GRUPO_ID }}" data-oficina="{{ $grupo->OFICINA_ID }}" {{ $usuario->grupo->GRUPO_ID == $grupo->GRUPO_ID ? 'selected' : '' }}>{{ $grupo->GRUPO_NOMBRE }}</option>
                             @endforeach
                         </select>
-                        @error('ID_GRUPO')
+                        @error('GRUPO_ID')
                             <span class="invalid-feedback" role="alert">
                                 <strong>{{ $message }}</strong>
                             </span>
                         @enderror
                     </div>
                 </div>
-                <div class="col">
+
+                <div class="col-md-3">
                     {{-- Calidad Jurídica --}}
                     <div class="form-group">
-                        <label for="ID_CALIDAD_JURIDICA"><i class="fa-solid fa-pen-to-square"></i> Calidad Jurídica</label>
-                        <select name="ID_CALIDAD_JURIDICA" id="ID_CALIDAD_JURIDICA" class="form-control @error('ID_CALIDAD_JURIDICA') is-invalid @enderror" required autofocus>
-                            <option value="">Seleccionar</option>
-                            @foreach ($calidadesJuridicas as $calidadJuridica)
-                                <option value="{{ $calidadJuridica->ID_CALIDAD }}" {{ $funcionario->ID_CALIDAD_JURIDICA == $calidadJuridica->ID_CALIDAD ? 'selected' : '' }}>{{ $calidadJuridica->CALIDAD }}</option>
-                            @endforeach
+                        <label for="USUARIO_CALIDAD_JURIDICA"><i class="fa-solid fa-pen-to-square"></i> Calidad Jurídica</label>
+                        <select name="USUARIO_CALIDAD_JURIDICA" id="USUARIO_CALIDAD_JURIDICA" class="form-control @error('USUARIO_CALIDAD_JURIDICA') is-invalid @enderror" required>
+                            <option value="" style="text-align: center;" selected disabled>{{ __('-- Seleccione una opción --') }}</option>
+                            <option value="PLANTA" {{ $usuario->USUARIO_CALIDAD_JURIDICA == 'PLANTA' ? 'selected' : '' }}>{{ __('PLANTA') }}</option>
+                            <option value="CONTRATA" {{ $usuario->USUARIO_CALIDAD_JURIDICA == 'CONTRATA' ? 'selected' : '' }}>{{ __('CONTRATA') }}</option>
                         </select>
-                        @error('ID_CALIDAD_JURIDICA')
+                        @error('USUARIO_CALIDAD_JURIDICA')
                             <span class="invalid-feedback" role="alert">
                                 <strong>{{ $message }}</strong>
                             </span>
                         @enderror
                     </div>
                 </div>
-            </div>
-            <br>
-            {{-- Niveles --}}
-            <h4>Niveles</h4>
-            <div class="row">
-                <div class="col">
+
+                <div class="col-md-3">
                     {{-- Grado field --}}
                     <div class="form-group">
-                        <label for="ID_GRADO"><i class="fa-solid fa-layer-group"></i> Grado</label>
-                        <select name="ID_GRADO" class="form-control @error('ID_GRADO') is-invalid @enderror" required>
-                            <option value="" selected >Seleccione un grado</option>
+                        <label for="GRADO_ID"><i class="fa-solid fa-layer-group"></i> Grado</label>
+                        <select name="GRADO_ID" id="GRADO_ID" class="form-control @error('GRADO_ID') is-invalid @enderror" required>
+                            <option value="" style="text-align: center;" selected disabled>-- Seleccione un grado --</option>
                             @foreach($grados as $grado)
-                                <option value="{{ $grado->ID_GRADO }}" {{ $funcionario->ID_GRADO == $grado->ID_GRADO ? 'selected' : '' }}>{{ $grado->GRADO }}</option>
+                                <option value="{{ $grado->GRADO_ID }}" data-oficina="{{ $grado->OFICINA_ID }}" {{ $usuario->grado->GRADO_ID == $grado->GRADO_ID ? 'selected' : '' }}>{{ $grado->GRADO_NUMERO }}</option>
                             @endforeach
                         </select>
-                        @error('ID_GRADO')
+                        @error('GRADO_ID')
                             <span class="invalid-feedback" role="alert">
                                 <strong>{{ $message }}</strong>
                             </span>
                         @enderror
                     </div>
                 </div>
-                <div class="col">
+                <div class="col-md-3">
                     {{-- Escalafon field --}}
                     <div class="form-group">
-                        <label for="ID_ESCALAFON"><i class="fa-solid fa-layer-group"></i> Escalafon</label>
-                        <select name="ID_ESCALAFON" class="form-control @error('ID_ESCALAFON') is-invalid @enderror" required>
-                            <option value="" selected >Seleccione un escalafon</option>
+                        <label for="ESCALAFON_ID"><i class="fa-solid fa-layer-group"></i> Escalafón</label>
+                        <select name="ESCALAFON_ID" id="ESCALAFON_ID" class="form-control @error('ESCALAFON_ID') is-invalid @enderror" required>
+                            <option value="" style="text-align: center;" selected disabled>-- Seleccione un escalafón --</option>
                             @foreach($escalafones as $escalafon)
-                                <option value="{{ $escalafon->ID_ESCALAFON }}" {{ $funcionario->ID_ESCALAFON == $escalafon->ID_ESCALAFON ? 'selected' : '' }}>{{ $escalafon->ESCALAFON }}</option>
+                                <option value="{{ $escalafon->ESCALAFON_ID }}" data-oficina="{{ $escalafon->OFICINA_ID }}" {{ $usuario->ESCALAFON_ID == $escalafon->ESCALAFON_ID ? 'selected' : '' }}>{{ $escalafon->ESCALAFON_NOMBRE }}</option>
                             @endforeach
                         </select>
-                        @error('ID_ESCALAFON')
+                        @error('ESCALAFON_ID')
                             <span class="invalid-feedback" role="alert">
                                 <strong>{{ $message }}</strong>
                             </span>
@@ -290,25 +246,81 @@
                     </div>
                 </div>
             </div>
-            <div>
-                <label for="ID_CARGO"><i class="fa-solid fa-person-circle-check"></i> Cargo</label>
-                <select name="ID_CARGO" id="ID_CARGO" class="form-control @error('ID_CARGO') is-invalid @enderror" required>
-                    <option value="" selected >Seleccione un cargo</option>
-                    @foreach ($cargos as $cargo)
-                        <option value="{{ $cargo->ID_CARGO }}" {{ old('ID_CARGO', $funcionario->ID_CARGO) == $cargo->ID_CARGO ? 'selected' : '' }}>{{ $cargo->CARGO }}</option>
-                    @endforeach
-                </select>
-                @error('ID_CARGO')
-                    <span class="invalid-feedback" role="alert">
-                        <strong>{{ $message }}</strong>
-                    </span>
-                @enderror
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label for="CARGO_ID"><i class="fa-solid fa-person-circle-check"></i> Cargo</label>
+                        <select name="CARGO_ID" id="CARGO_ID" class="form-control @error('CARGO_ID') is-invalid @enderror" required>
+                            <option value="" selected>Seleccione un cargo</option>
+                            @foreach ($cargos as $cargo)
+                                <option value="{{ $cargo->CARGO_ID }}" data-oficina="{{ $cargo->OFICINA_ID }}" {{ old('CARGO_ID', $usuario->CARGO_ID) == $cargo->CARGO_ID ? 'selected' : '' }}>{{ $cargo->CARGO_NOMBRE }}</option>
+                            @endforeach
+                        </select>
+                        @error('CARGO_ID')
+                            <span class="invalid-feedback" role="alert">
+                                <strong>{{ $message }}</strong>
+                            </span>
+                        @enderror
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    {{-- Anexo field --}}
+                    <div class="form-group">
+                        <label for="USUARIO_ANEXO"><i class="fa-regular fa-id-badge"></i> Anexo</label>
+                        <input type="text" name="USUARIO_ANEXO" class="form-control @error('USUARIO_ANEXO') is-invalid @enderror"
+                            value="{{ old('USUARIO_ANEXO', $usuario->USUARIO_ANEXO) }}" placeholder="{{ __('Ej: 9999') }}" required autofocus>
+            
+                        @error('USUARIO_ANEXO')
+                            <span class="invalid-feedback" role="alert">
+                                <strong>{{ $message }}</strong>
+                            </span>
+                        @enderror
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    {{-- Fono field --}}
+                    <div class="form-group">
+                        <label for="USUARIO_FONO"><i class="fa-solid fa-phone"></i> Fono</label>
+                        <input type="text" name="USUARIO_FONO" class="form-control @error('USUARIO_FONO') is-invalid @enderror"
+                            value="{{ old('USUARIO_FONO', $usuario->USUARIO_FONO) }}" placeholder="{{ __('Ej: 41 123 456') }}" required autofocus>
+            
+                        @error('USUARIO_FONO')
+                            <span class="invalid-feedback" role="alert">
+                                <strong>{{ $message }}</strong>
+                            </span>
+                        @enderror
+                    </div>
+                </div>
             </div>
+
+            
+            <br>
+
+            {{-- Niveles --}}
+            <h4>Privilegios</h4>
+
+            {{-- !!ROL --}}
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label for="role"><i class="fa-solid fa-address-book"></i> Rol en sistema</label>
+                        <select name="role" id="role" class="form-control" required>
+                            <option value="" style="text-align: center;" disabled selected>-- Seleccione un rol --</option>
+                            @foreach ($roles as $role)
+                                <option value="{{ $role->id }}" {{ $usuario->roles->pluck('id')->contains($role->id) ? 'selected' : '' }}>{{ $role->name }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                </div>
+                
+            
+            </div>
+            <br>
             <br>
 
             <div class="form-group">
-                <a href="{{route('funcionarios.index')}}" class="btn btn-secondary"><i class="fa-solid fa-hand-point-left"></i> Cancelar</a>
-                <button type="submit" class="btn btn-sia-primary"><i class="fa-solid fa-floppy-disk"></i> Guardar cambios</button>
+                <a href="{{route('panel.usuarios.index')}}" class="btn btn-secondary"><i class="fa-solid fa-hand-point-left"></i> Cancelar</a>
+                <button type="submit" class="btn btn-primary"><i class="fa-solid fa-floppy-disk"></i> Guardar cambios</button>
             </div>
         </form>
     </div>
@@ -321,98 +333,149 @@
 @endsection
 
 @section('js')
-    <!-- Incluir archivos JS flatpicker-->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
-    <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/es.js"></script>
-    <script>
-        $(function () {
-            // Configuración de Flatpickr para las fechas
-            let flatpickrConfig = {
-                locale: 'es',
-                maxDate: "today",
-                dateFormat: "Y-m-d",
-                altFormat: "d-m-Y",
-                altInput: true,
-                allowInput: true,
-                minDate: "1940-01-01",
-                maxDate: new Date(new Date().getFullYear() - 18, 11, 31).toISOString().split('T')[0], // Validar 18 años - a partir del día actual, en los 12 meses (contando de 0) hasta el día 31.
-            };
+<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+<script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/es.js"></script>
+{{-- !!SCRIPT DE FILTROS (SE OBTENDRA DIRECCION REGIONAL SEGUN LA REGION SELECCIONADA) --}}
+<script>
+    $(document).ready(function () {
+        // Configuración de Flatpickr para las fechas
+        let flatpickrConfig = {
+            locale: 'es',
+            maxDate: "today",
+            dateFormat: "Y-m-d",
+            altFormat: "d-m-Y",
+            altInput: true,
+            allowInput: true,
+            minDate: "1940-01-01",
+            maxDate: new Date(new Date().getFullYear() - 18, 11, 31).toISOString().split('T')[0],
+        };
 
-            // Obtener la fecha actual
-            let currentDate = new Date();
+        // Validar fecha de ingreso a partir del día actual. 31 días antes para ingresos tardíos y 31 días después para ingresos futuros.
+        let currentDate = new Date();
+        let fechaInicio = new Date(currentDate.getFullYear(), currentDate.getMonth(), currentDate.getDate() - 31);
+        let fechaFin = new Date(currentDate.getFullYear(), currentDate.getMonth(), currentDate.getDate() + 31);
 
-            // Calcular la fecha de inicio (hoy - 1 año)
-            let fechaInicio = new Date(currentDate.getFullYear() - 1, currentDate.getMonth(), currentDate.getDate());
+        let flatpickrConfig2 = {
+            locale: 'es',
+            minDate: fechaInicio.toISOString().split('T')[0],
+            maxDate: fechaFin.toISOString().split('T')[0],
+            dateFormat: "Y-m-d",
+            altFormat: "d-m-Y",
+            altInput: true,
+            allowInput: true,
+        };
 
-            // Calcular la fecha de fin (hoy + 31 días)
-            let fechaFin = new Date(currentDate.getFullYear(), currentDate.getMonth(), currentDate.getDate() + 31);
 
-            // Configuración para Flatpickr
-            let flatpickrConfig2 = {
-                locale: 'es',
-                minDate: fechaInicio.toISOString().split('T')[0],
-                maxDate: fechaFin.toISOString().split('T')[0],
-                dateFormat: "Y-m-d",
-                altFormat: "d-m-Y",
-                altInput: true,
-                allowInput: true,
-            };
+        // Inicializar Flatpickr en los campos de fecha
+        $('#USUARIO_FECHA_NAC').flatpickr(flatpickrConfig);
+        $('#USUARIO_FECHA_INGRESO').flatpickr(flatpickrConfig2);
+    });
+</script>
 
-            // Inicializar Flatpickr en los campos de fecha
-            $('#FECHA_NAC').flatpickr(flatpickrConfig);
-            $('#FECHA_INGRESO').flatpickr(flatpickrConfig2);
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const selectores = document.querySelectorAll('#dependencia, #GRUPO_ID, #GRADO_ID, #ESCALAFON_ID, #CARGO_ID');
+        const opcionesOriginales = {};
+        
+        // Almacenar las opciones originales de cada selector
+        selectores.forEach(selector => {
+            opcionesOriginales[selector.id] = Array.from(selector.querySelectorAll('optgroup, option'));
+            selector.disabled = true;
         });
-    </script>
-    {{-- filtros de region, direccion regional y ubicacion --}}
-    <script type="text/javascript">
-        $(document).ready(function() {
-            $('#region-select').on('change', function() {
-                var regionId = $(this).val();
+        
+        const selectorOficina = document.getElementById('oficina');
+        selectorOficina.addEventListener('change', function() {
+            const oficinaSeleccionada = this.value;
+            if (oficinaSeleccionada !== '') {
+                // Habilitar todos los selectores
+                selectores.forEach(selector => {
+                    selector.disabled = false;
+                });
 
-                // Limpia los selectores de direcciones regionales y ubicaciones
-                $('#direccion-select').empty();
-                $('#direccion-select').append('<option value="" disabled selected>Selecciona una dirección regional</option>'); // Agrega nuevamente la opción predeterminada
-
-                $('#ubicacion-select').empty();
-                $('#ubicacion-select').append('<option value="" disabled selected>Selecciona una ubicación</option>'); // Agrega nuevamente la opción predeterminada
-
-                if(regionId) {
-                    $.ajax({
-                        url: '/get-direcciones/'+regionId,
-                        type: 'GET',
-                        dataType: 'json',
-                        success: function(data) {
-                            $.each(data, function(key, value) {
-                                $('#direccion-select').append('<option value="'+ value.ID_DIRECCION +'">'+ value.DIRECCION +'</option>');
-                            });
+                // Filtrar las opciones de cada selector según la oficina seleccionada
+                selectores.forEach(selector => {
+                    const opcionesFiltradas = [];
+                    const gruposAñadidos = new Set();
+                    const opcionesÚnicas = new Set(); // Conjunto global para evitar duplicados en todo el selector
+                    opcionesOriginales[selector.id].forEach(opcion => {
+                        if (opcion.tagName.toLowerCase() === 'optgroup') {
+                            // Clonar grupos de opciones
+                            const grupoClonado = opcion.cloneNode(false);
+                            // Filtrar opciones dentro del grupo según la oficina seleccionada
+                            const opcionesGrupoFiltradas = Array.from(opcion.querySelectorAll('option')).filter(opt => opt.dataset.oficina === oficinaSeleccionada || opt.dataset.oficina === undefined);
+                            if (opcionesGrupoFiltradas.length > 0 && !gruposAñadidos.has(grupoClonado.label)) {
+                                opcionesGrupoFiltradas.forEach(opcionFiltrada => {
+                                    if (!opcionesÚnicas.has(opcionFiltrada.value)) {
+                                        grupoClonado.appendChild(opcionFiltrada.cloneNode(true));
+                                        opcionesÚnicas.add(opcionFiltrada.value);
+                                    }
+                                });
+                                opcionesFiltradas.push(grupoClonado);
+                                gruposAñadidos.add(grupoClonado.label);
+                            }
+                        } else {
+                            // Filtrar opciones individuales según la oficina seleccionada
+                            if (opcion.dataset.oficina === oficinaSeleccionada || opcion.dataset.oficina === undefined) {
+                                if (!opcionesÚnicas.has(opcion.value)) {
+                                    opcionesFiltradas.push(opcion.cloneNode(true));
+                                    opcionesÚnicas.add(opcion.value);
+                                }
+                            }
                         }
                     });
-                }
-            });
-
-            $('#direccion-select').on('change', function() {
-                var direccionId = $(this).val();
-
-                // Limpia el selector de ubicaciones
-                $('#ubicacion-select').empty();
-                $('#ubicacion-select').append('<option value="" disabled selected>Selecciona una ubicación</option>'); // Agrega nuevamente la opción predeterminada
-
-                if(direccionId) {
-                    $.ajax({
-                        url: '/get-ubicaciones/'+direccionId,
-                        type: 'GET',
-                        dataType: 'json',
-                        success: function(data) {
-                            $.each(data, function(key, value) {
-                                $('#ubicacion-select').append('<option value="'+ value.ID_UBICACION +'">'+ value.UBICACION +'</option>');
-                            });
-                        }
-                    });
-                }
-            });
+                    // Actualizar las opciones del selector
+                    actualizarOpciones(selector, opcionesFiltradas);
+                });
+            } else {
+                // Si no se selecciona ninguna oficina, deshabilitar todos los selectores y restaurar las opciones originales
+                selectores.forEach(selector => {
+                    selector.disabled = true;
+                    actualizarOpciones(selector, opcionesOriginales[selector.id]);
+                });
+            }
         });
-    </script>
+    });
+
+    // Función para actualizar las opciones de un selector
+    function actualizarOpciones(selector, opciones) {
+        selector.innerHTML = '';
+        opciones.forEach(opcion => {
+            selector.appendChild(opcion);
+        });
+    }
+</script>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        var selectDependencia = document.getElementById("dependencia");
+        var hiddenTipoDependencia = document.getElementById("tipo_dependencia");
+
+        selectDependencia.addEventListener("change", function() {
+            var tipoDependencia = selectDependencia.options[selectDependencia.selectedIndex].parentNode.label;
+            hiddenTipoDependencia.value = tipoDependencia;
+        });
+    });
+</script>
+
+<script>
+    // Esperar a que el documento esté completamente cargado
+document.addEventListener("DOMContentLoaded", function() {
+    // Obtener el botón "Guardar cambios"
+    var guardarCambiosBtn = document.querySelector('.btn-primary');
+
+    // Agregar un event listener para el evento click en el botón
+    guardarCambiosBtn.addEventListener('click', function() {
+        // Activar los selectores cuando se hace clic en el botón "Guardar cambios"
+        var selectores = document.querySelectorAll('select');
+        selectores.forEach(function(selector) {
+            selector.disabled = false; // Activar el selector
+        });
+    });
+});
+
+</script>
+
 
 
 @endsection
