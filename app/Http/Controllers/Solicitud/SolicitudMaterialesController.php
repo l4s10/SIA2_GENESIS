@@ -190,7 +190,7 @@ class SolicitudMaterialesController extends Controller
                         DB::rollBack(); // Revierte la transacción si la autorización falla
                         return $resultadoAutorizacion; // Esto debería ser un RedirectResponse con errores
                     }
-                    $this->updateSolicitud($request, $solicitud, 'AUTORIZADO');
+                    $this->updateSolicitud($request, $solicitud, 'APROBADO');
                     $this->createRevisionSolicitud($request, $solicitud);
                     break;
 
