@@ -34,13 +34,13 @@ class UbicacionController extends Controller
      *///Carga formulario de creacion
      public function create()
     {
-        try {   
-            $oficinas = Oficina::all();  
+        try {
+            $oficinas = Oficina::all();
             return view('sia2.panel.ubicaciones.create',compact('oficinas'));
         } catch (Exception $ex) {
             return redirect()->back()->with('error', 'Ha ocurrido un error al cargar la ubicación');
-        }   
-        
+        }
+
     }
 
     /**
@@ -63,7 +63,7 @@ class UbicacionController extends Controller
                 'exists' => 'El campo "Dirección regional asociada" no es válido.',
             ]);
 
-            
+
             // Validacion y redireccion con mensajes de error
             if ($validator->fails())
             {
@@ -108,12 +108,12 @@ class UbicacionController extends Controller
         try {
             $ubicacion = Ubicacion::find($id);
             $oficinas = Oficina::all();
-    
+
             return view('sia2.panel.ubicaciones.edit',compact('ubicacion','oficinas'));
 
         } catch (Exception $ex) {
             return redirect()->back()->with('error', 'Ha ocurrido un error al cargar la ubicación');
-        }    
+        }
     }
 
     public function update(Request $request, string $id)
@@ -144,7 +144,7 @@ class UbicacionController extends Controller
                     'UBICACION_NOMBRE' => strtoupper($request->input('UBICACION_NOMBRE')),
                     'OFICINA_ID' => $request->OFICINA_ID,
                 ]);
-                
+
                 // Retornamos la vista con el mensaje de éxito
                 return redirect()->route('panel.ubicaciones.index')->with('success', 'Ubicación actualizada exitosamente');
             }
@@ -168,11 +168,12 @@ class UbicacionController extends Controller
         }
         return redirect(route('panel.ubicaciones.index'));
     }
-    /*public function getUbicaciones($direccionId)
+    //!! Método para obtener ubicaciones por oficina (TABLA DE CONTINGENCIA -- NO BORRAR!!)
+    public function getUbicaciones($direccionId)
     {
         // Asume que tienes un modelo Ubicacion que tiene una relación con Direcciones
-        $ubicaciones = Ubicacion::where('ID_DIRECCION', $direccionId)->get();
+        $ubicaciones = Ubicacion::where('OFICINA_ID', $direccionId)->get();
 
-       return response()->json($ubicaciones);
-    }*/
+        return response()->json($ubicaciones);
+    }
 }

@@ -34,13 +34,13 @@ class DepartamentoController extends Controller
      *///Carga formulario de creacion
      public function create()
     {
-        try {   
-            $oficinas = Oficina::all();  
+        try {
+            $oficinas = Oficina::all();
             return view('sia2.panel.departamentos.create',compact('oficinas'));
         } catch (Exception $ex) {
             return redirect()->back()->with('error', 'Ha ocurrido un error al cargar el Departamento');
-        }   
-        
+        }
+
     }
 
     /**
@@ -61,7 +61,7 @@ class DepartamentoController extends Controller
                 'OFICINA_ID.required' => 'El campo "Dirección regional asociada" es requerido',
                 'OFICINA_ID.exists' => 'El campo "Dirección regional asociada" no es válido.',
             ]);
-    
+
             // Validación y redirección con mensajes de error
             if ($validator->fails()) {
                 return redirect()->back()->withErrors($validator)->withInput();
@@ -71,7 +71,7 @@ class DepartamentoController extends Controller
                     'DEPARTAMENTO_NOMBRE' => strtoupper($request->input('DEPARTAMENTO_NOMBRE')),
                     'OFICINA_ID' => $request->OFICINA_ID,
                 ]);
-    
+
                 // Retornamos la vista con el mensaje de éxito
                 return redirect()->route('panel.departamentos.index')->with('success', 'Departamento agregado exitosamente');
             }
@@ -101,12 +101,12 @@ class DepartamentoController extends Controller
         try {
             $departamento = Departamento::find($id);
             $oficinas = Oficina::all();
-    
+
             return view('sia2.panel.departamentos.edit',compact('departamento','oficinas'));
 
         } catch (Exception $ex) {
             return redirect()->back()->with('error', 'Ha ocurrido un error al cargar el Departamento');
-        }    
+        }
     }
 
     public function update(Request $request, string $id)
@@ -114,7 +114,7 @@ class DepartamentoController extends Controller
         try {
             // Encontrar el Departamento que se está actualizando
             $departamento = Departamento::findOrFail($id);
-    
+
             // Reglas de validación
             $validator = Validator::make($request->all(), [
                 'DEPARTAMENTO_NOMBRE' => 'required|string|max:128|unique:departamentos,DEPARTAMENTO_NOMBRE,' . $id . ',DEPARTAMENTO_ID,OFICINA_ID,' . $request->OFICINA_ID,
@@ -127,7 +127,7 @@ class DepartamentoController extends Controller
                 'OFICINA_ID.required' => 'El campo "Dirección regional asociada" es requerido',
                 'OFICINA_ID.exists' => 'El campo "Dirección regional asociada" no es válido.',
             ]);
-    
+
             // Si la validación falla, redirigir de vuelta con los errores
             if ($validator->fails()) {
                 return redirect()->back()->withErrors($validator)->withInput();
@@ -137,7 +137,7 @@ class DepartamentoController extends Controller
                     'DEPARTAMENTO_NOMBRE' => strtoupper($request->input('DEPARTAMENTO_NOMBRE')),
                     'OFICINA_ID' => $request->OFICINA_ID,
                 ]);
-                
+
                 // Retornamos la vista con el mensaje de éxito
                 return redirect()->route('panel.departamentos.index')->with('success', 'Departamento actualizado exitosamente');
             }
@@ -161,11 +161,14 @@ class DepartamentoController extends Controller
         }
         return redirect(route('panel.departamentos.index'));
     }
-    /*public function getDepartamentoes($direccionId)
-    {
-        // Asume que tienes un modelo Departamento que tiene una relación con Direcciones
-        $departamentos = Departamento::where('ID_DIRECCION', $direccionId)->get();
 
-       return response()->json($departamentos);
-    }*/
+
+    //!! Método para obtener departamentos por oficina (TABLA DE CONTINGENCIA -- NO BORRAR!!)
+    public function getDepartamentos($direccionId)
+    {
+        // Asume que tienes un modelo Ubicacion que tiene una relación con Direcciones
+        $departamentos = Departamento::where('OFICINA_ID', $direccionId)->get();
+
+        return response()->json($departamentos);
+    }
 }
