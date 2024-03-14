@@ -19,7 +19,7 @@
             <div class="row">
                 <div class="col-md-4">
                     <div class="form-group">
-                        <label for="USUARIO_NOMBRES"><i class="fa-solid fa-id-card"></i> Nombres</label>
+                        <label for="USUARIO_NOMBRES"><i class="fa-solid fa-id-card"></i> Nombres:</label>
                         <input type="text" name="USUARIO_NOMBRES" id="USUARIO_NOMBRES" class="form-control @error('nombres') is-invalid @enderror" placeholder="Ej: Primer nombre Segundo nombre" value="{{ old('USUARIO_NOMBRES') }}" required autofocus>
                         @error('USUARIO_NOMBRES')
                             <span class="invalid-feedback" role="alert">
@@ -31,7 +31,7 @@
 
                 <div class="col-md-4">
                     <div class="form-group">
-                        <label for="USUARIO_APELLIDOS"><i class="fa-solid fa-id-card"></i> Apellidos</label>
+                        <label for="USUARIO_APELLIDOS"><i class="fa-solid fa-id-card"></i> Apellidos:</label>
                         <input type="text" name="USUARIO_APELLIDOS" id="USUARIO_APELLIDOS" class="form-control @error('USUARIO_APELLIDOS') is-invalid @enderror" placeholder="Ej: Apellido Paterno Apellido Materno" value="{{ old('USUARIO_APELLIDOS') }}" required autofocus>
                         @error('USUARIO_APELLIDOS')
                             <span class="invalid-feedback" role="alert">
@@ -43,7 +43,7 @@
 
                 <div class="col-md-4">
                     <div class="form-group">
-                        <label for="USUARIO_RUT"><i class="fa-solid fa-id-card"></i> Rut</label>
+                        <label for="USUARIO_RUT"><i class="fa-solid fa-id-card"></i> Rut:</label>
                         <input type="text" name="USUARIO_RUT" id="USUARIO_RUT" class="form-control @error('USUARIO_RUT') is-invalid @enderror" placeholder="Ej: 12345678-9" value="{{ old('USUARIO_RUT') }}" required>
 
                         @error('USUARIO_RUT')
@@ -60,7 +60,7 @@
                 <div class="col-md-3">
                     {{-- Fecha de nacimiento field --}}
                     <div class="form-group">
-                        <label for="USUARIO_FECHA_NAC"><i class="fa-solid fa-calendar-days"></i> Fecha de nacimiento</label>
+                        <label for="USUARIO_FECHA_NAC"><i class="fa-solid fa-calendar-days"></i> Fecha de nacimiento:</label>
                         <input type="date" id="USUARIO_FECHA_NAC" name="USUARIO_FECHA_NAC" class="form-control @error('USUARIO_FECHA_NAC') is-invalid @enderror"
                             value="{{ old('USUARIO_FECHA_NAC') }}" placeholder="-- Seleccione la fecha de nacimiento --" required style="text-align: center;">
 
@@ -74,7 +74,7 @@
 
                 <div class="col-md-3">
                     <div class="form-group">
-                        <label for="USUARIO_SEXO"><i class="fa-solid fa-person-half-dress"></i> Sexo</label>
+                        <label for="USUARIO_SEXO"><i class="fa-solid fa-person-half-dress"></i> Sexo:</label>
                         <select name="USUARIO_SEXO" class="form-control @error('USUARIO_SEXO') is-invalid @enderror" required>
                             <option value="" style="text-align: center;" selected disabled>{{ __('-- Seleccione una opción --') }}</option>
                             <option value="FEMENINO">{{ __('FEMENINO') }}</option>
@@ -91,7 +91,7 @@
 
                 <div class="col-md-3">
                     <div class="form-group">
-                        <label for="email"><i class="fa-solid fa-envelope"></i> Email</label>
+                        <label for="email"><i class="fa-solid fa-envelope"></i> Email:</label>
                         <input type="email" name="email" id="email" class="form-control @error('email') is-invalid @enderror" value="{{ old('email') }}" placeholder="Ej: funcionario@sii.cl" required>
 
                         @error('email')
@@ -105,7 +105,7 @@
                 <div class="col-md-3">
                     {{-- Fecha de ingreso a la empresa field --}}
                     <div class="form-group">
-                        <label for="USUARIO_FECHA_INGRESO"><i class="fa-solid fa-calendar-days"></i> Fecha de ingreso al SII</label>
+                        <label for="USUARIO_FECHA_INGRESO"><i class="fa-solid fa-calendar-days"></i> Fecha de ingreso al SII:</label>
                         <input type="date" id="USUARIO_FECHA_INGRESO" name="USUARIO_FECHA_INGRESO" class="form-control @error('USUARIO_FECHA_INGRESO') is-invalid @enderror"
                             value="{{ old('USUARIO_FECHA_INGRESO') }}" placeholder="-- Seleccione la fecha de ingreso --" required style="text-align: center;">
 
@@ -125,7 +125,7 @@
             <div class="row">
                 <div class="col">
                     <div class="form-group">
-                        <label for="password"><i class="fa-solid fa-key"></i> Contraseña</label>
+                        <label for="password"><i class="fa-solid fa-key"></i> Contraseña:</label>
                         <input type="password" name="password" id="password" class="form-control{{ $errors->has('password') ? ' is-invalid' : '' }}" placeholder="Contraseña" required>
 
                         @if ($errors->has('password'))
@@ -137,7 +137,7 @@
                 </div>
                 <div class="col">
                     <div class="form-group">
-                        <label for="password_confirmation"><i class="fa-solid fa-key"></i> Confirmar contraseña</label>
+                        <label for="password_confirmation"><i class="fa-solid fa-key"></i> Confirmar contraseña:</label>
                         <input type="password" name="password_confirmation" id="password_confirmation" class="form-control{{ $errors->has('password_confirmation') ? ' is-invalid' : '' }}" placeholder="Confirmar contraseña" required>
 
                         @if ($errors->has('password_confirmation'))
@@ -195,7 +195,7 @@
                 <div class="col-md-3">
                     {{-- Grupo field --}}
                     <div class="form-group">
-                        <label for="GRUPO_ID"><i class="fa-solid fa-user-group"></i> Grupo</label>
+                        <label for="GRUPO_ID"><i class="fa-solid fa-user-group"></i> Grupo:</label>
                         <select name="GRUPO_ID" id="GRUPO_ID" class="form-control @error('GRUPO_ID') is-invalid @enderror" required autofocus>
                             <option value="" style="text-align: center;" disabled selected>-- Seleccione un grupo --</option>
                             @foreach ($grupos as $grupo)
@@ -214,7 +214,7 @@
                 <div class="col-md-3">
                     {{-- Calidad Jurídica --}}
                     <div class="form-group">
-                        <label for="USUARIO_CALIDAD_JURIDICA"><i class="fa-solid fa-pen-to-square"></i> Calidad Jurídica</label>
+                        <label for="USUARIO_CALIDAD_JURIDICA"><i class="fa-solid fa-pen-to-square"></i> Calidad Jurídica:</label>
                         <select name="USUARIO_CALIDAD_JURIDICA" id="USUARIO_CALIDAD_JURIDICA" class="form-control @error('USUARIO_CALIDAD_JURIDICA') is-invalid @enderror" required>
                             <option value="" style="text-align: center;" selected disabled>{{ __('-- Seleccione una opción --') }}</option>
                             <option value="PLANTA">{{ __('PLANTA') }}</option>
@@ -232,7 +232,7 @@
                 <div class="col-md-3">
                     {{-- Grado field --}}
                     <div class="form-group">
-                        <label for="GRADO_ID"><i class="fa-solid fa-layer-group"></i> Grado</label>
+                        <label for="GRADO_ID"><i class="fa-solid fa-layer-group"></i> Grado:</label>
                         <select name="GRADO_ID" id="GRADO_ID" class="form-control @error('GRADO_ID') is-invalid @enderror" required>
                             <option value="" style="text-align: center;" selected disabled>-- Seleccione un grado --</option>
                             @foreach($grados as $grado)
@@ -251,7 +251,7 @@
                 <div class="col-md-3">
                     {{-- Escalafon field --}}
                     <div class="form-group">
-                        <label for="ESCALAFON_ID"><i class="fa-solid fa-layer-group"></i> Escalafón</label>
+                        <label for="ESCALAFON_ID"><i class="fa-solid fa-layer-group"></i> Escalafón:</label>
                         <select name="ESCALAFON_ID" id="ESCALAFON_ID" class="form-control @error('ESCALAFON_ID') is-invalid @enderror" required>
                             <option value="" style="text-align: center;" selected disabled>-- Seleccione un escalafón --</option>
                             @foreach($escalafones as $escalafon)
@@ -272,7 +272,7 @@
 
                 <div class="col-md-6">
                     <div class="form-group">
-                        <label for="CARGO_ID"><i class="fa-solid fa-person-circle-check"></i> Cargo</label>
+                        <label for="CARGO_ID"><i class="fa-solid fa-person-circle-check"></i> Cargo:</label>
                         <select name="CARGO_ID" id="CARGO_ID" class="form-control" required>
                             <option value="" style="text-align: center;" disabled selected>-- Seleccione un cargo --</option>
                             @foreach ($cargos as $cargo)
@@ -285,7 +285,7 @@
                 <div class="col-md-3">
                     {{-- Anexo field --}}
                     <div class="form-group">
-                        <label for="USUARIO_ANEXO"><i class="fa-regular fa-id-badge"></i> Anexo</label>
+                        <label for="USUARIO_ANEXO"><i class="fa-regular fa-id-badge"></i> Anexo:</label>
                         <input type="text" name="USUARIO_ANEXO" class="form-control @error('USUARIO_ANEXO') is-invalid @enderror"
                             value="{{ old('USUARIO_ANEXO') }}" placeholder="{{ __('Ej: 9999') }}" required autofocus>
 
@@ -299,7 +299,7 @@
                 <div class="col-md-3">
                     {{-- Fono field --}}
                     <div class="form-group">
-                        <label for="USUARIO_FONO"><i class="fa-solid fa-phone"></i> Fono</label>
+                        <label for="USUARIO_FONO"><i class="fa-solid fa-phone"></i> Fono:</label>
                         <input type="text" name="USUARIO_FONO" class="form-control @error('USUARIO_FONO') is-invalid @enderror"
                             value="{{ old('USUARIO_FONO') }}" placeholder="{{ __('Ej: 41 123 456') }}" required autofocus>
 
@@ -332,7 +332,7 @@
             <div class="row">
                 <div class="col-md-6">
                     <div class="form-group">
-                        <label for="role"><i class="fa-solid fa-address-book"></i> Rol en sistema</label>
+                        <label for="role"><i class="fa-solid fa-address-book"></i> Rol en sistema:</label>
                         <select name="role" id="role" class="form-control" required>
                             <option value="" style="text-align: center;" disabled selected>-- Seleccione un rol --</option>
                             @foreach ($roles as $role)

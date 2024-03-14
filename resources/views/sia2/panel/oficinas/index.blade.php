@@ -5,7 +5,7 @@
 
 <!-- CABECERA DE LA PAGINA -->
 @section('content_header')
-    <h1>Listado de Direcicones Regionales</h1>
+    <h1>Listado de Direcciones Regionales</h1>
     {{--<br>
     @role('ADMINISTRADOR')
     <div class="alert alert-info alert1" role="alert">

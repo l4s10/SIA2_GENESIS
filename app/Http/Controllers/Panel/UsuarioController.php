@@ -7,8 +7,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 use Exception;
-use Illuminate\Support\Facades\Hash;
-use Carbon\Carbon;
+
+
 use Spatie\Permission\Models\Role;
 
 // Importar modelos
@@ -22,63 +22,10 @@ use App\Models\Grado;
 use App\Models\CalidadJuridica;
 use App\Models\Cargo;
 use App\Models\Oficina;
-use App\Utils\RutUtils;
 
 
 class UsuarioController extends Controller
 {
-
-    function validarRut($rut) {
-        // Verificar el formato del RUT (sin puntos pero con guión)
-        if (!preg_match('/^[0-9]{7,8}-[0-9Kk]$/', $rut)) {
-            echo "Formato de RUT incorrecto. Por favor ingréselo sin puntos y con guión.";
-            return false;
-        }
-    
-        // Despejar Guión
-        $valor = str_replace('-', '', $rut);
-        
-        // Aislar Cuerpo y Dígito Verificador
-        $cuerpo = substr($valor, 0, -1);
-        $dv = strtoupper(substr($valor, -1));
-        
-        // Calcular Dígito Verificador
-        $suma = 0;
-        $multiplo = 2;
-        
-        for ($i = 1; $i <= strlen($cuerpo); $i++) {
-            // Obtener el Producto con el Múltiplo Correspondiente
-            $index = $multiplo * $cuerpo[strlen($cuerpo) - $i];
-            
-            // Sumar al Contador General
-            $suma += $index;
-            
-            // Consolidar el Múltiplo dentro del rango [2, 7]
-            if ($multiplo < 7) {
-                $multiplo++;
-            } else {
-                $multiplo = 2;
-            }
-        }
-        
-        // Calcular Dígito Verificador en base al Módulo 11
-        $dvEsperado = 11 - ($suma % 11);
-        
-        // Casos Especiales (0 y K)
-        $dv = ($dv == 'K') ? 10 : $dv;
-        $dv = ($dv == 0) ? 11 : $dv;
-        
-        // Validar que el Cuerpo coincide con su Dígito Verificador
-        if ($dvEsperado != $dv) {
-            echo "Formato de RUT incorrecto. Por favor ingréselo sin puntos y con guión.";
-            return false;
-        }
-        
-        // Si todo sale bien, es válido
-        return true;
-    }
-
-
     /*public function __construct()
     {
         // * SI LA PERSONA ES ADMINISTRADOR O INFORMATICO TIENE ACCESO A TODOS LAS RUTAS* (le quitamos get usuarios pero se la volvemos a asignar en la siguiente)
@@ -119,9 +66,6 @@ class UsuarioController extends Controller
             $escalafones = Escalafon::all();
             $grados = Grado::all();
             $oficinas = Oficina::all();
-            //Cargos filtrar por ubicacion de usuario
-            //$ubicacionUser = Ubicacion::findOrFail(Auth::user()->ID_UBICACION);
-            //$direccionFiltradaId = $ubicacionUser->direccion->ID_DIRECCION;
             $cargos = Cargo::all();
 
             // Retornar vista con formulario para crear usuario
@@ -424,5 +368,55 @@ class UsuarioController extends Controller
             // Retornar vista con mensaje de error a través de session
             return back()->with('error', 'Error al eliminar el usuario');
         }
+    }
+
+    function validarRut($rut) {
+        // Verificar el formato del RUT (sin puntos pero con guión)
+        if (!preg_match('/^[0-9]{7,8}-[0-9Kk]$/', $rut)) {
+            echo "Formato de RUT incorrecto. Por favor ingréselo sin puntos y con guión.";
+            return false;
+        }
+    
+        // Despejar Guión
+        $valor = str_replace('-', '', $rut);
+        
+        // Aislar Cuerpo y Dígito Verificador
+        $cuerpo = substr($valor, 0, -1);
+        $dv = strtoupper(substr($valor, -1));
+        
+        // Calcular Dígito Verificador
+        $suma = 0;
+        $multiplo = 2;
+        
+        for ($i = 1; $i <= strlen($cuerpo); $i++) {
+            // Obtener el Producto con el Múltiplo Correspondiente
+            $index = $multiplo * $cuerpo[strlen($cuerpo) - $i];
+            
+            // Sumar al Contador General
+            $suma += $index;
+            
+            // Consolidar el Múltiplo dentro del rango [2, 7]
+            if ($multiplo < 7) {
+                $multiplo++;
+            } else {
+                $multiplo = 2;
+            }
+        }
+        
+        // Calcular Dígito Verificador en base al Módulo 11
+        $dvEsperado = 11 - ($suma % 11);
+        
+        // Casos Especiales (0 y K)
+        $dv = ($dv == 'K') ? 10 : $dv;
+        $dv = ($dv == 0) ? 11 : $dv;
+        
+        // Validar que el Cuerpo coincide con su Dígito Verificador
+        if ($dvEsperado != $dv) {
+            echo "Formato de RUT incorrecto. Por favor ingréselo sin puntos y con guión.";
+            return false;
+        }
+        
+        // Si todo sale bien, es válido
+        return true;
     }
 }
