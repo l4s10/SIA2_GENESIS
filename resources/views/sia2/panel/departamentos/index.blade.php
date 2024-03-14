@@ -1,15 +1,27 @@
 @extends('adminlte::page')
 
 <!-- TITULO DE LA PESTAÑA -->
-@section('title', 'Mostrar departamentos')
+@section('title', 'Mostrar Departamentos')
 
 <!-- CABECERA DE LA PAGINA -->
 @section('content_header')
-    <h1>Lista de departamentos</h1>
+    <h1>Listado de Departamentos</h1>
+    {{--<br>
+    @role('ADMINISTRADOR')
+    <div class="alert alert-info alert1" role="alert">
+    <div><strong>Bienvenido Administrador:</strong> Acceso total al modulo.<div>
+    </div>
+    @endrole
+    @role('INFORMATICA')
+    <div class="alert alert-info" role="alert">
+    <div><strong>Bienvenido Informatica:</strong> Aqui iria el texto donde le corresponde el rol INFORMATICA.<div>
+    </div>
+    @endrole--}}
 @stop
 
 @section('content')
-    @if (session('success'))
+<div class="container">
+        @if (session('success'))
         <script>
             document.addEventListener('DOMContentLoaded', () => {
                 Swal.fire({
@@ -32,47 +44,50 @@
             });
         </script>
     @endif
-
-    <a class="btn agregar mb-4"><i class="fa-solid fa-plus"></i> Ingresar nuevo departamento</a>
-
-    <div class="table-responsive">
-        <table id="departamento" class="table table-bordered mt-4">
-            <thead class="tablacolor">
-                <tr>
-                    <th scope="col">Departamento</th>
-                    <th scope="col">Administrar</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach($departamentos as $departamento)
+    <br>
+    <a href="{{route('panel.departamentos.create')}}" class="btn agregar" ><i class="fa-solid fa-plus"></i> Ingresar nuevo departamento</a>
+    <br><br>
+        <div class="table-responsive">
+            <table id="departamentos" class="table table-bordered mt-4">
+                <thead class="tablacolor">
                     <tr>
-                        <td>{{ $departamento->DEPARTAMENTO_NOMBRE }}</td>
+                        <th scope="col">Nombre</th>
+                        <th scope="col">Dirección Regional</th>
+                        <th scope="col">Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach($departamentos as $departamento)
+                    <tr>
+                        <td>{{$departamento->DEPARTAMENTO_NOMBRE}}</td>
+                        <td>{{$departamento->oficina->OFICINA_NOMBRE}}</td>
                         <td>
                             <div class="d-flex justify-content-center">
-                                <a class="btn botoneditar"><i class="fa-solid fa-gear"></i></a>
+                                <a href="{{route('panel.departamentos.edit',$departamento->DEPARTAMENTO_ID)}}"class="btn botoneditar"> 
+                                    <i class="fa-solid fa-pen-to-square"></i> Editar
+                                </a>
+                                @role('ADMINISTRADOR')
+                                    <form action="{{route('panel.departamentos.destroy',$departamento->DEPARTAMENTO_ID)}}" method="POST">
+                                        @csrf
+                                        @method('DELETE')
+                                            <button type="submit" class="btn btn-danger">
+                                                <i class="fa-solid fa-trash"></i> Borrar
+                                            </button>
+                                    </form>
+                                @endrole
                             </div>
                         </td>
                     </tr>
                 @endforeach
-            </tbody>
-        </table>
-    </div>
+                </tbody>
+            </table>
+        </div>
+</div>
 @endsection
 
+
 @section('css')
-    <style>
-        .alert {
-        opacity: 0.7;
-        background-color: #99CCFF;
-        color:     #000000;
-        }
-        .alert1 {
-            opacity: 0.7;
-            /* Ajusta la opacidad a tu gusto */
-            background-color: #FF8C40;
-            /* Color naranjo claro (RGB: 255, 214, 153) */
-            color: #000000;
-        }
+    <style>/* Estilos personalizados si es necesario */
         .tablacolor {
             background-color: #0064a0; /* Color de fondo personalizado */
             color: #fff; /* Color de texto personalizado */
@@ -86,21 +101,24 @@
             color: #fff;
         }
     </style>
-@endsection
+|@stop
 
 @section('js')
     <!-- Para inicializar -->
     <script>
         $(document).ready(function () {
-            $('#departamento').DataTable({
+            $('#departamentos').DataTable({
                 "lengthMenu": [[5,10, 50, -1], [5, 10, 50, "All"]],
+                "responsive": false,
                 "columnDefs": [
-                    { "orderable": false, "targets": 1 } // La séptima columna no es ordenable
+                    { "orderable": false, "targets": 2 }
                 ],
                 "language": {
-                    "url": "https://cdn.datatables.net/plug-ins/1.11.3/i18n/es_es.json"
+                    "url": "//cdn.datatables.net/plug-ins/1.10.25/i18n/Spanish.json"
                 },
             });
         });
     </script>
 @endsection
+
+
