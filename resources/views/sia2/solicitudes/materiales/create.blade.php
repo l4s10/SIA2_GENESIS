@@ -54,15 +54,17 @@
             <tbody>
                 {{-- Modificación: Botones para abrir modal en lugar de formulario directo --}}
                 @foreach($materiales as $material)
-                <tr>
-                    <td>{{ $material->tipoMaterial->TIPO_MATERIAL_NOMBRE }}</td>
-                    <td>{{ $material->MATERIAL_NOMBRE }}</td>
-                    <td>
-                        <button type="button" class="btn botoneditar" data-material-id="{{ $material->MATERIAL_ID }}" data-form-action="{{ route('materiales.addToCart', $material->MATERIAL_ID) }}">
-                            <i class="fa-solid fa-plus"></i> Agregar al Carrito
-                        </button>
-                    </td>
-                </tr>
+                    @if ($material->MATERIAL_STOCK > 0)
+                        <tr>
+                            <td>{{ $material->tipoMaterial->TIPO_MATERIAL_NOMBRE }}</td>
+                            <td>{{ $material->MATERIAL_NOMBRE }}</td>
+                            <td>
+                                <button type="button" class="btn botoneditar" data-material-id="{{ $material->MATERIAL_ID }}" data-form-action="{{ route('materiales.addToCart', $material->MATERIAL_ID) }}">
+                                    <i class="fa-solid fa-plus"></i> Agregar al Carrito
+                                </button>
+                            </td>
+                        </tr>
+                    @endif
                 @endforeach
             </tbody>
         </table>

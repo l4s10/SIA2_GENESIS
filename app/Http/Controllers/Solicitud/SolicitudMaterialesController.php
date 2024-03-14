@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\Validator;
 use Exception;
 use Illuminate\Support\Facades\Auth;
 use Gloudemans\Shoppingcart\Facades\Cart;
+use Illuminate\Support\Facades\DB;
 
 // Importar modelos
 use App\Models\Solicitud;
@@ -162,6 +163,8 @@ class SolicitudMaterialesController extends Controller
      */
     public function update(Request $request, string $id)
     {
+        DB::beginTransaction(); // Inicia una nueva transacción
+
         try {
             $solicitud = Solicitud::has('materiales')->findOrFail($id);
 
@@ -169,39 +172,45 @@ class SolicitudMaterialesController extends Controller
                 case 'guardar':
                     $validator = $this->validateGuardar($request);
                     if ($validator->fails()) {
+                        DB::rollBack(); // Revierte la transacción antes de redirigir con errores
                         return redirect()->back()->withErrors($validator)->withInput();
                     }
+                    $this->createRevisionSolicitud($request, $solicitud);
                     $this->updateSolicitud($request, $solicitud, 'EN REVISION');
                     break;
 
                 case 'finalizar_revision':
                     $validator = $this->validateFinalizarRevision($request);
                     if ($validator->fails()) {
+                        DB::rollBack(); // Revierte la transacción antes de redirigir con errores
                         return redirect()->back()->withErrors($validator)->withInput();
                     }
+                    $resultadoAutorizacion = $this->autorizarMateriales($request, $solicitud);
+                    if ($resultadoAutorizacion !== true) {
+                        DB::rollBack(); // Revierte la transacción si la autorización falla
+                        return $resultadoAutorizacion; // Esto debería ser un RedirectResponse con errores
+                    }
                     $this->updateSolicitud($request, $solicitud, 'AUTORIZADO');
-                    $this->autorizarMateriales($request, $solicitud);
+                    $this->createRevisionSolicitud($request, $solicitud);
                     break;
 
                 case 'rechazar':
-                        $validator = $this->validateRechazar($request);
-                        if ($validator->fails()) {
-                            return redirect()->back()->withErrors($validator)->withInput();
-                        }
-                        $this->updateSolicitud($request, $solicitud, 'RECHAZADO');
-                        $this->createRevisionSolicitud($request, $solicitud);
-                        return $this->redirectSuccess('Solicitud rechazada exitosamente');
-                    break;
-
-                default:
-                    // Lógica por defecto si se requiere
+                    $validator = $this->validateRechazar($request);
+                    if ($validator->fails()) {
+                        DB::rollBack(); // Revierte la transacción antes de redirigir con errores
+                        return redirect()->back()->withErrors($validator)->withInput();
+                    }
+                    $this->updateSolicitud($request, $solicitud, 'RECHAZADO');
+                    $this->createRevisionSolicitud($request, $solicitud);
+                    return $this->redirectSuccess('Solicitud rechazada exitosamente');
                     break;
             }
 
-            $this->createRevisionSolicitud($request, $solicitud);
+            DB::commit(); // Guarda todos los cambios en la base de datos
             return $this->redirectSuccess('Solicitud actualizada exitosamente');
         } catch (Exception $e) {
-            return $this->redirectError('Error al validar los datos.');
+            DB::rollBack(); // Asegura que se revierten las operaciones si ocurre un error inesperado
+            return $this->redirectError('Error al procesar la solicitud: ' . $e->getMessage());
         }
     }
 
@@ -251,9 +260,7 @@ class SolicitudMaterialesController extends Controller
             // 'SOLICITUD_ESTADO' => 'required|string|max:255|in:INGRESADO,EN REVISION,APROBADO,RECHAZADO,TERMINADO',
             'SOLICITUD_FECHA_HORA_INICIO_ASIGNADA' => 'required|date',
             'SOLICITUD_FECHA_HORA_TERMINO_ASIGNADA' => 'required|date|after:SOLICITUD_FECHA_HORA_INICIO_ASIGNADA',
-
             'REVISION_SOLICITUD_OBSERVACION' => 'required|string|max:255',
-            'autorizar.*' => 'required|numeric|min:0', // Ensures that all values in the array are numeric and non-negative
         ], [
             // Error messages
             'SOLICITUD_FECHA_HORA_INICIO_ASIGNADA.required' => 'La fecha de inicio asignada es requerida.',
@@ -264,9 +271,6 @@ class SolicitudMaterialesController extends Controller
             'REVISION_SOLICITUD_OBSERVACION.required' => 'Indique el motivo de la revisión.',
             'REVISION_SOLICITUD_OBSERVACION.string' => 'El campo Observación debe ser una cadena de caracteres.',
             'REVISION_SOLICITUD_OBSERVACION.max' => 'El campo Observación no debe exceder los 255 caracteres.',
-            'autorizar.*.required' => 'La Cantidad Autorizada es requerida.',
-            'autorizar.*.numeric' => 'La Cantidad Autorizada debe ser un número.',
-            'autorizar.*.min' => 'La Cantidad Autorizada no puede ser negativa.',
         ]);
 
         return $validator;
@@ -396,40 +400,71 @@ class SolicitudMaterialesController extends Controller
     /**
      * Autorizar materiales
      */
-    private function autorizarMateriales(Request $request, Solicitud $solicitud){
+    private function autorizarMateriales(Request $request, Solicitud $solicitud)
+    {
         // try-catch
         try {
             $autorizaciones = $request->input('autorizar', []);
+            $errores = [];
 
             foreach ($autorizaciones as $materialId => $cantidadAutorizada) {
-                $solicitud->materiales()->updateExistingPivot($materialId, ['SOLICITUD_MATERIAL_CANTIDAD_AUTORIZADA' => $cantidadAutorizada]);
-
-                // Actualiza el stock del material
                 $material = Material::findOrFail($materialId);
-                $stockPrevio = $material->MATERIAL_STOCK;
-                $stockResultante = $stockPrevio - $cantidadAutorizada;
-                $material->update(['MATERIAL_STOCK' => $stockResultante]);
+                $validator = Validator::make(
+                    ['autorizar' => $cantidadAutorizada],
+                    ['autorizar' => 'required|numeric|min:0|max:'.$material->MATERIAL_STOCK],
+                    [
+                        'required' => 'La cantidad autorizada es requerida.',
+                        'numeric' => 'La cantidad autorizada debe ser un número.',
+                        'min' => 'La cantidad autorizada no puede ser negativa.',
+                        'max' => 'La cantidad autorizada no puede ser mayor al stock disponible.',
+                    ]
+                );
 
-                // Registra el movimiento
-                Movimiento::create([
-                    'USUARIO_id' => Auth::user()->id,
-                    'MATERIAL_ID' => $material->MATERIAL_ID,
-                    'MOVIMIENTO_TITULAR' => (Auth::user()->USUARIO_NOMBRES.' '.Auth::user()->USUARIO_APELLIDOS),
-                    'MOVIMIENTO_OBJETO' => 'MATERIAL: ' . $material->MATERIAL_NOMBRE,
-                    'MOVIMIENTO_TIPO_OBJETO' => $material->tipoMaterial->TIPO_MATERIAL_NOMBRE,
-                    'MOVIMIENTO_TIPO' => 'RESTA',
-                    'MOVIMIENTO_STOCK_PREVIO' => $stockPrevio,
-                    'MOVIMIENTO_CANTIDAD_A_MODIFICAR' => $cantidadAutorizada,
-                    'MOVIMIENTO_STOCK_RESULTANTE' => $stockResultante,
-                    'MOVIMIENTO_DETALLE' => 'Solicitud de materiales: ' . $solicitud->SOLICITUD_MOTIVO,
-                ]);
+                if ($validator->fails()) {
+                    // Cambio aquí: asociar directamente los mensajes de error con cada ID de material
+                    // para asegurar que se muestren correctamente en la vista.
+                    $errores["autorizar.$materialId"] = $validator->errors()->get('autorizar');
+                } else {
+                    //?? Si las validaciones pasan, actualiza la cantidad autorizada del material en la solicitud
+                    // Actualiza la cantidad autorizada del material en la solicitud
+                    $solicitud->materiales()->updateExistingPivot($materialId, ['SOLICITUD_MATERIAL_CANTIDAD_AUTORIZADA' => $cantidadAutorizada]);
 
+                    // Actualiza el stock del material
+                    $stockPrevio = $material->MATERIAL_STOCK;
+                    $stockResultante = $stockPrevio - $cantidadAutorizada;
+                    $material->update(['MATERIAL_STOCK' => $stockResultante]);
+
+                    // Registra el movimiento
+                    Movimiento::create([
+                        'USUARIO_id' => Auth::user()->id,
+                        'MATERIAL_ID' => $material->MATERIAL_ID,
+                        'MOVIMIENTO_TITULAR' => (Auth::user()->USUARIO_NOMBRES.' '.Auth::user()->USUARIO_APELLIDOS),
+                        'MOVIMIENTO_OBJETO' => 'MATERIAL: ' . $material->MATERIAL_NOMBRE,
+                        'MOVIMIENTO_TIPO_OBJETO' => $material->tipoMaterial->TIPO_MATERIAL_NOMBRE,
+                        'MOVIMIENTO_TIPO' => 'RESTA',
+                        'MOVIMIENTO_STOCK_PREVIO' => $stockPrevio,
+                        'MOVIMIENTO_CANTIDAD_A_MODIFICAR' => $cantidadAutorizada,
+                        'MOVIMIENTO_STOCK_RESULTANTE' => $stockResultante,
+                        'MOVIMIENTO_DETALLE' => 'Solicitud de materiales: ' . $solicitud->SOLICITUD_MOTIVO,
+                    ]);
+                }
             }
+
+            if (!empty($errores)) {
+                // Cambio aquí: pasar el array $errores tal como está al método withErrors.
+                // Laravel automáticamente manejará este array asociativo y mapeará los errores
+                // a los campos respectivos en el formulario basado en las claves del array.
+                return redirect()->back()->withErrors($errores)->withInput();
+            }
+
+            // Continúa con la lógica de éxito si no hay errores, sin necesidad de redirigir aquí
+            return true; // Indica éxito sin errores
         } catch (Exception $e) {
             // Considera loguear el error para depuración
-            return redirect()->back()->with('error', 'Error al autorizar los materiales, vuelva a intentarlo más tarde.');
+            return false; // Indica error
         }
     }
+
 
     public function confirmar($id)
     {

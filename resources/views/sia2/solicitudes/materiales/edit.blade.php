@@ -215,6 +215,7 @@
                     <tr>
                         <th>Material</th>
                         <th>Cantidad solicitada</th>
+                        <th>Stock disponible</th>
                         <th>Cantidad autorizada</th>
                     </tr>
                     </thead>
@@ -223,6 +224,7 @@
                             <tr>
                                 <td>{{ $material->MATERIAL_NOMBRE }}</td>
                                 <td>{{ $material->pivot->SOLICITUD_MATERIAL_CANTIDAD }}</td>
+                                <td>{{ $material->MATERIAL_STOCK }}</td>
                                 <td>
                                     <input type="number" class="form-control" name="autorizar[{{ $material->MATERIAL_ID }}]" value="{{ old('autorizar.' . $material->MATERIAL_ID, $material->pivot->SOLICITUD_MATERIAL_CANTIDAD_AUTORIZADA) }}" min="0">
                                     @if ($errors->has('autorizar.' . $material->MATERIAL_ID))

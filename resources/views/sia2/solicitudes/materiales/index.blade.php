@@ -161,10 +161,10 @@
         color: #ffffff;
         background-color: #0CB009;
         }
-        
+
     </style>
-    
-    
+
+
     <!-- Color mensajes usuario -->
     <style>
         .alert {
@@ -193,7 +193,7 @@
                 "language": {
                     "url": "https://cdn.datatables.net/plug-ins/1.11.3/i18n/es_es.json"
                 },
-                "order": [[ 2, "desc" ]],
+                "order": [[ 5, "desc" ]],
             });
         });
     </script>
