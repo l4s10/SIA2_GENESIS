@@ -9,19 +9,33 @@ use App\Http\Controllers\Activos\Equipo\TipoEquipoController;
 
 // Rutas para Materiales
 Route::prefix('material')->name('materiales.')->group(function () {
-    Route::post('/addToCart/{material}', [MaterialController::class, 'addToCart'])->name('addToCart');
-    Route::delete('/removeItem/{id}', [MaterialController::class, 'deleteFromCart'])->name('removeItem');
+    Route::post('/addToCart/{material}', [MaterialController::class, 'addToCart'])
+        ->name('addToCart')
+        ->middleware('can:crear_solicitud');
+
+    Route::delete('/removeItem/{id}', [MaterialController::class, 'deleteFromCart'])
+        ->name('removeItem')
+        ->middleware('can:crear_solicitud');
 });
 
 // Rutas para Formularios
 Route::prefix('formulario')->name('formularios.')->group(function () {
-    Route::post('/addToCart/{formulario}', [FormularioController::class, 'addToCart'])->name('addToCart');
-    // Route::get('/showCart', [FormularioController::class, 'showCart'])->name('showCart');
-    Route::delete('/removeItem/{id}', [FormularioController::class, 'deleteFromCart'])->name('removeItem');
+    Route::post('/addToCart/{formulario}', [FormularioController::class, 'addToCart'])
+        ->name('addToCart')
+        ->middleware('can:crear_solicitud');
+
+    Route::delete('/removeItem/{id}', [FormularioController::class, 'deleteFromCart'])
+        ->name('removeItem')
+        ->middleware('can:crear_solicitud');
 });
 
 // Rutas para Tipos de Equipos
 Route::prefix('tipoequipo')->name('tiposequipos.')->group(function () {
-    Route::post('/addToCart/{tipoequipo}', [TipoEquipoController::class, 'addToCart'])->name('addToCart');
-    Route::delete('/removeItem/{id}', [TipoEquipoController::class, 'removeFromCart'])->name('removeItem');
+    Route::post('/addToCart/{tipoequipo}', [TipoEquipoController::class, 'addToCart'])
+        ->name('addToCart')
+        ->middleware('can:crear_solicitud');
+
+    Route::delete('/removeItem/{id}', [TipoEquipoController::class, 'removeFromCart'])
+        ->name('removeItem')
+        ->middleware('can:crear_solicitud');
 });
