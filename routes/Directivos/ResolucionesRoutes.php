@@ -8,7 +8,7 @@ Route::prefix('resoluciones')->group(function () {
     //** Listar resoluciones */
     Route::get('/', [ResolucionController::class, 'index'])
         ->name('resoluciones.index')
-        ->middleware('can:ver_reposisitorio');
+        ->middleware('can:ver_repositorio');
 
     //  Crear resolucion
     Route::get('/resoluciones/create', [ResolucionController::class, 'create'])
