@@ -52,49 +52,75 @@
     </thead>
     <tbody>
         @foreach($tiposEquipos as $tipoEquipo)
-            <tr>
-                <td>{{ $tipoEquipo->TIPO_EQUIPO_NOMBRE }}</td>
-                <td>
-                    <form action="{{ route('tiposequipos.addToCart', $tipoEquipo->TIPO_EQUIPO_ID) }}" method="POST">
-                        @csrf
-                        <button type="submit" class="btn botoneditar">
+            @php
+                // Suma el stock de todos los equipos de este tipo
+                $stockTotal = $tipoEquipo->equipos->sum('EQUIPO_STOCK');
+            @endphp
+
+            @if ($stockTotal > 0)
+                <tr>
+                    <td>{{ $tipoEquipo->TIPO_EQUIPO_NOMBRE }}</td>
+                    <td>
+                        <button type="button" class="btn botoneditar" data-tipo-equipo-id="{{ $tipoEquipo->TIPO_EQUIPO_ID }}" data-form-action="{{ route('tiposequipos.addToCart', $tipoEquipo->TIPO_EQUIPO_ID) }}">
                             <i class="fa-solid fa-plus"></i> Agregar al Carrito
                         </button>
-                    </form>
-                </td>
-            </tr>
+                    </td>
+                </tr>
+            @endif
         @endforeach
     </tbody>
 </table>
 
-{{-- Carrito --}}
-<h3 class="centrar">Carrito</h3>
-<table class="table table-bordered" id="carrito">
-    <thead class="tablacarrito">
-        <tr>
-            <th>Tipo equipo</th>
-            <th>Cantidad</th>
-            <th>Acciones</th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach($cartItems as $cartItem)
+    {{-- Carrito --}}
+    <h3 class="centrar">Carrito</h3>
+    <table class="table table-bordered" id="carrito">
+        <thead class="tablacarrito">
             <tr>
-                <td>{{ $cartItem->name }}</td>
-                <td>{{ $cartItem->qty }}</td>
-                <td>
-                    <form action="{{ route('tiposequipos.removeItem', $cartItem->rowId) }}" method="POST">
-                        @csrf
-                        @method('DELETE')
-                        <button type="submit" class="btn btn-danger">
-                            <i class="fa-solid fa-trash"></i> Eliminar
-                        </button>
-                    </form>
-                </td>
+                <th>Tipo equipo</th>
+                <th>Cantidad</th>
+                <th>Acciones</th>
             </tr>
-        @endforeach
-    </tbody>
-</table>
+        </thead>
+        <tbody>
+            @foreach($cartItems as $cartItem)
+                <tr>
+                    <td>{{ $cartItem->name }}</td>
+                    <td>{{ $cartItem->qty }}</td>
+                    <td>
+                        <form action="{{ route('tiposequipos.removeItem', $cartItem->rowId) }}" method="POST">
+                            @csrf
+                            @method('DELETE')
+                            <button type="submit" class="btn btn-danger">
+                                <i class="fa-solid fa-trash"></i> Eliminar
+                            </button>
+                        </form>
+                    </td>
+                </tr>
+            @endforeach
+        </tbody>
+    </table>
+
+        {{-- Modal para cantidad de equipos personalizada --}}
+        <div class="modal fade" id="cantidadEquipoModal" tabindex="-1" data-bs-backdrop="static" aria-labelledby="cantidadEquipoModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="cantidadEquipoModalLabel">Agregar equipo</h5>
+                    </div>
+                    <form id="formAgregarEquipoCarrito" method="POST">
+                        @csrf
+                        <div class="modal-body">
+                            <input type="number" name="cantidad" class="form-control" required min="1" value="1">
+                            <input type="hidden" name="tipo_equipo_id" id="tipo_equipo_id">
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                            <button type="submit" class="btn btn-primary">Agregar al Carrito</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
 
     {{-- Formulario de Solicitud --}}
     <form action="{{ route('solicitudes.salas.store') }}" method="POST">
@@ -206,6 +232,19 @@
                 "language": {
                     "url": "https://cdn.datatables.net/plug-ins/1.11.3/i18n/es_es.json"
                 },
+            });
+        });
+    </script>
+
+    <script>
+        document.querySelectorAll('.botoneditar').forEach(button => {
+            button.addEventListener('click', function(event) {
+                event.preventDefault();
+                const tipoEquipoId = this.getAttribute('data-tipo-equipo-id');
+                document.getElementById('tipo_equipo_id').value = tipoEquipoId;
+                const formAction = this.getAttribute('data-form-action');
+                document.getElementById('formAgregarEquipoCarrito').action = formAction;
+                new bootstrap.Modal(document.getElementById('cantidadEquipoModal')).show();
             });
         });
     </script>

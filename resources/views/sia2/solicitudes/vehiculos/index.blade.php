@@ -245,6 +245,7 @@
                 "language": {
                     "url": "//cdn.datatables.net/plug-ins/1.11.3/i18n/es_es.json"
                 },
+                "order": [[ 5, "desc" ]],
             });
 
             $('.btn-success').on('click', function(event) {
