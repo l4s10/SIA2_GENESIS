@@ -86,7 +86,6 @@ class UsuarioController extends Controller
             // Reglas de validación
             $validator = Validator::make($request->all(), [
                 'oficina' => 'required|exists:oficinas,OFICINA_ID',
-                'GRUPO_ID' => 'required|exists:grupos,GRUPO_ID',
                 'ESCALAFON_ID' => 'required|exists:escalafones,ESCALAFON_ID',
                 'GRADO_ID' => 'required|exists:grados,GRADO_ID',
                 'CARGO_ID' => 'required|exists:cargos,CARGO_ID',
@@ -104,8 +103,6 @@ class UsuarioController extends Controller
             ], [
                 'OFICINA_ID.required' => 'El campo "Dirección regional asociada" es requerido',
                 'OFICINA_ID.exists' => 'El campo "Dirección regional asociada" no es válido.',
-                'GRUPO_ID.required' => 'El campo "Grupo" es requerido',
-                'GRUPO_ID.exists' => 'El campo "Grupo" no es válido.',
                 'ESCALAFON_ID.required' => 'El campo "Escalafón" es requerido',
                 'ESCALAFON_ID.exists' => 'El campo "Escalafón" no es válido.',
                 'GRADO_ID.required' => 'El campo "Grado" es requerido',
@@ -247,7 +244,6 @@ class UsuarioController extends Controller
             // Reglas de validación
             $validator = Validator::make($request->all(), [
                 'oficina' => 'required|exists:oficinas,OFICINA_ID',
-                'GRUPO_ID' => 'required|exists:grupos,GRUPO_ID',
                 'ESCALAFON_ID' => 'required|exists:escalafones,ESCALAFON_ID',
                 'GRADO_ID' => 'required|exists:grados,GRADO_ID',
                 'CARGO_ID' => 'required|exists:cargos,CARGO_ID',
@@ -265,8 +261,6 @@ class UsuarioController extends Controller
             ], [
                 'oficina.required' => 'El campo "Dirección regional asociada" es requerido',
                 'oficina.exists' => 'El campo "Dirección regional asociada" no es válido',
-                'GRUPO_ID.required' => 'El campo "Grupo" es requerido',
-                'GRUPO_ID.exists' => 'El campo "Grupo" no es válido',
                 'ESCALAFON_ID.required' => 'El campo "Escalafón" es requerido',
                 'ESCALAFON_ID.exists' => 'El campo "Escalafón" no es válido',
                 'GRADO_ID.required' => 'El campo "Grado" es requerido',
