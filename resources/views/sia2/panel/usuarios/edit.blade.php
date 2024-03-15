@@ -353,12 +353,11 @@
 
         // Validar fecha de ingreso a partir del día actual. 31 días antes para ingresos tardíos y 31 días después para ingresos futuros.
         let currentDate = new Date();
-        let fechaInicio = new Date(currentDate.getFullYear(), currentDate.getMonth(), currentDate.getDate() - 31);
         let fechaFin = new Date(currentDate.getFullYear(), currentDate.getMonth(), currentDate.getDate() + 31);
 
         let flatpickrConfig2 = {
             locale: 'es',
-            minDate: fechaInicio.toISOString().split('T')[0],
+            minDate: "1940-01-01",
             maxDate: fechaFin.toISOString().split('T')[0],
             dateFormat: "Y-m-d",
             altFormat: "d-m-Y",
