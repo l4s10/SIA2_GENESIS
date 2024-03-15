@@ -131,7 +131,10 @@ class ResolucionController extends Controller
             $resolucion->CARGO_ID = $request->input('CARGO_ID');
             $resolucion->RESOLUCION_DOCUMENTO = $request->input('RESOLUCION_DOCUMENTO');
             $resolucion->RESOLUCION_OBSERVACIONES = $request->input('RESOLUCION_OBSERVACIONES');
-
+            
+            
+    
+            $data = $request->only('RESOLUCION_NUMERO', 'RESOLUCION_FECHA', 'TIPO_RESOLUCION_ID', 'CARGO_ID', 'RESOLUCION_OBSERVACIONES');
 
             if ($request->hasFile('RESOLUCION_DOCUMENTO')) {
                 $documento = $request->file('RESOLUCION_DOCUMENTO');
@@ -143,10 +146,10 @@ class ResolucionController extends Controller
                 $documento->storeAs('resoluciones', $nombreArchivo, 'public');
 
                 // Asignar el nombre del archivo a la columna RESOLUCION_DOCUMENTO
-                $resolucion->RESOLUCION_DOCUMENTO = $nombreArchivo;
+                $data['RESOLUCION_DOCUMENTO'] = $nombreArchivo;
             }
             // Guardar el modelo actualizado
-            $resolucion->save();
+            Resolucion::create($data);
 
             //dd($resolucion);
             $delegaFacultad = new DelegaFacultad();
