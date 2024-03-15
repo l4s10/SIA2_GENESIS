@@ -3,7 +3,7 @@
 @section('title', 'Solicitudes de vehículos por aprobar')
 
 @section('content_header')
-    <h1>Listado de solicitudes de vehículos por rendir</h1>
+    <h1>Listado de Solicitudes de Vehículos por Rendir</h1>
 @stop
 
 @section('content')
@@ -70,9 +70,10 @@
                                 {{ $solicitud->user->email}}
                             </div>
                         </td>
-                        <td><span class="badge rounded-pill estado-{{ strtolower(str_replace(' ', '-', $solicitud->SOLICITUD_VEHICULO_ESTADO)) }}">
-                        {{ $solicitud->SOLICITUD_VEHICULO_ESTADO }}
-                        </span>
+                        <td>
+                            <span class="badge rounded-pill estado-{{ preg_replace('/\s+/u', '-', mb_strtolower($solicitud->SOLICITUD_VEHICULO_ESTADO)) }}">
+                                {{ $solicitud->SOLICITUD_VEHICULO_ESTADO }}
+                            </span>
                         </td>
                         <td>
                             <div class="d-flex justify-content-center">
@@ -118,45 +119,53 @@
 @section('css')
 
 <style>
-        /* Estilos personalizados si es necesario */
-        .tablacolor {
-            background-color: #0064a0; /* Color de fondo personalizado */
-            color: #fff; /* Color de texto personalizado */
-        }
-        .agregar {
-            background-color: #e6500a;
-            color: #fff;
-        }
-        .botoneditar {
-            background-color: #1aa16b;
-            color: #fff;
-        }
-        /*Colores de los estados*/
-        .estado-ingresado {
+    /* Estilos personalizados si es necesario */
+    .tablacolor {
+        background-color: #0064a0; /* Color de fondo personalizado */
+        color: #fff; /* Color de texto personalizado */
+    }
+    .agregar {
+        background-color: #e6500a;
+        color: #fff;
+    }
+    .botoneditar {
+        background-color: #1aa16b;
+        color: #fff;
+    }
+
+    .estado-ingresado {
         color: #000000;
         background-color: #FFA600;
         }
 
-        .estado-en-revision {
+        .estado-en-revisión {
+        color: #ffffff;
+        background-color: #0064a0;
+        }
+
+        .estado-por-aprobar {
         color: #000000;
         background-color: #F7F70B;
         }
 
+        .estado-por-autorizar {
+        color: #FFFFFF;
+        background-color: #0CB009;
+        }
+        .estado-por-rendir {
+        color: #000000;
+        background-color: #FFFFFF;
+        }
         .estado-rechazado {
         color: #FFFFFF;
         background-color: #F70B0B;
         }
-
         .estado-terminado {
         color: #000000;
         background-color: #d9d9d9;
         }
-
-        .estado-autorizado {
-        color: #ffffff;
-        background-color: #0CB009;
-        }
 </style>
+
 
 
 

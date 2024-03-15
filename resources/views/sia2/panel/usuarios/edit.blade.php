@@ -179,11 +179,11 @@
                 <div class="col-md-3">
                     {{-- Grupo field --}}
                     <div class="form-group">
-                        <label for="GRUPO_ID"><i class="fa-solid fa-user-group"></i> Grupo:</label>
-                        <select name="GRUPO_ID" id="GRUPO_ID" class="form-control @error('GRUPO_ID') is-invalid @enderror" required autofocus>
-                            <option value="" style="text-align: center;" disabled selected>-- Seleccione un grupo --</option>
-                            @foreach ($grupos as $grupo)
-                                <option value="{{ $grupo->GRUPO_ID }}" data-oficina="{{ $grupo->OFICINA_ID }}" {{ $usuario->grupo->GRUPO_ID == $grupo->GRUPO_ID ? 'selected' : '' }}>{{ $grupo->GRUPO_NOMBRE }}</option>
+                        <label for="GRUPO_ID"><i class="fa-solid fa-layer-group"></i> Grupo:</label>
+                        <select name="GRUPO_ID" id="GRUPO_ID" class="form-control @error('GRUPO_ID') is-invalid @enderror" required>
+                            <option value="" style="text-align: center;" {{ is_null($usuario->grupo) ? 'selected' : '' }}>-- Seleccione un grupo --</option>
+                            @foreach($grupos as $grupo)
+                                <option value="{{ $grupo->GRUPO_ID }}" data-oficina="{{ $grupo->OFICINA_ID }}" {{ optional($usuario->grupo)->GRUPO_ID == $grupo->GRUPO_ID ? 'selected' : '' }}>{{ $grupo->GRUPO_NOMBRE }}</option>
                             @endforeach
                         </select>
                         @error('GRUPO_ID')
@@ -193,13 +193,12 @@
                         @enderror
                     </div>
                 </div>
-
                 <div class="col-md-3">
                     {{-- Calidad Jurídica --}}
                     <div class="form-group">
                         <label for="USUARIO_CALIDAD_JURIDICA"><i class="fa-solid fa-pen-to-square"></i> Calidad Jurídica:</label>
                         <select name="USUARIO_CALIDAD_JURIDICA" id="USUARIO_CALIDAD_JURIDICA" class="form-control @error('USUARIO_CALIDAD_JURIDICA') is-invalid @enderror" required>
-                            <option value="" style="text-align: center;" selected disabled>{{ __('-- Seleccione una opción --') }}</option>
+                            <option value="" style="text-align: center;" selected >{{ __('-- Seleccione una opción --') }}</option>
                             <option value="PLANTA" {{ $usuario->USUARIO_CALIDAD_JURIDICA == 'PLANTA' ? 'selected' : '' }}>{{ __('PLANTA') }}</option>
                             <option value="CONTRATA" {{ $usuario->USUARIO_CALIDAD_JURIDICA == 'CONTRATA' ? 'selected' : '' }}>{{ __('CONTRATA') }}</option>
                         </select>
@@ -216,7 +215,7 @@
                     <div class="form-group">
                         <label for="GRADO_ID"><i class="fa-solid fa-layer-group"></i> Grado:</label>
                         <select name="GRADO_ID" id="GRADO_ID" class="form-control @error('GRADO_ID') is-invalid @enderror" required>
-                            <option value="" style="text-align: center;" selected disabled>-- Seleccione un grado --</option>
+                            <option value="" style="text-align: center;" selected >-- Seleccione un grado --</option>
                             @foreach($grados as $grado)
                                 <option value="{{ $grado->GRADO_ID }}" data-oficina="{{ $grado->OFICINA_ID }}" {{ $usuario->grado->GRADO_ID == $grado->GRADO_ID ? 'selected' : '' }}>{{ $grado->GRADO_NUMERO }}</option>
                             @endforeach
@@ -233,7 +232,7 @@
                     <div class="form-group">
                         <label for="ESCALAFON_ID"><i class="fa-solid fa-layer-group"></i> Escalafón:</label>
                         <select name="ESCALAFON_ID" id="ESCALAFON_ID" class="form-control @error('ESCALAFON_ID') is-invalid @enderror" required>
-                            <option value="" style="text-align: center;" selected disabled>-- Seleccione un escalafón --</option>
+                            <option value="" style="text-align: center;" selected >-- Seleccione un escalafón --</option>
                             @foreach($escalafones as $escalafon)
                                 <option value="{{ $escalafon->ESCALAFON_ID }}" data-oficina="{{ $escalafon->OFICINA_ID }}" {{ $usuario->ESCALAFON_ID == $escalafon->ESCALAFON_ID ? 'selected' : '' }}>{{ $escalafon->ESCALAFON_NOMBRE }}</option>
                             @endforeach
@@ -251,7 +250,7 @@
                     <div class="form-group">
                         <label for="CARGO_ID"><i class="fa-solid fa-person-circle-check"></i> Cargo:</label>
                         <select name="CARGO_ID" id="CARGO_ID" class="form-control @error('CARGO_ID') is-invalid @enderror" required>
-                            <option value="" selected>Seleccione un cargo</option>
+                            <option value=""  style="text-align: center;" selected>-- Seleccione un cargo --</option>
                             @foreach ($cargos as $cargo)
                                 <option value="{{ $cargo->CARGO_ID }}" data-oficina="{{ $cargo->OFICINA_ID }}" {{ old('CARGO_ID', $usuario->CARGO_ID) == $cargo->CARGO_ID ? 'selected' : '' }}>{{ $cargo->CARGO_NOMBRE }}</option>
                             @endforeach
@@ -353,12 +352,11 @@
 
         // Validar fecha de ingreso a partir del día actual. 31 días antes para ingresos tardíos y 31 días después para ingresos futuros.
         let currentDate = new Date();
-        let fechaInicio = new Date(currentDate.getFullYear(), currentDate.getMonth(), currentDate.getDate() - 31);
         let fechaFin = new Date(currentDate.getFullYear(), currentDate.getMonth(), currentDate.getDate() + 31);
 
         let flatpickrConfig2 = {
             locale: 'es',
-            minDate: fechaInicio.toISOString().split('T')[0],
+            minDate: "1940-01-01",
             maxDate: fechaFin.toISOString().split('T')[0],
             dateFormat: "Y-m-d",
             altFormat: "d-m-Y",
@@ -444,7 +442,7 @@
             selector.appendChild(opcion);
         });
     }
-</script>
+</script>"
 
 <script>
     document.addEventListener("DOMContentLoaded", function() {

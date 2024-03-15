@@ -62,6 +62,13 @@ return [
             'throw' => false,
         ],
 
+        'resoluciones' => [
+            'driver' => 'local',
+            'root' => storage_path('app/resoluciones'),
+            'url' => env('APP_URL') . '/storage/resoluciones',
+            'visibility' => 'public',
+        ],
+
     ],
 
     /*

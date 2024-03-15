@@ -35,4 +35,9 @@ Route::prefix('resoluciones')->group(function () {
     Route::delete('/{resolucion}', [ResolucionController::class, 'destroy'])
         ->name('resoluciones.destroy')
         ->middleware('can:eliminar_repositorio');
+
+    // Ruta para obtener documento asociado a una resolucion
+    Route::get('/{resolucion}/documento/{filename}', [ResolucionController::class, 'showDocumento'])
+    ->name('resolucion.documento');
 });
+

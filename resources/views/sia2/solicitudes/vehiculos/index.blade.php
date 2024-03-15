@@ -3,7 +3,7 @@
 @section('title', 'Solicitudes de vehículos')
 
 @section('content_header')
-    <h1>Listado de solicitudes de vehículos</h1>
+    <h1>Listado de Solicitudes de Vehículos</h1>
     @role('ADMINISTRADOR')
     <div class="alert alert-info alert1" role="alert">
     <div><strong>Bienvenido Administrador:</strong> Acceso total al modulo.<div>
@@ -101,23 +101,9 @@
                             </div>
                         </td>
                         <td>
-                            <div class="d-flex justify-content-center">
-                                @if ($solicitud->SOLICITUD_VEHICULO_ESTADO == 'INGRESADO')
-                                    <span style="color: #e6500a;">🟠 <span style="color: black; font-weight: bold;">INGRESADO</span></span>
-                                @elseif ($solicitud->SOLICITUD_VEHICULO_ESTADO == 'EN REVISIÓN')
-                                    <span style="color: #0000ff;">🔵 <span style="color: black; font-weight: bold;">EN REVISIÓN</span></span>
-                                @elseif ($solicitud->SOLICITUD_VEHICULO_ESTADO == 'POR APROBAR')
-                                    <span style="color: #ffff00;">🟡 <span style="color: black; font-weight: bold;">POR APROBAR</span></span>
-                                @elseif ($solicitud->SOLICITUD_VEHICULO_ESTADO == 'POR AUTORIZAR')
-                                    <span style="color: #00ff00;">🟢 <span style="color: black; font-weight: bold;">POR AUTORIZAR</span></span>
-                                @elseif ($solicitud->SOLICITUD_VEHICULO_ESTADO == 'POR RENDIR')
-                                    <span style="color: #ffffff;">⚪ <span style="color: black; font-weight: bold;">POR RENDIR</span></span>
-                                @elseif ($solicitud->SOLICITUD_VEHICULO_ESTADO == 'RECHAZADO')
-                                    <span style="color: #ff0000;">🔴 <span style="color: black; font-weight: bold;">RECHAZADO</span></span>
-                                @elseif ($solicitud->SOLICITUD_VEHICULO_ESTADO == 'TERMINADO')
-                                    <span style="color: #000000;">⚫ <span style="color: black; font-weight: bold;">TERMINADO</span></span>
-                                @endif
-                            </div>
+                            <span class="badge rounded-pill estado-{{ preg_replace('/\s+/u', '-', mb_strtolower($solicitud->SOLICITUD_VEHICULO_ESTADO)) }}">
+                                {{ $solicitud->SOLICITUD_VEHICULO_ESTADO }}
+                            </span>
                         </td>
                         <td>
                             <div class="d-flex justify-content-center">
@@ -129,19 +115,34 @@
                                 {{-- Boton de ver detalles --}}
                                 <a href="{{ route('solicitudesvehiculos.timeline', $solicitud->SOLICITUD_VEHICULO_ID) }}" class="btn btn-primary"><i class="fa-solid fa-eye"></i></a>
 
-                                {{-- Boton de editar --}}
-                                @role('ADMINISTRADOR|SERVICIOS')
-                                    <a href="{{ route('solicitudesvehiculos.edit', $solicitud->SOLICITUD_VEHICULO_ID) }}" class="btn btn-secondary ml-2"><i class="fa-solid fa-pencil"></i></a>
-                                @endrole
+                                @if ($solicitud->SOLICITUD_VEHICULO_ESTADO == 'INGRESADO' || $solicitud->SOLICITUD_VEHICULO_ESTADO == 'EN REVISIÓN')
 
-                                {{-- Boton de eliminar --}}
-                                @role('ADMINISTRADOR')
+                                    {{-- Boton de editar --}}
+                                    @role('ADMINISTRADOR|SERVICIOS')
+                                        <a href="{{ route('solicitudesvehiculos.edit', $solicitud->SOLICITUD_VEHICULO_ID) }}" class="btn btn-secondary ml-2"><i class="fa-solid fa-pencil"></i></a>
+                                    @endrole
+
+                                    {{-- Boton de eliminar --}}
+                                    @role('ADMINISTRADOR')
+                                        <form action="{{ route('solicitudesvehiculos.destroy', $solicitud->SOLICITUD_VEHICULO_ID) }}" method="POST" class="d-inline">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button type="submit" class="btn btn-danger ml-2"><i class="fa-solid fa-trash"></i></button>
+                                        </form>
+                                    @endrole
+
+                                @else
+
+                                    {{-- Boton de eliminar --}}
+                                    @role('ADMINISTRADOR')
                                     <form action="{{ route('solicitudesvehiculos.destroy', $solicitud->SOLICITUD_VEHICULO_ID) }}" method="POST" class="d-inline">
                                         @csrf
                                         @method('DELETE')
                                         <button type="submit" class="btn btn-danger ml-2"><i class="fa-solid fa-trash"></i></button>
                                     </form>
-                                @endrole
+                                    @endrole
+                                @endif
+
                             </div>
                         </td>
                         <td>
@@ -175,21 +176,53 @@
         background-color: #1aa16b;
         color: #fff;
     }
+
+    .estado-ingresado {
+        color: #000000;
+        background-color: #FFA600;
+        }
+
+        .estado-en-revisión {
+        color: #ffffff;
+        background-color: #0064a0;
+        }
+
+        .estado-por-aprobar {
+        color: #000000;
+        background-color: #F7F70B;
+        }
+
+        .estado-por-autorizar {
+        color: #FFFFFF;
+        background-color: #0CB009;
+        }
+        .estado-por-rendir {
+        color: #000000;
+        background-color: #FFFFFF;
+        }
+        .estado-rechazado {
+        color: #FFFFFF;
+        background-color: #F70B0B;
+        }
+        .estado-terminado {
+        color: #000000;
+        background-color: #d9d9d9;
+        }
 </style>
 
-    <!-- Color mensajes usuario -->
-    <style>
-        .alert {
-            opacity: 0.7; /* Ajusta la opacidad del texto */
-            background-color: #99CCFF;
-            color:     #000000;
-        }
-        .alert1 {
-            opacity: 0.7; /* Ajusta la opacidad del texto  */
-            background-color: #FF8C40;
-            color: #000000;
-        }
-    </style>
+<!-- Color mensajes usuario -->
+<style>
+    .alert {
+        opacity: 0.7; /* Ajusta la opacidad del texto */
+        background-color: #99CCFF;
+        color:     #000000;
+    }
+    .alert1 {
+        opacity: 0.7; /* Ajusta la opacidad del texto  */
+        background-color: #FF8C40;
+        color: #000000;
+    }
+</style>
 
 
 

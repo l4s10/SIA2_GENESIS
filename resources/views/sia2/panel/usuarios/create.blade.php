@@ -196,7 +196,7 @@
                     {{-- Grupo field --}}
                     <div class="form-group">
                         <label for="GRUPO_ID"><i class="fa-solid fa-user-group"></i> Grupo:</label>
-                        <select name="GRUPO_ID" id="GRUPO_ID" class="form-control @error('GRUPO_ID') is-invalid @enderror" required autofocus>
+                        <select name="GRUPO_ID" id="GRUPO_ID" class="form-control @error('GRUPO_ID') is-invalid @enderror"  autofocus>
                             <option value="" style="text-align: center;" disabled selected>-- Seleccione un grupo --</option>
                             @foreach ($grupos as $grupo)
                                 <option value="{{ $grupo->GRUPO_ID }}" data-oficina="{{ $grupo->OFICINA_ID }}" {{ old('GRUPO_ID') == $grupo->GRUPO_ID ? 'selected' : '' }}>{{ $grupo->GRUPO_NOMBRE }}</option>

@@ -105,7 +105,7 @@
             color: #fff;
         }
     </style>
-|@stop
+@stop
 
 @section('js')
     <!-- Para inicializar -->
