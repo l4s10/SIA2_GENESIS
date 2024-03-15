@@ -11,8 +11,10 @@ use Gloudemans\Shoppingcart\Facades\Cart;
 
 use Exception;
 
+use App\Models\Equipo;
 use App\Models\TipoEquipo;
 use App\Models\Oficina;
+
 
 
 
@@ -183,7 +185,7 @@ class TipoEquipoController extends Controller
                 'TIPO_EQUIPO_NOMBRE.max' => 'El campo "Nombre Tipo" no debe exceder los :max caracteres.'
             ]);
 
-            
+
             // Validar clave única compuesta
             $validator->after(function ($validator) use ($request, $id) {
                 $exists = TipoEquipo::where([
@@ -244,17 +246,31 @@ class TipoEquipoController extends Controller
     }
 
     // Funciones para agregar y tipos de equipo al carrito
-    public function addToCart(TipoEquipo $tipoequipo)
+    public function addToCart(Request $request, TipoEquipo $tipoequipo)
     {
         // Llamamos a la instancia del carrito de compras para los equipos
         $carritoEquipos = Cart::instance('carrito_equipos');
 
-        // Agregamos el tipo de equipo al carrito
-        $carritoEquipos->add($tipoequipo, 1);
+        // Obtenemos la cantidad deseada desde la solicitud
+        $cantidadSolicitada = $request->input('cantidad', 1);
 
-        // Retornar a la vista con un mensaje de éxito y mantener los datos de entrada del formulario
-        return redirect()->back()->with('success', 'Tipo de equipo agregado exitosamente')->withInput();
+        // Obtenemos el stock total disponible para este tipo de equipo
+        $stockTotal = Equipo::where('TIPO_EQUIPO_ID', $tipoequipo->TIPO_EQUIPO_ID)
+                             ->sum('EQUIPO_STOCK');
+
+        // Verificamos si la cantidad solicitada no excede el stock disponible
+        if ($cantidadSolicitada > $stockTotal) {
+            // Si excede el stock, retornamos a la página anterior con un mensaje de error
+            return redirect()->back()->with('error', 'La cantidad solicitada excede el stock disponible.')->withInput();
+        }
+
+        // Agregamos el tipo de equipo al carrito con la cantidad solicitada
+        $carritoEquipos->add($tipoequipo, $cantidadSolicitada);
+
+        // Retornar a la vista con un mensaje de éxito
+        return redirect()->back()->with('success', 'Tipo de equipo agregado exitosamente con la cantidad especificada.')->withInput();
     }
+
 
     // Función para eliminar un tipo de equipo del carrito
     public function removeFromCart($rowId)

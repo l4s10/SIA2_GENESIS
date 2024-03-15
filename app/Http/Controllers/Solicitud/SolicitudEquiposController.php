@@ -6,11 +6,14 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Gloudemans\Shoppingcart\Facades\Cart;
 use Exception;
 use App\Models\Solicitud;
 use App\Models\TipoEquipo;
+use App\Models\Equipo;
 use App\Models\RevisionSolicitud;
+use App\Models\Movimiento;
 
 
 class SolicitudEquiposController extends Controller
@@ -21,8 +24,16 @@ class SolicitudEquiposController extends Controller
     public function index()
     {
         try{
-            // Query que a traves de la relacion has() filtra las solicitudes que SOLO tengan equipos asociados
-            $solicitudes = Solicitud::has('equipos')->get();
+            // SI el usuario es ADMINISTRADOR o INFORMATICA, mostrar todas las solicitudes de equipos (filtrado por oficina)
+            if (Auth::user()->hasRole('ADMINISTRADOR') || Auth::user()->hasRole('INFORMATICA')) {
+                // Filtrar por OFICINA_ID del usuario logueado con la relacion solicitante
+                $solicitudes = Solicitud::has('equipos')->whereHas('solicitante', function ($query) {
+                    $query->where('OFICINA_ID', Auth::user()->OFICINA_ID);
+                })->orderBy('created_at', 'desc')->get();
+            } else {
+                // Si el usuario es otro tipo de usuario, mostrar solo sus solicitudes de equipos a traves de la relacion solicitante y la sesion activa
+                $solicitudes = Solicitud::has('equipos')->where('USUARIO_id', Auth::user()->id)->orderBy('created_at', 'desc')->get();
+            }
             // Retornar la vista con las solicitudes
             return view('sia2.solicitudes.equipos.index', compact('solicitudes'));
         }catch(Exception $e){
@@ -117,8 +128,14 @@ class SolicitudEquiposController extends Controller
     public function show(string $id)
     {
         try{
+            // SI el usuario tiene rol ADMINISTRADOR o INFORMATICA, buscar la solicitud y mostrarla
+            if (Auth::user()->hasRole('ADMINISTRADOR') || Auth::user()->hasRole('INFORMATICA')) {
+                $solicitud = Solicitud::has('equipos')->findOrFail($id);
+            } else {
+                // Si el usuario no tiene rol ADMINISTRADOR o INFORMATICA, buscar la solicitud y mostrarla solo si es el solicitante, en caso de que no sea el solicitante, redirigir a la vista index con mensaje de error.
+                $solicitud = Solicitud::has('equipos')->where('USUARIO_id', Auth::user()->id)->findOrFail($id);
+            }
             // Retornar la vista con la solicitud
-            $solicitud = Solicitud::has('equipos')->findOrFail($id);
             return view('sia2.solicitudes.equipos.show', compact('solicitud'));
         }catch(Exception $e){
             // Manejar excepciones
@@ -148,6 +165,7 @@ class SolicitudEquiposController extends Controller
      */
     public function update(Request $request, string $id)
     {
+        DB::beginTransaction(); // Inicia una nueva transacción
         // try-catch
         try{
             // Obtener la solicitud
@@ -156,83 +174,190 @@ class SolicitudEquiposController extends Controller
             // Determinar la acción basada en el botón presionado
             switch ($request->input('action')) {
                 case 'guardar':
-                    // Lógica para guardar cambios
-                    $solicitud->update(['SOLICITUD_ESTADO' => 'EN REVISION']);
+                    $validator = $this->validateGuardar($request);
+                    if($validator->fails()){
+                        DB::rollBack(); // Revierte la transacción
+                        return redirect()->back()->withErrors($validator)->withInput();
+                    }
+                    $this->createRevisionSolicitud($request, $solicitud);
+                    $this->updateSolicitud($request, $solicitud, 'EN REVISION');
                 break;
 
                 case 'finalizar_revision':
-                    // Lógica para finalizar la revisión
-                    $solicitud->update(['SOLICITUD_ESTADO' => 'APROBADO']);
-                break;
-
-                case 'rechazar':
-                    // verificar al menos que haya una observacion (motivo del rechazo) con validator
-                    $validator = Validator::make($request->all(),[
-                        'REVISION_SOLICITUD_OBSERVACION' => 'required|string|max:255',
-                    ], [
-                        //Mensajes de error
-                        'REVISION_SOLICITUD_OBSERVACION.required' => 'Indique el motivo del rechazo.',
-                        'REVISION_SOLICITUD_OBSERVACION.string' => 'El campo Observación debe ser una cadena de caracteres.',
-                    ]);
-                    // Si la validación falla, se redirecciona al formulario con los errores
+                    $validator = $this->validateFinalizarRevision($request);
                     if ($validator->fails()) {
+                        DB::rollBack(); // Revierte la transacción antes de redirigir con errores
                         return redirect()->back()->withErrors($validator)->withInput();
                     }
-                    // Lógica para rechazar la solicitud
-                    $solicitud->update(['SOLICITUD_ESTADO' => 'RECHAZADO']);
-                    // Guardar la observacion del rechazo
+                    $resultadoAutorizacion = $this->autorizarEquipos($request, $solicitud);
+                    if (is_array($resultadoAutorizacion) && isset($resultadoAutorizacion['errors'])) {
+                        // Si hay errores específicos de autorización, revierte la transacción
+                        DB::rollBack();
+                        // Redirige de vuelta con los mensajes de error específicos
+                        return redirect()->back()->withErrors($resultadoAutorizacion['errors'])->withInput();
+                    }
+                    $this->updateSolicitud($request, $solicitud, 'APROBADO');
                     $this->createRevisionSolicitud($request, $solicitud);
-                    // redireccionar a la vista de solicitudes con un mensaje de éxito
-                    return redirect()->route('solicitudes.equipos.index')->with('success', 'Solicitud rechazada exitosamente');
+                    break;
+
+
+                case 'rechazar':
+                    $validator = $this->validateRechazar($request);
+                    if ($validator->fails()) {
+                        DB::rollBack(); // Revierte la transacción antes de redirigir con errores
+                        return redirect()->back()->withErrors($validator)->withInput();
+                    }
+                    $this->updateSolicitud($request, $solicitud, 'RECHAZADO');
+                    $this->createRevisionSolicitud($request, $solicitud);
+                    return $this->redirectSuccess('Solicitud rechazada exitosamente');
                 break;
-
-                // default:
-                    // Lógica por defecto o para casos no contemplados
-                    // break;
-            }
-            // Valida los datos del formulario de solicitud de equipos.
-            $validator = Validator::make($request->all(),[
-                // 'SOLICITUD_ESTADO' => 'required|string|max:255|in:INGRESADO,EN REVISION,APROBADO,RECHAZADO,TERMINADO',
-                'SOLICITUD_FECHA_HORA_INICIO_ASIGNADA' => 'required|date',
-                'SOLICITUD_FECHA_HORA_TERMINO_ASIGNADA' => 'required|date|after:SOLICITUD_FECHA_HORA_INICIO_ASIGNADA',
-
-                'REVISION_SOLICITUD_OBSERVACION' => 'required|string|max:255',
-                'autorizar.*' => 'required|numeric|min:0', // Asegura que todos los valores en el array sean numéricos y no negativos
-            ], [
-                //Mensajes de error
-                'required' => 'El campo :attribute es requerido.',
-                'date' => 'El campo :attribute debe ser una fecha.',
-                'after' => 'El campo :attribute debe ser una fecha posterior a la fecha de inicio solicitada.',
-                'string' => 'El campo :attribute debe ser una cadena de caracteres.',
-                'in' => 'El campo :attribute debe ser uno de los valores: INGRESADO, EN REVISION, APROBADO, RECHAZADO, TERMINADO',
-                'numeric' => 'El campo :attribute debe ser un número.',
-                'min' => 'El campo :attribute debe ser un número no negativo.'
-            ]);
-
-            // Si la validación falla, redirecciona al formulario con los errores y el input antiguo
-            if ($validator->fails()) {
-                return redirect()->back()->withErrors($validator)->withInput();
             }
 
-            // Actualizar la solicitud
-            $solicitud->update([
-                // 'SOLICITUD_ESTADO' => $request->input('SOLICITUD_ESTADO'),
-                'SOLICITUD_FECHA_HORA_INICIO_ASIGNADA' => $request->input('SOLICITUD_FECHA_HORA_INICIO_ASIGNADA'),
-                'SOLICITUD_FECHA_HORA_TERMINO_ASIGNADA' => $request->input('SOLICITUD_FECHA_HORA_TERMINO_ASIGNADA'),
-            ]);
-
-            // Autorizar los equipos si corresponde
-            $this->autorizarEquipos($request, $solicitud);
-
-            // Crear la revisión de la solicitud
-            $this->createRevisionSolicitud($request, $solicitud);
-
-            // Redireccionar a la vista de solicitudes con un mensaje de éxito
-            return redirect()->route('solicitudes.equipos.index')->with('success', 'Solicitud actualizada exitosamente');
+            DB::commit(); // Confirma la transacción
+            return $this->redirectSuccess('Solicitud actualizada exitosamente');
         }catch(Exception $e){
             // Manejar excepciones
-            return redirect()->route('solicitudes.equipos.index')->with('error', 'Error al cargar la solicitud.');
+            DB:rollBack(); // Revierte la transacción
+            return $this->redirectError('Error al procesar la solicitud: ' . $e->getMessage());
         }
+    }
+
+
+        /**
+     * Validates the 'guardar' action of the solicitud.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Contracts\Validation\Validator
+     */
+    private function validateGuardar($request)
+    {
+        // Code for validating 'guardar'
+        // Validates at least one observation of the solicitud, optionally the assignment dates and authorized quantities of the materials (ONLY IF ENTERED)
+        $validator = Validator::make($request->all(),[
+            'REVISION_SOLICITUD_OBSERVACION' => 'required|string|max:255',
+            'SOLICITUD_FECHA_HORA_INICIO_ASIGNADA' => 'required|date',
+            'SOLICITUD_FECHA_HORA_TERMINO_ASIGNADA' => 'required|date|after:SOLICITUD_FECHA_HORA_INICIO_ASIGNADA',
+            'autorizar.*' => 'nullable|numeric|min:0',
+        ], [
+            // Error messages
+            'REVISION_SOLICITUD_OBSERVACION.required' => 'Indicate the reason for the revision.',
+            'REVISION_SOLICITUD_OBSERVACION.string' => 'The Observation field must be a string.',
+            'REVISION_SOLICITUD_OBSERVACION.max' => 'The Observation field must not exceed 255 characters.',
+            'SOLICITUD_FECHA_HORA_INICIO_ASIGNADA.required' => 'The Start Date Assigned field is required.',
+            'SOLICITUD_FECHA_HORA_INICIO_ASIGNADA.date' => 'The Start Date Assigned field must be a date.',
+            'SOLICITUD_FECHA_HORA_TERMINO_ASIGNADA.required' => 'The End Date Assigned field is required.',
+            'SOLICITUD_FECHA_HORA_TERMINO_ASIGNADA.date' => 'The End Date Assigned field must be a date.',
+            'SOLICITUD_FECHA_HORA_TERMINO_ASIGNADA.after' => 'The End Date Assigned field must be a date after the requested start date.',
+            'autorizar.*.nullable' => 'The Authorized Quantity field must be null or a number.',
+            'autorizar.*.numeric' => 'The Authorized Quantity field must be a number.',
+            'autorizar.*.min' => 'The Authorized Quantity field cannot be negative.',
+        ]);
+
+        return $validator;
+    }
+
+    /**
+     * Validates the 'finalizar_revision' action of the solicitud.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Contracts\Validation\Validator
+     */
+    private function validateFinalizarRevision($request)
+    {
+        // Code for validating 'finalizar_revision'
+        $validator = Validator::make($request->all(),[
+            // 'SOLICITUD_ESTADO' => 'required|string|max:255|in:INGRESADO,EN REVISION,APROBADO,RECHAZADO,TERMINADO',
+            'SOLICITUD_FECHA_HORA_INICIO_ASIGNADA' => 'required|date',
+            'SOLICITUD_FECHA_HORA_TERMINO_ASIGNADA' => 'required|date|after:SOLICITUD_FECHA_HORA_INICIO_ASIGNADA',
+            'REVISION_SOLICITUD_OBSERVACION' => 'required|string|max:255',
+        ], [
+            // Error messages
+            'SOLICITUD_FECHA_HORA_INICIO_ASIGNADA.required' => 'La fecha de inicio asignada es requerida.',
+            'SOLICITUD_FECHA_HORA_INICIO_ASIGNADA.date' => 'La fecha de inicio asignada debe ser una fecha.',
+            'SOLICITUD_FECHA_HORA_TERMINO_ASIGNADA.required' => 'La fecha de término asignada es requerida.',
+            'SOLICITUD_FECHA_HORA_TERMINO_ASIGNADA.date' => 'La fecha de término asignada debe ser una fecha.',
+            'SOLICITUD_FECHA_HORA_TERMINO_ASIGNADA.after' => 'La fecha de término asignada debe ser una fecha posterior a la fecha de inicio asignada.',
+            'REVISION_SOLICITUD_OBSERVACION.required' => 'Indique el motivo de la revisión.',
+            'REVISION_SOLICITUD_OBSERVACION.string' => 'El campo Observación debe ser una cadena de caracteres.',
+            'REVISION_SOLICITUD_OBSERVACION.max' => 'El campo Observación no debe exceder los 255 caracteres.',
+        ]);
+
+        return $validator;
+    }
+
+    /**
+     * Validates the 'rechazar' action of the solicitud.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Contracts\Validation\Validator
+     */
+    private function validateRechazar($request)
+    {
+        // Code for validating 'rechazar'
+        // Should return true or false depending on the validation result
+        // Verify at least one observation (reason for rejection) with validator
+        $validator = Validator::make($request->all(),[
+            'REVISION_SOLICITUD_OBSERVACION' => 'required|string|max:255',
+            'SOLICITUD_FECHA_HORA_INICIO_ASIGNADA' => 'nullable|date',
+            'SOLICITUD_FECHA_HORA_TERMINO_ASIGNADA' => 'nullable|date|after:SOLICITUD_FECHA_HORA_INICIO_ASIGNADA',
+            'autorizar.*' => 'nullable|numeric|min:0',
+
+        ], [
+            // Error messages
+            'REVISION_SOLICITUD_OBSERVACION.required' => 'Indique el motivo del rechazo.',
+            'REVISION_SOLICITUD_OBSERVACION.string' => 'El campo Observación debe ser una cadena de caracteres.',
+            'REVISION_SOLICITUD_OBSERVACION.max' => 'El campo Observación no debe exceder los 255 caracteres.',
+            'SOLICITUD_FECHA_HORA_INICIO_ASIGNADA.date' => 'La fecha de inicio asignada debe ser una fecha.',
+            'SOLICITUD_FECHA_HORA_TERMINO_ASIGNADA.date' => 'La fecha de término asignada debe ser una fecha.',
+            'SOLICITUD_FECHA_HORA_TERMINO_ASIGNADA.after' => 'La fecha de término asignada debe ser una fecha posterior a la fecha de inicio asignada.',
+            'autorizar.*.nullable' => 'La Cantidad Autorizada debe ser nula o un número.',
+            'autorizar.*.numeric' => 'La Cantidad Autorizada debe ser un número.',
+            'autorizar.*.min' => 'La Cantidad Autorizada no puede ser negativa.',
+        ]);
+
+        return $validator;
+    }
+
+    /**
+     * Updates the solicitud (request) with the given data and state.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  \App\Models\Solicitud  $solicitud
+     * @param  string  $estado
+     * @return void
+     */
+    private function updateSolicitud($request, $solicitud, $estado)
+    {
+        // Common logic for updating the solicitud
+        $solicitud->update([
+            'SOLICITUD_ESTADO' => $estado,
+            'SOLICITUD_FECHA_HORA_INICIO_ASIGNADA' => $request->input('SOLICITUD_FECHA_HORA_INICIO_ASIGNADA'),
+            'SOLICITUD_FECHA_HORA_TERMINO_ASIGNADA' => $request->input('SOLICITUD_FECHA_HORA_TERMINO_ASIGNADA'),
+        ]);
+    }
+
+    /**
+     * Redirects to the index page for materials requests with a success message.
+     *
+     * @param string $message The success message to be displayed.
+     * @return \Illuminate\Http\RedirectResponse The redirect response to the index page with the success message.
+     */
+    private function redirectSuccess($message)
+    {
+        // Redirigir con mensaje de éxito
+        return redirect()->route('solicitudes.equipos.index')->with('success', $message);
+    }
+
+    /**
+     * Redirects to the index page of the materials request with an error message.
+     *
+     * @param string $message The error message to be displayed.
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    private function redirectError($message)
+    {
+        // Redirigir con mensaje de error
+        return redirect()->route('solicitudes.equipos.index')->with('error', $message);
     }
 
     /**
@@ -279,18 +404,58 @@ class SolicitudEquiposController extends Controller
         }
     }
 
-    // Funcion para autorizar los equipos si corresponde
-    private function autorizarEquipos(Request $request, Solicitud $solicitud){
+    private function autorizarEquipos(Request $request, Solicitud $solicitud) {
         try {
-            $autorizaciones = $request->input('autorizar', []); // Obtiene el array de autorizaciones o un array vacío si no hay nada
+            $autorizaciones = $request->input('autorizar', []);
+            $errores = [];
 
             foreach ($autorizaciones as $tipoEquipoId => $cantidadAutorizada) {
-                $solicitud->equipos()->updateExistingPivot($tipoEquipoId, ['SOLICITUD_EQUIPOS_CANTIDAD_AUTORIZADA' => $cantidadAutorizada]);
+                $tipoEquipo = TipoEquipo::findOrFail($tipoEquipoId);
+                $equipos = Equipo::where('TIPO_EQUIPO_ID', $tipoEquipoId)->where('EQUIPO_STOCK', '>', 0)->get();
+
+                if ($cantidadAutorizada > $equipos->sum('EQUIPO_STOCK')) {
+                    $errores["autorizar.$tipoEquipoId"] = "La cantidad autorizada de " . $tipoEquipo->TIPO_EQUIPO_NOMBRE . " excede el stock disponible.";
+                    continue;
+                }
+
+                foreach ($equipos as $equipo) {
+                    if ($cantidadAutorizada <= 0) break;
+
+                    $cantidadDisponible = $equipo->EQUIPO_STOCK;
+                    $cantidadAUsar = min($cantidadAutorizada, $cantidadDisponible);
+
+                    $equipo->decrement('EQUIPO_STOCK', $cantidadAUsar);
+
+                    Movimiento::create([
+                        'USUARIO_id' => Auth::user()->id,
+                        'EQUIPO_ID' => $equipo->id, // Asegúrate de que este campo se llama 'id', no 'EQUIPO_ID', a menos que tu modelo lo especifique así.
+                        'MOVIMIENTO_TITULAR' => (Auth::user()->USUARIO_NOMBRES.' '.Auth::user()->USUARIO_APELLIDOS),
+                        'MOVIMIENTO_OBJETO' => 'EQUIPO: ' . $equipo->EQUIPO_MODELO,
+                        'MOVIMIENTO_TIPO_OBJETO' => $equipo->tipoEquipo->TIPO_EQUIPO_NOMBRE,
+                        'MOVIMIENTO_TIPO' => 'RESTA',
+                        'MOVIMIENTO_STOCK_PREVIO' => $cantidadDisponible,
+                        'MOVIMIENTO_CANTIDAD_A_MODIFICAR' => $cantidadAUsar,
+                        'MOVIMIENTO_STOCK_RESULTANTE' => $cantidadDisponible - $cantidadAUsar,
+                        'MOVIMIENTO_DETALLE' => 'Autorización de solicitud de equipos: ' . $solicitud->SOLICITUD_MOTIVO,
+                    ]);
+
+                    $cantidadAutorizada -= $cantidadAUsar;
+                }
+
+                if ($cantidadAutorizada > 0) {
+                    $errores["autorizar.$tipoEquipoId"] .= " No se pudo autorizar la cantidad completa de " . $tipoEquipo->TIPO_EQUIPO_NOMBRE . ".";
+                }
             }
+
+            if (!empty($errores)) {
+                return ['errors' => $errores];
+            }
+
+            return ['success' => true];
         } catch (Exception $e) {
-            // Considera loguear el error para depuración
-            return redirect()->back()->with('error', 'Error al autorizar los equipos, vuelva a intentarlo más tarde.');
+            return ['errors' => ['general' => 'Error al autorizar los equipos, vuelva a intentarlo más tarde.']];
         }
     }
+
 
 }

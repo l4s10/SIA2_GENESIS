@@ -52,17 +52,21 @@
         </thead>
         <tbody>
             @foreach($tiposEquipos as $tipoEquipo)
-                <tr>
-                    <td>{{ $tipoEquipo->TIPO_EQUIPO_NOMBRE }}</td>
-                    <td>
-                        <form action="{{ route('tiposequipos.addToCart', $tipoEquipo->TIPO_EQUIPO_ID) }}" method="POST">
-                            @csrf
-                            <button type="submit" class="btn botoneditar">
+                @php
+                    // Suma el stock de todos los equipos de este tipo
+                    $stockTotal = $tipoEquipo->equipos->sum('EQUIPO_STOCK');
+                @endphp
+
+                @if ($stockTotal > 0)
+                    <tr>
+                        <td>{{ $tipoEquipo->TIPO_EQUIPO_NOMBRE }}</td>
+                        <td>
+                            <button type="button" class="btn botoneditar" data-tipo-equipo-id="{{ $tipoEquipo->TIPO_EQUIPO_ID }}" data-form-action="{{ route('tiposequipos.addToCart', $tipoEquipo->TIPO_EQUIPO_ID) }}">
                                 <i class="fa-solid fa-plus"></i> Agregar al Carrito
                             </button>
-                        </form>
-                    </td>
-                </tr>
+                        </td>
+                    </tr>
+                @endif
             @endforeach
         </tbody>
     </table>
@@ -95,6 +99,31 @@
             @endforeach
         </tbody>
     </table>
+
+
+    {{-- Modal para cantidad de equipos personalizada --}}
+    <div class="modal fade" id="cantidadEquipoModal" tabindex="-1" data-bs-backdrop="static" aria-labelledby="cantidadEquipoModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="cantidadEquipoModalLabel">Agregar equipo</h5>
+                </div>
+                <form id="formAgregarEquipoCarrito" method="POST">
+                    @csrf
+                    <div class="modal-body">
+                        <input type="number" name="cantidad" class="form-control" required min="1" value="1">
+                        <input type="hidden" name="tipo_equipo_id" id="tipo_equipo_id">
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                        <button type="submit" class="btn btn-primary">Agregar al Carrito</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+
 
     {{-- Formulario de Solicitud --}}
     <form action="{{ route('solicitudes.equipos.store') }}" method="POST">
@@ -166,7 +195,7 @@
             color: #fff;
         }
     </style>
-    
+
     <!-- Color mensajes usuario -->
     <style>
         .alert {
@@ -206,6 +235,19 @@
                 "language": {
                     "url": "https://cdn.datatables.net/plug-ins/1.11.3/i18n/es_es.json"
                 },
+            });
+        });
+    </script>
+
+    <script>
+        document.querySelectorAll('.botoneditar').forEach(button => {
+            button.addEventListener('click', function(event) {
+                event.preventDefault();
+                const tipoEquipoId = this.getAttribute('data-tipo-equipo-id');
+                document.getElementById('tipo_equipo_id').value = tipoEquipoId;
+                const formAction = this.getAttribute('data-form-action');
+                document.getElementById('formAgregarEquipoCarrito').action = formAction;
+                new bootstrap.Modal(document.getElementById('cantidadEquipoModal')).show();
             });
         });
     </script>
