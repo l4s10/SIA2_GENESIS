@@ -44,6 +44,11 @@ class RolesAndPermissionsSeeder extends Seeder
             'eliminar_activo',
         ]);
 
+        // Definir permisos (GRAFICOS)
+        $permisos = array_merge($permisos, [
+            'ver_graficos',
+        ]);
+
         // Definir permisos (AUDITORIA)
         $permisos = array_merge($permisos, [
             'ver_auditoria',
@@ -90,6 +95,10 @@ class RolesAndPermissionsSeeder extends Seeder
         // Asignación de permisos (ACTIVOS - INVENTARIO)
         $roles['SERVICIOS']->givePermissionTo(['crear_activo', 'ver_activos', 'editar_activo', 'actualizar_activo']);
         $roles['INFORMATICA']->givePermissionTo(['crear_activo', 'ver_activos', 'editar_activo', 'actualizar_activo']);
+
+        // Asignación de permisos (GRAFICOS)
+        $roles['SERVICIOS']->givePermissionTo(['ver_graficos']);
+        $roles['INFORMATICA']->givePermissionTo(['ver_graficos']);
 
         // Asignación de permisos (PANEL DE CONTROL)
         $roles['SERVICIOS']->givePermissionTo(['ver_panel_control', 'editar_panel_control', 'actualizar_panel_control']);

@@ -500,7 +500,7 @@ return [
                 ],
             ],
         ],
-        ['header' => 'GESTIONAR ACTIVOS'],
+        ['header' => 'GESTIONAR ACTIVOS', 'can' => 'ver_activos'],
         [
             'text'  =>  'Inventario',
             'route' =>  'inventarios.index',
@@ -511,6 +511,7 @@ return [
             'text' => 'Reportes',
             'route'  => 'reportes.home.index',
             'icon' => 'fas fa-fw fa-solid fa-chart-pie',
+            'can'  => 'ver_graficos',
         ],
         [
             'text' => 'Auditorías',
@@ -533,7 +534,7 @@ return [
             ],
         ],
 
-        ['header' => 'AJUSTES DEL SISTEMA SIAV2.5'],
+        ['header' => 'AJUSTES DEL SISTEMA SIAV2.5', 'can' => 'ver_panel_control'],
         [
             'text' => 'Administrar usuarios',
             'route'  => 'panel.usuarios.index',
