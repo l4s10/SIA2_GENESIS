@@ -95,13 +95,22 @@
                         <td>{{ $solicitud->mostrarFecha($solicitud->created_at) }}</td>
                         <td>
                             <div class="d-flex justify-content-center">
+                                {{-- Boton de ver detalles --}}
                                 <a href="{{ route('solicitudes.equipos.show', $solicitud->SOLICITUD_ID) }}" class="btn btn-primary"><i class="fa-solid fa-eye"></i></a>
-                                <a href="{{ route('solicitudes.equipos.edit', $solicitud->SOLICITUD_ID) }}" class="btn botoneditar ml-2"><i class="fa-solid fa-pencil"></i></a>
-                                <form action="{{ route('solicitudes.equipos.destroy', $solicitud->SOLICITUD_ID) }}" method="POST" class="d-inline">
-                                    @csrf
-                                    @method('DELETE')
-                                    <button type="submit" class="btn btn-danger ml-2"><i class="fa-solid fa-trash"></i></button>
-                                </form>
+
+                                {{-- Boton de editar (ADMINISTRADOR, INFORMATICA) --}}
+                                @role('ADMINISTRADOR|INFORMATICA')
+                                    <a href="{{ route('solicitudes.equipos.edit', $solicitud->SOLICITUD_ID) }}" class="btn botoneditar ml-2"><i class="fa-solid fa-pencil"></i></a>
+                                @endrole
+
+                                {{-- Boton de eliminar (ADMINISTRADOR) --}}
+                                @role('ADMINISTRADOR')
+                                    <form action="{{ route('solicitudes.equipos.destroy', $solicitud->SOLICITUD_ID) }}" method="POST" class="d-inline">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button type="submit" class="btn btn-danger ml-2"><i class="fa-solid fa-trash"></i></button>
+                                    </form>
+                                @endrole
                             </div>
                         </td>
                     </tr>
@@ -152,8 +161,8 @@
         background-color: #d9d9d9;
         }
 </style>
-    
-    
+
+
     <!-- Color mensajes usuario -->
     <style>
         .alert {

@@ -110,25 +110,24 @@
                             </div>
                         </td>
                         <td>
-                                @if ($solicitud->SOLICITUD_VEHICULO_ESTADO == 'INGRESADO' || $solicitud->SOLICITUD_VEHICULO_ESTADO == 'EN REVISIÓN')
-                                    <div class="d-flex justify-content-between">
-                                        <a href="{{ route('solicitudesvehiculos.edit', $solicitud->SOLICITUD_VEHICULO_ID) }}" class="btn btn-secondary"><i class="fa-solid fa-pencil"></i></a>
+                            <div class="d-flex justify-content-center">
+                                {{-- Boton de ver detalles --}}
+                                <a href="{{ route('solicitudesvehiculos.timeline', $solicitud->SOLICITUD_VEHICULO_ID) }}" class="btn btn-primary"><i class="fa-solid fa-eye"></i></a>
 
-                                    <a href="{{ route('solicitudesvehiculos.timeline', $solicitud->SOLICITUD_VEHICULO_ID) }}" class="btn btn-primary"><i class="fa-solid fa-eye"></i></a>
+                                {{-- Boton de editar --}}
+                                @role('ADMINISTRADOR|SERVICIOS')
+                                    <a href="{{ route('solicitudesvehiculos.edit', $solicitud->SOLICITUD_VEHICULO_ID) }}" class="btn btn-secondary ml-2"><i class="fa-solid fa-pencil"></i></a>
+                                @endrole
 
-                                    <button type="submit" class="btn btn-danger"><i class="fa-solid fa-trash"></i></button>
-                                </div>
-                                @else
-                                <div class="d-flex justify-content-end">
-                                    <a href="{{ route('solicitudesvehiculos.timeline', $solicitud->SOLICITUD_VEHICULO_ID) }}" class="btn btn-primary"><i class="fa-solid fa-eye"></i></a>
-                                    {{--<form action="{{ route('solicitud_vehiculos.destroy', $solicitud->SOLICITUD_VEHICULO_ID) }}" method="POST">
+                                {{-- Boton de eliminar --}}
+                                @role('ADMINISTRADOR')
+                                    <form action="{{ route('solicitudesvehiculos.destroy', $solicitud->SOLICITUD_VEHICULO_ID) }}" method="POST" class="d-inline">
                                         @csrf
-                                        @method('DELETE')--}}
-                                        <button type="submit" class="btn btn-danger ml-2"><i class="fa-solid fa-trash"></i></button> {{--
-                                    </form>--}}
-                                </div>
-                                    @endif
-
+                                        @method('DELETE')
+                                        <button type="submit" class="btn btn-danger ml-2"><i class="fa-solid fa-trash"></i></button>
+                                    </form>
+                                @endrole
+                            </div>
                         </td>
                         <td>
                             <div class="d-flex justify-content-center">

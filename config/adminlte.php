@@ -318,45 +318,48 @@ return [
             'route'         => 'home',
             'icon'        => 'far fa-fw fa-solid fa-home',
         ],
-        [
-            'text'        => 'Calendario de actividades',
-            'url'         => '#',
-            'icon'        => 'far fa-fw fa-solid fa-calendar-alt',
-        ],
         ['header' => 'MODULOS DE SOLICITUDES'],
         [
             'text'        => 'Vehículos',
             'icon'        => 'far fa-fw fa-solid fa-car-side',
+            'can'         => 'crear_solicitud',
             'submenu' => [
                 [
                     'text' => 'Solicitar',
                     'route'  => 'solicitudesvehiculos.create',
+                    'can'   => 'crear_solicitud',
                 ],
                 [
                     'text' => 'Ver solicitudes',
                     'route'  => 'solicitudesvehiculos.index',
+                    'can'   => 'ver_solicitudes',
                 ],
                 [
                     'text' => 'Aprobar solicitudes',
                     'route'  => 'solicitudesvehiculos.indexPorAprobar',
+                    'can'   => 'firmar_solicitud',
                 ],
                 [
                     'text' => 'Rendir solicitudes',
                     'route'  => 'solicitudesvehiculos.indexPorRendir',
+                    'can'   => 'ver_solicitudes',
                 ],
 
             ],
         ],[
             'text'        => 'Materiales',
             'icon'        => 'far fa-fw fa-solid fa-boxes',
+            'can'         => 'crear_solicitud',
             'submenu' => [
                 [
                     'text' => 'Solicitar',
                     'route'  => 'solicitudes.materiales.create',
+                    'can'   => 'crear_solicitud',
                 ],
                 [
                     'text' => 'Mis solicitudes',
                     'route'  => 'solicitudes.materiales.index',
+                    'can'   => 'ver_solicitudes',
                 ],
             ],
         ],
@@ -364,70 +367,85 @@ return [
             'text'        => 'Equipos',
             'url'         => 'admin/pages',
             'icon'        => 'far fa-fw fa-solid fa-desktop',
+            'can'         => 'crear_solicitud',
             'submenu' => [
                 [
                     'text' => 'Solicitar',
                     'route'  => 'solicitudes.equipos.create',
+                    'can'   => 'crear_solicitud',
                 ],
                 [
                     'text' => 'Mis solicitudes',
                     'route'  => 'solicitudes.equipos.index',
+                    'can'   => 'ver_solicitudes',
                 ],
             ],
         ],
         [
             'text'        => 'Formularios',
             'icon'        => 'far fa-fw fa-solid fa-file',
+            'can'         => 'crear_solicitud',
             'submenu' => [
                 [
                     'text' => 'Solicitar',
                     'route'  => 'solicitudes.formularios.create',
+                    'can'   => 'crear_solicitud',
                 ],
                 [
                     'text' => 'Mis solicitudes',
                     'route'  => 'solicitudes.formularios.index',
+                    'can'   => 'ver_solicitudes',
                 ],
             ],
         ],
         [
             'text'        => 'Salas',
             'icon'        => 'far fa-fw fa-solid fa-building',
+            'can'         => 'crear_solicitud',
             'submenu' => [
                 [
                     'text' => 'Solicitar',
                     'route'  => 'solicitudes.salas.create',
+                    'can'   => 'crear_solicitud',
                 ],
                 [
                     'text' => 'Mis solicitudes',
                     'route'  => 'solicitudes.salas.index',
+                    'can'   => 'ver_solicitudes',
                 ],
             ],
         ],
         [
             'text'        => 'Bodegas',
             'icon'        => 'far fa-fw fa-solid fa-building',
+            'can'         => 'crear_solicitud',
             'submenu' => [
                 [
                     'text' => 'Solicitar',
                     'route'  => 'solicitudes.bodegas.create',
+                    'can'   => 'crear_solicitud',
                 ],
                 [
                     'text' => 'Mis solicitudes',
                     'route'  => 'solicitudes.bodegas.index',
+                    'can'   => 'ver_solicitudes',
                 ],
             ],
         ],
         [
             'text'        => 'Reparaciones y mantenciones',
             'icon'        => 'far fa-fw fa-solid fa-hammer',
+            'can'         => 'crear_solicitud',
             'submenu' => [
                 [
                     'text' => 'Solicitar',
                     'route'  => 'solicitudes.reparaciones.create',
+                    'can'   => 'crear_solicitud',
                 ],
                 [
                     'text' => 'Mis solicitudes',
                     'route'  => 'solicitudes.reparaciones.index',
+                    'can'   => 'ver_solicitudes',
                 ],
             ],
         ],
@@ -435,46 +453,54 @@ return [
         [
             'text' => 'Buscar resoluciones',
             'icon' => 'fas fa-fw fa-solid fa-search',
+            'can'  => 'buscar_resoluciones',
             'submenu' => [
                 [
                     'text' => 'Búsqueda avanzada',
                     'route'  => 'directivos.indexBusquedaFuncionarios',
                     'icon' => 'fas fa-fw fa-solid fa-search-plus',
+                    'can'  => 'buscar_resoluciones',
                 ],
                 [
                     'text' => 'Búsqueda básica',
                     'route'  => 'directivos.indexBusquedaBasica',
                     'icon' => 'fas fa-fw fa-solid fa-search-minus',
+                    'can'  => 'buscar_resoluciones',
                 ],
             ],
         ],
         [
             'text' => 'Repositorio',
             'icon' => 'fas fa-fw fa-solid fa-archive',
+            'can'  => 'ver_repositorio',
             'submenu' => [
                 [
                     'text' => 'Resoluciones',
                     'route'  => 'resoluciones.index',
                     'icon' => 'fas fa-fw fa-solid fa-file-alt',
+                    'can'  => 'ver_repositorio',
                 ],
                 [
                     'text' => 'Pólizas',
                     'route'  => 'polizas.index',
                     'icon' => 'fas fa-fw fa-solid fa-file-contract',
+                    'can'  => 'ver_repositorio',
                 ],
                 [
                     'text' => 'Facultades',
                     'route'  => 'facultades.index',
                     'icon' => 'fas fa-fw fa-solid fa-file-signature',
+                    'can'  => 'ver_repositorio',
                 ],
                 [
                     'text' => 'Cargos',
                     'route'  => 'cargos.index',
                     'icon' => 'fas fa-fw fa-solid fa-file-invoice',
+                    'can'  => 'ver_repositorio',
                 ],
             ],
         ],
-        ['header' => 'GESTIONAR ACTIVOS'],
+        ['header' => 'GESTIONAR ACTIVOS', 'can' => 'ver_activos'],
         [
             'text'  =>  'Inventario',
             'route' =>  'inventarios.index',
@@ -485,55 +511,65 @@ return [
             'text' => 'Reportes',
             'route'  => 'reportes.home.index',
             'icon' => 'fas fa-fw fa-solid fa-chart-pie',
+            'can'  => 'ver_graficos',
         ],
         [
             'text' => 'Auditorías',
             'url'  => '#',
             'icon' => 'fas fa-fw fa-solid fa-tablet',
+            'can'  => 'ver_auditoria',
             'submenu' => [
                 [
                     'text' => 'Materiales',
                     'icon' => 'fas fa-fw fa-solid fa-boxes',
                     'route'  => 'movimientos.materiales',
+                    'can'  => 'ver_auditoria'
                 ],
                 [
                     'text' => 'Equipos',
                     'icon' => 'fas fa-fw fa-solid fa-desktop',
                     'route'  => 'movimientos.equipos',
+                    'can'  => 'ver_auditoria'
                 ],
             ],
         ],
 
-        ['header' => 'AJUSTES DEL SISTEMA SIAV2.5'],
+        ['header' => 'AJUSTES DEL SISTEMA SIAV2.5', 'can' => 'ver_panel_control'],
         [
             'text' => 'Administrar usuarios',
             'route'  => 'panel.usuarios.index',
             'icon' => 'fas fa-fw fa-solid fa-users-cog',
+            'can'  => 'ver_panel_control',
         ],
         [
             'text' => 'Administrar regiones',
             'route'  => 'panel.regiones.index',
             'icon' => 'fas fa-fw fa-solid fa-globe-americas',
+            'can'  => 'ver_panel_control',
         ],
         [
             'text' => 'Administrar comunas',
             'route'  => 'panel.comunas.index',
             'icon' => 'fas fa-fw fa-solid fa-map-marked-alt',
+            'can'  => 'ver_panel_control',
         ],
         [
             'text' => 'Administrar direcciones regionales',
             'route'  => 'panel.oficinas.index',
             'icon' => 'fas fa-fw fa-solid fa-building',
+            'can'  => 'ver_panel_control',
         ],
         [
             'text' => 'Administrar departamentos',
             'route'  => 'panel.departamentos.index',
             'icon' => 'fas fa-fw fa-solid fa-building-un',
+            'can'  => 'ver_panel_control',
         ],
         [
             'text' => 'Administrar ubicaciones',
             'route'  => 'panel.ubicaciones.index',
             'icon' => 'fas fa-fw fa-solid fa-building-un',
+            'can'  => 'ver_panel_control',
         ],
         ['header' => 'account_settings'],
         // [

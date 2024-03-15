@@ -105,13 +105,23 @@
                                     </form>
                                 @endif
 
+                                {{-- Boton de ver detalles --}}
                                 <a href="{{ route('solicitudes.materiales.show', $solicitud->SOLICITUD_ID) }}" class="btn btn-primary"><i class="fa-solid fa-eye"></i></a>
-                                <a href="{{ route('solicitudes.materiales.edit', $solicitud->SOLICITUD_ID) }}" class="btn botoneditar ml-2"><i class="fa-solid fa-pencil"></i></a>
-                                <form action="{{ route('solicitudes.materiales.destroy', $solicitud->SOLICITUD_ID) }}" method="POST" class="d-inline">
-                                    @csrf
-                                    @method('DELETE')
-                                    <button type="submit" class="btn btn-danger ml-2"><i class="fa-solid fa-trash"></i></button>
-                                </form>
+
+                                {{-- Solo ADMINISTRADOR y SERVICIOS pueden manipular estos botones --}}
+                                @role('ADMINISTRADOR|SERVICIOS')
+                                    {{-- Boton de edicion --}}
+                                    <a href="{{ route('solicitudes.materiales.edit', $solicitud->SOLICITUD_ID) }}" class="btn botoneditar ml-2"><i class="fa-solid fa-pencil"></i></a>
+                                @endrole
+
+                                @role('ADMINISTRADOR')
+                                    {{-- Boton de eliminacion (dentro del form) --}}
+                                    <form action="{{ route('solicitudes.materiales.destroy', $solicitud->SOLICITUD_ID) }}" method="POST" class="d-inline">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button type="submit" class="btn btn-danger ml-2"><i class="fa-solid fa-trash"></i></button>
+                                    </form>
+                                @endrole
                             </div>
                         </td>
                     </tr>

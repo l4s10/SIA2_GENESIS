@@ -95,13 +95,20 @@
                         <td>{{ $solicitud->mostrarFecha($solicitud->created_at) }}</td>
                         <td>
                             <div class="d-flex justify-content-center">
+                                {{-- Boton ver detalles --}}
                                 <a href="{{ route('solicitudes.salas.show', $solicitud->SOLICITUD_ID) }}" class="btn btn-primary"><i class="fa-solid fa-eye"></i></a>
-                                <a href="{{ route('solicitudes.salas.edit', $solicitud->SOLICITUD_ID) }}" class="btn botoneditar ml-2"><i class="fa-solid fa-pencil"></i></a>
-                                <form action="{{ route('solicitudes.salas.destroy', $solicitud->SOLICITUD_ID) }}" method="POST" class="d-inline">
-                                    @csrf
-                                    @method('DELETE')
-                                    <button type="submit" class="btn btn-danger ml-2"><i class="fa-solid fa-trash"></i></button>
-                                </form>
+                                {{-- Boton editar (SOLO ADMINISTRADOR E INFORMATICA)--}}
+                                @role('ADMINISTRADOR|INFORMATICA')
+                                    <a href="{{ route('solicitudes.salas.edit', $solicitud->SOLICITUD_ID) }}" class="btn botoneditar ml-2"><i class="fa-solid fa-pencil"></i></a>
+                                @endrole
+
+                                @role('ADMINISTRADOR|INFORMATICA')
+                                    <form action="{{ route('solicitudes.salas.destroy', $solicitud->SOLICITUD_ID) }}" method="POST" class="d-inline">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button type="submit" class="btn btn-danger ml-2"><i class="fa-solid fa-trash"></i></button>
+                                    </form>
+                                @endrole
                             </div>
                         </td>
                     </tr>
