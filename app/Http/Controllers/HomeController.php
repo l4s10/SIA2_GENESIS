@@ -39,7 +39,7 @@ class HomeController extends Controller
             ->join('solicitudes', 'solicitudes_salas.SOLICITUD_ID', '=', 'solicitudes.SOLICITUD_ID')
             ->join('users as solicitantes', 'solicitudes.USUARIO_id', '=', 'solicitantes.id')
             ->where('solicitantes.OFICINA_ID', $oficinaId)
-            ->where('solicitudes.SOLICITUD_ESTADO', 'AUTORIZADO')
+            ->where('solicitudes.SOLICITUD_ESTADO', 'APROBADO')
             ->select('solicitudes.SOLICITUD_ID')
             ->distinct()
             ->pluck('SOLICITUD_ID');
@@ -71,7 +71,7 @@ class HomeController extends Controller
             ->join('solicitudes', 'solicitudes_bodegas.SOLICITUD_ID', '=', 'solicitudes.SOLICITUD_ID')
             ->join('users as solicitantes', 'solicitudes.USUARIO_id', '=', 'solicitantes.id')
             ->where('solicitantes.OFICINA_ID', $oficinaId)
-            ->where('solicitudes.SOLICITUD_ESTADO', 'AUTORIZADO')
+            ->where('solicitudes.SOLICITUD_ESTADO', 'APROBADO')
             ->select('solicitudes.SOLICITUD_ID')
             ->distinct()
             ->pluck('SOLICITUD_ID');
@@ -108,7 +108,7 @@ class HomeController extends Controller
             ->whereIn('categorias_reparaciones.CATEGORIA_REPARACION_NOMBRE', $categorias)
             ->whereNotNull('users.DEPARTAMENTO_ID')
             ->where('users.OFICINA_ID', '=', $oficinaId)
-            ->where('solicitudes_reparaciones.SOLICITUD_REPARACION_ESTADO', '=', 'AUTORIZADO')
+            ->where('solicitudes_reparaciones.SOLICITUD_REPARACION_ESTADO', '=', 'APROBADO')
             ->get();
 
         // Query para obtener las solicitudes de mantenimiento por Ubicación
@@ -118,6 +118,7 @@ class HomeController extends Controller
             ->whereIn('categorias_reparaciones.CATEGORIA_REPARACION_NOMBRE', $categorias)
             ->whereNotNull('users.UBICACION_ID')
             ->where('users.OFICINA_ID', '=', $oficinaId)
+            ->where('solicitudes_reparaciones.SOLICITUD_REPARACION_ESTADO', '=', 'APROBADO')
             ->get();
 
         // Unir los resultados de las dos consultas anteriores (merge)
