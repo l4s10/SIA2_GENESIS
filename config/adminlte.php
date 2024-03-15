@@ -337,7 +337,7 @@ return [
                 [
                     'text' => 'Aprobar solicitudes',
                     'route'  => 'solicitudesvehiculos.indexPorAprobar',
-                    'can'   => 'firmar_solicitud',
+                    'can'   => 'ver_solicitudes',
                 ],
                 [
                     'text' => 'Rendir solicitudes',
