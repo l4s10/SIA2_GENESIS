@@ -3,7 +3,7 @@
 @section('title', 'Solicitudes de equipos')
 
 @section('content_header')
-    <h1>Listado de solicitudes de equipos</h1>
+    <h1>Listado de Solicitudes de Equipos</h1>
     @role('ADMINISTRADOR')
     <div class="alert alert-info alert1" role="alert">
     <div><strong>Bienvenido Administrador:</strong> Acceso total al módulo, se dispone las opciones para administrar, modificar, eliminar, las solicitudes de reservas de equipos.<div>
@@ -145,8 +145,7 @@
         color: #000000;
         background-color: #F7F70B;
         }
-
-        .estado-autorizado {
+        .estado-aprobado {
         color: #ffffff;
         background-color: #0CB009;
         }

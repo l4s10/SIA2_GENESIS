@@ -103,7 +103,7 @@
             color: #fff;
         }
     </style>
-|@stop
+@stop
 
 @section('js')
     <script>

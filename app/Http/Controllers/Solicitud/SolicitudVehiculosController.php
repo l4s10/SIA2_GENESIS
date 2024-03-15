@@ -123,7 +123,6 @@ class SolicitudVehiculosController extends Controller
             // Obtener el ID del usuario autenticado
             $userId = Auth::user()->id;
 
-            // Si es el jefe de departamento de administración, obtener todas las solicitudes por aprobar de la misma oficina
             $solicitudes = SolicitudVehicular::whereHas('user', function ($query) use ($oficinaIdUsuario) {
                     $query->where('OFICINA_ID', $oficinaIdUsuario);
                 })
@@ -452,6 +451,7 @@ class SolicitudVehiculosController extends Controller
      */
     public function update(Request $request, string $id)
     {
+        //dd($request);
         try {
             // Encontrar la solicitud por su ID
             $solicitud = SolicitudVehicular::findOrFail($id);
@@ -617,7 +617,7 @@ class SolicitudVehiculosController extends Controller
 
                 // Verificar si se envió el botón de autorizar
                 if ($request->has('botonAutorizar')) {
-                    if ((Auth::user()->cargo->CARGO_ID == $solicitud->SOLICITUD_VEHICULO_JEFE_QUE_AUTORIZA) && (Auth::user()->cargo->CARGO_NOMBRE !== 'JEFE DE DEPARTAMENTO DE ADMINISTRACION') ) {
+                    if ((Auth::user()->cargo->CARGO_ID == $solicitud->SOLICITUD_VEHICULO_JEFE_QUE_AUTORIZA) && (Auth::user()->cargo->CARGO_NOMBRE !== 'JEFE DE DEPARTAMENTO DE ADMINISTRACIÓN') ) {
                         // Si es el 'JEFE QUE AUTORIZA'
                         $existeAutorizacion = Autorizacion::where('SOLICITUD_VEHICULO_ID', $solicitud->SOLICITUD_VEHICULO_ID)
                             ->where('USUARIO_id', Auth::user()->id)

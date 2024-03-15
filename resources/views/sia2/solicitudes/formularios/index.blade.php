@@ -3,7 +3,7 @@
 @section('title', 'Solicitudes de formularios')
 
 @section('content_header')
-    <h1>Listado de solicitudes de formularios</h1>
+    <h1>Listado de Solicitudes de Formularios</h1>
     @role('ADMINISTRADOR')
     <div class="alert alert-info alert1" role="alert">
     <div><strong>Bienvenido Administrador:</strong> Acceso total al modulo.<div>

@@ -3,7 +3,7 @@
 @section('title', 'Solicitudes de vehículos')
 
 @section('content_header')
-    <h1>Listado de solicitudes de vehículos</h1>
+    <h1>Listado de Solicitudes de Vehículos</h1>
     @role('ADMINISTRADOR')
     <div class="alert alert-info alert1" role="alert">
     <div><strong>Bienvenido Administrador:</strong> Acceso total al modulo.<div>
@@ -100,10 +100,11 @@
                                 {{ $solicitud->user->email}}
                             </div>
                         </td>
-                        <td><span class="badge rounded-pill estado-{{ strtolower(str_replace(' ', '-', $solicitud->SOLICITUD_VEHICULO_ESTADO)) }}">
-                            {{ $solicitud->SOLICITUD_VEHICULO_ESTADO }}
+                        <td>
+                            <span class="badge rounded-pill estado-{{ preg_replace('/\s+/u', '-', mb_strtolower($solicitud->SOLICITUD_VEHICULO_ESTADO)) }}">
+                                {{ $solicitud->SOLICITUD_VEHICULO_ESTADO }}
                             </span>
-                            </td>
+                        </td>
                         <td>
                             <div class="d-flex justify-content-center">
                                 {{ $solicitud->formatted_created_at }}
@@ -114,19 +115,34 @@
                                 {{-- Boton de ver detalles --}}
                                 <a href="{{ route('solicitudesvehiculos.timeline', $solicitud->SOLICITUD_VEHICULO_ID) }}" class="btn btn-primary"><i class="fa-solid fa-eye"></i></a>
 
-                                {{-- Boton de editar --}}
-                                @role('ADMINISTRADOR|SERVICIOS')
-                                    <a href="{{ route('solicitudesvehiculos.edit', $solicitud->SOLICITUD_VEHICULO_ID) }}" class="btn btn-secondary ml-2"><i class="fa-solid fa-pencil"></i></a>
-                                @endrole
+                                @if ($solicitud->SOLICITUD_VEHICULO_ESTADO == 'INGRESADO' || $solicitud->SOLICITUD_VEHICULO_ESTADO == 'EN REVISIÓN')
 
-                                {{-- Boton de eliminar --}}
-                                @role('ADMINISTRADOR')
+                                    {{-- Boton de editar --}}
+                                    @role('ADMINISTRADOR|SERVICIOS')
+                                        <a href="{{ route('solicitudesvehiculos.edit', $solicitud->SOLICITUD_VEHICULO_ID) }}" class="btn btn-secondary ml-2"><i class="fa-solid fa-pencil"></i></a>
+                                    @endrole
+
+                                    {{-- Boton de eliminar --}}
+                                    @role('ADMINISTRADOR')
+                                        <form action="{{ route('solicitudesvehiculos.destroy', $solicitud->SOLICITUD_VEHICULO_ID) }}" method="POST" class="d-inline">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button type="submit" class="btn btn-danger ml-2"><i class="fa-solid fa-trash"></i></button>
+                                        </form>
+                                    @endrole
+
+                                @else
+
+                                    {{-- Boton de eliminar --}}
+                                    @role('ADMINISTRADOR')
                                     <form action="{{ route('solicitudesvehiculos.destroy', $solicitud->SOLICITUD_VEHICULO_ID) }}" method="POST" class="d-inline">
                                         @csrf
                                         @method('DELETE')
                                         <button type="submit" class="btn btn-danger ml-2"><i class="fa-solid fa-trash"></i></button>
                                     </form>
-                                @endrole
+                                    @endrole
+                                @endif
+
                             </div>
                         </td>
                         <td>
@@ -166,21 +182,25 @@
         background-color: #FFA600;
         }
 
-        .estado-en-revision {
+        .estado-en-revisión {
+        color: #ffffff;
+        background-color: #0064a0;
+        }
+
+        .estado-por-aprobar {
         color: #000000;
         background-color: #F7F70B;
         }
 
-        .estado-por-aprobar {
-        color: #ffffff;
-        background-color: #0CB009;
-        }
-
         .estado-por-autorizar {
         color: #FFFFFF;
-        background-color: #F70B0B;
+        background-color: #0CB009;
         }
         .estado-por-rendir {
+        color: #000000;
+        background-color: #FFFFFF;
+        }
+        .estado-rechazado {
         color: #FFFFFF;
         background-color: #F70B0B;
         }
