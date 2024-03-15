@@ -218,7 +218,10 @@
                         <select name="GRADO_ID" id="GRADO_ID" class="form-control @error('GRADO_ID') is-invalid @enderror" required>
                             <option value="" style="text-align: center;" selected disabled>-- Seleccione un grado --</option>
                             @foreach($grados as $grado)
-                                <option value="{{ $grado->GRADO_ID }}" data-oficina="{{ $grado->OFICINA_ID }}" {{ $usuario->grado->GRADO_ID == $grado->GRADO_ID ? 'selected' : '' }}>{{ $grado->GRADO_NUMERO }}</option>
+                                <option value="{{ $grado->GRADO_ID }}" data-oficina="{{ $grado->OFICINA_ID }}" 
+                                    {{ $usuario->grado->GRADO_ID == $grado->GRADO_ID || is_null($usuario->grado->GRADO_ID) ? 'selected' : '' }}>
+                                    {{ $grado->GRADO_NUMERO }}
+                                </option>
                             @endforeach
                         </select>
                         @error('GRADO_ID')
