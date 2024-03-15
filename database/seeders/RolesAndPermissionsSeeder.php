@@ -25,11 +25,14 @@ class RolesAndPermissionsSeeder extends Seeder
 
         // Definir permisos (SOLICITUDES)
         $permisos = [
+            // MODULO DE SOLICITUDES (GENERALES)
             'crear_solicitud',
             'ver_solicitudes', // Permiso único para ver el detalle y la lista de solicitudes
             'editar_solicitud',
             'actualizar_solicitud',
             'eliminar_solicitud',
+            // MODULO DE VEHICULOS (EXCLUSIVO)
+            'firmar_solicitud',
         ];
 
         // Definir permisos (ACTIVOS - INVENTARIO)
@@ -39,6 +42,11 @@ class RolesAndPermissionsSeeder extends Seeder
             'editar_activo',
             'actualizar_activo',
             'eliminar_activo',
+        ]);
+
+        // Definir permisos (AUDITORIA)
+        $permisos = array_merge($permisos, [
+            'ver_auditoria',
         ]);
 
         // Definir permisos (PANEL DE CONTROL)
@@ -94,5 +102,6 @@ class RolesAndPermissionsSeeder extends Seeder
         $roles['JURIDICO']->givePermissionTo(['buscar_resoluciones']);
         $roles['SERVICIOS']->givePermissionTo(['buscar_resoluciones']);
         $roles['INFORMATICA']->givePermissionTo(['buscar_resoluciones']);
+        $roles['FUNCIONARIO']->givePermissionTo(['buscar_resoluciones']);
     }
 }
