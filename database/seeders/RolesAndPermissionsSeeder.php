@@ -57,8 +57,10 @@ class RolesAndPermissionsSeeder extends Seeder
         // Definir permisos (PANEL DE CONTROL)
         $permisos = array_merge($permisos, [
             'ver_panel_control',
+            'crear_panel_control',
             'editar_panel_control',
             'actualizar_panel_control',
+            'eliminar_panel_control'
         ]);
 
         // Definir permisos para (REPOSITORIO)
