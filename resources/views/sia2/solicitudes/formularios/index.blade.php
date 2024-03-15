@@ -90,13 +90,22 @@
                         <td>{{ $solicitud->mostrarFecha($solicitud->created_at) }}</td>
                         <td>
                             <div class="d-flex justify-content-center">
+                                {{-- Boton de ver detalles --}}
                                 <a href="{{ route('solicitudes.formularios.show', $solicitud->SOLICITUD_ID) }}" class="btn btn-primary"><i class="fa-solid fa-eye"></i></a>
-                                <a href="{{ route('solicitudes.formularios.edit', $solicitud->SOLICITUD_ID) }}" class="btn botoneditar ml-2"><i class="fa-solid fa-pencil"></i></a>
-                                <form action="{{ route('solicitudes.formularios.destroy', $solicitud->SOLICITUD_ID) }}" method="POST" class="d-inline">
-                                    @csrf
-                                    @method('DELETE')
-                                    <button type="submit" class="btn btn-danger ml-2"><i class="fa-solid fa-trash"></i></button>
-                                </form>
+
+                                {{-- Boton de editar (ADMINISTRADOR, SERVICIOS) --}}
+                                @role('ADMINISTRADOR|SERVICIOS')
+                                    <a href="{{ route('solicitudes.formularios.edit', $solicitud->SOLICITUD_ID) }}" class="btn botoneditar ml-2"><i class="fa-solid fa-pencil"></i></a>
+                                @endrole
+
+                                {{-- Boton de eliminar (ADMINISTRADOR) --}}
+                                @role('ADMINISTRADOR')
+                                    <form action="{{ route('solicitudes.formularios.destroy', $solicitud->SOLICITUD_ID) }}" method="POST" class="d-inline">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button type="submit" class="btn btn-danger ml-2"><i class="fa-solid fa-trash"></i></button>
+                                    </form>
+                                @endrole
                             </div>
                         </td>
                     </tr>

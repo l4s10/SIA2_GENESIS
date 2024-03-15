@@ -90,13 +90,20 @@
                         <td>{{ $solicitud->mostrarFecha($solicitud->created_at) }}</td>
                         <td>
                             <div class="d-flex justify-content-center">
+                                {{-- Boton de ver detalles --}}
                                 <a href="{{ route('solicitudes.reparaciones.show', $solicitud->SOLICITUD_REPARACION_ID) }}" class="btn btn-primary"><i class="fa-solid fa-eye"></i></a>
+                                {{-- Boton de editar --}}
+                                @role('ADMINISTRADOR|SERVICIOS')
                                 <a href="{{ route('solicitudes.reparaciones.edit', $solicitud->SOLICITUD_REPARACION_ID) }}" class="btn botoneditar ml-2"><i class="fa-solid fa-pencil"></i></a>
-                                <form action="{{ route('solicitudes.reparaciones.destroy', $solicitud->SOLICITUD_REPARACION_ID) }}" method="POST">
-                                    @csrf
-                                    @method('DELETE')
-                                    <button type="submit" class="btn btn-danger ml-2"><i class="fa-solid fa-trash"></i></button>
-                                </form>
+                                @endrole
+                                {{-- Boton de eliminar --}}
+                                @role('ADMINISTRADOR')
+                                    <form action="{{ route('solicitudes.reparaciones.destroy', $solicitud->SOLICITUD_REPARACION_ID) }}" method="POST">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button type="submit" class="btn btn-danger ml-2"><i class="fa-solid fa-trash"></i></button>
+                                    </form>
+                                @endrole
                             </div>
                         </td>
                     </tr>
