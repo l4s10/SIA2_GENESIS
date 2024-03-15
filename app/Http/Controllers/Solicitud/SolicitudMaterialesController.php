@@ -27,11 +27,16 @@ class SolicitudMaterialesController extends Controller
     {
         // Try-catch para el manejo de excepciones
         try {
-            // Recuperar las solicitudes con sus materiales asociados y que el solicitante tenga la misma OFICINA_ID que el usuario logueado
-            $solicitudes = Solicitud::whereHas('solicitante', function ($query) {
-                $query->where('OFICINA_ID', Auth::user()->OFICINA_ID);
-            })->whereHas('materiales')->get();
-
+            // SI el usuario es ADMINISTRADOR o SERVICIOS, mostrar todas las solicitudes de materiales (filtrado por oficina)
+            if (Auth::user()->hasRole('ADMINISTRADOR') || Auth::user()->hasRole('SERVICIOS')) {
+                // Filtrar por OFICINA_ID del usuario logueado con la relacion solicitante
+                $solicitudes = Solicitud::has('materiales')->whereHas('solicitante', function ($query) {
+                    $query->where('OFICINA_ID', Auth::user()->OFICINA_ID);
+                })->orderBy('created_at', 'desc')->get();
+            } else {
+                // Si el usuario es otro tipo de usuario, mostrar solo sus solicitudes de materiales a traves de la relacion solicitante y la sesion activa
+                $solicitudes = Solicitud::has('materiales')->where('USUARIO_id', Auth::user()->id)->orderBy('created_at', 'desc')->get();
+            }
             // Retornar la vista con las solicitudes
             return view('sia2.solicitudes.materiales.index', compact('solicitudes'));
         } catch (Exception $e) {
@@ -127,8 +132,14 @@ class SolicitudMaterialesController extends Controller
     public function show(string $id)
     {
         try {
-            // Recuperar la solicitud con sus materiales asociados
-            $solicitud = Solicitud::has('materiales')->findOrFail($id);
+            // SI el usuario tiene rol ADMINISTRADOR o SERVICIOS, buscar la solicitud y mostrarla
+            if (Auth::user()->hasRole('ADMINISTRADOR') || Auth::user()->hasRole('SERVICIOS')) {
+                $solicitud = Solicitud::has('materiales')->findOrFail($id);
+            } else {
+                // Si el usuario no tiene rol ADMINISTRADOR o SERVICIOS, buscar la solicitud y mostrarla solo si es el solicitante
+                $solicitud = Solicitud::has('materiales')->where('USUARIO_id', Auth::user()->id)->findOrFail($id);
+            }
+
             // Retornar la vista con la solicitud
             return view('sia2.solicitudes.materiales.show', compact('solicitud'));
         } catch (Exception $e) {
