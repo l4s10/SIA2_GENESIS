@@ -13,9 +13,10 @@ $(function () {
         locale: "es",
         minDate: today, // Establecer la fecha mínima como la fecha actual
         maxDate: new Date(today.getFullYear(), 11, 31), // Permitir fechas hasta fin de año
-        defaultDate: today, // Establecer la fecha por defecto como la fecha actual
+        // defaultDate: today, // Esta línea se comenta para evitar una fecha por defecto
         minTime: today.getHours() + ":" + today.getMinutes(), // Establecer la hora mínima como la hora actual
-        maxTime: "19:00" // Hora máxima permitida
+        maxTime: "19:00", // Hora máxima permitida
+        placeholder: 'Seleccione la fecha y hora de inicio' // Placeholder para el campo
     };
 
     // Configuración para la fecha de término
@@ -27,9 +28,10 @@ $(function () {
         locale: "es",
         minDate: today, // Establecer la fecha mínima como la fecha actual
         maxDate: new Date(today.getFullYear() + 1, 1, 28), // Permitir fechas hasta febrero del siguiente año
-        defaultDate: today, // Establecer la fecha por defecto como la fecha actual
+        // defaultDate: today, // Esta línea se comenta para evitar una fecha por defecto
         minTime: today.getHours() + ":" + today.getMinutes(), // Establecer la hora mínima como la hora actual
-        maxTime: "19:00" // Hora máxima permitida
+        maxTime: "19:00", // Hora máxima permitida
+        placeholder: 'Seleccione la fecha y hora de término' // Placeholder para el campo
     };
 
     // Inicializar el calendario de fecha de inicio
