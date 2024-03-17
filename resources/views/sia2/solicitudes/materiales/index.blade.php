@@ -167,7 +167,7 @@
         background-color: #d9d9d9;
         }
 
-        .estado-autorizado {
+        .estado-aprobado {
         color: #ffffff;
         background-color: #0CB009;
         }

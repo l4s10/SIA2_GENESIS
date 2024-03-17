@@ -66,8 +66,8 @@
                                     @case('EN REVISION')
                                     <span class="badge estado-en-revision rounded-pill">EN REVISION</span>
                                     @break
-                                    @case('AUTORIZADO')
-                                    <span class="badge estado-autorizado rounded-pill">AUTORIZADO</span>
+                                    @case('APROBADO')
+                                    <span class="badge estado-aprobado rounded-pill">APROBADO</span>
                                     @break
                                     @case('RECHAZADO')
                                     <span class="badge estado-rechazado rounded-pill">RECHAZADO</span>
@@ -299,7 +299,7 @@
         background-color: #F7F70B;
         }
 
-        .estado-autorizado {
+        .estado-aprobado {
         color: #ffffff;
         background-color: #0CB009;
         }

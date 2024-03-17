@@ -66,8 +66,8 @@
                                     @case('EN REVISION')
                                     <span class="badge estado-en-revision rounded-pill">EN REVISION</span>
                                     @break
-                                    @case('AUTORIZADO')
-                                    <span class="badge estado-autorizado rounded-pill">AUTORIZADO</span>
+                                    @case('APROBADO')
+                                    <span class="badge estado-aprobado rounded-pill">APROBADO</span>
                                     @break
                                     @case('RECHAZADO')
                                     <span class="badge estado-rechazado rounded-pill">RECHAZADO</span>
@@ -102,10 +102,10 @@
                                     <td>
                                         @switch($bodega->BODEGA_ESTADO)
                                             @case('DISPONIBLE')
-                                                <span class="badge estado-aceptado rounded-pill">DISPONIBLE</span>
+                                                <span class="badge estado-disponible rounded-pill">DISPONIBLE</span>
                                                 @break
                                             @case('OCUPADA')
-                                                <span class="badge estado-rechazado rounded-pill">OCUPADA</span>
+                                                <span class="badge estado-ocupado rounded-pill">OCUPADA</span>
                                                 @break
                                             @default
                                                 <span class="badge badge-secondary">{{ $sala->SALA_ESTADO }}</span>
@@ -267,7 +267,7 @@
         background-color: #F7F70B;
         }
 
-        .estado-autorizado {
+        .estado-aprobado {
         color: #ffffff;
         background-color: #0CB009;
         }
@@ -280,6 +280,21 @@
         .estado-terminado {
         color: #000000;
         background-color: #d9d9d9;
+        }
+
+        .estado-disponible {
+        color: #ffffff;
+        background-color: #0CB009;
+        }
+
+        .estado-ocupado {
+            color: #FFFFFF;
+            background-color: #F70B0B;
+        }
+
+        .estado-desabilitado {
+        color: #000000;
+        background-color: #F7F70B;
         }
     </style>
 @stop

@@ -65,8 +65,8 @@
                                     @case('EN REVISION')
                                     <span class="badge estado-en-revision rounded-pill">EN REVISION</span>
                                     @break
-                                    @case('AUTORIZADO')
-                                    <span class="badge estado-autorizado rounded-pill">AUTORIZADO</span>
+                                    @case('APROBADO')
+                                    <span class="badge estado-aprobado rounded-pill">APROBADO</span>
                                     @break
                                     @case('RECHAZADO')
                                     <span class="badge estado-rechazado rounded-pill">RECHAZADO</span>
@@ -81,7 +81,7 @@
                             @else
                                 <p><strong><i class="fa-solid fa-file-pen"></i> Tipo de solicitud:</strong> Reparación</p>
                             @endif
-                            <p><strong><i class="fa-solid fa-warehouse"></i> / </i><i class="fa-solid fa-car-on"></i>Categoría de solicitud:</strong> {{ $solicitud->categoria->CATEGORIA_REPARACION_NOMBRE }}</p>
+                            <p><strong><i class="fa-solid fa-warehouse"></i> / </i><i class="fa-solid fa-car-on"></i> Categoría de solicitud:</strong> {{ $solicitud->categoria->CATEGORIA_REPARACION_NOMBRE }}</p>
                             <p><strong><i class="fa-solid fa-calendar-week"></i> Fecha y hora de solicitud:</strong> {{ $solicitud->created_at }}</p>
                             <p><strong><i class="fa-solid fa-calendar-check"></i> Fecha y hora de inicio autorizada:</strong> {{ $solicitud->SOLICITUD_REPARACION_FECHA_HORA_INICIO ?? 'SIN ASIGNACION POR AHORA' }}</p>
                             <p><strong><i class="fa-regular fa-calendar-check"></i> Fecha y hora de término autorizada:</strong> {{ $solicitud->SOLICITUD_REPARACION_FECHA_HORA_TERMINO ?? 'SIN ASIGNACION POR AHORA' }}</p>
@@ -220,7 +220,7 @@
         background-color: #F7F70B;
         }
 
-        .estado-autorizado {
+        .estado-aprobado {
         color: #ffffff;
         background-color: #0CB009;
         }
