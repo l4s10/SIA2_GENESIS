@@ -21,7 +21,7 @@ class ModelHasRolesSeeder extends Seeder
         $users = User::all();
 
         foreach ($users as $user) {
-            $roleId = ($user->id == 8) ? $roleIdForUser8 : $roleIdForAllUsers;
+            $roleId = ($user->id == 14) ? $roleIdForUser8 : $roleIdForAllUsers;
 
             DB::table('model_has_roles')->insert([
                 'role_id' => $roleId,
