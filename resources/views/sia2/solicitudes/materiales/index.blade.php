@@ -97,7 +97,7 @@
                             <div class="d-flex justify-content-center">
                                 {{-- Si el usuario autentificado es el solicitante, y el estado es igual a "AUTORIZADO" mostrar un boton adicional para confirmar la recepcion --}}
                                 {{-- Para el backend esto solo actualizara el estado a terminado, actualizando la fecha de "updated_at" cerrandola para siempre. --}}
-                                @if (auth()->user()->USUARIO_ID == $solicitud->SOLICITUD_USUARIO_ID && $solicitud->SOLICITUD_ESTADO == 'AUTORIZADO')
+                                @if (auth()->user()->USUARIO_ID == $solicitud->SOLICITUD_USUARIO_ID && $solicitud->SOLICITUD_ESTADO == 'APROBADO')
                                     <form action="{{ route('solicitudes.materiales.confirmar', $solicitud->SOLICITUD_ID) }}" method="POST">
                                         @csrf
                                         @method('PUT')
