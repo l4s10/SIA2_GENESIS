@@ -7,9 +7,6 @@
             font-family: 'Arial', sans-serif;
             color: #333;
         }
-        .container {
-            padding: 20px;
-        }
         h1 {
             text-align: center;
             margin-bottom: 20px;
@@ -20,7 +17,7 @@
         }
         th, td {
             border: 1px solid #0064a0;
-            padding: 8px;
+            padding: 5px;
             text-align: left;
         }
         th {
