@@ -479,14 +479,16 @@ class MaterialController extends Controller
         $dompdf->stream($nombreArchivo, ["Attachment" => false]);
     }
 
-    // Exportable Auditoria Materiales  para PDF
+    // Exportable Auditoria Materiales para PDF
     public function exportAuditoriaPdf()
     {
         $responsable = Auth::user()->USUARIO_NOMBRES.' '.Auth::user()->USUARIO_APELLIDOS . ' - ' . Auth::user()->USUARIO_RUT;
         $direccion = Auth::user()->oficina->OFICINA_NOMBRE;
 
-        // Obtener los movimientos que representan las auditorías (ajusta la consulta según sea necesario)
-        $auditorias = Movimiento::where('MOVIMIENTO_OBJETO', 'LIKE', 'MATERIAL: %')->get();
+        // Obtener los movimientos que representan las auditorías, ordenados de la más reciente a la más antigua
+        $auditorias = Movimiento::where('MOVIMIENTO_OBJETO', 'LIKE', 'MATERIAL: %')
+                        ->orderBy('created_at', 'desc') // Asumiendo que 'created_at' es el campo de fecha
+                        ->get();
 
         $fecha = now()->setTimezone('America/Santiago')->format('d/m/Y H:i');
         $fechaParaNombreArchivo = str_replace(['/', ':', ' '], '-', $fecha);

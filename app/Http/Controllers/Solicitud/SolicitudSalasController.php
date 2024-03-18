@@ -227,6 +227,7 @@ class SolicitudSalasController extends Controller
                     }
                     $this->updateSolicitud($request, $solicitud, 'RECHAZADO');
                     $this->createRevisionSolicitud($request, $solicitud);
+                    DB::commit(); // Guarda todos los cambios en la base de datos
                     return $this->redirectSuccess('Solicitud rechazada exitosamente');
                 break;
             }
