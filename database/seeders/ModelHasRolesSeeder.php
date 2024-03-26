@@ -15,13 +15,13 @@ class ModelHasRolesSeeder extends Seeder
     public function run(): void
     {
         $roleIdForAllUsers = 4;
-        $roleIdForUser8 = 1;
+        $roleIdForAdministrators = 1;
         $model = 'App\Models\User';
 
         $users = User::all();
 
         foreach ($users as $user) {
-            $roleId = ($user->id == 14) ? $roleIdForUser8 : $roleIdForAllUsers;
+            $roleId = ($user->id == 14 || $user->id == 15 || $user->id == 288) ? $roleIdForAdministrators : $roleIdForAllUsers;
 
             DB::table('model_has_roles')->insert([
                 'role_id' => $roleId,

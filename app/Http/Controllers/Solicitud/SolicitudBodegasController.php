@@ -165,7 +165,7 @@ class SolicitudBodegasController extends Controller
 
                 case 'finalizar_revision':
                     // Lógica para finalizar la revisión
-                    $solicitud->update(['SOLICITUD_ESTADO' => 'AUTORIZADO']);
+                    $solicitud->update(['SOLICITUD_ESTADO' => 'APROBADO']);
                 break;
 
                 case 'rechazar':
