@@ -156,7 +156,7 @@ class SolicitudReparacionesController extends Controller
 
                 case 'finalizar_revision':
                     // Lógica para finalizar la revisión
-                    $solicitud->update(['SOLICITUD_REPARACION_ESTADO' => 'AUTORIZADO']);
+                    $solicitud->update(['SOLICITUD_REPARACION_ESTADO' => 'APROBADO']);
                 break;
 
                 case 'rechazar':
