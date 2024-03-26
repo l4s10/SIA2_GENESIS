@@ -155,11 +155,6 @@
         color: #000000;
         background-color: #d9d9d9;
         }
-
-        .estado-autorizado {
-        color: #ffffff;
-        background-color: #0CB009;
-        }
     </style>
 
     <!-- Color mensajes usuario -->

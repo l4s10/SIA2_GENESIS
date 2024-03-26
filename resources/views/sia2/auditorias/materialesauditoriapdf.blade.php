@@ -12,7 +12,7 @@
             margin-bottom: 20px;
         }
         table {
-            width: 80%; /* Reducir el ancho de la tabla al 80% del contenedor */
+            width: 100%;
             border-collapse: collapse;
         }
         th, td {
