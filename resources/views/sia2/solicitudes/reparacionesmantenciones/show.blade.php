@@ -29,7 +29,31 @@
 
 @section('css')
 <style>
+      /*Colores de los estados*/
+      .estado-ingresado {
+        color: #000000;
+        background-color: #FFA600;
+        }
+
+        .estado-en-revision {
+        color: #000000;
+        background-color: #F7F70B;
+        }
+
+        .estado-aprobado {
+        color: #ffffff;
+        background-color: #0CB009;
+        }
+
+        .estado-rechazado {
+        color: #FFFFFF;
+        background-color: #F70B0B;
+        }
         
+        .estado-terminado {
+        color: #000000;
+        background-color: #d9d9d9;
+        }  
 </style>
 @stop
 
