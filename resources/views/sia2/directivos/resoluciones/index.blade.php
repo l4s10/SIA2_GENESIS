@@ -49,7 +49,7 @@
 
         <div class="table custom-table-responsive">
             <table id="resoluciones" class="table table-bordered mt-4 custom-table">
-                <thead class="bg-primary text-white">
+                <thead class="tablacolor">
                     <tr>
                         <th scope="col">Resolución</th>
                         <th scope="col">Fecha</th>
@@ -147,7 +147,7 @@
                             </td>
                             <td>
                                 <div class="d-flex justify-content-between">
-                                    <a href="{{ route('resoluciones.edit', $resolucion->RESOLUCION_ID) }}" class="btn btn-secondary"><i class="fa-solid fa-pencil"></i></a>
+                                    <a href="{{ route('resoluciones.edit', $resolucion->RESOLUCION_ID) }}" class="btn botoneditar"><i class="fa-solid fa-pencil"></i></a>
                                     <form action="{{ route('resoluciones.destroy', $resolucion->RESOLUCION_ID) }}" method="POST" style="display: inline-block;">
                                         @csrf
                                         @method('DELETE')
