@@ -501,7 +501,7 @@
                 <div class="modal-dialog" role="document">
                     <div class="modal-content">
                         <div class="modal-header">
-                            <h5 class="modal-title" style="text-align: center;" id="passwordModalLabel">Autenticación Para Firmar Autorización</h5>
+                            <h5 class="modal-title" style="text-align: center;" id="passwordModalLabel">Autenticación Para Firmar Rendición</h5>
                             <button type="button" class="close" onclick="cerrarModal()" aria-label="Close">
                                 <span aria-hidden="true">&times;</span>
                             </button>

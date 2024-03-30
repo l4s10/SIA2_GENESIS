@@ -46,22 +46,26 @@ class SolicitudVehiculosController extends Controller
      */
     public function index()
     {
-        // Try-catch para el manejo de excepciones
         try {
-            // Obtener la oficina del usuario actual
-            $oficinaIdUsuario = Auth::user()->OFICINA_ID;
-
-            // Obtener las solicitudes vehiculares realizadas por usuarios de la oficina correspondiente
-            $solicitudes = SolicitudVehicular::whereHas('user', function ($query) use ($oficinaIdUsuario) {
-                $query->where('OFICINA_ID', $oficinaIdUsuario);
-            })->get();
-
+            $user = Auth::user();
+            $solicitudes = null;
+            
+            // Verificar si el usuario tiene el rol de 'JEFE DEPARTAMENTO DE ADMINISTRACION' o 'JEFE VIRTUAL'
+            if ($user->hasRole('ADMINISTRADOR') || $user->hasRole('SERVICIOS')) {
+                // Obtener las solicitudes vehiculares realizadas por usuarios de la oficina correspondiente
+                $solicitudes = SolicitudVehicular::whereHas('user', function ($query) use ($user) {
+                    $query->where('OFICINA_ID', $user->OFICINA_ID);
+                })->get();
+            } else {
+                // Obtener las solicitudes vehiculares creadas por el usuario actual
+                $solicitudes = SolicitudVehicular::where('USUARIO_id', $user->id)->get();
+            }
+    
             // Formatear las fechas created_at en DD:MM:AA
             foreach ($solicitudes as $solicitud) {
                 $solicitud->formatted_created_at = Carbon::parse($solicitud->created_at)->format('d-m-y H:i');
             }
-
-
+    
             // Retornar la vista con las solicitudes
             return view('sia2.solicitudes.vehiculos.index', compact('solicitudes'));
         } catch (Exception $e) {
@@ -69,6 +73,7 @@ class SolicitudVehiculosController extends Controller
             return redirect()->back()->with('error', 'Error al cargar las solicitudes.');
         }
     }
+
     public function indexPorAprobar()
     {
         try {
@@ -79,7 +84,7 @@ class SolicitudVehiculosController extends Controller
             $solicitudes = null;
 
             // Verificar si el usuario es el jefe del departamento de administración
-            if (Auth::user()->cargo->CARGO_NOMBRE == 'JEFE DE DEPARTAMENTO DE ADMINISTRACION') {
+            if (Auth::user()->cargo->CARGO_NOMBRE == 'JEFE DE DEPARTAMENTO DE ADMINISTRACIÓN') {
                 // Si es el jefe de departamento de administración, obtener todas las solicitudes por aprobar de la misma oficina
                 $solicitudes = SolicitudVehicular::whereHas('user', function ($query) use ($oficinaIdUsuario) {
                     $query->where('OFICINA_ID', $oficinaIdUsuario);

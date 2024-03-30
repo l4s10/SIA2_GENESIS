@@ -3,7 +3,7 @@
 @section('title', 'Solicitudes de vehículos')
 
 @section('content_header')
-    <h1>Listado de Solicitudes de Vehículos</h1>
+    <h1>Listado de Solicitudes de Vehículos</h1>    
     @role('ADMINISTRADOR')
     <div class="alert alert-info alert1" role="alert">
     <div><strong>Bienvenido Administrador:</strong> Acceso total al modulo.<div>
@@ -101,9 +101,11 @@
                             </div>
                         </td>
                         <td>
-                            <span class="badge rounded-pill estado-{{ preg_replace('/\s+/u', '-', mb_strtolower($solicitud->SOLICITUD_VEHICULO_ESTADO)) }}">
-                                {{ $solicitud->SOLICITUD_VEHICULO_ESTADO }}
-                            </span>
+                            <div class="d-flex justify-content-center">
+                                <span class="badge rounded-pill estado-{{ preg_replace('/\s+/u', '-', mb_strtolower($solicitud->SOLICITUD_VEHICULO_ESTADO)) }}">
+                                    {{ $solicitud->SOLICITUD_VEHICULO_ESTADO }}
+                                </span>
+                            </div>
                         </td>
                         <td>
                             <div class="d-flex justify-content-center">
@@ -243,7 +245,7 @@
                     { "orderable": false, "targets": 7 }
                 ],
                 "language": {
-                    "url": "//cdn.datatables.net/plug-ins/1.11.3/i18n/es_es.json"
+                    "url": "https://cdn.datatables.net/plug-ins/1.11.3/i18n/es_es.json"
                 },
                 "order": [[ 5, "desc" ]],
             });

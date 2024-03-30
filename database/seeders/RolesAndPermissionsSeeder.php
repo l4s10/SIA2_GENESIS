@@ -19,8 +19,8 @@ class RolesAndPermissionsSeeder extends Seeder
             'ADMINISTRADOR' => Role::create(['name' => 'ADMINISTRADOR']),
             'SERVICIOS' => Role::create(['name' => 'SERVICIOS']),
             'INFORMATICA' => Role::create(['name' => 'INFORMATICA']),
-            'FUNCIONARIO' => Role::create(['name' => 'FUNCIONARIO']),
             'JURIDICO' => Role::create(['name' => 'JURIDICO']),
+            'FUNCIONARIO' => Role::create(['name' => 'FUNCIONARIO']),
         ];
 
         // Definir permisos (SOLICITUDES)
