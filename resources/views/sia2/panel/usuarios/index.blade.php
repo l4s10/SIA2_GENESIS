@@ -67,7 +67,7 @@
                         <td>{{$usuario->email}}</td>
                         <td>
                             <div class="d-flex justify-content-center">
-                                <a href="{{route('panel.usuarios.edit',$usuario->id)}}"class="btn botoneditar"> 
+                                <a href="{{route('panel.usuarios.edit',$usuario->id)}}"class="btn botoneditar">
                                     <i class="fa-solid fa-pen-to-square"></i> Editar
                                 </a>
                                 @role('ADMINISTRADOR')
@@ -118,7 +118,7 @@
                     { "orderable": false, "targets": 2 }
                 ],
                 "language": {
-                    "url": "//cdn.datatables.net/plug-ins/1.10.25/i18n/Spanish.json"
+                    "url": "https://cdn.datatables.net/plug-ins/1.11.3/i18n/es_es.json"
                 },
             });
         });
