@@ -154,14 +154,14 @@
                         <option style="text-align: center;" value="">-- Seleccione una opción --</option>
                         <optgroup label="Ubicaciones">
                             @foreach($ubicaciones as $ubicacion)
-                                <option value="{{ $ubicacion->UBICACION_ID }}" data-oficina="{{ $ubicacion->OFICINA_ID }}" {{ isset($usuario->ubicacion) && $usuario->ubicacion->UBICACION_ID == $ubicacion->UBICACION_ID ? 'selected' : '' }}>
+                                <option value="{{ $ubicacion->UBICACION_ID }}" data-oficina="{{ $ubicacion->OFICINA_ID }}" {{ old('UBICACION_ID', $usuario->ubicacion->UBICACION_ID ?? '') == $ubicacion->UBICACION_ID ? 'selected' : '' }}>
                                     {{ $ubicacion->UBICACION_NOMBRE }}
                                 </option>
                             @endforeach
                         </optgroup>
                         <optgroup label="Departamentos">
                             @foreach($departamentos as $departamento)
-                                <option value="{{ $departamento->DEPARTAMENTO_ID }}" data-oficina="{{ $departamento->OFICINA_ID }}" {{ isset($usuario->departamento) && $usuario->departamento->DEPARTAMENTO_ID == $departamento->DEPARTAMENTO_ID ? 'selected' : '' }}>
+                                <option value="{{ $departamento->DEPARTAMENTO_ID }}" data-oficina="{{ $departamento->OFICINA_ID }}" {{ old('DEPARTAMENTO_ID', $usuario->departamento->DEPARTAMENTO_ID ?? '') == $departamento->DEPARTAMENTO_ID ? 'selected' : '' }}>
                                     {{ $departamento->DEPARTAMENTO_NOMBRE }}
                                 </option>
                             @endforeach
@@ -180,7 +180,7 @@
                     {{-- Grupo field --}}
                     <div class="form-group">
                         <label for="GRUPO_ID"><i class="fa-solid fa-layer-group"></i> Grupo:</label>
-                        <select name="GRUPO_ID" id="GRUPO_ID" class="form-control @error('GRUPO_ID') is-invalid @enderror" required>
+                        <select name="GRUPO_ID" id="GRUPO_ID" class="form-control @error('GRUPO_ID') is-invalid @enderror" >
                             <option value="" style="text-align: center;" {{ is_null($usuario->grupo) ? 'selected' : '' }}>-- Seleccione un grupo --</option>
                             @foreach($grupos as $grupo)
                                 <option value="{{ $grupo->GRUPO_ID }}" data-oficina="{{ $grupo->OFICINA_ID }}" {{ optional($usuario->grupo)->GRUPO_ID == $grupo->GRUPO_ID ? 'selected' : '' }}>{{ $grupo->GRUPO_NOMBRE }}</option>

@@ -464,89 +464,6 @@
     <!-- Bootstrap -->
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
     <script>
-        // Obtener el valor del token CSRF del meta tag
-        var csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
-
-        // Función para autorizar el formulario con verificación de contraseña
-        function abrirModal() {
-            // Abrir el modal con contraseña limpia
-            $('#inputPassword').val('') ;
-            $('#passwordModal').modal('show');
-        }
-
-        // Función para cerrar el modal
-        function cerrarModal() {
-            $('#passwordModal').modal('hide');
-        }
-
-        // Función para verificar la contraseña cuando se hace clic en el botón "Confirmar" del modal
-        function verificarContraseña() {
-            var inputPassword = document.getElementById('inputPassword').value;
-
-            // Realizar la solicitud AJAX al backend para verificar la contraseña
-            console.log(inputPassword);
-
-            var xhr = new XMLHttpRequest();
-            xhr.open('POST', '/verificar-contrasena', true);
-            xhr.setRequestHeader('Content-Type', 'application/json');
-            xhr.setRequestHeader('X-CSRF-TOKEN', csrfToken);
-
-            xhr.onload = function() {
-                if (xhr.status === 200) {
-                    var response = JSON.parse(xhr.responseText);
-                    if (response.message === 'Contraseña correcta') {
-                        // Contraseña correcta, activar todos los campos del formulario
-                        var campos = document.querySelectorAll('#formulario input, #formulario select, #formulario textarea');
-                        campos.forEach(function (campo) {
-                            campo.removeAttribute('disabled');
-                        });
-
-                        // Deshabilitar campos dentro del div de los pasajeros
-                        var camposPasajeros = document.querySelectorAll('#pasajeros input, #pasajeros select, #pasajeros textarea');
-                        camposPasajeros.forEach(function (campo) {
-                            campo.removeAttribute('disabled');
-                        });
-
-                        // Deshabilitar campos específicos
-                        document.getElementById('TRABAJA_NUMERO_ORDEN_TRABAJO').setAttribute('disabled', 'disabled');
-                        document.getElementById('TRABAJA_HORA_INICIO_ORDEN_TRABAJO').setAttribute('disabled', 'disabled');
-                        document.getElementById('TRABAJA_HORA_TERMINO_ORDEN_TRABAJO').setAttribute('disabled', 'disabled');
-
-                        // Deshabilitar el botón después de hacer clic para evitar múltiples envíos del formulario
-                        document.getElementById('botonAutorizar').setAttribute('disabled', 'disabled');
-
-                        // Envía el formulario
-                        document.getElementById('formulario').submit();
-
-                        // Cerrar el modal
-                        cerrarModal();
-                    } 
-                } else if (xhr.status === 401) {
-                    // Contraseña incorrecta, mostrar mensaje de error
-                    alert("La contraseña ingresada es incorrecta. Por favor, inténtelo de nuevo.");
-                    // Cerrar el modal
-                    cerrarModal();
-                } else {
-                    // Error en la solicitud AJAX, mostrar mensaje de error
-                    alert("Error al verificar la contraseña. Por favor, reingrese en el sistema.");
-                    // Cerrar el modal
-                    cerrarModal();
-                }
-            };
-            xhr.onerror = function() {
-                // Manejar errores de red
-                console.log('Error de red al verificar la contraseña.');
-                alert('Error de red al verificar la contraseña. Por favor, revise su conexión a internet.');
-                // Cerrar el modal en caso de error de red
-                cerrarModal();
-            };
-
-            xhr.send(JSON.stringify({ password: inputPassword }));
-        }
-
-    </script>
-
-    <script>
 
     document.addEventListener('DOMContentLoaded', function () {
         let inputfechaHoraInicioAsignada = document.getElementById('fechaHoraInicioAsignada');
@@ -563,7 +480,7 @@
         let minutoActual = fechaActual.getMinutes(); // Minuto actual
 
         // **Fecha mínima permitida (día actual)**
-        let fechaMinimaPermitida = new Date(añoActual, mesActual, diaActual, horaActual, minutoActual);
+        let fechaMinimaPermitida = new Date(añoActual, mesActual, diaActual-2, horaActual, minutoActual);
         // **Fecha máxima permitida**
         let fechaMaximaPermitida;
 
@@ -716,6 +633,7 @@
                 if (validarCampos()) {
                     botonTerminarRevisiones.disabled = true;
                     botonGuardarRevision.disabled = true;
+                    botonRechazar.disabled = true;
                     // Enviar el formulario
                     document.getElementById('formulario').submit();
                 }
@@ -730,6 +648,7 @@
                 if (validarCampos()) {
                     botonTerminarRevisiones.disabled = true;
                     botonGuardarRevision.disabled = true;
+                    botonRechazar.disabled = true;
                     // Enviar el formulario
                     document.getElementById('formulario').submit();
                 }
@@ -889,33 +808,24 @@
         document.addEventListener('DOMContentLoaded', function() {
             // Obtener el contenedor de los campos de orden de trabajo
             var ordenTrabajoInputs = document.getElementById('ordenTrabajoInputs');
-                    // Obtener los elementos de hora y nro de orden de trabajo
-        var horaInicioSelector = document.getElementById("TRABAJA_HORA_INICIO_ORDEN_TRABAJO");
-        var horaTerminoSelector = document.getElementById("TRABAJA_HORA_TERMINO_ORDEN_TRABAJO");
-        var numeroOrdenTrabajo = document.getElementById('TRABAJA_NUMERO_ORDEN_TRABAJO');
+            // Obtener los elementos de hora y nro de orden de trabajo
+            var horaInicioSelector = document.getElementById("TRABAJA_HORA_INICIO_ORDEN_TRABAJO");
+            var horaTerminoSelector = document.getElementById("TRABAJA_HORA_TERMINO_ORDEN_TRABAJO");
+            var numeroOrdenTrabajo = document.getElementById('TRABAJA_NUMERO_ORDEN_TRABAJO');
 
             const solicitudOT = {!! json_encode($solicitud->ordenTrabajo) !!};
-
-            console.log("SOLICITUD OT: ", solicitudOT);
 
             // Verificar si la solicitud tiene una orden de trabajo asociada
             @if(isset($solicitud->ordenTrabajo) && $solicitud->ordenTrabajo != null)
                 // Mostrar los campos de orden de trabajo si la solicitud tiene una orden de trabajo
                 ordenTrabajoInputs.style.display = 'block';
-
-
-
-
             @else
                 // Ocultar los campos de orden de trabajo si la solicitud no tiene una orden de trabajo
                 ordenTrabajoInputs.style.display = 'none';
                 numeroOrdenTrabajo.disabled = true;
                 horaInicioSelector.disabled = true;
                 horaTerminoSelector.disabled = true;
-
             @endif
-
- 
             
         });
     </script>
@@ -934,19 +844,6 @@
 
             var pasajerosExistente = document.getElementsByClassName('pasajeros-box').length;
             contadorPasajeros = pasajerosExistente;
-
-
-
-
-            // Propuesta para eliminación de pasajeros hasta la cantidad solicitada
-            // Obtener la capacidad máxima del vehículo para validar agregado de pasajeros
-            /*var capacidadMaxima = {!! $solicitud->vehiculo->tipoVehiculo->TIPO_VEHICULO_CAPACIDAD !!};
-            var contadorPasajeros = 0;
-
-            // Contar la cantidad de pasajeros existentes al cargar la página
-            var pasajerosExistente = document.getElementsByClassName('pasajeros-box').length;
-            contadorPasajeros = pasajerosExistente;*/
-
 
             configurarSelectores();
             configurarSelectoresPasajero();

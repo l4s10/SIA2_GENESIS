@@ -151,8 +151,6 @@ class UsuarioController extends Controller
                 // Crear el usuario
                 $user = User::create([
                     'OFICINA_ID' => $request->oficina,
-                    'DEPARTAMENTO_ID' => $request->tipo_dependencia == 'Departamentos' ? $request->dependencia : null,
-                    'UBICACION_ID' => $request->tipo_dependencia == 'Ubicaciones' ? $request->dependencia : null,
                     'GRUPO_ID' => $request->GRUPO_ID,
                     'ESCALAFON_ID' => $request->ESCALAFON_ID,
                     'GRADO_ID' => $request->GRADO_ID,
@@ -169,6 +167,14 @@ class UsuarioController extends Controller
                     'USUARIO_CALIDAD_JURIDICA' => $request->USUARIO_CALIDAD_JURIDICA,
                     'USUARIO_SEXO' => $request->USUARIO_SEXO,
                 ]);
+
+                if($request->input('tipo_dependencia')==='Departamentos'){
+                    $user->DEPARTAMENTO_ID = $request->input('dependencia');
+                } else {
+                    $user->UBICACION_ID = $request->input('dependencia');
+                }
+
+                $user->save();
 
                 // Asignar el rol al usuario
                 $user->roles()->attach($request->role);
@@ -319,7 +325,7 @@ class UsuarioController extends Controller
                 ]);
 
                 // Si se proporcionó una nueva contraseña, actualizarla
-                if ($request->has('password')) {
+                if ($request->input('password') !== NULL) {
                     $usuario->update(['password' => bcrypt($request->password)]);
                 }
 

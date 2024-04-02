@@ -501,7 +501,7 @@
                 <div class="modal-dialog" role="document">
                     <div class="modal-content">
                         <div class="modal-header">
-                            <h5 class="modal-title" style="text-align: center;" id="passwordModalLabel">Autenticación Para Firmar Autorización</h5>
+                            <h5 class="modal-title" style="text-align: center;" id="passwordModalLabel">Autenticación Para Firmar Rendición</h5>
                             <button type="button" class="close" onclick="cerrarModal()" aria-label="Close">
                                 <span aria-hidden="true">&times;</span>
                             </button>
@@ -590,13 +590,18 @@
                         // Cerrar el modal
                         cerrarModal();
                     }
+                }else if (xhr.status === 401) {
+                    // Contraseña incorrecta, mostrar mensaje de error
+                    alert("La contraseña ingresada es incorrecta. Por favor, intente nuevamente.");
+                    // Cerrar el modal
+                    cerrarModal();
+                    // Habilitar el botón después de hacer clic para permitir envíos del formulario
+                    document.getElementById('botonRendicion').removeAttribute('disabled');
                 } else {
                     // Error en la solicitud AJAX, mostrar mensaje de error
                     alert("Error al verificar la contraseña. Por favor, reingrese en el sistema.");
                     // Cerrar el modal
                     cerrarModal();
-                    // Habilitar el botón después de hacer clic para permitir envíos del formulario
-                    document.getElementById('botonRendicion').removeAttribute('disabled');
                 }
             };
             xhr.onerror = function() {
@@ -647,102 +652,7 @@
     
 
     </script>
-   {{-- <script>
-        // Obtener el valor del token CSRF del meta tag
-        var csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
-    
-        // Función para autorizar el formulario con verificación de contraseña
-        function abrirModal() {
-            // Abrir el modal con contraseña limpia
-            $('#inputPassword').val('');
-            $('#passwordModal').modal('show');
-        }
-    
-        // Función para cerrar el modal
-        function cerrarModal() {
-            $('#passwordModal').modal('hide');
-        }
-    
-        // Función para activar todos los campos del formulario al hacer clic en el botón "Rendir"
-        function autorizarFormulario() {
-            // Obtener todos los campos de la rendición
-            var camposRendicion = document.querySelectorAll('#formulario input[name^="RENDICION_"], #formulario select[name^="RENDICION_"], #formulario textarea[name^="RENDICION_"]');
-    
-            // Verificar si todos los campos de la rendición tienen valor
-            var rendicionCompleta = Array.from(camposRendicion).every(function(campo) {
-                return campo.value.trim() !== ''; // Verifica que el valor del campo no esté vacío
-            });
-    
-            if (rendicionCompleta) {
-                // Activar todos los campos del formulario
-                var camposFormulario = document.querySelectorAll('#formulario input, #formulario select, #formulario textarea, #pasajeros input, #pasajeros select, #pasajeros textarea');
-                camposFormulario.forEach(function(campo) {
-                    campo.removeAttribute('disabled');
-                });
-    
-                // Deshabilitar campos adicionales si es necesario
-                document.getElementById('TRABAJA_NUMERO_ORDEN_TRABAJO').setAttribute('disabled', 'disabled');
-                document.getElementById('TRABAJA_HORA_INICIO_ORDEN_TRABAJO').setAttribute('disabled', 'disabled');
-                document.getElementById('TRABAJA_HORA_TERMINO_ORDEN_TRABAJO').setAttribute('disabled', 'disabled');
-    
-                // Deshabilitar el botón después de hacer clic para evitar múltiples envíos del formulario
-                document.getElementById('botonRendicion').setAttribute('disabled', 'disabled');
-    
-                // Envía el formulario
-                document.getElementById('formulario').submit();
-            } else {
-                // Si la rendición no está completa, no se envía el formulario
-                alert('Debe completar todos los campos de la rendición antes de enviar el formulario.');
-                return false; // Evita que el formulario se envíe si la rendición no está completa
-            }
-        }
-    
-        // Función para verificar la contraseña cuando se hace clic en el botón "Confirmar" del modal
-        function verificarContraseña() {
-            var inputPassword = document.getElementById('inputPassword').value;
-    
-            // Realizar la solicitud AJAX al backend para verificar la contraseña
-            console.log(inputPassword);
-    
-            var xhr = new XMLHttpRequest();
-            xhr.open('POST', '/verificar-contrasena', true);
-            xhr.setRequestHeader('Content-Type', 'application/json');
-            xhr.setRequestHeader('X-CSRF-TOKEN', csrfToken);
-    
-            xhr.onload = function() {
-                if (xhr.status === 200) {
-                    var response = JSON.parse(xhr.responseText);
-                    if (response.message === 'Contraseña correcta') {
-                        // Contraseña correcta
-                        // Llamar a la función para autorizar el formulario
-                        autorizarFormulario();
-                        // Cerrar el modal
-                        cerrarModal();
-                    }
-                } else if (xhr.status === 401) {
-                    // Contraseña incorrecta, mostrar mensaje de error
-                    alert("La contraseña ingresada es incorrecta. Por favor, inténtelo de nuevo.");
-                    // Cerrar el modal
-                    cerrarModal();
-                } else {
-                    // Error en la solicitud AJAX, mostrar mensaje de error
-                    alert("Error al verificar la contraseña. Por favor, reingrese en el sistema.");
-                    // Cerrar el modal
-                    cerrarModal();
-                }
-            };
-            xhr.onerror = function() {
-                // Manejar errores de red
-                console.log('Error de red al verificar la contraseña.');
-                alert('Error de red al verificar la contraseña. Por favor, revise su conexión a internet.');
-                // Cerrar el modal en caso de error de red
-                cerrarModal();
-            };
-    
-            xhr.send(JSON.stringify({ password: inputPassword }));
-        }
-    
-    </script>--}}
+   
     
     <script>
         document.addEventListener('DOMContentLoaded', function () {

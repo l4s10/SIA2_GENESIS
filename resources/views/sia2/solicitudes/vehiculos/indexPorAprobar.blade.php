@@ -71,9 +71,11 @@
                             </div>
                         </td>
                         <td>
-                            <span class="badge rounded-pill estado-{{ preg_replace('/\s+/u', '-', mb_strtolower($solicitud->SOLICITUD_VEHICULO_ESTADO)) }}">
-                                {{ $solicitud->SOLICITUD_VEHICULO_ESTADO }}
-                            </span>
+                            <div class="d-flex justify-content-center">
+                                <span class="badge rounded-pill estado-{{ preg_replace('/\s+/u', '-', mb_strtolower($solicitud->SOLICITUD_VEHICULO_ESTADO)) }}">
+                                    {{ $solicitud->SOLICITUD_VEHICULO_ESTADO }}
+                                </span>
+                            </div>
                         </td>
                         <td>
                             <div class="d-flex justify-content-center">
@@ -185,7 +187,7 @@
                     { "orderable": false, "targets": 7 }
                 ],
                 "language": {
-                    "url": "//cdn.datatables.net/plug-ins/1.11.3/i18n/es_es.json"
+                    "url": "https://cdn.datatables.net/plug-ins/1.11.3/i18n/es_es.json"
                 },
             });
 
@@ -207,7 +209,7 @@
                     // Mostrar el primer mensaje emergente con SweetAlert2
                     Swal.fire({
                         title: 'Producción PDF',
-                        text: 'La producción del PDF está en curso. Por favor, espera unos momentos.',
+                        text: 'La producción del PDF está en curso. Por favor, espere unos momentos.',
                         icon: 'info',
                         showConfirmButton: false, // No mostrar botón de confirmación
                         timer: 6000 // Tiempo en milisegundos antes de que se cierre automáticamente
@@ -215,7 +217,7 @@
                         // Mostrar el segundo mensaje emergente con SweetAlert2
                         Swal.fire({
                             title: 'Descarga PDF',
-                            text: 'La descarga del PDF comenzará en breve. Por favor, espera unos momentos.',
+                            text: 'La descarga del PDF comenzará en breve. Por favor, espere unos momentos.',
                             icon: 'info',
                             showConfirmButton: false, // No mostrar botón de confirmación
                             timer: 6000 // Tiempo en milisegundos antes de que se cierre automáticamente
