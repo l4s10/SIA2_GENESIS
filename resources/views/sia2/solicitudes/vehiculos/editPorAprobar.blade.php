@@ -358,8 +358,7 @@
                 </div>
                 <div class="col-md-3">
                     <!-- Botón Rechazar -->
-                    <input type="hidden" name="rechazoSolicitud" id="rechazoSolicitud" value="0">
-                    <button type="submit" class="btn btn-custom" name="rechazarSolicitud" style="background-color: #E22C2C; color: white;" ><i class="fa-solid fa-ban" style="margin-right: 5px;"></i> Rechazar solicitud</button>
+                    <button type="submit" class="btn btn-custom" id="botonRechazar" name="rechazarSolicitud" style="background-color: #E22C2C; color: white;" ><i class="fa-solid fa-ban" style="margin-right: 5px;"></i> Rechazar solicitud</button>
                 </div>
                 <div class="col-md-6">
                     <div class="row">
@@ -406,8 +405,7 @@
 @stop
 
 @section('css')
-<link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
-
+<link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" >
     <style>
         .btn-custom {
             width: 100%; /* Puedes ajustar el ancho según tus necesidades */
@@ -448,8 +446,6 @@
             var inputPassword = document.getElementById('inputPassword').value;
 
             // Realizar la solicitud AJAX al backend para verificar la contraseña
-            console.log(inputPassword);
-
             var xhr = new XMLHttpRequest();
             xhr.open('POST', '/verificar-contrasena', true);
             xhr.setRequestHeader('Content-Type', 'application/json');
@@ -464,6 +460,7 @@
                         campos.forEach(function (campo) {
                             campo.removeAttribute('disabled');
                         });
+                        document.getElementById('botonRechazar').disabled = true;
 
                         // Deshabilitar campos dentro del div de los pasajeros
                         var camposPasajeros = document.querySelectorAll('#pasajeros input, #pasajeros select, #pasajeros textarea');
@@ -476,10 +473,12 @@
                         document.getElementById('TRABAJA_HORA_INICIO_ORDEN_TRABAJO').setAttribute('disabled', 'disabled');
                         document.getElementById('TRABAJA_HORA_TERMINO_ORDEN_TRABAJO').setAttribute('disabled', 'disabled');
 
-                        // Deshabilitar el botón después de hacer clic para evitar múltiples envíos del formulario
+                        // Asignar valor '1' al botón de autorización
+                        document.querySelector('input[name="botonAutorizar"]').value = '1';
+                        // Deshabilitar el botón de autorización después de hacer clic en él, para evitar múltiples envíos del formulario
                         document.getElementById('botonAutorizar').setAttribute('disabled', 'disabled');
 
-                        // Envía el formulario
+                        // Envíar el formulario
                         document.getElementById('formulario').submit();
 
                         // Cerrar el modal

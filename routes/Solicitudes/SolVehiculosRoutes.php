@@ -22,13 +22,11 @@ Route::prefix('solicitudesvehiculos')->group(function () {
 
     // Ruta para editar solicitud de vehículo (1ERA FASE)
     Route::get('/{solicitudesvehiculo}/edit', [SolicitudVehiculosController::class, 'edit'])
-        ->name('solicitudesvehiculos.edit')
-        ->middleware('can:editar_solicitud');
+        ->name('solicitudesvehiculos.edit');
 
     // Ruta para actualizar/ REVISAR (1ERA FASE) solicitud de vehículo
     Route::put('/{solicitudesvehiculo}', [SolicitudVehiculosController::class, 'update'])
-        ->name('solicitudesvehiculos.update')
-        ->middleware('can:actualizar_solicitud');
+        ->name('solicitudesvehiculos.update');
 
     // Ruta para eliminar solicitud de vehículo
     Route::delete('/{solicitudesvehiculo}', [SolicitudVehiculosController::class, 'destroy'])

@@ -268,7 +268,7 @@
                     // Mostrar el primer mensaje emergente con SweetAlert2
                     Swal.fire({
                         title: 'Producción PDF',
-                        text: 'La producción del PDF está en curso. Por favor, espera unos momentos.',
+                        text: 'La producción del PDF está en curso. Por favor, espere unos momentos.',
                         icon: 'info',
                         showConfirmButton: false, // No mostrar botón de confirmación
                         timer: 6000 // Tiempo en milisegundos antes de que se cierre automáticamente
@@ -276,7 +276,7 @@
                         // Mostrar el segundo mensaje emergente con SweetAlert2
                         Swal.fire({
                             title: 'Descarga PDF',
-                            text: 'La descarga del PDF comenzará en breve. Por favor, espera unos momentos.',
+                            text: 'La descarga del PDF comenzará en breve. Por favor, espere unos momentos.',
                             icon: 'info',
                             showConfirmButton: false, // No mostrar botón de confirmación
                             timer: 6000 // Tiempo en milisegundos antes de que se cierre automáticamente

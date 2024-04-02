@@ -293,7 +293,7 @@
                         </div>
                         <div class="col-md-6 text-end">
                             <!-- Botón Terminar Revisiones -->
-                            <button type="submit"   class="btn btn-custom"  style="background-color: #00B050; color: white;" ><i class="fa-solid fa-clipboard-check"></i> Crear Solicitud</button>
+                            <button type="submit" id='submitButton'  class="btn btn-custom"  style="background-color: #00B050; color: white;" ><i class="fa-solid fa-clipboard-check"></i> Crear Solicitud</button>
 
                         </div>
                     </div>
@@ -654,11 +654,7 @@
                 alert(mensajeError);
                 event.preventDefault();
             } else {
-                const submitButton = document.getElementById('submitButton');
-
-                submitButton.addEventListener('click', function() {
-                    submitButton.disabled = true;
-                });
+                document.getElementById('submitButton').disabled=true;
             }
         });
     });

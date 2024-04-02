@@ -199,6 +199,7 @@ class SolicitudVehiculosController extends Controller
      */
     public function store(Request $request)
     {
+        //dd($request);
         // Intentar guardar la solicitud en la base de datos
         try {
             //if ( $request->)
@@ -467,9 +468,6 @@ class SolicitudVehiculosController extends Controller
                 return redirect()->route('solicitudesvehiculos.index')->with('success', 'Solicitud rechazada correctamente.');
             } else {
 
-
-
-
                 // Validación de datos
                 $validatorRules = [
                     'VEHICULO_ID' => 'required|exists:vehiculos,VEHICULO_ID',
@@ -509,8 +507,6 @@ class SolicitudVehiculosController extends Controller
                         'RENDICION_OBSERVACIONES' => 'nullable|string|max:255',
                     ]);
                 }
-
-
 
                 $validator = Validator::make($request->all(), $validatorRules, [
                     'VEHICULO_ID.required' => 'El campo Vehículo es obligatorio.',
@@ -621,7 +617,7 @@ class SolicitudVehiculosController extends Controller
                 }*/
 
                 // Verificar si se envió el botón de autorizar
-                if ($request->has('botonAutorizar')) {
+                if (($request->has('botonAutorizar')) && ($request->input('botonAutorizar') == 1)) {
                     if ((Auth::user()->cargo->CARGO_ID == $solicitud->SOLICITUD_VEHICULO_JEFE_QUE_AUTORIZA) && (Auth::user()->cargo->CARGO_NOMBRE !== 'JEFE DE DEPARTAMENTO DE ADMINISTRACIÓN') ) {
                         // Si es el 'JEFE QUE AUTORIZA'
                         $existeAutorizacion = Autorizacion::where('SOLICITUD_VEHICULO_ID', $solicitud->SOLICITUD_VEHICULO_ID)
@@ -849,47 +845,6 @@ class SolicitudVehiculosController extends Controller
                 'jefeAdmin' => 'D27',
             ];
 
-            // Rendicion para recuperar firma
-            $rendicion = Rendicion::where('SOLICITUD_VEHICULO_ID', $solicitud->SOLICITUD_VEHICULO_ID)->first();
-            $totalKmsRecorridos= 0;
-            // Verificar si se encontró la rendición
-            if ($rendicion) {
-                $totalKmsRecorridos=($rendicion->RENDICION_KILOMETRAJE_TERMINO - $rendicion->RENDICION_KILOMETRAJE_INICIO);
-                // Acceder a la firma del conductor desde la rendición
-                $firmaConductor = ( 'Firmado digitalmente por: ' . "\n" . $rendicion->user->USUARIO_NOMBRES.' '.$rendicion->user->USUARIO_APELLIDOS . "\n" . ' Rut: '.$rendicion->user->USUARIO_RUT . "\n" . 'Fecha: '. Carbon::parse($rendicion->created_at)->format('d-m-Y H:i') );
-
-                $spreadsheet->getActiveSheet()->setCellValue('C31', strtoupper(Carbon::parse($rendicion->RENDICION_FECHA_HORA_LLEGADA)->isoFormat('dddd')));
-                $spreadsheet->getActiveSheet()->setCellValue('D31', Carbon::parse($rendicion->RENDICION_FECHA_HORA_LLEGADA)->format('j'));
-                $spreadsheet->getActiveSheet()->setCellValue('E31', strtoupper(Carbon::parse($rendicion->RENDICION_FECHA_HORA_LLEGADA)->isoFormat('MMMM')));
-                $spreadsheet->getActiveSheet()->setCellValue('F31', Carbon::parse($rendicion->RENDICION_FECHA_HORA_LLEGADA)->format('Y'));
-                $spreadsheet->getActiveSheet()->setCellValue('C32', strtoupper(Carbon::parse($rendicion->RENDICION_FECHA_HORA_LLEGADA)->format('H:i')));
-                $spreadsheet->getActiveSheet()->setCellValue('C33', $rendicion->RENDICION_TOTAL_HORAS);
-                $spreadsheet->getActiveSheet()->setCellValue('C34', $rendicion->RENDICION_OBSERVACIONES);
-                $spreadsheet->getActiveSheet()->setCellValue('J31', $rendicion->RENDICION_NUMERO_BITACORA);
-                $spreadsheet->getActiveSheet()->setCellValue('J32', $rendicion->RENDICION_ABASTECIMIENTO);
-                $spreadsheet->getActiveSheet()->setCellValue('J33', $rendicion->RENDICION_NIVEL_ESTANQUE);
-                $spreadsheet->getActiveSheet()->setCellValue('H31', $rendicion->RENDICION_KILOMETRAJE_INICIO);
-                $spreadsheet->getActiveSheet()->setCellValue('H32', $rendicion->RENDICION_KILOMETRAJE_TERMINO);
-                $spreadsheet->getActiveSheet()->setCellValue('H33', $totalKmsRecorridos);
-
-                // DATOS DE RENDICION
-                /*['C32', strtoupper(Carbon::parse($rendicion->RENDICION_FECHA_HORA_LLEGADA)->isoFormat('dddd'))],
-                ['D32', Carbon::parse($rendicion->RENDICION_FECHA_HORA_LLEGADA)->format('j')],
-                ['E32', strtoupper(Carbon::parse($rendicion->RENDICION_FECHA_HORA_LLEGADA)->isoFormat('MMMM'))],
-                ['F32', Carbon::parse($rendicion->RENDICION_FECHA_HORA_LLEGADA)->format('Y')],
-                ['C33', strtoupper(Carbon::parse($rendicion->RENDICION_FECHA_HORA_LLEGADA)->format('H:i'))],
-                ['C34', $rendicion->RENDICION_TOTAL_HORAS],
-                ['C35', $rendicion->RENDICION_OBSERVACIONES],
-                ['J32', $rendicion->RENDICION_NUMERO_BITACORA ],
-                ['J33', $rendicion->RENDICION_ABASTECIMIENTO],
-                ['J34', $rendicion->RENDICION_NIVEL_ESTANQUE],
-                ['H32', $rendicion->RENDICION_KILOMETRAJE_INICIO],
-                ['H33', $rendicion->RENDICION_KILOMETRAJE_TERMINO],
-                ['H34', $totalKmsRecorridos]*/
-
-            } else {
-                $firmaConductor = " ";
-            }
             // Verificar si existe solo una autorización y la solicitud está en el estado adecuado
             if ($autorizaciones->count() === 1 && ($solicitud->SOLICITUD_VEHICULO_ESTADO === 'POR RENDIR' || $solicitud->SOLICITUD_VEHICULO_ESTADO === 'TERMINADO')) {
                 // Obtener la autorización única
@@ -912,7 +867,6 @@ class SolicitudVehiculosController extends Controller
                     }
                 }
             }
-
 
             // Registro de celdas en excel
 
@@ -994,11 +948,11 @@ class SolicitudVehiculosController extends Controller
 
 
                     // FOLIO
-                    ['J3', $solicitud->SOLICITUD_VEHICULO_ID],
+                    ['J3', ''],
 
 
                     // FIRMA DE CONDUCTOR ASIGNADO
-                    ['D22', $firmaConductor],
+                    ['D22', ''],
 
                 ]
             );
@@ -1011,7 +965,7 @@ class SolicitudVehiculosController extends Controller
                 $spreadsheet->getActiveSheet()->setCellValue('C' . $filaPasajero, $pasajero->usuario->USUARIO_NOMBRES . ' ' . $pasajero->usuario->USUARIO_APELLIDOS);
 
                 // Agregar la dirección regional del pasajero
-                $spreadsheet->getActiveSheet()->setCellValue('H' . $filaPasajero, $pasajero->usuario->ubicacion ? $pasajero->usuario->ubicacion->UBICACION_NOMBRE : $pasajero->usuario->departamento->DEPARTAMENTO_NOMBRE . ' | ' . ($pasajero->usuario->oficina ? $pasajero->usuario->oficina->OFICINA_NOMBRE : ''));
+                $spreadsheet->getActiveSheet()->setCellValue('H' . $filaPasajero, $pasajero->usuario->ubicacion ? $pasajero->usuario->ubicacion->UBICACION_NOMBRE . ' | ' . ($pasajero->usuario->oficina->OFICINA_NOMBRE) : $pasajero->usuario->departamento->DEPARTAMENTO_NOMBRE . ' | ' . ($pasajero->usuario->oficina->OFICINA_NOMBRE));
 
             }
 
@@ -1028,6 +982,52 @@ class SolicitudVehiculosController extends Controller
                 $valor = $dato[1]; // Valor a asignar a la celda
                 $spreadsheet->getActiveSheet()->setCellValue($celda, $valor);
             }
+
+
+            // Rendicion para recuperar firma
+            $rendicion = Rendicion::where('SOLICITUD_VEHICULO_ID', $solicitud->SOLICITUD_VEHICULO_ID)->first();
+            $totalKmsRecorridos= 0;
+            // Verificar si se encontró la rendición
+            if ($rendicion) {
+                $totalKmsRecorridos=($rendicion->RENDICION_KILOMETRAJE_TERMINO - $rendicion->RENDICION_KILOMETRAJE_INICIO);
+                // Acceder a la firma del conductor desde la rendición
+                $firmaConductor = ( 'Firmado digitalmente por: ' . "\n" . $rendicion->user->USUARIO_NOMBRES.' '.$rendicion->user->USUARIO_APELLIDOS . "\n" . ' Rut: '.$rendicion->user->USUARIO_RUT . "\n" . 'Fecha: '. Carbon::parse($rendicion->created_at)->format('d-m-Y H:i') );
+
+                $spreadsheet->getActiveSheet()->setCellValue('C31', strtoupper(Carbon::parse($rendicion->RENDICION_FECHA_HORA_LLEGADA)->isoFormat('dddd')));
+                $spreadsheet->getActiveSheet()->setCellValue('D31', Carbon::parse($rendicion->RENDICION_FECHA_HORA_LLEGADA)->format('j'));
+                $spreadsheet->getActiveSheet()->setCellValue('E31', strtoupper(Carbon::parse($rendicion->RENDICION_FECHA_HORA_LLEGADA)->isoFormat('MMMM')));
+                $spreadsheet->getActiveSheet()->setCellValue('F31', Carbon::parse($rendicion->RENDICION_FECHA_HORA_LLEGADA)->format('Y'));
+                $spreadsheet->getActiveSheet()->setCellValue('C32', strtoupper(Carbon::parse($rendicion->RENDICION_FECHA_HORA_LLEGADA)->format('H:i')));
+                $spreadsheet->getActiveSheet()->setCellValue('C33', $rendicion->RENDICION_TOTAL_HORAS);
+                $spreadsheet->getActiveSheet()->setCellValue('C34', $rendicion->RENDICION_OBSERVACIONES);
+                $spreadsheet->getActiveSheet()->setCellValue('J31', $rendicion->RENDICION_NUMERO_BITACORA);
+                $spreadsheet->getActiveSheet()->setCellValue('J3', $rendicion->RENDICION_NUMERO_BITACORA);
+                $spreadsheet->getActiveSheet()->setCellValue('D22', $firmaConductor);
+                $spreadsheet->getActiveSheet()->setCellValue('J32', $rendicion->RENDICION_ABASTECIMIENTO);
+                $spreadsheet->getActiveSheet()->setCellValue('J33', $rendicion->RENDICION_NIVEL_ESTANQUE);
+                $spreadsheet->getActiveSheet()->setCellValue('H31', $rendicion->RENDICION_KILOMETRAJE_INICIO);
+                $spreadsheet->getActiveSheet()->setCellValue('H32', $rendicion->RENDICION_KILOMETRAJE_TERMINO);
+                $spreadsheet->getActiveSheet()->setCellValue('H33', $totalKmsRecorridos);
+
+                // DATOS DE RENDICION
+                /*['C32', strtoupper(Carbon::parse($rendicion->RENDICION_FECHA_HORA_LLEGADA)->isoFormat('dddd'))],
+                ['D32', Carbon::parse($rendicion->RENDICION_FECHA_HORA_LLEGADA)->format('j')],
+                ['E32', strtoupper(Carbon::parse($rendicion->RENDICION_FECHA_HORA_LLEGADA)->isoFormat('MMMM'))],
+                ['F32', Carbon::parse($rendicion->RENDICION_FECHA_HORA_LLEGADA)->format('Y')],
+                ['C33', strtoupper(Carbon::parse($rendicion->RENDICION_FECHA_HORA_LLEGADA)->format('H:i'))],
+                ['C34', $rendicion->RENDICION_TOTAL_HORAS],
+                ['C35', $rendicion->RENDICION_OBSERVACIONES],
+                ['J32', $rendicion->RENDICION_NUMERO_BITACORA ],
+                ['J33', $rendicion->RENDICION_ABASTECIMIENTO],
+                ['J34', $rendicion->RENDICION_NIVEL_ESTANQUE],
+                ['H32', $rendicion->RENDICION_KILOMETRAJE_INICIO],
+                ['H33', $rendicion->RENDICION_KILOMETRAJE_TERMINO],
+                ['H34', $totalKmsRecorridos]*/
+
+            } else {
+                $firmaConductor = " ";
+            }
+            
 
 
             /*// Guardar los cambios en la plantilla Excel

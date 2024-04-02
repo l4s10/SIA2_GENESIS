@@ -154,14 +154,14 @@
                         <option style="text-align: center;" value="">-- Seleccione una opción --</option>
                         <optgroup label="Ubicaciones">
                             @foreach($ubicaciones as $ubicacion)
-                                <option value="{{ $ubicacion->UBICACION_ID }}" data-oficina="{{ $ubicacion->OFICINA_ID }}" {{ isset($usuario->ubicacion) && $usuario->ubicacion->UBICACION_ID == $ubicacion->UBICACION_ID ? 'selected' : '' }}>
+                                <option value="{{ $ubicacion->UBICACION_ID }}" data-oficina="{{ $ubicacion->OFICINA_ID }}" {{ old('UBICACION_ID', $usuario->ubicacion->UBICACION_ID ?? '') == $ubicacion->UBICACION_ID ? 'selected' : '' }}>
                                     {{ $ubicacion->UBICACION_NOMBRE }}
                                 </option>
                             @endforeach
                         </optgroup>
                         <optgroup label="Departamentos">
                             @foreach($departamentos as $departamento)
-                                <option value="{{ $departamento->DEPARTAMENTO_ID }}" data-oficina="{{ $departamento->OFICINA_ID }}" {{ isset($usuario->departamento) && $usuario->departamento->DEPARTAMENTO_ID == $departamento->DEPARTAMENTO_ID ? 'selected' : '' }}>
+                                <option value="{{ $departamento->DEPARTAMENTO_ID }}" data-oficina="{{ $departamento->OFICINA_ID }}" {{ old('DEPARTAMENTO_ID', $usuario->departamento->DEPARTAMENTO_ID ?? '') == $departamento->DEPARTAMENTO_ID ? 'selected' : '' }}>
                                     {{ $departamento->DEPARTAMENTO_NOMBRE }}
                                 </option>
                             @endforeach

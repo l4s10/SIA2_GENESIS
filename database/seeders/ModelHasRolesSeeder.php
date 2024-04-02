@@ -22,18 +22,14 @@ class ModelHasRolesSeeder extends Seeder
             14 => 1, // Asignar Rol 1 al Usuario con ID 14
             15 => 1, // Asignar Rol 1 al Usuario con ID 15
             16 => 1, // Asignar Rol 1 al Usuario con ID 16
-            26 => 1, // Asignar Rol 1 al Usuario con ID 26
-            234 => 1, // Asignar Rol 1 al Usuario con ID 234
-            563 => 1, // Asignar Rol 1 al Usuario con ID 563
+            288 => 1, // Asignar Rol 1 al Usuario con ID 288
             17 => 2, // Asignar Rol 2 al Usuario con ID 17
             19 => 2, // Asignar Rol 2 al Usuario con ID 19
             24 => 2, // Asignar Rol 2 al Usuario con ID 24
             29 => 2, // Asignar Rol 2 al Usuario con ID 29
             57 => 2, // Asignar Rol 2 al Usuario con ID 57
-            564 => 2, // Asignar Rol 2 al Usuario con ID 564
             21 => 3, // Asignar Rol 3 al Usuario con ID 21
             27 => 3, // Asignar Rol 3 al Usuario con ID 27
-            565 => 3, // Asignar Rol 3 al Usuario con ID 565
             250 => 4, // Asignar Rol 4 al Usuario con ID 250
             253 => 4, // Asignar Rol 4 al Usuario con ID 253
             254 => 4, // Asignar Rol 4 al Usuario con ID 254
@@ -49,7 +45,6 @@ class ModelHasRolesSeeder extends Seeder
             265 => 4, // Asignar Rol 4 al Usuario con ID 265
             266 => 4, // Asignar Rol 4 al Usuario con ID 266
             267 => 4, // Asignar Rol 4 al Usuario con ID 267
-            566 => 4, // Asignar Rol 4 al Usuario con ID 566
         ];
 
         // Obtener todos los IDs de usuarios disponibles en la tabla 'users'

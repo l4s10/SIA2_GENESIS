@@ -76,10 +76,10 @@
                     <div class="form-group">
                         <label for="USUARIO_SEXO"><i class="fa-solid fa-person-half-dress"></i> Sexo:</label>
                         <select name="USUARIO_SEXO" class="form-control @error('USUARIO_SEXO') is-invalid @enderror" required>
-                            <option value="" style="text-align: center;" selected disabled>{{ __('-- Seleccione una opción --') }}</option>
-                            <option value="FEMENINO">{{ __('FEMENINO') }}</option>
-                            <option value="MASCULINO">{{ __('MASCULINO') }}</option>       
-                            <option value="OTRO">{{ __('OTRO') }}</option>     
+                            <option value="" style="text-align: center;" {{ old('USUARIO_SEXO') == '' ? 'selected disabled' : '' }}>{{ __('-- Seleccione una opción --') }}</option>
+                            <option value="FEMENINO" {{ old('USUARIO_SEXO') == 'FEMENINO' ? 'selected' : '' }}>{{ __('FEMENINO') }}</option>
+                            <option value="MASCULINO" {{ old('USUARIO_SEXO') == 'MASCULINO' ? 'selected' : '' }}>{{ __('MASCULINO') }}</option>
+                            <option value="OTRO" {{ old('USUARIO_SEXO') == 'OTRO' ? 'selected' : '' }}>{{ __('OTRO') }}</option>
                         </select>
                         @error('USUARIO_SEXO')
                             <span class="invalid-feedback" role="alert">
@@ -159,7 +159,7 @@
                     <select id="oficina" name="oficina" class="form-control oficina" required>
                         <option style="text-align: center;" value="">-- Seleccione una opción --</option>
                         @foreach($oficinas as $oficina)
-                            <option value="{{ $oficina->OFICINA_ID }}" data-oficina="{{ $oficina->OFICINA_ID }}">
+                            <option value="{{ $oficina->OFICINA_ID }}" {{ old('oficina') == $oficina->OFICINA_ID ? 'selected' : '' }}>
                                 {{ $oficina->OFICINA_NOMBRE }}
                             </option>
                         @endforeach
@@ -171,14 +171,14 @@
                         <option style="text-align: center;" value="">-- Seleccione una opción --</option>
                         <optgroup label="Ubicaciones">
                             @foreach($ubicaciones as $ubicacion)
-                                <option value="{{ $ubicacion->UBICACION_ID }}" data-oficina="{{ $ubicacion->OFICINA_ID }}">
+                                <option value="{{ $ubicacion->UBICACION_ID }}" data-oficina="{{ $ubicacion->OFICINA_ID }}" {{ old('dependencia') == $ubicacion->UBICACION_ID ? 'selected' : '' }}>
                                     {{ $ubicacion->UBICACION_NOMBRE }}
                                 </option>
                             @endforeach
                         </optgroup>
                         <optgroup label="Departamentos">
                             @foreach($departamentos as $departamento)
-                                <option value="{{ $departamento->DEPARTAMENTO_ID }}" data-oficina="{{ $departamento->OFICINA_ID }}">
+                                <option value="{{ $departamento->DEPARTAMENTO_ID }}" data-oficina="{{ $departamento->OFICINA_ID }}" {{ old('dependencia') == $departamento->DEPARTAMENTO_ID ? 'selected' : '' }}>
                                     {{ $departamento->DEPARTAMENTO_NOMBRE }}
                                 </option>
                             @endforeach
@@ -216,11 +216,11 @@
                     <div class="form-group">
                         <label for="USUARIO_CALIDAD_JURIDICA"><i class="fa-solid fa-pen-to-square"></i> Calidad Jurídica:</label>
                         <select name="USUARIO_CALIDAD_JURIDICA" id="USUARIO_CALIDAD_JURIDICA" class="form-control @error('USUARIO_CALIDAD_JURIDICA') is-invalid @enderror" required>
-                            <option value="" style="text-align: center;" selected disabled>{{ __('-- Seleccione una opción --') }}</option>
-                            <option value="PLANTA">{{ __('PLANTA') }}</option>
-                            <option value="CONTRATA">{{ __('CONTRATA') }}</option>       
+                            <option value="" style="text-align: center;" {{ old('USUARIO_CALIDAD_JURIDICA') == '' ? 'selected' : '' }} disabled>{{ __('-- Seleccione una opción --') }}</option>
+                            <option value="PLANTA" {{ old('USUARIO_CALIDAD_JURIDICA') == 'PLANTA' ? 'selected' : '' }}>{{ __('PLANTA') }}</option>
+                            <option value="CONTRATA" {{ old('USUARIO_CALIDAD_JURIDICA') == 'CONTRATA' ? 'selected' : '' }}>{{ __('CONTRATA') }}</option>
                         </select>
-            
+                
                         @error('USUARIO_CALIDAD_JURIDICA')
                             <span class="invalid-feedback" role="alert">
                                 <strong>{{ $message }}</strong>
@@ -228,18 +228,17 @@
                         @enderror
                     </div>
                 </div>
-
                 <div class="col-md-3">
                     {{-- Grado field --}}
                     <div class="form-group">
                         <label for="GRADO_ID"><i class="fa-solid fa-layer-group"></i> Grado:</label>
                         <select name="GRADO_ID" id="GRADO_ID" class="form-control @error('GRADO_ID') is-invalid @enderror" required>
-                            <option value="" style="text-align: center;" selected disabled>-- Seleccione un grado --</option>
+                            <option value="" style="text-align: center;" {{ old('GRADO_ID') == '' ? 'selected' : '' }} disabled>-- Seleccione un grado --</option>
                             @foreach($grados as $grado)
-                                <option value="{{ $grado->GRADO_ID }}" data-oficina="{{ $grado->OFICINA_ID }}" >{{ $grado->GRADO_NUMERO }}</option>
+                                <option value="{{ $grado->GRADO_ID }}" data-oficina="{{ $grado->OFICINA_ID }}" {{ old('GRADO_ID') == $grado->GRADO_ID ? 'selected' : '' }}>{{ $grado->GRADO_NUMERO }}</option>
                             @endforeach
                         </select>
-
+                
                         @error('GRADO_ID')
                             <span class="invalid-feedback" role="alert">
                                 <strong>{{ $message }}</strong>
@@ -253,12 +252,12 @@
                     <div class="form-group">
                         <label for="ESCALAFON_ID"><i class="fa-solid fa-layer-group"></i> Escalafón:</label>
                         <select name="ESCALAFON_ID" id="ESCALAFON_ID" class="form-control @error('ESCALAFON_ID') is-invalid @enderror" required>
-                            <option value="" style="text-align: center;" selected disabled>-- Seleccione un escalafón --</option>
+                            <option value="" style="text-align: center;" {{ old('ESCALAFON_ID') == '' ? 'selected' : '' }} disabled>-- Seleccione un escalafón --</option>
                             @foreach($escalafones as $escalafon)
-                                <option value="{{ $escalafon->ESCALAFON_ID }}" data-oficina="{{ $escalafon->OFICINA_ID }}">{{ $escalafon->ESCALAFON_NOMBRE }}</option>
+                                <option value="{{ $escalafon->ESCALAFON_ID }}" data-oficina="{{ $escalafon->OFICINA_ID }}" {{ old('ESCALAFON_ID') == $escalafon->ESCALAFON_ID ? 'selected' : '' }}>{{ $escalafon->ESCALAFON_NOMBRE }}</option>
                             @endforeach
                         </select>
-
+                
                         @error('ESCALAFON_ID')
                             <span class="invalid-feedback" role="alert">
                                 <strong>{{ $message }}</strong>
@@ -276,19 +275,19 @@
                         <select name="CARGO_ID" id="CARGO_ID" class="form-control" required>
                             <option value="" style="text-align: center;" disabled selected>-- Seleccione un cargo --</option>
                             @foreach ($cargos as $cargo)
-                                <option value="{{$cargo->CARGO_ID}}" data-oficina="{{ $cargo->OFICINA_ID }}" >{{$cargo->CARGO_NOMBRE}}</option>
+                                <option value="{{$cargo->CARGO_ID}}" data-oficina="{{ $cargo->OFICINA_ID }}" {{ old('CARGO_ID') == $cargo->CARGO_ID ? 'selected' : '' }}>{{$cargo->CARGO_NOMBRE}}</option>
                             @endforeach
                         </select>
                     </div>
                 </div>
-
+                
                 <div class="col-md-3">
                     {{-- Anexo field --}}
                     <div class="form-group">
                         <label for="USUARIO_ANEXO"><i class="fa-regular fa-id-badge"></i> Anexo:</label>
                         <input type="text" name="USUARIO_ANEXO" class="form-control @error('USUARIO_ANEXO') is-invalid @enderror"
                             value="{{ old('USUARIO_ANEXO') }}" placeholder="{{ __('Ej: 9999') }}" required autofocus>
-
+                
                         @error('USUARIO_ANEXO')
                             <span class="invalid-feedback" role="alert">
                                 <strong>{{ $message }}</strong>
@@ -302,7 +301,7 @@
                         <label for="USUARIO_FONO"><i class="fa-solid fa-phone"></i> Fono:</label>
                         <input type="text" name="USUARIO_FONO" class="form-control @error('USUARIO_FONO') is-invalid @enderror"
                             value="{{ old('USUARIO_FONO') }}" placeholder="{{ __('Ej: 41 123 456') }}" required autofocus>
-
+                
                         @error('USUARIO_FONO')
                             <span class="invalid-feedback" role="alert">
                                 <strong>{{ $message }}</strong>
@@ -311,23 +310,14 @@
                     </div>
                 </div>
 
-                
-
             </div>
-
-            <div class="row">
-                
-            </div>
-      
             
             <br>
 
 
             {{-- Niveles --}}
             <h4>Privilegios</h4>
-            <div class="row">
-               
-            </div>
+
             {{-- !!ROL --}}
             <div class="row">
                 <div class="col-md-6">
@@ -336,13 +326,11 @@
                         <select name="role" id="role" class="form-control" required>
                             <option value="" style="text-align: center;" disabled selected>-- Seleccione un rol --</option>
                             @foreach ($roles as $role)
-                                <option value="{{ $role->id }}">{{ $role->name }}</option>
+                                <option value="{{ $role->id }}" {{ old('role') == $role->id ? 'selected' : '' }}>{{ $role->name }}</option>
                             @endforeach
                         </select>
                     </div>
                 </div>
-                
-               
             </div>
             <br>
             <div class="form-group">
