@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Exception; // Libreria faltante
+use Illuminate\Database\QueryException;
 
 use Carbon\Carbon;
 use Dompdf\Dompdf;
@@ -457,6 +458,9 @@ class EquipoController extends Controller
         } catch(ModelNotFoundException $e) {
             // Manejo de excepciones cuando no encuentre el modelo
             return redirect()->route('equipos.index')->with('error', 'Error al eliminar el equipo');
+        } catch(QueryException $e) {
+            // Manejo de excepciones de violación de restricción de clave externa
+            return redirect()->route('equipos.index')->with('error', 'No se puede eliminar el equipo porque tiene registros relacionados');
         } catch(Exception $e) {
             //Manejo para cualquier otra excepcion
             return redirect()->route('equipos.index')->with('error', 'Error al eliminar el equipo');

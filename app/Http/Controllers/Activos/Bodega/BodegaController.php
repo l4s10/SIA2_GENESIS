@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Exception;
+use Illuminate\Database\QueryException;
 
 use App\Models\Bodega;
 use App\Models\Oficina;
@@ -228,6 +229,9 @@ class BodegaController extends Controller
         } catch (ModelNotFoundException $e) {
             // Manejar excepción de modelo no encontrado
             return redirect()->route('bodegas.index')->with('error', 'Ocurrió un error inesperado al eliminar la bodega.');
+        } catch(QueryException $e) {
+            // Manejar excepción de consulta (QueryException)
+            return redirect()->route('bodegas.index')->with('error', 'Ocurrió un error en la consulta.');
         } catch (Exception $e) {
             // Manejar otras excepciones
             return redirect()->route('bodegas.index')->with('error', 'Ocurrió un error inesperado al eliminar la bodega.');

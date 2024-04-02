@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Exception;
+use Illuminate\Database\QueryException;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Gloudemans\Shoppingcart\Facades\Cart;
@@ -246,6 +247,11 @@ class FormularioController extends Controller
         {
             // Retornamos la vista con el mensaje de error (concatenar mensaje con $ex para obtener detalles DEBUG)
             return redirect()->back()->with('error', 'Ha ocurrido un error al eliminar el formulario');
+        }
+        catch(QueryException $ex)
+        {
+            // Retornamos la vista con el mensaje de error (concatenar mensaje con $ex para obtener detalles DEBUG)
+            return redirect()->back()->with('error', 'No se puede eliminar el formulario porque tiene registros relacionados');
         }
         catch(Exception $ex)
         {
