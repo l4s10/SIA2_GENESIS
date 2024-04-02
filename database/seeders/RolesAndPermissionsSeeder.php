@@ -31,8 +31,6 @@ class RolesAndPermissionsSeeder extends Seeder
             'editar_solicitud',
             'actualizar_solicitud',
             'eliminar_solicitud',
-            // MODULO DE VEHICULOS (EXCLUSIVO)
-            'firmar_solicitud',
         ];
 
         // Definir permisos (ACTIVOS - INVENTARIO)
