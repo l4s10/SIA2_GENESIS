@@ -261,17 +261,26 @@ class FormularioController extends Controller
     }
 
     // Funcion para agregar un formulario al carrito
-    public function addToCart(Formulario $formulario){
-
-        // Creamos la instancia del carrito de formularios
+    public function addToCart(Request $request, Formulario $formulario)
+    {
+        $cantidadSolicitada = $request->input('cantidad', 1);
         $carritoFormularios = Cart::instance('carrito_formularios');
+        $carritoFormularios->add($formulario, $cantidadSolicitada);
 
-        // Agregamos el formulario al carrito
-        $carritoFormularios->add($formulario, 1);
-
-        // Redireccionamos a la vista que mostrará el carrito
         return redirect()->back()->with('success', 'Formulario agregado exitosamente');
     }
+
+    // public function addToCart(Formulario $formulario){
+
+    //     // Creamos la instancia del carrito de formularios
+    //     $carritoFormularios = Cart::instance('carrito_formularios');
+
+    //     // Agregamos el formulario al carrito
+    //     $carritoFormularios->add($formulario, 1);
+
+    //     // Redireccionamos a la vista que mostrará el carrito
+    //     return redirect()->back()->with('success', 'Formulario agregado exitosamente');
+    // }
 
 
 
