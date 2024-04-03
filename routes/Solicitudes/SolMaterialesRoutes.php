@@ -28,12 +28,12 @@ Route::prefix('solicitudes')->group(function () {
     //** Editar solicitud */
     Route::get('/materiales/{solicitudesmaterial}/edit', [SolicitudMaterialesController::class, 'edit'])
         ->name('solicitudes.materiales.edit')
-        ->middleware('can:editar_solicitud');
+        ->middleware(['role:ADMINISTRADOR|SERVICIOS']);
 
     //** Actualizar solicitud */
     Route::put('/materiales/{solicitudesmaterial}', [SolicitudMaterialesController::class, 'update'])
         ->name('solicitudes.materiales.update')
-        ->middleware('can:actualizar_solicitud');
+        ->middleware(['role:ADMINISTRADOR|SERVICIOS']);
 
     //** Eliminar solicitud */
     Route::delete('/materiales/{solicitudesmaterial}', [SolicitudMaterialesController::class, 'destroy'])
