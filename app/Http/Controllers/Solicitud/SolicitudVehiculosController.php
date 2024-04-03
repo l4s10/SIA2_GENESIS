@@ -99,6 +99,7 @@ class SolicitudVehiculosController extends Controller
                         ->orWhere('SOLICITUD_VEHICULO_ESTADO', 'POR AUTORIZAR');
                 })
                 ->where('SOLICITUD_VEHICULO_ESTADO', '!=', 'ELIMINADO')
+                ->orderBy('created_at', 'desc')
                 ->get();
             } elseif (strpos(Auth::user()->cargo->CARGO_NOMBRE, 'JEFE') === 0) {
                 // Si es otro jefe que autoriza, obtener las solicitudes por aprobar de la misma oficina y asignadas al jefe que autoriza
@@ -108,6 +109,7 @@ class SolicitudVehiculosController extends Controller
                     })
                     ->where('SOLICITUD_VEHICULO_ESTADO', 'POR APROBAR')
                     ->where('SOLICITUD_VEHICULO_ESTADO', '!=', 'ELIMINADO')
+                    ->orderBy('created_at', 'desc')
                     ->get();
             } 
 
@@ -140,6 +142,7 @@ class SolicitudVehiculosController extends Controller
                 ->whereHas('conductor', function ($query) use ($userId) {
                     $query->where('CONDUCTOR_id', $userId);
                 })
+                ->orderBy('created_at', 'desc')
                 ->get();
 
 
@@ -345,9 +348,58 @@ class SolicitudVehiculosController extends Controller
     public function timeline($id)
     {
         try {
+            // Encontrar la solicitud vehicular
             $solicitud = SolicitudVehicular::findOrFail($id);
+
+            // Obtener las revisiones de la solicitud vehicular
             $revisiones = RevisionSolicitud::where('SOLICITUD_VEHICULO_ID', $id)->get();
-            return view('sia2.solicitudes.vehiculos.show', compact('solicitud', 'revisiones'));
+
+            // Obtener las autorizaciones de la solicitud vehicular
+            $autorizaciones = Autorizacion::where('SOLICITUD_VEHICULO_ID', $id)->get();
+
+            // Obtener la rendición asociada a la solicitud vehicular
+            $rendicion = Rendicion::where('SOLICITUD_VEHICULO_ID', $id)->first();
+
+            // Arreglo para almacenar el historial de estados
+            $historialEstados = [];
+
+            // Agregar el estado inicial
+            $historialEstados[] = [
+                'estado' => 'Solicitud creada',
+                'fecha' => $solicitud->created_at
+            ];
+
+            // Agregar los estados de las revisiones
+            foreach($revisiones as $revision) {
+                $historialEstados[] = [
+                    'estado' => 'Revisión por ' . ($revision->gestionador ? $revision->gestionador->USUARIO_NOMBRES . ' ' . $revision->gestionador->USUARIO_APELLIDOS : 'Usuario Desconocido'),
+                    'fecha' => $revision->created_at
+                ];
+            }
+
+            // Agregar los estados de las autorizaciones
+            foreach($autorizaciones as $autorizacion) {
+                $historialEstados[] = [
+                    'estado' => 'Autorización',
+                    'fecha' => $autorizacion->created_at
+                ];
+            }
+
+            // Agregar el estado de la rendición si existe
+            if($rendicion) {
+                $historialEstados[] = [
+                    'estado' => 'Rendición',
+                    'fecha' => $rendicion->created_at
+                ];
+            }
+
+            // Agregar el estado actual
+            $historialEstados[] = [
+                'estado' => 'Estado actual: ' . $solicitud->SOLICITUD_VEHICULO_ESTADO,
+                'fecha' => now() // O la fecha actual, según sea necesario
+            ];
+
+            return view('sia2.solicitudes.vehiculos.show', compact('solicitud', 'revisiones', 'autorizaciones', 'rendicion', 'historialEstados'));
         } catch (Exception $e) {
             return redirect()->back()->with('error', 'Error al cargar la línea de tiempo de la solicitud.');
         }

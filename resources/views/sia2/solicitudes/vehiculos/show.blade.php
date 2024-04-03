@@ -1,107 +1,84 @@
 @extends('adminlte::page')
 
-@section('title', 'Línea del Tiempo para Solicitud Vehicular')
+@section('title', 'Editar Solicitud Vehicular')
 
 @section('content_header')
-    <h1>Línea del Tiempo de Solicitud Vehicular</h1>
+    <div class="row">
+        <div class="col-md-6">
+            <h1>Revisión Solicitud Vehicular</h1>
+        </div>
+    </div>
 @stop
 
 @section('content')
-<div class="container">
-    <div class="card">
-        <div class="card-header">
-            Detalles de la Solicitud
-        </div>
-        <div class="card-body">
-            <p><strong>ID de Solicitud:</strong> {{ $solicitud->id }}</p>
-            {{-- Detalles de la solicitud aquí--}}
-        </div>
-    </div>
-    <div class="card border">
-        <div class="card-header">
-            <h2>Detalles de la Solicitud</h2>
-        </div>
-        <div class="card-body">
-                <div class="container-timeline">
-                    <div class="card timeline-item">
-                        <div class="card-header">
-                            <div class="timeline-icon">
-                                <i class="fas fa-car"></i>
-                            </div>
-                            <div class="timeline-content">
-                                <h3>Solicitud creada</h3>
-                                <p>{{ $solicitud->created_at }}</p>
-                            </div>
-                        </div>
+    <div class="container">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="card">
+                    <div class="card-header">
+                        <h2>Detalle de la Solicitud</h2>
                     </div>
-                    @foreach($revisiones as $revision)
-                        <div class="card timeline-item">
-                            <div class="card-header">
-                                <div class="timeline-icon">
-                                    <i class="fas fa-user"></i>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="solicitante"><strong>Solicitante:</strong></label>
+                                    <input type="text" id="solicitante" class="form-control" value="{{ $solicitud->user->USUARIO_NOMBRES . ' ' . $solicitud->user->USUARIO_APELLIDOS }}" readonly>
                                 </div>
-                                <div class="timeline-content">
-                                    <h3>Revisión por {{ $revision->gestionador ? $revision->gestionador->USUARIO_NOMBRES.' '.$revision->gestionador->USUARIO_APELLIDOS : 'Usuario Desconocido' }}</h3>
-                                    <p>{{ $revision->created_at }}</p>
-                                    <p>Observaciones: {{ $revision->REVISION_SOLICITUD_OBSERVACION }}</p>
-                                    <p>Estado:
-                                        @if(in_array($revision->SOLICITUD_VEHICULO_ESTADO, ['INGRESADO', 'EN REVISIÓN', 'POR APROBAR', 'POR AUTORIZAR', 'POR RENDIR', 'TERMINADO', 'RECHAZADO']))
-                                            {{ $revision->SOLICITUD_VEHICULO_ESTADO }}
+                                <div class="form-group">
+                                    <label for="estado_actual"><strong>Estado Actual:</strong></label>
+                                    <input type="text" id="estado_actual" class="form-control" value="{{ $solicitud->SOLICITUD_VEHICULO_ESTADO }}" readonly>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="direccion_regional"><strong>Dirección Regional:</strong></label>
+                                    <input type="text" id="direccion_regional" class="form-control" value="{{ $solicitud->user->oficina->OFICINA_NOMBRE }}" readonly>
+                                </div>
+                                <div class="form-group">
+                                    <label for="dependencia"><strong>Dependencia:</strong></label>
+                                    <input type="text" id="dependencia" class="form-control" value="
+                                        @if($solicitud->user->ubicacion)
+                                            {{ $solicitud->user->ubicacion->UBICACION_NOMBRE }}
+                                        @elseif($solicitud->user->departamento)
+                                            {{ $solicitud->user->departamento->DEPARTAMENTO_NOMBRE }}
                                         @else
-                                            Estado Desconocido
+                                            Ninguna ubicación o departamento especificado
                                         @endif
-                                    </p>
+                                    " readonly>
                                 </div>
                             </div>
                         </div>
-                    @endforeach
-                    <div class="card timeline-item">
-                        <div class="card-header">
-                            <div class="timeline-icon">
-                                <i class="fas fa-check-circle"></i>
-                            </div>
-                            <div class="timeline-content">
-                                <h3>Estado actual: {{ $solicitud->SOLICITUD_VEHICULO_ESTADO }}</h3>
-                            </div>
                     </div>
-                 </div>
+                </div>
+            </div>
+        </div>
+        <h2>Timeline de la Solicitud</h2>
+        <div class="timeline">
+            <div class="container-timeline">
+                <div class="timeline-item">
+                    <div class="timeline-icon">
+                        <i class="fas fa-car"></i>
+                    </div>
+                    <div class="timeline-content">
+                        <h3>Solicitud creada</h3>
+                        <p>{{ $solicitud->created_at }}</p>
+                    </div>
+                </div>
+                @foreach($historialEstados as $estado)
+                    <div class="timeline-item">
+                        <div class="timeline-icon">
+                            <i class="fas fa-info-circle"></i>
+                        </div>
+                        <div class="timeline-content">
+                            <h3>{{ $estado['estado'] }}</h3>
+                            <p>{{ $estado['fecha'] }}</p>
+                        </div>
+                    </div>
+                @endforeach
             </div>
         </div>
     </div>
-</div>
-<script src="scripts.js"></script>
+
+    <script src="scripts.js"></script>
 @endsection
-@section('css')
-<style>
-            /*Colores de los estados*/
-            .estado-ingresado {
-        color: #000000;
-        background-color: #FFA600;
-        }
-
-        .estado-en-revision {
-        color: #000000;
-        background-color: #F7F70B;
-        }
-
-        .estado-aprobado {
-        color: #ffffff;
-        background-color: #0CB009;
-        }
-
-        .estado-rechazado {
-        color: #FFFFFF;
-        background-color: #F70B0B;
-        }
-
-        .estado-terminado {
-        color: #000000;
-        background-color: #d9d9d9;
-        }
-
-        .estado-autorizado {
-        color: #ffffff;
-        background-color: #0CB009;
-        }
-</style>
-@stop
