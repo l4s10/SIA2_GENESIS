@@ -126,7 +126,7 @@
             </div>
 
 
-            <button href="{{ route('solicitudes.formularios.index') }}" class="btn btn-secondary "><i class="fa-solid fa-hand-point-left"></i> Cancelar</button>
+            <a href="{{ route('solicitudes.reparaciones.index') }}" class="btn btn-secondary "><i class="fa-solid fa-hand-point-left"></i> Cancelar</a>
             {{-- Botón de envío --}}
             <button type="submit" class="btn agregar"><i class="fa-solid fa-clipboard-check"></i> Crear Solicitud</button>
         </form>
