@@ -271,7 +271,7 @@
             @if ($solicitud->equipos->isNotEmpty())
                 <div class="form-group">
                     <label for="autorizarEquipos">Autorizar cantidades de equipos solicitados</label>
-                    <table class="table table-bordered">
+                    <table class="table table-bordered" id="carrito">
                         <thead class="tablacolor">
                             <tr>
                                 <th>Tipo de Equipo</th>
@@ -304,7 +304,7 @@
                     <div class="alert alert-danger">{{ $message }}</div>
                 @enderror
             </div>
-           
+
             {{-- Botones de retorno y envo --}}
             <a href="{{ route('solicitudes.salas.index') }}" class="btn btn-secondary"><i class="fa-solid fa-hand-point-left"></i> Volver</a>
             <button type="submit" name="action" value="guardar" class="btn agregar"><i class="fa-solid fa-floppy-disk"></i> Guardar revisión</button>
@@ -369,4 +369,19 @@
 @section('js')
     {{-- Llamar a fechasAutorizadas.js --}}
     <script src="{{ asset('js/Components/fechasAutorizadas.js') }}"></script>
+
+    {{-- Llamar a componente DataTables --}}
+    <script>
+        $(document).ready(function () {
+            $('#carrito').DataTable({
+                "lengthMenu": [[5, 10, 50, -1], [5, 10, 50, "All"]],
+                "columnDefs": [
+                    { "orderable": false, "targets": 2 }
+                ],
+                "language": {
+                    "url": "https://cdn.datatables.net/plug-ins/1.11.3/i18n/es_es.json"
+                },
+            });
+        });
+    </script>
 @stop

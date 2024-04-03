@@ -155,7 +155,7 @@
             color: #fff;
         }
     </style>
-    
+
     <!-- Color mensajes usuario -->
     <style>
         .alert {
@@ -172,6 +172,10 @@
 @stop
 
 @section('js')
+    {{-- Script cooldown envio formulario (evita entradas repetidas) --}}
+    <script src="{{ asset('js/Components/cooldownSendForm.js') }}"></script>
+
+    {{-- Script para manejar la visibilidad, habilitación/deshabilitación y requerimiento del campo de vehículo --}}
     <script>
         $(document).ready(function() {
             // Función para manejar la visibilidad, habilitación/deshabilitación y requerimiento del campo de vehículo

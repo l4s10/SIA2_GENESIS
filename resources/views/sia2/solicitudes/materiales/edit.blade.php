@@ -210,7 +210,7 @@
             {{-- Autorizar cantidades de materiales solicitados --}}
             <div class="form-group">
                 <label for="materiales">Autorizar cantidades de materiales solicitados</label>
-                <table class="table table-bordered">
+                <table class="table table-bordered" id="carrito">
                     <thead class="tablacarrito">
                     <tr>
                         <th>Material</th>
@@ -311,4 +311,19 @@
 @section('js')
     {{-- Llamar a fechasAutorizadas.js --}}
     <script src="{{ asset('js/Components/fechasAutorizadas.js') }}"></script>
+
+    {{-- Llamar a componente DataTables --}}
+    <script>
+        $(document).ready(function () {
+            $('#carrito').DataTable({
+                "lengthMenu": [[5, 10, 50, -1], [5, 10, 50, "All"]],
+                "columnDefs": [
+                    { "orderable": false, "targets": 3 }
+                ],
+                "language": {
+                    "url": "https://cdn.datatables.net/plug-ins/1.11.3/i18n/es_es.json"
+                },
+            });
+        });
+    </script>
 @stop

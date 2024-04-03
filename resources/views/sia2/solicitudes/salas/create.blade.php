@@ -212,6 +212,12 @@
 @section('js')
     {{-- Llamar a componente fechas solicitadas --}}
     <script src="{{ asset('js/Components/fechasSolicitadas.js') }}"></script>
+    {{-- Script cooldown envio formulario (evita entradas repetidas) --}}
+    <script src="{{ asset('js/Components/cooldownSendForm.js') }}"></script>
+    {{-- Cooldown borrar del carrito (evita llamados multiples) --}}
+    <script src="{{ asset('js/Components/cooldownEraseFromCart.js') }}"></script>
+
+
     {{-- Llamar a componente de DataTables --}}
     <script>
         $(document).ready(function () {

@@ -145,4 +145,6 @@
 @section('js')
     {{-- Llamar a componente configuracion fechas SOLICITADAS --}}
     <script src="{{ asset('js/Components/fechasSolicitadas.js') }}"></script>
+    {{-- Script cooldown envio formulario (evita entradas repetidas) --}}
+    <script src="{{ asset('js/Components/cooldownSendForm.js') }}"></script>
 @stop
