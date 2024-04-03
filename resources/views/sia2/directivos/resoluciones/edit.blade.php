@@ -68,25 +68,20 @@
                             <div class="invalid-feedback">{{ $message }}</div>
                         @enderror
                     </div>
-
                     <div class="mb-3">
                         <label for="FACULTAD_ID" class="form-label"><i class="fa-solid fa-book-bookmark"></i> Facultad:</label>
                         <select id="FACULTAD_ID" name="FACULTAD_ID" class="form-control @error('FACULTAD_ID') is-invalid @enderror" required>
                             <option value="" selected>--Seleccione Facultad--</option>
-            
                             @foreach ($facultades as $facultad)
-                                <option value="{{ $facultad->FACULTAD_ID }}" {{ $delegacion->facultad->FACULTAD_ID == $facultad->FACULTAD_ID ? 'selected' : '' }}>
+                                <option value="{{ $facultad->FACULTAD_ID }}" @if($delegacion->facultad && $delegacion->facultad->FACULTAD_ID == $facultad->FACULTAD_ID) selected @endif>
                                     {{ $facultad->FACULTAD_NOMBRE }}
                                 </option>
                             @endforeach
-            
                         </select>
-            
                         @error('FACULTAD_ID')
                             <div class="invalid-feedback">{{ $message }}</div>
                         @enderror
                     </div>
-
                     <div class="mb-3">
                         <label for="DELEGADO_ID" class="form-label"><i class="fa-solid fa-book-bookmark"></i> Delegado:</label>
                         <select id="DELEGADO_ID" name="DELEGADO_ID" class="form-control @error('DELEGADO_ID') is-invalid @enderror" required>

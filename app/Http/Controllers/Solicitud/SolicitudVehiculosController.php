@@ -55,10 +55,14 @@ class SolicitudVehiculosController extends Controller
                 // Obtener las solicitudes vehiculares realizadas por usuarios de la oficina correspondiente
                 $solicitudes = SolicitudVehicular::whereHas('user', function ($query) use ($user) {
                     $query->where('OFICINA_ID', $user->OFICINA_ID);
-                })->get();
+                })
+                ->where('SOLICITUD_VEHICULO_ESTADO', '!=', 'ELIMINADO')
+                ->get();
             } else {
                 // Obtener las solicitudes vehiculares creadas por el usuario actual
-                $solicitudes = SolicitudVehicular::where('USUARIO_id', $user->id)->get();
+                $solicitudes = SolicitudVehicular::where('USUARIO_id', $user->id)
+                                            ->where('SOLICITUD_VEHICULO_ESTADO', '!=', 'ELIMINADO')
+                                            ->get();
             }
     
             // Formatear las fechas created_at en DD:MM:AA
@@ -91,11 +95,10 @@ class SolicitudVehiculosController extends Controller
                 })
                 ->where(function ($query) {
                     $query->where('SOLICITUD_VEHICULO_ESTADO', 'POR APROBAR')
-                    ->where('SOLICITUD_VEHICULO_JEFE_QUE_AUTORIZA', Auth::user()->cargo->CARGO_ID)
-                          ->orWhere(function ($query) {
-                            $query->where('SOLICITUD_VEHICULO_ESTADO', 'POR AUTORIZAR');
-                          });
+                        ->where('SOLICITUD_VEHICULO_JEFE_QUE_AUTORIZA', Auth::user()->cargo->CARGO_ID)
+                        ->orWhere('SOLICITUD_VEHICULO_ESTADO', 'POR AUTORIZAR');
                 })
+                ->where('SOLICITUD_VEHICULO_ESTADO', '!=', 'ELIMINADO')
                 ->get();
             } elseif (strpos(Auth::user()->cargo->CARGO_NOMBRE, 'JEFE') === 0) {
                 // Si es otro jefe que autoriza, obtener las solicitudes por aprobar de la misma oficina y asignadas al jefe que autoriza
@@ -104,8 +107,9 @@ class SolicitudVehiculosController extends Controller
                         $query->where('OFICINA_ID', $oficinaIdUsuario);
                     })
                     ->where('SOLICITUD_VEHICULO_ESTADO', 'POR APROBAR')
+                    ->where('SOLICITUD_VEHICULO_ESTADO', '!=', 'ELIMINADO')
                     ->get();
-            }
+            } 
 
             // Formatear las fechas created_at en DD:MM:AA
             foreach ($solicitudes as $solicitud) {
@@ -132,6 +136,7 @@ class SolicitudVehiculosController extends Controller
                     $query->where('OFICINA_ID', $oficinaIdUsuario);
                 })
                 ->where('SOLICITUD_VEHICULO_ESTADO', 'POR RENDIR')
+                ->where('SOLICITUD_VEHICULO_ESTADO', '!=', 'ELIMINADO')
                 ->whereHas('conductor', function ($query) use ($userId) {
                     $query->where('CONDUCTOR_id', $userId);
                 })
@@ -746,26 +751,26 @@ class SolicitudVehiculosController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-/*   public function destroy($id)
+    public function destroy($id)
     {
         //Try catch
         try {
             // Busca la solicitud con sus materiales asociados
-            $solicitud = Solicitud::has('materiales')->findOrFail($id);
+            $solicitud = SolicitudVehicular::findOrFail($id);
 
             //Eliminar registros asociados a esta solicitud en la tabla solicitud_material (para no tener problemas de parent row not found)
-            $solicitud->materiales()->detach();
+            $solicitud->SOLICITUD_VEHICULO_ESTADO = 'ELIMINADO';
 
             // Elimina la solicitud
-            $solicitud->delete();
+            $solicitud->save();
 
             // Puedes agregar un mensaje de éxito si lo deseas
-            return redirect()->route('solicitudesmateriales.index')->with('success', 'Solicitud eliminada exitosamente');
+            return redirect()->route('solicitudesvehiculos.index')->with('success', 'Solicitud eliminada exitosamente');
         } catch (Exception $e) {
             // Manejar excepciones si es necesario
-            return redirect()->route('solicitudesmateriales.index')->with('error', 'Error al eliminar la solicitud.');
+            return redirect()->route('solicitudesvehiculos.index')->with('error', 'Error al eliminar la solicitud.');
         }
-    }*/
+    }
 
 
     private function actualizarPasajeros($solicitud, $request)

@@ -1,6 +1,6 @@
 @extends('adminlte::page')
 
-@section('title', 'Solicitudes de salas')
+@section('title', 'Solicitudes de Salas')
 
 @section('content_header')
     <h1>Listado de Solicitudes de Salas</h1>

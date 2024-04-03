@@ -1,9 +1,9 @@
 @extends('adminlte::page')
 
-@section('title', 'Solicitudes de reparaciones y mantenciones')
+@section('title', 'Solicitudes de Reparaciones y Mantenciones')
 
 @section('content_header')
-    <h1>Listado de solicitudes de reparaciones y mantenciones</h1>
+    <h1>Listado de Solicitudes de Reparaciones y Mantenciones</h1>
     @role('ADMINISTRADOR')
     <div class="alert alert-info alert1" role="alert">
     <div><strong>Bienvenido Administrador:</strong> Acceso total al modulo.<div>

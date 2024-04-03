@@ -72,16 +72,16 @@ class BusquedaFuncionarioController extends Controller
                             $query->where('OFICINA_ID', $direccionRegionalAutenticada);
                         });
                 })->get();
-    
+                $cargoFuncionario = $user->cargo->CARGO_NOMBRE;
+                $rutRes = $user->USUARIO_RUT;
                 //dd($resoluciones);
                 if ($resoluciones->isNotEmpty()) {
-                    $cargoFuncionario = $user->cargo->CARGO_NOMBRE;
-                    $rutRes = $user->USUARIO_RUT;
                     $busquedaResolucionFuncionario = true;
                 } else {
                     $busquedaResolucionFuncionarioFallida = true;
                 }
             }
+
             //dd($user,$resoluciones);
         } elseif ($idCargo) {
             // Consulta para obtener las resoluciones asociadas al cargo en la misma OFICINA_ID
@@ -120,6 +120,7 @@ class BusquedaFuncionarioController extends Controller
         $cargos = Cargo::where('OFICINA_ID', $direccionRegionalAutenticada)
             ->whereNotIn('CARGO_NOMBRE', $exclusionCargos)
             ->get();
+
     
         return view('sia2.directivos.directivos.busquedafuncionario.index', compact('resoluciones', 'cargos', 'nombres', 'apellidos', 'cargoFuncionario', 'rutRes', 'cargoResolucion', 'busquedaResolucionCargo', 'busquedaResolucionFuncionario', 'busquedaResolucionCargoFallida', 'busquedaResolucionFuncionarioFallida'));
     }

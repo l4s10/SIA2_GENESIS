@@ -1,7 +1,7 @@
 
 @extends('adminlte::page')
 
-@section('title', 'Solicitar equipos')
+@section('title', 'Solicitar Equipos')
 
 @section('content_header')
     <h1>Crear Solicitud</h1>

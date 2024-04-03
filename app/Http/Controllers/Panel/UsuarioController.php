@@ -40,17 +40,19 @@ class UsuarioController extends Controller
     {
         //try-catch para manejar errores
         try {
-            // Listar todos los usuarios que esten dentro de la misma direccion regional que el usuario logueado.
-            $usuarios = User::where('OFICINA_ID', Auth::user()->OFICINA_ID)->get();
-
+            // Listar todos los usuarios que estén dentro de la misma dirección regional que el usuario logueado
+            // y que tengan estado "INGRESADO"
+            $usuarios = User::where('OFICINA_ID', Auth::user()->OFICINA_ID)
+                            ->where('USUARIO_ESTADO', 'INGRESADO')
+                            ->get();
+    
             // Retornar vista con usuarios
             return view('sia2.panel.usuarios.index', compact('usuarios'));
         } catch (Exception $e) {
-            //Retornar vista con mensaje de error a traves de session
+            // Retornar vista con mensaje de error a través de session
             return back()->with('error', 'Error al listar usuarios');
         }
     }
-
     /**
      * Show the form for creating a new resource.
      */
@@ -166,6 +168,7 @@ class UsuarioController extends Controller
                     'USUARIO_ANEXO' => $request->USUARIO_ANEXO,
                     'USUARIO_CALIDAD_JURIDICA' => $request->USUARIO_CALIDAD_JURIDICA,
                     'USUARIO_SEXO' => $request->USUARIO_SEXO,
+                    'USUARIO_ESTADO' => 'INGRESADO'
                 ]);
 
                 if($request->input('tipo_dependencia')==='Departamentos'){
@@ -358,10 +361,10 @@ class UsuarioController extends Controller
         try {
             // Buscar el usuario por su ID
             $usuario = User::findOrFail($id);
-    
-            // Eliminar el usuario
-            $usuario->delete();
-    
+            $usuario->USUARIO_ESTADO = 'ELIMINADO';
+            // Actualizar usuario
+            $usuario->save();
+            //dd($usuario);
             // Retornar la vista con un mensaje de éxito
             return redirect()->route('panel.usuarios.index')->with('success', 'Usuario eliminado exitosamente');
         } catch (\Exception $e) {
