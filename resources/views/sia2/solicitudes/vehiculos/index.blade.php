@@ -1,6 +1,6 @@
 @extends('adminlte::page')
 
-@section('title', 'Solicitudes de vehículos')
+@section('title', 'Solicitudes de Vehículos')
 
 @section('content_header')
     <h1>Listado de Solicitudes de Vehículos</h1>    

@@ -38,6 +38,7 @@ class User extends Authenticatable
         'USUARIO_SEXO',
         'USUARIO_NOMBRES',
         'USUARIO_APELLIDOS',
+        'USUARIO_ESTADO'
     ];
 
     /**

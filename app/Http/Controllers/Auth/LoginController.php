@@ -41,6 +41,38 @@ class LoginController extends Controller
         $this->middleware('guest')->except('logout');
     }
 
+    /**
+     * Attempt to log the user into the application.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return bool
+     *
+     * @throws \Illuminate\Validation\ValidationException
+     */
+    protected function attemptLogin(Request $request)
+    {
+        // Intenta autenticar al usuario
+        $credentials = $this->credentials($request);
+        if (!Auth::attempt($credentials, $request->filled('remember'))) {
+            // Si las credenciales proporcionadas son incorrectas, se lanza una excepción
+            throw ValidationException::withMessages([
+                $this->username() => [trans('auth.failed')],
+            ]);
+        }
+
+        // Verifica si el estado del usuario es 'INGRESADO'
+        $user = Auth::user();
+        if ($user->USUARIO_ESTADO !== 'INGRESADO') {
+            // Si el estado del usuario no es 'INGRESADO', se desconecta y se lanza una excepción
+            Auth::logout();
+            throw ValidationException::withMessages([
+                $this->username() => ['User account is not active.'],
+            ]);
+        }
+
+        // Si el usuario se autentica correctamente y su estado es 'INGRESADO', se retorna verdadero
+        return true;
+    }
 
     public function logout(Request $request)
     {
@@ -62,24 +94,36 @@ class LoginController extends Controller
         return redirect('/login');
     }
 
-
     public function getToken(Request $request)
     {
         $request->validate([
             'email' => 'required|email',
             'password' => 'required',
         ]);
-
+    
+        // Intenta autenticar al usuario
         if (Auth::attempt($request->only('email', 'password'))) {
             $user = Auth::user();
-            $token = $user->createToken('API Token')->plainTextToken;
-
-            return response()->json([
-                'message' => 'Success',
-                'token' => $token,
-            ]);
+    
+            // Verifica si el estado del usuario es 'INGRESADO'
+            if ($user->USUARIO_ESTADO === 'INGRESADO') {
+                // Genera el token para el usuario autenticado
+                $token = $user->createToken('API Token')->plainTextToken;
+    
+                return response()->json([
+                    'message' => 'Success',
+                    'token' => $token,
+                ]);
+            } else {
+                // Si el estado del usuario no es 'INGRESADO', se desconecta y se lanza una excepción
+                Auth::logout();
+                throw ValidationException::withMessages([
+                    'email' => ['User account is not active.'],
+                ]);
+            }
         }
-
+    
+        // Si las credenciales proporcionadas son incorrectas, se lanza una excepción
         throw ValidationException::withMessages([
             'email' => ['The provided credentials are incorrect.'],
         ]);

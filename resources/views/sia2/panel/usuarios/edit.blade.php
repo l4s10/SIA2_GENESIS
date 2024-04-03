@@ -332,147 +332,147 @@
 @endsection
 
 @section('js')
-<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
-<script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/es.js"></script>
-{{-- !!SCRIPT DE FILTROS (SE OBTENDRA DIRECCION REGIONAL SEGUN LA REGION SELECCIONADA) --}}
-<script>
-    $(document).ready(function () {
-        // Configuración de Flatpickr para las fechas
-        let flatpickrConfig = {
-            locale: 'es',
-            maxDate: "today",
-            dateFormat: "Y-m-d",
-            altFormat: "d-m-Y",
-            altInput: true,
-            allowInput: true,
-            minDate: "1940-01-01",
-            maxDate: new Date(new Date().getFullYear() - 18, 11, 31).toISOString().split('T')[0],
-        };
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/es.js"></script>
+    {{-- !!SCRIPT DE FILTROS (SE OBTENDRA DIRECCION REGIONAL SEGUN LA REGION SELECCIONADA) --}}
+    <script>
+        $(document).ready(function () {
+            // Configuración de Flatpickr para las fechas
+            let flatpickrConfig = {
+                locale: 'es',
+                maxDate: "today",
+                dateFormat: "Y-m-d",
+                altFormat: "d-m-Y",
+                altInput: true,
+                allowInput: true,
+                minDate: "1940-01-01",
+                maxDate: new Date(new Date().getFullYear() - 18, 11, 31).toISOString().split('T')[0],
+            };
 
-        // Validar fecha de ingreso a partir del día actual. 31 días antes para ingresos tardíos y 31 días después para ingresos futuros.
-        let currentDate = new Date();
-        let fechaFin = new Date(currentDate.getFullYear(), currentDate.getMonth(), currentDate.getDate() + 31);
+            // Validar fecha de ingreso a partir del día actual. 31 días antes para ingresos tardíos y 31 días después para ingresos futuros.
+            let currentDate = new Date();
+            let fechaFin = new Date(currentDate.getFullYear(), currentDate.getMonth(), currentDate.getDate() + 31);
 
-        let flatpickrConfig2 = {
-            locale: 'es',
-            minDate: "1940-01-01",
-            maxDate: fechaFin.toISOString().split('T')[0],
-            dateFormat: "Y-m-d",
-            altFormat: "d-m-Y",
-            altInput: true,
-            allowInput: true,
-        };
+            let flatpickrConfig2 = {
+                locale: 'es',
+                minDate: "1940-01-01",
+                maxDate: fechaFin.toISOString().split('T')[0],
+                dateFormat: "Y-m-d",
+                altFormat: "d-m-Y",
+                altInput: true,
+                allowInput: true,
+            };
 
 
-        // Inicializar Flatpickr en los campos de fecha
-        $('#USUARIO_FECHA_NAC').flatpickr(flatpickrConfig);
-        $('#USUARIO_FECHA_INGRESO').flatpickr(flatpickrConfig2);
-    });
-</script>
-
-<script>
-    document.addEventListener('DOMContentLoaded', function() {
-        const selectores = document.querySelectorAll('#dependencia, #GRUPO_ID, #GRADO_ID, #ESCALAFON_ID, #CARGO_ID');
-        const opcionesOriginales = {};
-        
-        // Almacenar las opciones originales de cada selector
-        selectores.forEach(selector => {
-            opcionesOriginales[selector.id] = Array.from(selector.querySelectorAll('optgroup, option'));
-            selector.disabled = true;
+            // Inicializar Flatpickr en los campos de fecha
+            $('#USUARIO_FECHA_NAC').flatpickr(flatpickrConfig);
+            $('#USUARIO_FECHA_INGRESO').flatpickr(flatpickrConfig2);
         });
-        
-        const selectorOficina = document.getElementById('oficina');
-        selectorOficina.addEventListener('change', function() {
-            const oficinaSeleccionada = this.value;
-            if (oficinaSeleccionada !== '') {
-                // Habilitar todos los selectores
-                selectores.forEach(selector => {
-                    selector.disabled = false;
-                });
+    </script>
 
-                // Filtrar las opciones de cada selector según la oficina seleccionada
-                selectores.forEach(selector => {
-                    const opcionesFiltradas = [];
-                    const gruposAñadidos = new Set();
-                    const opcionesÚnicas = new Set(); // Conjunto global para evitar duplicados en todo el selector
-                    opcionesOriginales[selector.id].forEach(opcion => {
-                        if (opcion.tagName.toLowerCase() === 'optgroup') {
-                            // Clonar grupos de opciones
-                            const grupoClonado = opcion.cloneNode(false);
-                            // Filtrar opciones dentro del grupo según la oficina seleccionada
-                            const opcionesGrupoFiltradas = Array.from(opcion.querySelectorAll('option')).filter(opt => opt.dataset.oficina === oficinaSeleccionada || opt.dataset.oficina === undefined);
-                            if (opcionesGrupoFiltradas.length > 0 && !gruposAñadidos.has(grupoClonado.label)) {
-                                opcionesGrupoFiltradas.forEach(opcionFiltrada => {
-                                    if (!opcionesÚnicas.has(opcionFiltrada.value)) {
-                                        grupoClonado.appendChild(opcionFiltrada.cloneNode(true));
-                                        opcionesÚnicas.add(opcionFiltrada.value);
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const selectores = document.querySelectorAll('#dependencia, #GRUPO_ID, #GRADO_ID, #ESCALAFON_ID, #CARGO_ID');
+            const opcionesOriginales = {};
+            
+            // Almacenar las opciones originales de cada selector
+            selectores.forEach(selector => {
+                opcionesOriginales[selector.id] = Array.from(selector.querySelectorAll('optgroup, option'));
+                selector.disabled = true;
+            });
+            
+            const selectorOficina = document.getElementById('oficina');
+            selectorOficina.addEventListener('change', function() {
+                const oficinaSeleccionada = this.value;
+                if (oficinaSeleccionada !== '') {
+                    // Habilitar todos los selectores
+                    selectores.forEach(selector => {
+                        selector.disabled = false;
+                    });
+
+                    // Filtrar las opciones de cada selector según la oficina seleccionada
+                    selectores.forEach(selector => {
+                        const opcionesFiltradas = [];
+                        const gruposAñadidos = new Set();
+                        const opcionesÚnicas = new Set(); // Conjunto global para evitar duplicados en todo el selector
+                        opcionesOriginales[selector.id].forEach(opcion => {
+                            if (opcion.tagName.toLowerCase() === 'optgroup') {
+                                // Clonar grupos de opciones
+                                const grupoClonado = opcion.cloneNode(false);
+                                // Filtrar opciones dentro del grupo según la oficina seleccionada
+                                const opcionesGrupoFiltradas = Array.from(opcion.querySelectorAll('option')).filter(opt => opt.dataset.oficina === oficinaSeleccionada || opt.dataset.oficina === undefined);
+                                if (opcionesGrupoFiltradas.length > 0 && !gruposAñadidos.has(grupoClonado.label)) {
+                                    opcionesGrupoFiltradas.forEach(opcionFiltrada => {
+                                        if (!opcionesÚnicas.has(opcionFiltrada.value)) {
+                                            grupoClonado.appendChild(opcionFiltrada.cloneNode(true));
+                                            opcionesÚnicas.add(opcionFiltrada.value);
+                                        }
+                                    });
+                                    opcionesFiltradas.push(grupoClonado);
+                                    gruposAñadidos.add(grupoClonado.label);
+                                }
+                            } else {
+                                // Filtrar opciones individuales según la oficina seleccionada
+                                if (opcion.dataset.oficina === oficinaSeleccionada || opcion.dataset.oficina === undefined) {
+                                    if (!opcionesÚnicas.has(opcion.value)) {
+                                        opcionesFiltradas.push(opcion.cloneNode(true));
+                                        opcionesÚnicas.add(opcion.value);
                                     }
-                                });
-                                opcionesFiltradas.push(grupoClonado);
-                                gruposAñadidos.add(grupoClonado.label);
-                            }
-                        } else {
-                            // Filtrar opciones individuales según la oficina seleccionada
-                            if (opcion.dataset.oficina === oficinaSeleccionada || opcion.dataset.oficina === undefined) {
-                                if (!opcionesÚnicas.has(opcion.value)) {
-                                    opcionesFiltradas.push(opcion.cloneNode(true));
-                                    opcionesÚnicas.add(opcion.value);
                                 }
                             }
-                        }
+                        });
+                        // Actualizar las opciones del selector
+                        actualizarOpciones(selector, opcionesFiltradas);
                     });
-                    // Actualizar las opciones del selector
-                    actualizarOpciones(selector, opcionesFiltradas);
-                });
-            } else {
-                // Si no se selecciona ninguna oficina, deshabilitar todos los selectores y restaurar las opciones originales
-                selectores.forEach(selector => {
-                    selector.disabled = true;
-                    actualizarOpciones(selector, opcionesOriginales[selector.id]);
-                });
-            }
+                } else {
+                    // Si no se selecciona ninguna oficina, deshabilitar todos los selectores y restaurar las opciones originales
+                    selectores.forEach(selector => {
+                        selector.disabled = true;
+                        actualizarOpciones(selector, opcionesOriginales[selector.id]);
+                    });
+                }
+            });
         });
-    });
 
-    // Función para actualizar las opciones de un selector
-    function actualizarOpciones(selector, opciones) {
-        selector.innerHTML = '';
-        opciones.forEach(opcion => {
-            selector.appendChild(opcion);
+        // Función para actualizar las opciones de un selector
+        function actualizarOpciones(selector, opciones) {
+            selector.innerHTML = '';
+            opciones.forEach(opcion => {
+                selector.appendChild(opcion);
+            });
+        }
+    </script>"
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            var selectDependencia = document.getElementById("dependencia");
+            var hiddenTipoDependencia = document.getElementById("tipo_dependencia");
+
+            selectDependencia.addEventListener("change", function() {
+                var tipoDependencia = selectDependencia.options[selectDependencia.selectedIndex].parentNode.label;
+                hiddenTipoDependencia.value = tipoDependencia;
+            });
         });
-    }
-</script>"
+    </script>
 
-<script>
+    <script>
+        // Esperar a que el documento esté completamente cargado
     document.addEventListener("DOMContentLoaded", function() {
-        var selectDependencia = document.getElementById("dependencia");
-        var hiddenTipoDependencia = document.getElementById("tipo_dependencia");
+        // Obtener el botón "Guardar cambios"
+        var guardarCambiosBtn = document.querySelector('.btn-primary');
 
-        selectDependencia.addEventListener("change", function() {
-            var tipoDependencia = selectDependencia.options[selectDependencia.selectedIndex].parentNode.label;
-            hiddenTipoDependencia.value = tipoDependencia;
+        // Agregar un event listener para el evento click en el botón
+        guardarCambiosBtn.addEventListener('click', function() {
+            // Activar los selectores cuando se hace clic en el botón "Guardar cambios"
+            var selectores = document.querySelectorAll('select');
+            selectores.forEach(function(selector) {
+                selector.disabled = false; // Activar el selector
+            });
         });
     });
-</script>
 
-<script>
-    // Esperar a que el documento esté completamente cargado
-document.addEventListener("DOMContentLoaded", function() {
-    // Obtener el botón "Guardar cambios"
-    var guardarCambiosBtn = document.querySelector('.btn-primary');
-
-    // Agregar un event listener para el evento click en el botón
-    guardarCambiosBtn.addEventListener('click', function() {
-        // Activar los selectores cuando se hace clic en el botón "Guardar cambios"
-        var selectores = document.querySelectorAll('select');
-        selectores.forEach(function(selector) {
-            selector.disabled = false; // Activar el selector
-        });
-    });
-});
-
-</script>
+    </script>
 
 
 

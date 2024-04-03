@@ -1,9 +1,9 @@
 @extends('adminlte::page')
 
-@section('title', 'Editar Solicitud Vehicular')
+@section('title', 'Línea del Tiempo para Solicitud Vehicular')
 
 @section('content_header')
-    <h1>Revisión Solicitud Vehicular</h1>
+    <h1>Línea del Tiempo de Solicitud Vehicular</h1>
 @stop
 
 @section('content')

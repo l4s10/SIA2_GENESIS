@@ -1,6 +1,6 @@
 @extends('adminlte::page')
 
-@section('title', 'Solicitudes de formularios')
+@section('title', 'Solicitudes de Formularios')
 
 @section('content_header')
     <h1>Listado de Solicitudes de Formularios</h1>

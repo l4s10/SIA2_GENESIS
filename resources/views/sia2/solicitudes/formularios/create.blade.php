@@ -1,7 +1,7 @@
 
 @extends('adminlte::page')
 
-@section('title', 'Solicitar formularios')
+@section('title', 'Solicitar Formularios')
 
 @section('content_header')
     <h1>Crear Solicitud</h1>

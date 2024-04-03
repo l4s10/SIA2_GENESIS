@@ -34,6 +34,7 @@ return new class extends Migration
             $table->string('USUARIO_SEXO');
             $table->string('USUARIO_NOMBRES');
             $table->string('USUARIO_APELLIDOS');
+            $table->string('USUARIO_ESTADO');
             //!! Campos por defecto de Laravel
             $table->timestamp('email_verified_at')->nullable();
             $table->rememberToken();
