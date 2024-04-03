@@ -23,6 +23,15 @@ class SolicitudBodegasController extends Controller
     public function index()
     {
         try{
+            if (Auth::user()->hasRole('ADMINISTRADOR') || Auth::user()->hasRole('INFORMATICA')) {
+                // Filtrar por OFICINA_ID del usuario logueado con la relacion solicitante
+                $solicitudes = Solicitud::has('bodegas')->whereHas('solicitante', function ($query) {
+                    $query->where('OFICINA_ID', Auth::user()->OFICINA_ID);
+                })->orderBy('created_at', 'desc')->get();
+            } else {
+                // Si el usuario es otro tipo de usuario, mostrar solo sus solicitudes de bodegas a traves de la relacion solicitante y la sesion activa
+                $solicitudes = Solicitud::has('bodegas')->where('USUARIO_id', Auth::user()->id)->orderBy('created_at', 'desc')->get();
+            }
             // Query que a través de la relación has() filtra las solicitudes que SOLO tengan bodegas asociadas
             $solicitudes = Solicitud::has('bodegas')->get();
 
