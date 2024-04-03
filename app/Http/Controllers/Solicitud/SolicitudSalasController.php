@@ -29,20 +29,25 @@ class SolicitudSalasController extends Controller
      */
     public function index()
     {
-        // try-catch para el manejo de excepciones
         try {
+            // SI el usuario es ADMINISTRADOR o INFORMATICA, mostrar todas las solicitudes de salas (filtrado por oficina)
             if (Auth::user()->hasRole('ADMINISTRADOR') || Auth::user()->hasRole('INFORMATICA')) {
                 // Filtrar por OFICINA_ID del usuario logueado con la relacion solicitante
-                $solicitudes = Solicitud::has('salas')->whereHas('solicitante', function ($query) {
-                    $query->where('OFICINA_ID', Auth::user()->OFICINA_ID);
-                })->orderBy('created_at', 'desc')->get();
+                $solicitudes = Solicitud::has('salas')
+                                    ->whereHas('solicitante', function ($query) {
+                                        $query->where('OFICINA_ID', Auth::user()->OFICINA_ID);
+                                    })
+                                    ->where('SOLICITUD_ESTADO', '!=', 'ELIMINADO')
+                                    ->orderBy('created_at', 'desc')
+                                    ->get();
             } else {
-                // Si el usuario es otro tipo de usuario, mostrar solo sus solicitudes de salas a traves de la relacion solicitante y la sesion activa
-                $solicitudes = Solicitud::has('salas')->where('USUARIO_id', Auth::user()->id)->orderBy('created_at', 'desc')->get();
+                // Si el usuario es otro tipo de usuario, mostrar solo sus solicitudes de salas a través de la relación solicitante y la sesión activa
+                $solicitudes = Solicitud::has('salas')
+                    ->where('USUARIO_id', Auth::user()->id)
+                    ->where('SOLICITUD_ESTADO', '!=', 'ELIMINADO')
+                    ->orderBy('created_at', 'desc')
+                    ->get();
             }
-            // Query que a través de la relación has() filtra las solicitudes que SOLO tengan salas asociadas
-            // $solicitudes = Solicitud::has('salas')->get();
-
             // Retornar la vista con las solicitudes
             return view('sia2.solicitudes.salas.index', compact('solicitudes'));
         } catch (Exception $e) {
@@ -388,14 +393,6 @@ class SolicitudSalasController extends Controller
         return redirect()->route('solicitudes.salas.index')->with('error', $message);
     }
 
-
-
-
-
-
-
-
-
     /**
      * Remove the specified resource from storage.
      */
@@ -405,15 +402,11 @@ class SolicitudSalasController extends Controller
             // Recuperar la solicitud
             $solicitud = Solicitud::findOrFail($id);
 
-            // Eliminar la relación entre la solicitud y las salas y los equipos
-            $solicitud->salas()->detach();
-            //verificar si tiene equipos asociados (ya que es opcional la eleccion de equipos)
-            if($solicitud->equipos()->count() > 0){
-                $solicitud->equipos()->detach();
-            }
+            // Cambiar estado
+            $solicitud->SOLICITUD_ESTADO = 'ELIMINADO';
 
-            // Eliminar la solicitud
-            $solicitud->delete();
+            // Guardar la solicitud eliminada
+            $solicitud->save();
 
             // Redireccionar a la vista de solicitudes con un mensaje de éxito
             return redirect()->route('solicitudes.salas.index')->with('success', 'Solicitud eliminada correctamente.');

@@ -21,30 +21,31 @@ class SolicitudReparacionesController extends Controller
      */
     public function index()
     {
-        try{
+        try {
+            // SI el usuario es ADMINISTRADOR o SERVICIOS, mostrar todas las solicitudes de reparaciones (filtrado por oficina)
             if (Auth::user()->hasRole('ADMINISTRADOR') || Auth::user()->hasRole('SERVICIOS')) {
                 // Filtrar por OFICINA_ID del usuario logueado con la relacion solicitante
-                $solicitudes = SolicitudReparacion::whereHas('solicitante', function($query){
-                    $query->where('OFICINA_ID', Auth::user()->OFICINA_ID);
-                })->orderBy('created_at', 'desc')->get();
+                $solicitudes = SolicitudReparacion::whereHas('solicitante', function ($query) {
+                                        $query->where('OFICINA_ID', Auth::user()->OFICINA_ID);
+                                    })
+                                    ->where('SOLICITUD_REPARACION_ESTADO', '!=', 'ELIMINADO')
+                                    ->orderBy('created_at', 'desc')
+                                    ->get();
             } else {
-                // Si el usuario es otro tipo de usuario, mostrar solo sus solicitudes de materiales a traves de la relacion solicitante y la sesion activa
-                $solicitudes = SolicitudReparacion::where('USUARIO_id', Auth::user()->id)->orderBy('created_at', 'desc')->get();
+                // Si el usuario es otro tipo de usuario, mostrar solo sus solicitudes de reparaciones de equipos a través de la relación solicitante y la sesión activa
+                $solicitudes = SolicitudReparacion::where('USUARIO_id', Auth::user()->id)
+                    ->where('SOLICITUD_REPARACION_ESTADO', '!=', 'ELIMINADO')
+                    ->orderBy('created_at', 'desc')
+                    ->get();
             }
-            // Cargar las solicitudes de reparaciones de la misma dirección del usuario logueado, haciendo 'match' con el USUARIO_id de la solicitud
-            //!!TESTEAR QUERY.
-            // $solicitudes = SolicitudReparacion::whereHas('solicitante', function($query){
-            //     $query->where('OFICINA_ID', Auth::user()->OFICINA_ID);
-            // })->get();
-
             // Retornar la vista con las solicitudes
             return view('sia2.solicitudes.reparacionesmantenciones.index', compact('solicitudes'));
-        }
-        catch(Exception $e)
-        {
+        } catch (Exception $e) {
+            // Manejar excepciones si es necesario
             return redirect()->back()->with('error', 'Error al cargar las solicitudes.');
         }
     }
+
 
     /**
      * Show the form for creating a new resource.
@@ -239,8 +240,11 @@ class SolicitudReparacionesController extends Controller
             // Buscar la solicitud por ID
             $solicitud = SolicitudReparacion::findOrFail($id);
 
-            // Eliminar la solicitud
-            $solicitud->delete();
+            // Cambiar estado
+            $solicitud->SOLICITUD_REPARACION_ESTADO = 'ELIMINADO';
+
+            // Guardar la solicitud eliminada
+            $solicitud->save();
 
             // Redirigir a la vista de solicitudes con mensaje de éxito
             return redirect()->route('solicitudes.reparaciones.index')->with('success', 'Solicitud eliminada exitosamente.');
