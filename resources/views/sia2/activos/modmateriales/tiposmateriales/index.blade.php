@@ -96,7 +96,6 @@
 @stop
 
 @section('css')
-    <link rel="stylesheet" href="/css/admin_custom.css">
     <style>
         .alert {
             opacity: 0.7; /* Ajusta la opacidad a tu gusto */
@@ -133,6 +132,8 @@
 @stop
 
 @section('js')
+    {{-- Script cooldown envio formulario (evita entradas repetidas) --}}
+    <script src="{{ asset('js/Components/cooldownSendForm.js') }}"></script>
     <!-- Para inicializar -->
     <script>
         $(document).ready(function () {

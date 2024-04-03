@@ -102,7 +102,7 @@
             color: #fff;
         }
     </style>
-    
+
     <!-- Color mensajes usuario -->
     <style>
         .alert {
@@ -119,6 +119,8 @@
 @stop
 
 @section('js')
+    {{-- Script cooldown envio formulario (evita entradas repetidas) --}}
+    <script src="{{ asset('js/Components/cooldownSendForm.js') }}"></script>
     <!-- Para inicializar -->
     <script>
         $(document).ready(function () {

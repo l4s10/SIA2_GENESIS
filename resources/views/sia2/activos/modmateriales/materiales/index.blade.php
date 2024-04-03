@@ -54,7 +54,7 @@
     <a href="{{ route('exportar-materiales-pdf') }}" class="btn pdf" target="_blank">
         <i class="fa-solid fa-file-pdf"></i> Exportar PDF
     </a>
-    
+
     {{-- Acordeón para filtrar materiales --}}
     <div class="accordion" id="accordionFiltrarMateriales">
         <div class="card my-4">
@@ -186,6 +186,8 @@
 @stop
 
 @section('js')
+    {{-- Script cooldown envio formulario (evita entradas repetidas) --}}
+    <script src="{{ asset('js/Components/cooldownSendForm.js') }}"></script>
     <script>
         $(document).ready(function () {
             // Inicialización de DataTables

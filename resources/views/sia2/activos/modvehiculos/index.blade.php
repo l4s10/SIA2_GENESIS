@@ -252,6 +252,8 @@
 
 
 @section('js')
+    {{-- Script cooldown envio formulario (evita entradas repetidas) --}}
+    <script src="{{ asset('js/Components/cooldownSendForm.js') }}"></script>
     <script>
         $(document).ready(function () {
             // Inicialización de DataTables

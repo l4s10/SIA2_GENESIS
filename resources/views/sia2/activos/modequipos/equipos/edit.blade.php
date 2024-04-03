@@ -253,7 +253,6 @@
 @stop
 
 @section('css')
-    <link rel="stylesheet" href="/css/admin_custom.css">
     <style>/* Estilos personalizados si es necesario */
         .guardar {
             background-color: #e6500a;
@@ -263,6 +262,8 @@
 @stop
 
 @section('js')
+    {{-- Script cooldown envio formulario (evita entradas repetidas) --}}
+    <script src="{{ asset('js/Components/cooldownSendForm.js') }}"></script>
     <!-- JavaScript para manejar la lógica de mostrar/ocultar campos -->
     <script>
         document.addEventListener('DOMContentLoaded', function () {
