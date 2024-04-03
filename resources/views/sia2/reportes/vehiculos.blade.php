@@ -258,19 +258,19 @@
                 .then(response => response.json())
                 .then(data => {
                     // Setear la view en la coordenada de la comuna de salida
-                    map.setView(data.comunaSalida.coordinates, 13);
+                    map.setView([data.comunaSalida.coordinates[0],data.comunaSalida.coordinates[1]], 13);
 
                     // Obtener las comunas filtradas y la comuna de salida desde la respuesta
                     const { comunasFiltradas, comunaSalida } = data;
 
                     // Crear un marcador para la comuna de salida
-                    const salidaMarker = L.marker(comunaSalida.coordinates.reverse()).addTo(map);
+                    const salidaMarker = L.marker(comunaSalida.coordinates).addTo(map);
                     salidaMarker.bindPopup(comunaSalida.comuna + ' (Salida)');
 
                     // Configurar el enrutamiento desde la comuna de salida a cada comuna filtrada
                     comunasFiltradas.forEach(comuna => {
                         // Crear un marcador para cada comuna en las coordenadas recibidas
-                        const marker = L.marker(comuna.coordinates.reverse()).addTo(map);
+                        const marker = L.marker(comuna.coordinates).addTo(map);
                         marker.bindPopup(comuna.comuna);
                     });
 

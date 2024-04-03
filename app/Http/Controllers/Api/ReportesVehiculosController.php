@@ -412,13 +412,13 @@ class ReportesVehiculosController extends Controller
 
             if ($oficinaId == 10) {
                 $comunaSalida = 'Recoleta';
-                $coordenadasSalida = [-33.4063, -70.6435];
+                $coordenadasSalida = [-33.40619935, -70.6321819467442];
             }elseif ($oficinaId == 16) {
                 $comunaSalida = 'Concepción';
-                $coordenadasSalida = [-73.0498, -36.8261];
+                $coordenadasSalida = [-36.8261, -73.0498];
             } elseif ($oficinaId == 18) {
                 $comunaSalida = 'Valdivia';
-                $coordenadasSalida = [-73.2452, -39.8142];
+                $coordenadasSalida = [-39.8142, -73.2452];
             }
 
             $comunaSalida = [
