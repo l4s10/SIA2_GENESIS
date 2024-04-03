@@ -20,19 +20,34 @@ class SolicitudFormulariosController extends Controller
      */
     public function index()
     {
-        try
-        {
-            // Query que a través de la relación has() filtra las solicitudes que SOLO tengan formularios asociados
-            $solicitudes = Solicitud::has('formularios')->get();
-
-            //Retornar la vista con las solicitudes
+        try {
+            // SI el usuario es ADMINISTRADOR o INFORMATICA, mostrar todas las solicitudes de formularios (filtrado por oficina)
+            if (Auth::user()->hasRole('ADMINISTRADOR') || Auth::user()->hasRole('SERVICIOS')) {
+                // Filtrar por OFICINA_ID del usuario logueado con la relacion solicitante
+                $solicitudes = Solicitud::has('formularios')
+                    ->whereHas('solicitante', function ($query) {
+                        $query->where('OFICINA_ID', Auth::user()->OFICINA_ID);
+                    })
+                    ->where('SOLICITUD_ESTADO', '!=', 'ELIMINADO')
+                    ->orderBy('created_at', 'desc')
+                    ->get();
+            } else {
+                // Si el usuario es otro tipo de usuario, mostrar solo sus solicitudes de formularios a traves de la relacion solicitante y la sesion activa
+                $solicitudes = Solicitud::has('formularios')
+                    ->where('USUARIO_id', Auth::user()->id)
+                    ->where('SOLICITUD_ESTADO', '!=', 'ELIMINADO')
+                    ->orderBy('created_at', 'desc')
+                    ->get();
+            }
+            // Retornar la vista con las solicitudes
             return view('sia2.solicitudes.formularios.index', compact('solicitudes'));
-        }
-        catch(Exception $e)
-        {
+        } catch (Exception $e) {
+            // Manejar excepciones si es necesario
             return redirect()->back()->with('error', 'Error al cargar las solicitudes.');
         }
     }
+
+
 
     /**
      * Show the form for creating a new resource.
@@ -240,11 +255,12 @@ class SolicitudFormulariosController extends Controller
             // Recuperar la solicitud
             $solicitud = Solicitud::has('formularios')->findOrFail($id);
 
-            // Eliminar los formularios asociados a la solicitud
-            $solicitud->formularios()->detach();
+            // Cambiar estado
+            $solicitud->SOLICITUD_ESTADO = 'ELIMINADO';
 
-            // Eliminar la solicitud
-            $solicitud->delete();
+            // Guardar la solicitud eliminada
+            $solicitud->save();
+
 
             // Redireccionar a la vista de solicitudes
             return redirect()->route('solicitudes.formularios.index')->with('success', 'Solicitud eliminada correctamente.');

@@ -22,15 +22,32 @@ class SolicitudBodegasController extends Controller
      */
     public function index()
     {
-        try{
-            // Query que a través de la relación has() filtra las solicitudes que SOLO tengan bodegas asociadas
-            $solicitudes = Solicitud::has('bodegas')->get();
-
+        try {
+            // SI el usuario es ADMINISTRADOR o INFORMATICA, mostrar todas las solicitudes de bodegas (filtrado por oficina)
+            if (Auth::user()->hasRole('ADMINISTRADOR') || Auth::user()->hasRole('INFORMATICA')) {
+                // Filtrar por OFICINA_ID del usuario logueado con la relacion solicitante
+                $solicitudes = Solicitud::has('bodegas')
+                    ->whereHas('solicitante', function ($query) {
+                        $query->where('OFICINA_ID', Auth::user()->OFICINA_ID);
+                })
+                    ->where('SOLICITUD_ESTADO', '!=', 'ELIMINADO')
+                    ->orderBy('created_at', 'desc')
+                    ->get();
+            } else {
+                // Si el usuario es otro tipo de usuario, mostrar solo sus solicitudes de bodegas a traves de la relacion solicitante y la sesion activa
+                $solicitudes = Solicitud::has('bodegas')
+                    ->where('USUARIO_id', Auth::user()->id)
+                    ->where('SOLICITUD_ESTADO', '!=', 'ELIMINADO')
+                    ->orderBy('created_at', 'desc')
+                    ->get();
+            }
             // Retornar la vista con las solicitudes
             return view('sia2.solicitudes.bodegas.index', compact('solicitudes'));
-        }catch(Exception $e){
+        } catch (Exception $e) {
+            // Manejar excepciones si es necesario
             return redirect()->back()->with('error', 'Error al cargar las solicitudes.');
         }
+        
     }
 
     /**
@@ -243,11 +260,11 @@ class SolicitudBodegasController extends Controller
             // Buscar la solicitud por ID
             $solicitud = Solicitud::has('bodegas')->findOrFail($id);
 
-            // Eliminar asociacion de bodegas
-            $solicitud->bodegas()->detach();
+            // Cambiar estado
+            $solicitud->SOLICITUD_ESTADO = 'ELIMINADO';
 
-            // Eliminar la solicitud
-            $solicitud->delete();
+            // Guardar solicitud eliminada
+            $solicitud->save();
 
             // Redirigir a la vista de solicitudes con mensaje de éxito
             return redirect()->route('solicitudes.bodegas.index')->with('success', 'Solicitud eliminada exitosamente.');

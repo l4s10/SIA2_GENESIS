@@ -57,12 +57,12 @@ class SolicitudVehiculosController extends Controller
                     $query->where('OFICINA_ID', $user->OFICINA_ID);
                 })
                 ->where('SOLICITUD_VEHICULO_ESTADO', '!=', 'ELIMINADO')
-                ->get();
+                ->orderBy('created_at', 'desc')->get();
             } else {
                 // Obtener las solicitudes vehiculares creadas por el usuario actual
                 $solicitudes = SolicitudVehicular::where('USUARIO_id', $user->id)
                                             ->where('SOLICITUD_VEHICULO_ESTADO', '!=', 'ELIMINADO')
-                                            ->get();
+                                            ->orderBy('created_at', 'desc')->get();
             }
     
             // Formatear las fechas created_at en DD:MM:AA

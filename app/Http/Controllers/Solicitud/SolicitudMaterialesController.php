@@ -25,17 +25,24 @@ class SolicitudMaterialesController extends Controller
      */
     public function index()
     {
-        // Try-catch para el manejo de excepciones
         try {
-            // SI el usuario es ADMINISTRADOR o SERVICIOS, mostrar todas las solicitudes de materiales (filtrado por oficina)
+            // SI el usuario es ADMINISTRADOR o INFORMATICA, mostrar todas las solicitudes de materiales (filtrado por oficina)
             if (Auth::user()->hasRole('ADMINISTRADOR') || Auth::user()->hasRole('SERVICIOS')) {
                 // Filtrar por OFICINA_ID del usuario logueado con la relacion solicitante
-                $solicitudes = Solicitud::has('materiales')->whereHas('solicitante', function ($query) {
-                    $query->where('OFICINA_ID', Auth::user()->OFICINA_ID);
-                })->orderBy('created_at', 'desc')->get();
+                $solicitudes = Solicitud::has('materiales')
+                    ->whereHas('solicitante', function ($query) {
+                        $query->where('OFICINA_ID', Auth::user()->OFICINA_ID);
+                    })
+                    ->where('SOLICITUD_ESTADO', '!=', 'ELIMINADO')
+                    ->orderBy('created_at', 'desc')
+                    ->get();
             } else {
                 // Si el usuario es otro tipo de usuario, mostrar solo sus solicitudes de materiales a traves de la relacion solicitante y la sesion activa
-                $solicitudes = Solicitud::has('materiales')->where('USUARIO_id', Auth::user()->id)->orderBy('created_at', 'desc')->get();
+                $solicitudes = Solicitud::has('materiales')
+                    ->where('USUARIO_id', Auth::user()->id)
+                    ->where('SOLICITUD_ESTADO', '!=', 'ELIMINADO')
+                    ->orderBy('created_at', 'desc')
+                    ->get();
             }
             // Retornar la vista con las solicitudes
             return view('sia2.solicitudes.materiales.index', compact('solicitudes'));
@@ -372,11 +379,11 @@ class SolicitudMaterialesController extends Controller
             // Busca la solicitud con sus materiales asociados
             $solicitud = Solicitud::has('materiales')->findOrFail($id);
 
-            //Eliminar registros asociados a esta solicitud en la tabla solicitud_material (para no tener problemas de parent row not found)
-            $solicitud->materiales()->detach();
-
-            // Elimina la solicitud
-            $solicitud->delete();
+            // Cambiar estado
+            $solicitud->SOLICITUD_ESTADO = 'ELIMINADO';
+            
+            // Guardar la solicitud eliminada
+            $solicitud->save();
 
             // Puedes agregar un mensaje de éxito si lo deseas
             return redirect()->route('solicitudes.materiales.index')->with('success', 'Solicitud eliminada exitosamente');

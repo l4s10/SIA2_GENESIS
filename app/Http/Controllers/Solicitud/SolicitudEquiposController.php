@@ -27,12 +27,20 @@ class SolicitudEquiposController extends Controller
             // SI el usuario es ADMINISTRADOR o INFORMATICA, mostrar todas las solicitudes de equipos (filtrado por oficina)
             if (Auth::user()->hasRole('ADMINISTRADOR') || Auth::user()->hasRole('INFORMATICA')) {
                 // Filtrar por OFICINA_ID del usuario logueado con la relacion solicitante
-                $solicitudes = Solicitud::has('equipos')->whereHas('solicitante', function ($query) {
-                    $query->where('OFICINA_ID', Auth::user()->OFICINA_ID);
-                })->orderBy('created_at', 'desc')->get();
+                $solicitudes = Solicitud::has('equipos')
+                    ->whereHas('solicitante', function ($query) {
+                        $query->where('OFICINA_ID', Auth::user()->OFICINA_ID);
+                })
+                    ->where('SOLICITUD_ESTADO', '!=', 'ELIMINADO')
+                    ->orderBy('created_at', 'desc')
+                    ->get();
             } else {
                 // Si el usuario es otro tipo de usuario, mostrar solo sus solicitudes de equipos a traves de la relacion solicitante y la sesion activa
-                $solicitudes = Solicitud::has('equipos')->where('USUARIO_id', Auth::user()->id)->orderBy('created_at', 'desc')->get();
+                $solicitudes = Solicitud::has('equipos')
+                    ->where('USUARIO_id', Auth::user()->id)
+                    ->where('SOLICITUD_ESTADO', '!=', 'ELIMINADO')
+                    ->orderBy('created_at', 'desc')
+                    ->get();
             }
             // Retornar la vista con las solicitudes
             return view('sia2.solicitudes.equipos.index', compact('solicitudes'));
@@ -368,10 +376,12 @@ class SolicitudEquiposController extends Controller
         try{
             // Obtener la solicitud
             $solicitud = Solicitud::findOrFail($id);
-            // Desacoplar los equipos de la solicitud
-            $solicitud->equipos()->detach();
-            // Eliminar la solicitud
-            $solicitud->delete();
+
+            // Cambiar estado
+            $solicitud->SOLICITUD_ESTADO = 'ELIMINADO';
+            
+            // Guardar la solicitud eliminada
+            $solicitud->save();
 
             // Redireccionar a la vista de solicitudes con un mensaje de éxito
             return redirect()->route('solicitudes.equipos.index')->with('success', 'Solicitud eliminada exitosamente');
