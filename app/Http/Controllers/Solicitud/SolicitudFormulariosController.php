@@ -22,8 +22,18 @@ class SolicitudFormulariosController extends Controller
     {
         try
         {
+            // SI el usuario es ADMINISTRADOR o SERVICIOS, mostrar todas las solicitudes de materiales (filtrado por oficina)
+            if (Auth::user()->hasRole('ADMINISTRADOR') || Auth::user()->hasRole('SERVICIOS')) {
+                // Filtrar por OFICINA_ID del usuario logueado con la relacion solicitante
+                $solicitudes = Solicitud::has('formularios')->whereHas('solicitante', function ($query) {
+                    $query->where('OFICINA_ID', Auth::user()->OFICINA_ID);
+                })->orderBy('created_at', 'desc')->get();
+            } else {
+                // Si el usuario es otro tipo de usuario, mostrar solo sus solicitudes de formularios a traves de la relacion solicitante y la sesion activa
+                $solicitudes = Solicitud::has('formularios')->where('USUARIO_id', Auth::user()->id)->orderBy('created_at', 'desc')->get();
+            }
             // Query que a través de la relación has() filtra las solicitudes que SOLO tengan formularios asociados
-            $solicitudes = Solicitud::has('formularios')->get();
+            // $solicitudes = Solicitud::has('formularios')->get();
 
             //Retornar la vista con las solicitudes
             return view('sia2.solicitudes.formularios.index', compact('solicitudes'));

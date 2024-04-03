@@ -22,11 +22,20 @@ class SolicitudReparacionesController extends Controller
     public function index()
     {
         try{
+            if (Auth::user()->hasRole('ADMINISTRADOR') || Auth::user()->hasRole('SERVICIOS')) {
+                // Filtrar por OFICINA_ID del usuario logueado con la relacion solicitante
+                $solicitudes = SolicitudReparacion::whereHas('solicitante', function($query){
+                    $query->where('OFICINA_ID', Auth::user()->OFICINA_ID);
+                })->orderBy('created_at', 'desc')->get();
+            } else {
+                // Si el usuario es otro tipo de usuario, mostrar solo sus solicitudes de materiales a traves de la relacion solicitante y la sesion activa
+                $solicitudes = SolicitudReparacion::where('USUARIO_id', Auth::user()->id)->orderBy('created_at', 'desc')->get();
+            }
             // Cargar las solicitudes de reparaciones de la misma dirección del usuario logueado, haciendo 'match' con el USUARIO_id de la solicitud
             //!!TESTEAR QUERY.
-            $solicitudes = SolicitudReparacion::whereHas('solicitante', function($query){
-                $query->where('OFICINA_ID', Auth::user()->OFICINA_ID);
-            })->get();
+            // $solicitudes = SolicitudReparacion::whereHas('solicitante', function($query){
+            //     $query->where('OFICINA_ID', Auth::user()->OFICINA_ID);
+            // })->get();
 
             // Retornar la vista con las solicitudes
             return view('sia2.solicitudes.reparacionesmantenciones.index', compact('solicitudes'));
