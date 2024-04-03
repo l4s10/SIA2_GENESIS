@@ -101,8 +101,8 @@ class RolesAndPermissionsSeeder extends Seeder
         $roles['INFORMATICA']->givePermissionTo(['ver_graficos']);
 
         // Asignación de permisos (PANEL DE CONTROL)
-        $roles['SERVICIOS']->givePermissionTo(['ver_panel_control', 'editar_panel_control', 'actualizar_panel_control']);
-        $roles['INFORMATICA']->givePermissionTo(['ver_panel_control', 'editar_panel_control', 'actualizar_panel_control']);
+        // $roles['SERVICIOS']->givePermissionTo(['ver_panel_control', 'editar_panel_control', 'actualizar_panel_control']);
+        // $roles['INFORMATICA']->givePermissionTo(['ver_panel_control', 'editar_panel_control', 'actualizar_panel_control']);
 
         // Asignación de permisos (REPOSITORIO - JURIDICO)
         $roles['JURIDICO']->givePermissionTo(['ver_repositorio', 'crear_repositorio', 'editar_repositorio', 'actualizar_repositorio', 'eliminar_repositorio']);

@@ -48,7 +48,7 @@
     <br><br>
     <div class="table-responsive">
         <table id="facultades" class="table text-justify table-bordered mt-4 mx-auto" >
-            <thead class="bg-primary text-white">
+            <thead class="tablacolor">
                 <tr>
                     <th scope="col">N° Facultad</th>
                     <th scope="col">Nombre</th>
@@ -72,7 +72,7 @@
                     <td>{{$facultad->FACULTAD_ART_LEY_ASOCIADA}}</td>
                     <td>
                         <div class="d-flex justify-content-between">
-                            <a href="{{ route('facultades.edit', $facultad->FACULTAD_ID) }}" class="btn btn-secondary"><i class="fa-solid fa-pencil"></i></a>
+                            <a href="{{ route('facultades.edit', $facultad->FACULTAD_ID) }}" class="btn botoneditar"><i class="fa-solid fa-pencil"></i></a>
                             <form action="{{ route('facultades.destroy', $facultad->FACULTAD_ID) }}" method="POST" style="display: inline-block;">
                                 @csrf
                                 @method('DELETE')

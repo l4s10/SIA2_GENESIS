@@ -28,6 +28,7 @@ class SolicitudEquiposController extends Controller
             if (Auth::user()->hasRole('ADMINISTRADOR') || Auth::user()->hasRole('INFORMATICA')) {
                 // Filtrar por OFICINA_ID del usuario logueado con la relacion solicitante
                 $solicitudes = Solicitud::has('equipos')
+                    ->whereDoesntHave('salas')
                     ->whereHas('solicitante', function ($query) {
                         $query->where('OFICINA_ID', Auth::user()->OFICINA_ID);
                 })
@@ -37,6 +38,7 @@ class SolicitudEquiposController extends Controller
             } else {
                 // Si el usuario es otro tipo de usuario, mostrar solo sus solicitudes de equipos a traves de la relacion solicitante y la sesion activa
                 $solicitudes = Solicitud::has('equipos')
+                    ->whereDoesntHave('salas')
                     ->where('USUARIO_id', Auth::user()->id)
                     ->where('SOLICITUD_ESTADO', '!=', 'ELIMINADO')
                     ->orderBy('created_at', 'desc')
@@ -138,7 +140,7 @@ class SolicitudEquiposController extends Controller
         try{
             // SI el usuario tiene rol ADMINISTRADOR o INFORMATICA, buscar la solicitud y mostrarla
             if (Auth::user()->hasRole('ADMINISTRADOR') || Auth::user()->hasRole('INFORMATICA')) {
-                $solicitud = Solicitud::has('equipos')->findOrFail($id);
+                $solicitud = Solicitud::has('equipos')->whereDoesntHave('salas')->findOrFail($id);
             } else {
                 // Si el usuario no tiene rol ADMINISTRADOR o INFORMATICA, buscar la solicitud y mostrarla solo si es el solicitante, en caso de que no sea el solicitante, redirigir a la vista index con mensaje de error.
                 $solicitud = Solicitud::has('equipos')->where('USUARIO_id', Auth::user()->id)->findOrFail($id);
@@ -177,7 +179,7 @@ class SolicitudEquiposController extends Controller
         // try-catch
         try{
             // Obtener la solicitud
-            $solicitud = Solicitud::has('equipos')->findOrFail($id);
+            $solicitud = Solicitud::has('equipos')->whereDoesntHave('salas')->findOrFail($id);
 
             // Determinar la acción basada en el botón presionado
             switch ($request->input('action')) {
@@ -217,6 +219,7 @@ class SolicitudEquiposController extends Controller
                     }
                     $this->updateSolicitud($request, $solicitud, 'RECHAZADO');
                     $this->createRevisionSolicitud($request, $solicitud);
+                    DB::commit(); // Guarda todos los cambios en la base de datos
                     return $this->redirectSuccess('Solicitud rechazada exitosamente');
                 break;
             }
@@ -379,7 +382,7 @@ class SolicitudEquiposController extends Controller
 
             // Cambiar estado
             $solicitud->SOLICITUD_ESTADO = 'ELIMINADO';
-            
+
             // Guardar la solicitud eliminada
             $solicitud->save();
 

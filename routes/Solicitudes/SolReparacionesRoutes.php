@@ -30,12 +30,12 @@ Route::prefix('solicitudes')->group(function () {
     //** Editar solicitud */
     Route::get('/reparaciones/{solicitud}/edit', [SolicitudReparacionesController::class, 'edit'])
         ->name('solicitudes.reparaciones.edit')
-        ->middleware('can:editar_solicitud');
+        ->middleware(['role:ADMINISTRADOR|SERVICIOS']);
 
     //** Actualizar solicitud */
     Route::put('/reparaciones/{solicitud}', [SolicitudReparacionesController::class, 'update'])
         ->name('solicitudes.reparaciones.update')
-        ->middleware('can:actualizar_solicitud');
+        ->middleware(['role:ADMINISTRADOR|SERVICIOS']);
 
     //** Eliminar solicitud */
     Route::delete('/reparaciones/{solicitud}', [SolicitudReparacionesController::class, 'destroy'])

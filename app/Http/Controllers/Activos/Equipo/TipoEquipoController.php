@@ -10,14 +10,11 @@ use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Gloudemans\Shoppingcart\Facades\Cart;
 
 use Exception;
+use Illuminate\Database\QueryException;
 
 use App\Models\Equipo;
 use App\Models\TipoEquipo;
 use App\Models\Oficina;
-
-
-
-
 
 class TipoEquipoController extends Controller
 {
@@ -239,6 +236,9 @@ class TipoEquipoController extends Controller
         } catch(ModelNotFoundException $e) {
             //Manejar la excepcion de modelo no encontrado
             return redirect()->route('tiposequipos.index')->with('error', 'El tipo de equipo no se encontró');
+        } catch(QueryException $e) {
+            //Manejar la excepcion de consulta
+            return redirect()->route('tiposequipos.index')->with('error', 'Error al eliminar el tipo de equipo');
         } catch(Exception $e) {
             //Manejar otras excepciones
             return redirect()->route('tiposequipos.index')->with('error', 'Error al eliminar el tipo de equipo');

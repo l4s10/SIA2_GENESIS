@@ -49,7 +49,7 @@
 
         <div class="table-responsive">
             <table id="polizas" class="table text-justify table-bordered mt-4 mx-auto" style="white-space:nowrap;">
-                <thead class="bg-primary text-white">
+                <thead class="tablacolor">
                     <tr>
                         <th scope="col">N° Póliza</th>
                         <th scope="col">Conductor</th>
@@ -75,7 +75,7 @@
                                 </td>
                                 <td>
                                     <div class="d-flex justify-content-center">
-                                        <a href="{{ route('polizas.edit', $poliza->POLIZA_ID) }}" class="btn btn-secondary"><i class="fa-solid fa-pencil"></i></a>
+                                        <a href="{{ route('polizas.edit', $poliza->POLIZA_ID) }}" class="btn botoneditar"><i class="fa-solid fa-pencil"></i></a>
                                         <form action="{{ route('polizas.destroy', $poliza->POLIZA_ID) }}" method="POST" style="display: inline-block;">
                                             @csrf
                                             @method('DELETE')

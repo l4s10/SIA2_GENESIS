@@ -165,6 +165,8 @@
 @stop
 {{-- Seccion para los Javascripts --}}
 @section('js')
+    {{-- Script cooldown envio formulario (evita entradas repetidas) --}}
+    <script src="{{ asset('js/Components/cooldownSendForm.js') }}"></script>
     <script>
         $(document).ready(function() {
             $('#formularios').DataTable({

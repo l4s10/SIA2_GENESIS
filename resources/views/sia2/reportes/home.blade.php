@@ -36,7 +36,7 @@
     @role('ADMINISTRADOR|SERVICIOS')
         {{-- Reportes vehiculos --}}
         <div class="card text-bg-primary mb-3">
-            <div class="card-header">Módulo de Informes de vehículos</div>
+            <div class="card-header">Módulo de Informes de Vehículos</div>
             <div class="card-body">
                 <p class="card-text">Este módulo permite ver los reportes de <strong>Vehiculos</strong>. Estadísticas de uso de vehículos, georreferenciación, este módulo permite acceder a la información relacionada con las solicitudes de salida de vehículos.</p>
             </div>
@@ -60,7 +60,7 @@
         <div class="card text-bg-primary mb-3">
             <div class="card-header">Módulo de Informes de Reparaciones y Mantenimientos</div>
             <div class="card-body">
-                <p class="card-text">Este módulo permite ver los reportes de <strong>reparaciones y mantenciones</strong>. Para saber las cantidades de solicitudes de <strong>reparaciones y mantenciones</strong> del sistema completo.</p>
+                <p class="card-text">Este módulo permite ver los reportes de <strong>Reparaciones y Mantenciones</strong>. Para saber las cantidades de solicitudes de <strong>reparaciones y mantenciones</strong> del sistema completo.</p>
             </div>
             <div class="card-footer">
                 <a class="btn btn-primary" href="{{route('reportes.reparaciones.index')}}"><i class="fa-solid fa-chart-pie"></i> Graficos</a>
@@ -72,7 +72,7 @@
     @role('ADMINISTRADOR|INFORMATICA')
         {{-- Reportes equipos --}}
         <div class="card text-bg-primary mb-3">
-            <div class="card-header">Módulo de Informes sobre equipos</div>
+            <div class="card-header">Módulo de Informes sobre Equipos</div>
             <div class="card-body">
                 <p class="card-text">Este módulo permite ver los reportes de <strong>Equipos</strong>. Para saber las cantidades de solicitudes de <strong>Equipos</strong> del sistema completo.</p>
             </div>
@@ -82,9 +82,9 @@
         </div>
         {{-- Reportes salas --}}
         <div class="card text-bg-primary mb-3">
-            <div class="card-header">Módulo de Informes sobre reservas de salas</div>
+            <div class="card-header">Módulo de Informes sobre Reservas de Salas</div>
             <div class="card-body">
-                <p class="card-text">Este módulo permite ver los reportes de <strong>Reservas de salas</strong>. Para saber las cantidades de solicitudes de <strong>Reservas de salas</strong> del sistema completo.</p>
+                <p class="card-text">Este módulo permite ver los reportes de <strong>Reservas de Salas</strong>. Para saber las cantidades de solicitudes de <strong>Reservas de salas</strong> del sistema completo.</p>
             </div>
             <div class="card-footer">
                 <a class="btn btn-primary" href="{{route('reportes.salas.index')}}"><i class="fa-solid fa-chart-pie"></i> Graficos</a>
@@ -92,9 +92,9 @@
         </div>
         {{-- Reportes bodegas --}}
         <div class="card text-bg-primary mb-3">
-            <div class="card-header">Módulo de Informes sobre reservas de bodegas</div>
+            <div class="card-header">Módulo de Informes sobre Reservas de Bodegas</div>
             <div class="card-body">
-                <p class="card-text">Este módulo permite ver los reportes de <strong>Reservas de bodegas</strong>. Para saber las cantidades de solicitudes de <strong>Reservas de bodegas</strong> del sistema completo.</p>
+                <p class="card-text">Este módulo permite ver los reportes de <strong>Reservas de Bodegas</strong>. Para saber las cantidades de solicitudes de <strong>Reservas de bodegas</strong> del sistema completo.</p>
             </div>
             <div class="card-footer">
                 <a class="btn btn-primary" href="{{route('reportes.bodegas.index')}}"><i class="fa-solid fa-chart-pie"></i> Graficos</a>
@@ -106,7 +106,7 @@
     @role('ADMINISTRADOR')
         {{-- Reportes sistema --}}
         <div class="card text-bg-primary mb-3">
-            <div class="card-header">Módulo Informes del sistema</div>
+            <div class="card-header">Módulo Informes del Sistema</div>
             <div class="card-body">
                 <p class="card-text">Este módulo permite ver los reportes del <strong>Sistema</strong>. Para saber las cantidades de solicitudes del <strong>Sistema</strong> del sistema completo.</p>
             </div>

@@ -222,71 +222,83 @@
 
     <!-- Scrip para inicizaliar el mapa -->
     <script>
-            document.addEventListener('DOMContentLoaded', function() {
-                var mapDiv = document.getElementById('map');
-                var mapOpenButton = document.getElementById('map-open');
-                var map;
-                var featureGroup;
+        document.addEventListener('DOMContentLoaded', function() {
+            var mapDiv = document.getElementById('map');
+            var mapOpenButton = document.getElementById('map-open');
+            var map;
+            var featureGroup;
 
-                function toggleMap() {
-                    if (mapDiv.style.display === 'none') {
-                        mapDiv.style.display = 'block';
-                        mapDiv.requestFullscreen(); // Solicita el modo de pantalla completa para el elemento del mapa
-                        initializeMap();
-                    } else {
-                        mapDiv.style.display = 'none';
-                        document.exitFullscreen(); // Sale del modo de pantalla completa si el mapa ya no está visible
-                        mapOpenButton.disabled = false; // Restablece el botón a su estado original
-                    }
+            function toggleMap() {
+                if (mapDiv.style.display === 'none') {
+                    mapDiv.style.display = 'block';
+                    mapDiv.requestFullscreen(); // Solicita el modo de pantalla completa para el elemento del mapa
+                    initializeMap();
+                } else {
+                    mapDiv.style.display = 'none';
+                    document.exitFullscreen(); // Sale del modo de pantalla completa si el mapa ya no está visible
+                    mapOpenButton.disabled = false; // Restablece el botón a su estado original
                 }
+            }
 
-                function initializeMap() {
-                    var map = L.map('map').setView([-36.8261, -73.0498], 13); // Coordenadas de Concepción, Chile y nivel de zoom 13
+            function initializeMap() {
+                var map = L.map('map');
 
-                    L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-                    }).addTo(map);
+                L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+                }).addTo(map);
 
-                    // devuelve las comunas y coordenadas
-                    fetch('/api/reportes/vehiculos/georeferenciacion', {
-                        method: 'GET',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'Accept': 'application/json',
-                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                fetch('/api/reportes/vehiculos/georeferenciacion', {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json',
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                    },
+                })
+                .then(response => response.json())
+                .then(data => {
+                    // Setear la view en la coordenada de la comuna de salida
+                    map.setView([data.comunaSalida.coordinates[0],data.comunaSalida.coordinates[1]], 13);
+
+                    // Obtener las comunas filtradas y la comuna de salida desde la respuesta
+                    const { comunasFiltradas, comunaSalida } = data;
+
+                    // Crear un marcador para la comuna de salida
+                    const salidaMarker = L.marker(comunaSalida.coordinates).addTo(map);
+                    salidaMarker.bindPopup(comunaSalida.comuna + ' (Salida)');
+
+                    // Configurar el enrutamiento desde la comuna de salida a cada comuna filtrada
+                    comunasFiltradas.forEach(comuna => {
+                        // Crear un marcador para cada comuna en las coordenadas recibidas
+                        const marker = L.marker(comuna.coordinates).addTo(map);
+                        marker.bindPopup(comuna.comuna);
+                    });
+
+                    // Configurar el enrutamiento desde la comuna de salida a cada comuna filtrada
+                    const waypoints = [L.latLng(comunaSalida.coordinates)];
+                    comunasFiltradas.forEach(comuna => {
+                        waypoints.push(L.latLng(comuna.coordinates));
+                    });
+
+                    L.Routing.control({
+                        waypoints: waypoints,
+                        language: 'es',
+                        lineOptions: {
+                            styles: [
+                                { color: 'blue', opacity: 0.6, weight: 4 },
+                            ]
                         },
-                    })
-                        .then(response => response.json())
-                        .then(comunas => {
-                            comunas.forEach(comuna => {
-                                // Crea un marcador para cada comuna en las coordenadas recibidas
-                                var marker = L.marker(comuna.coordinates.reverse()).addTo(map);
-                                marker.bindPopup(comuna.comuna);
+                        show: true, // Oculta la lista de instrucciones de ruta
+                    }).addTo(map);
+                })
+                .catch(error => {
+                    console.error('Error al cargar los datos:', error);
+                });
 
-                                // Configura el enrutamiento desde Concepción a esta comuna
-                                L.Routing.control({
-                                    waypoints: [
-                                        L.latLng(-36.8261, -73.0498), // Concepción
-                                        L.latLng(comuna.coordinates)  // Coordenadas de destino
-                                    ],
-                                    language: 'es',
-                                    lineOptions: {
-                                        styles: [
-                                            { color: 'blue', opacity: 0.6, weight: 4 },
-                                        ]
-                                    },
-                                    createMarker: function() { return null; }, // Evita la creación de marcadores adicionales por Routing
-                                    show: true, // Oculta la lista de instrucciones de ruta
-                                }).addTo(map);
-                            });
-                        })
-                        .catch(error => {
-                            console.error('Error al cargar los datos:', error);
-                        });
-                }
+            }
 
-                mapOpenButton.addEventListener('click', toggleMap);
-            });
+            mapOpenButton.addEventListener('click', toggleMap);
+        });
     </script>
 
     <!-- Scrip para sacar pantallazo a los graficos y hacerlos grandes. -->

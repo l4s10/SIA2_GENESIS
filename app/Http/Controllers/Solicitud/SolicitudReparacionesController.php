@@ -29,11 +29,13 @@ class SolicitudReparacionesController extends Controller
                                         $query->where('OFICINA_ID', Auth::user()->OFICINA_ID);
                                     })
                                     ->where('SOLICITUD_REPARACION_ESTADO', '!=', 'ELIMINADO')
+                                    ->orderBy('created_at', 'desc')
                                     ->get();
             } else {
                 // Si el usuario es otro tipo de usuario, mostrar solo sus solicitudes de reparaciones de equipos a través de la relación solicitante y la sesión activa
                 $solicitudes = SolicitudReparacion::where('USUARIO_id', Auth::user()->id)
                     ->where('SOLICITUD_REPARACION_ESTADO', '!=', 'ELIMINADO')
+                    ->orderBy('created_at', 'desc')
                     ->get();
             }
             // Retornar la vista con las solicitudes
@@ -164,7 +166,7 @@ class SolicitudReparacionesController extends Controller
 
                 case 'finalizar_revision':
                     // Lógica para finalizar la revisión
-                    $solicitud->update(['SOLICITUD_REPARACION_ESTADO' => 'AUTORIZADO']);
+                    $solicitud->update(['SOLICITUD_REPARACION_ESTADO' => 'APROBADO']);
                 break;
 
                 case 'rechazar':

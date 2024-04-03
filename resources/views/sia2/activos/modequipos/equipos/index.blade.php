@@ -130,7 +130,10 @@
                         <td>{{$equipo->tipoEquipo->TIPO_EQUIPO_NOMBRE }}</td>
                         <td>{{$equipo->EQUIPO_MODELO}}</td>
                         <td>{{$equipo->EQUIPO_MARCA}}</td>
-                        <td>{{$equipo->EQUIPO_ESTADO}}</td>
+                        <td><span class="badge rounded-pill estado-{{ strtolower(str_replace(' ', '-', $equipo->EQUIPO_ESTADO )) }}">
+                        {{ $equipo->EQUIPO_ESTADO }}
+                        </span>
+                        </td>
                         <td>{{ $equipo->EQUIPO_STOCK }}</td>
                         <td>
                             <div class="d-flex justify-content-center">
@@ -167,6 +170,21 @@
             background-color: #1aa16b;
             color: #fff;
         }
+
+        .estado-disponible {
+        color: #ffffff;
+        background-color: #0CB009;
+        }
+
+        .estado-ocupado {
+            color: #FFFFFF;
+            background-color: #F70B0B;
+        }
+
+        .estado-desabilitado {
+        color: #000000;
+        background-color: #F7F70B;
+        }
     </style>
 
     <!-- Color mensajes usuario -->
@@ -185,6 +203,8 @@
 @stop
 
 @section('js')
+    {{-- Script cooldown envio formulario (evita entradas repetidas) --}}
+    <script src="{{ asset('js/Components/cooldownSendForm.js') }}"></script>
     <script>
         $(document).ready(function () {
             // Inicialización de DataTables

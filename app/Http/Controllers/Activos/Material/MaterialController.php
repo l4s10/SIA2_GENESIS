@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Exception;
+use Illuminate\Database\QueryException;
 use Gloudemans\Shoppingcart\Facades\Cart;
 
 use Carbon\Carbon;
@@ -373,7 +374,7 @@ class MaterialController extends Controller
 
     public function destroy(string $id)
     {
-        try{
+        try {
             // Encontrar el material por su ID
             $material = Material::find($id);
 
@@ -393,18 +394,24 @@ class MaterialController extends Controller
                     'MOVIMIENTO_STOCK_RESULTANTE' => ($material->MATERIAL_STOCK-$material->MATERIAL_STOCK),
                     'MOVIMIENTO_DETALLE' => 'ELIMINACIÓN DEL MATERIAL EN EL INVENTARIO',
                 ]);
+
                 // Eliminar el material
                 $material->delete();
-            }
 
-            return redirect()->route('materiales.index')->with('success', 'Material eliminado exitosamente.');
-        } catch(ModelNotFoundException) {
-            // Manejo de excepciones cuando no encuentre el material
+                return redirect()->route('materiales.index')->with('success', 'Material eliminado exitosamente.');
+            } else {
+                // Material no encontrado
+                return redirect()->route('materiales.index')->with('error', 'No se encontró el material.');
+            }
+        } catch (QueryException $e) {
+            // Manejo de excepciones cuando hay violaciones de restricción de clave externa
+            return redirect()->route('materiales.index')->with('error', 'No se puede eliminar el material porque tiene registros relacionados.');
+        } catch (Exception $e) {
+            // Manejo de otras excepciones
             return redirect()->route('materiales.index')->with('error', 'Error al eliminar el material');
-        } catch(Exception $e) {// "Exeption" estaba mal escrito
-            return redirect()->route('materiales.index')->with('error', 'No se encontró el material.');
         }
     }
+
 
     public function addToCart(Request $request, Material $material)
     {
@@ -479,14 +486,16 @@ class MaterialController extends Controller
         $dompdf->stream($nombreArchivo, ["Attachment" => false]);
     }
 
-    // Exportable Auditoria Materiales  para PDF
+    // Exportable Auditoria Materiales para PDF
     public function exportAuditoriaPdf()
     {
         $responsable = Auth::user()->USUARIO_NOMBRES.' '.Auth::user()->USUARIO_APELLIDOS . ' - ' . Auth::user()->USUARIO_RUT;
         $direccion = Auth::user()->oficina->OFICINA_NOMBRE;
 
-        // Obtener los movimientos que representan las auditorías (ajusta la consulta según sea necesario)
-        $auditorias = Movimiento::where('MOVIMIENTO_OBJETO', 'LIKE', 'MATERIAL: %')->get();
+        // Obtener los movimientos que representan las auditorías, ordenados de la más reciente a la más antigua
+        $auditorias = Movimiento::where('MOVIMIENTO_OBJETO', 'LIKE', 'MATERIAL: %')
+                        ->orderBy('created_at', 'desc') // Asumiendo que 'created_at' es el campo de fecha
+                        ->get();
 
         $fecha = now()->setTimezone('America/Santiago')->format('d/m/Y H:i');
         $fechaParaNombreArchivo = str_replace(['/', ':', ' '], '-', $fecha);

@@ -141,7 +141,7 @@
         background-color: #F7F70B;
         }
 
-        .estado-autorizado {
+        .estado-aprobado {
         color: #ffffff;
         background-color: #0CB009;
         }
@@ -154,11 +154,6 @@
         .estado-terminado {
         color: #000000;
         background-color: #d9d9d9;
-        }
-
-        .estado-autorizado {
-        color: #ffffff;
-        background-color: #0CB009;
         }
     </style>
 

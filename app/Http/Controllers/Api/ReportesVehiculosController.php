@@ -370,8 +370,9 @@ class ReportesVehiculosController extends Controller
         }
     }
 
-    public function georeferenciacion(){
-        try{
+    public function georeferenciacion()
+    {
+        try {
             $solicitudes = SolicitudVehicular::where('SOLICITUD_VEHICULO_ESTADO', 'POR RENDIR')
                 ->join('users', 'solicitudes_vehiculos.USUARIO_id', '=', 'users.id')
                 ->where('users.OFICINA_ID', Auth::user()->OFICINA_ID)
@@ -380,9 +381,9 @@ class ReportesVehiculosController extends Controller
             $comunas = $solicitudes->pluck('COMUNA_ID')->unique();
 
             $comunasNombres = DB::table('comunas')
-                            ->whereIn('COMUNA_ID', $comunas)
-                            ->pluck('COMUNA_NOMBRE')
-                            ->toArray();
+                ->whereIn('COMUNA_ID', $comunas)
+                ->pluck('COMUNA_NOMBRE')
+                ->toArray();
 
             $comunasGeoJSON = json_decode(file_get_contents(public_path('json/comunasbiobio.geojson')), true);
 
@@ -404,10 +405,33 @@ class ReportesVehiculosController extends Controller
                 ];
             })->values()->all();
 
-            // Aquí puedes devolver $comunasFiltradas como necesites, por ejemplo, pasándolas a una vista o devolviéndolas como JSON.
-            return response()->json($comunasFiltradas);
+            // En base a la OFICINA_ID del usuario autentificado, obtener comuna de salida y devolver con coordenadas
+            $oficinaId = Auth::user()->OFICINA_ID;
+            $comunaSalida = '';
+            $coordenadasSalida = [];
 
-        }catch(\Exception $e){
+            if ($oficinaId == 10) {
+                $comunaSalida = 'Recoleta';
+                $coordenadasSalida = [-33.40619935, -70.6321819467442];
+            }elseif ($oficinaId == 16) {
+                $comunaSalida = 'Concepción';
+                $coordenadasSalida = [-36.8261, -73.0498];
+            } elseif ($oficinaId == 18) {
+                $comunaSalida = 'Valdivia';
+                $coordenadasSalida = [-39.8142, -73.2452];
+            }
+
+            $comunaSalida = [
+                'comuna' => $comunaSalida,
+                'coordinates' => $coordenadasSalida,
+            ];
+
+            // Aquí puedes devolver $comunasFiltradas y $comunaSalida como necesites, por ejemplo, pasándolas a una vista o devolviéndolas como JSON.
+            return response()->json([
+                'comunasFiltradas' => $comunasFiltradas,
+                'comunaSalida' => $comunaSalida
+            ]);
+        } catch (\Exception $e) {
             return response()->json([
                 'status' => 'error',
                 'message' => 'Error al obtener la georeferenciacion: ' . $e->getMessage(),

@@ -8,8 +8,10 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Exception;
+use Illuminate\Database\QueryException;
 
 use App\Models\TipoMaterial;
+use App\Models\Material;
 use App\Models\Oficina;
 
 
@@ -192,13 +194,17 @@ class TipoMaterialController extends Controller
     public function destroy($id)
     {
         try {
-            // Obtener el tipo de material por ID y eliminarlo
+            // Obtener el tipo de material por ID
             $tipoMaterial = TipoMaterial::findOrFail($id);
             $tipoMaterial->delete();
+
             return redirect()->route('tiposmateriales.index')->with('success', 'Tipo de material eliminado exitosamente.');
         } catch (ModelNotFoundException $e) {
             // Manejar excepción de modelo no encontrado
             return redirect()->route('tiposmateriales.index')->with('error', 'El tipo de material no se encontró.');
+        } catch (QueryException $e) {
+            // Manejar excepción de violación de restricción de clave externa
+            return redirect()->route('tiposmateriales.index')->with('error', 'No se puede eliminar el tipo de material porque tiene registros relacionados.');
         } catch (Exception $e) {
             // Manejar otras excepciones
             return redirect()->route('tiposmateriales.index')->with('error', 'Ocurrió un error inesperado al eliminar el tipo de material.');

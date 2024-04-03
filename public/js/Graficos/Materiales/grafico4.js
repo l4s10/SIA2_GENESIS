@@ -60,6 +60,12 @@ document.addEventListener('DOMContentLoaded', function() {
                     ticks: {
                         precision: 0
                     }
+                },
+                x: {
+                    title: {
+                        display: true,
+                        text: 'Materiales más solicitados'
+                    }
                 }
             },
             barThickness: 65,

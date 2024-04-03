@@ -8,10 +8,10 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Exception;
+use Illuminate\Database\QueryException;
 
 use App\Models\Sala;
 use App\Models\Oficina;
-
 
 class SalaController extends Controller
 {
@@ -241,7 +241,13 @@ class SalaController extends Controller
         } catch (ModelNotFoundException $e) {
             // Manejar excepción de modelo no encontrado
             return redirect()->route('salas.index')->with('error', 'Ocurrió un error inesperado al eliminar la sala.');
-        } catch (Exception $e) {
+        }
+        catch(QueryException $ex)
+        {
+            // Retornamos la vista con el mensaje de error (concatenar mensaje con $ex para obtener detalles DEBUG)
+            return redirect()->back()->with('error', 'No se puede eliminar la sala porque tiene registros relacionados');
+        }
+        catch (Exception $e) {
             // Manejar otras excepciones
             return redirect()->route('salas.index')->with('error', 'Ocurrió un error inesperado al eliminar la sala.');
         }

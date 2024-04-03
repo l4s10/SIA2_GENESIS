@@ -60,6 +60,12 @@ document.addEventListener('DOMContentLoaded', function() {
                     ticks: {
                         precision: 0
                     }
+                },
+                x: { // Definición del eje X
+                    title: {
+                        display: true,
+                        text: 'Estados'
+                    }
                 }
             },
             barThickness: 65,

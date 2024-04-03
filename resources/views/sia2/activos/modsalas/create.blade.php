@@ -31,7 +31,7 @@
             @endif
         </div>
 
-        
+
         <div class="mb-3">
             <label for="SALA_CAPACIDAD" class="form-label"><i class="fas fa-person-shelter"></i> Capacidad personas:</label>
             <input type="number" class="form-control{{ $errors->has('SALA_CAPACIDAD') ? ' is-invalid' : '' }}" id="SALA_CAPACIDAD" name="SALA_CAPACIDAD" value="{{ old('SALA_CAPACIDAD') }}" placeholder="10" min="1" max="200" required>
@@ -64,7 +64,6 @@
 @stop
 
 @section('css')
-    <link rel="stylesheet" href="/css/admin_custom.css">
     <style>/* Estilos personalizados si es necesario */
         .guardar {
             background-color: #e6500a;
@@ -74,6 +73,6 @@
 @stop
 
 @section('js')
-    <!-- CONEXION FONT-AWESOME CON TOOLKIT -->
-    <script src="https://kit.fontawesome.com/742a59c628.js" crossorigin="anonymous"></script>
+    {{-- Script cooldown envio formulario (evita entradas repetidas) --}}
+    <script src="{{ asset('js/Components/cooldownSendForm.js') }}"></script>
 @stop

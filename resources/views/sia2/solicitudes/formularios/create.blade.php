@@ -77,12 +77,15 @@
                     <td>{{ $formulario->FORMULARIO_TIPO}}</td>
                     <td>{{ $formulario->FORMULARIO_NOMBRE }}</td>
                     <td>
-                        <form action="{{ route('formularios.addToCart', $formulario->FORMULARIO_ID) }}" method="POST">
+                        <button type="button" class="btn botoneditar" data-formulario-id="{{ $formulario->FORMULARIO_ID }}" data-form-action="{{ route('formularios.addToCart', $formulario->FORMULARIO_ID) }}">
+                            <i class="fa-solid fa-plus"></i> Agregar al Carrito
+                        </button>
+                        {{-- <form action="{{ route('formularios.addToCart', $formulario->FORMULARIO_ID) }}" method="POST">
                             @csrf
                             <button type="submit" class="btn botoneditar">
                                 <i class="fa-solid fa-plus"></i> Agregar al Carrito
                             </button>
-                        </form>
+                        </form> --}}
                     </td>
                 </tr>
             @endforeach
@@ -117,6 +120,29 @@
             @endforeach
         </tbody>
     </table>
+
+    {{-- Modal para cantidad personalizada --}}
+    <div class="modal fade" id="cantidadModal" tabindex="-1" data-bs-backdrop="static" aria-labelledby="cantidadModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="cantidadModalLabel">Agregar formulario</h5>
+                </div>
+                <form id="formAgregarCarrito" method="POST">
+                    @csrf
+                    <div class="modal-body">
+                        <input type="number" name="cantidad" class="form-control" required min="1" value="1">
+                        <input type="hidden" name="formulario_id" id="formulario_id">
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dissmiss="modal">Cancelar</button>
+                        <button type="submit" class="btn btn-primary">Agregar al carrito</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
 
     {{-- Formulario de Solicitud --}}
     <form action="{{ route('solicitudes.formularios.store') }}" method="POST">
@@ -199,7 +225,7 @@
             background-color: #FF8C40;
             color: #000000;
         }
-        
+
         .verde {
             display: flex;
             justify-content: center;
@@ -224,6 +250,11 @@
 @section('js')
     {{-- Llamar a componente configuracion fechas SOLICITADAS --}}
     <script src="{{ asset('js/Components/fechasSolicitadas.js') }}"></script>
+    {{-- Script cooldown envio formulario (evita entradas repetidas) --}}
+    <script src="{{ asset('js/Components/cooldownSendForm.js') }}"></script>
+    {{-- Cooldown borrar del carrito (evita llamados multiples) --}}
+    <script src="{{ asset('js/Components/cooldownEraseFromCart.js') }}"></script>
+
     {{-- Componentes dataTables --}}
     <script>
         $(document).ready(function () {
@@ -241,6 +272,19 @@
                 "language": {
                     "url": "https://cdn.datatables.net/plug-ins/1.11.3/i18n/es_es.json"
                 },
+            });
+        });
+    </script>
+
+    <script>
+        document.querySelectorAll('.botoneditar').forEach(button => {
+            button.addEventListener('click', function(event) {
+                event.preventDefault();
+                const formularioId = this.getAttribute('data-formulario-id');
+                document.getElementById('formulario_id').value = formularioId;
+                const formAction = this.getAttribute('data-form-action');
+                document.getElementById('formAgregarCarrito').action = formAction;
+                new bootstrap.Modal(document.getElementById('cantidadModal')).show();
             });
         });
     </script>

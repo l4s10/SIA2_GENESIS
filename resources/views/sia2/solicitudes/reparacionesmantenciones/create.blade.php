@@ -126,7 +126,7 @@
             </div>
 
 
-            <button href="{{ route('solicitudes.formularios.index') }}" class="btn btn-secondary "><i class="fa-solid fa-hand-point-left"></i> Cancelar</button>
+            <a href="{{ route('solicitudes.reparaciones.index') }}" class="btn btn-secondary "><i class="fa-solid fa-hand-point-left"></i> Cancelar</a>
             {{-- Botón de envío --}}
             <button type="submit" class="btn agregar"><i class="fa-solid fa-clipboard-check"></i> Crear Solicitud</button>
         </form>
@@ -155,7 +155,7 @@
             color: #fff;
         }
     </style>
-    
+
     <!-- Color mensajes usuario -->
     <style>
         .alert {
@@ -172,6 +172,10 @@
 @stop
 
 @section('js')
+    {{-- Script cooldown envio formulario (evita entradas repetidas) --}}
+    <script src="{{ asset('js/Components/cooldownSendForm.js') }}"></script>
+
+    {{-- Script para manejar la visibilidad, habilitación/deshabilitación y requerimiento del campo de vehículo --}}
     <script>
         $(document).ready(function() {
             // Función para manejar la visibilidad, habilitación/deshabilitación y requerimiento del campo de vehículo

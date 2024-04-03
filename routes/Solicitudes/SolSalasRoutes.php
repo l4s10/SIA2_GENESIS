@@ -31,12 +31,12 @@ Route::prefix('solicitudes')->group(function () {
     //** Editar solicitud */
     Route::get('/salas/{solicitud}/edit', [SolicitudSalasController::class, 'edit'])
         ->name('solicitudes.salas.edit')
-        ->middleware('can:editar_solicitud');
+        ->middleware(['role:ADMINISTRADOR|INFORMATICA']);
 
     //** Actualizar solicitud */
     Route::put('/salas/{solicitud}', [SolicitudSalasController::class, 'update'])
         ->name('solicitudes.salas.update')
-        ->middleware('can:actualizar_solicitud');
+        ->middleware(['role:ADMINISTRADOR|INFORMATICA']);
 
     //** Eliminar solicitud */
     Route::delete('/salas/{solicitud}', [SolicitudSalasController::class, 'destroy'])

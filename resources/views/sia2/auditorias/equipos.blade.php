@@ -95,7 +95,7 @@
         background-color: #F7F70B;
         }
 
-        .estado-traslado {
+        .estado-resta {
         color: #FFFFFF;
         background-color: #F70B0B;
         }

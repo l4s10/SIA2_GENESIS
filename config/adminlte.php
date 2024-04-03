@@ -571,17 +571,19 @@ return [
             'icon' => 'fas fa-fw fa-solid fa-building-un',
             'can'  => 'ver_panel_control',
         ],
-        ['header' => 'account_settings'],
+        // HEADER PARA EL ACCOUNT_SETTINGS
+        // ['header' => 'account_settings'],
         // [
         //     'text' => 'profile',
         //     'url'  => 'admin/settings',
         //     'icon' => 'fas fa-fw fa-user',
         // ],
-        [
-            'text' => 'change_password',
-            'url'  => 'password/reset',
-            'icon' => 'fas fa-fw fa-lock',
-        ],
+        // SE OCULTA EL CAMBIO DE CONTRASEÑA (FALTA IMPLEMENTAR "CORREO MENSAJERO")
+        // [
+        //     'text' => 'change_password',
+        //     'url'  => 'password/reset',
+        //     'icon' => 'fas fa-fw fa-lock',
+        // ],
         // [
         //     'text'    => 'multilevel',
         //     'icon'    => 'fas fa-fw fa-share',

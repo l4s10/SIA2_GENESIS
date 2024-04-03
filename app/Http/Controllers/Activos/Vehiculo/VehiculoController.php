@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Exception;
+use Illuminate\Database\QueryException;
 
 use App\Models\Vehiculo;
 use App\Models\TipoVehiculo;
@@ -423,7 +424,13 @@ class VehiculoController extends Controller
         } catch(ModelNotFoundException) {
             // Manejo de excepciones cuando no encuentre el material
             return redirect()->route('vehiculos.index')->with('error', 'Error al eliminar el vehículo');
-        } catch(Exception $e) {// "Exeption" estaba mal escrito
+        }
+        catch(QueryException $ex)
+        {
+            // Retornamos la vista con el mensaje de error (concatenar mensaje con $ex para obtener detalles DEBUG)
+            return redirect()->back()->with('error', 'No se puede eliminar el vehículo porque tiene registros relacionados');
+        }
+        catch(Exception $e) {// "Exeption" estaba mal escrito
             return redirect()->route('vehiculos.index')->with('error', 'No se encontró el vehículo.');
         }
     }

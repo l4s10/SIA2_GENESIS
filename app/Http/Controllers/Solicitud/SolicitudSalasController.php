@@ -38,6 +38,7 @@ class SolicitudSalasController extends Controller
                                         $query->where('OFICINA_ID', Auth::user()->OFICINA_ID);
                                     })
                                     ->where('SOLICITUD_ESTADO', '!=', 'ELIMINADO')
+                                    ->orderBy('created_at', 'desc')
                                     ->get();
             } else {
                 // Si el usuario es otro tipo de usuario, mostrar solo sus solicitudes de salas a través de la relación solicitante y la sesión activa
@@ -240,6 +241,7 @@ class SolicitudSalasController extends Controller
                     }
                     $this->updateSolicitud($request, $solicitud, 'RECHAZADO');
                     $this->createRevisionSolicitud($request, $solicitud);
+                    DB::commit(); // Guarda todos los cambios en la base de datos
                     return $this->redirectSuccess('Solicitud rechazada exitosamente');
                 break;
             }
@@ -402,7 +404,7 @@ class SolicitudSalasController extends Controller
 
             // Cambiar estado
             $solicitud->SOLICITUD_ESTADO = 'ELIMINADO';
-            
+
             // Guardar la solicitud eliminada
             $solicitud->save();
 

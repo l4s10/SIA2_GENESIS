@@ -168,7 +168,6 @@
 @stop
 
 @section('css')
-    <link rel="stylesheet" href="/css/admin_custom.css">
     <style>/* Estilos personalizados si es necesario */
         .guardar {
             background-color: #e6500a;
@@ -178,6 +177,8 @@
 @stop
 
 @section('js')
+    {{-- Script cooldown envio formulario (evita entradas repetidas) --}}
+    <script src="{{ asset('js/Components/cooldownSendForm.js') }}"></script>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     {{-- Establecer el año máximo como el año actual, para el input VEHICULO_ANO --}}
     <script>

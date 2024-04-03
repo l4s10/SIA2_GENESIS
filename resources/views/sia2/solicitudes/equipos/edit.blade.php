@@ -66,8 +66,8 @@
                                     @case('EN REVISION')
                                     <span class="badge estado-en-revision rounded-pill">EN REVISION</span>
                                     @break
-                                    @case('AUTORIZADO')
-                                    <span class="badge estado-autorizado rounded-pill">AUTORIZADO</span>
+                                    @case('APROBADO')
+                                    <span class="badge estado-aprobado rounded-pill">APROBADO</span>
                                     @break
                                     @case('RECHAZADO')
                                     <span class="badge estado-rechazado rounded-pill">RECHAZADO</span>
@@ -220,7 +220,7 @@
             {{-- Autorizar cantidades de equipos solicitados --}}
             <div class="form-group">
                 <label for="autorizarEquipos">Autorizar cantidades de equipos solicitados</label>
-                <table class="table table-bordered">
+                <table class="table table-bordered" id="carrito">
                     <thead class="tablacarrito">
                         <tr>
                             <th>Tipo de Equipo</th>
@@ -254,11 +254,11 @@
                 @enderror
             </div>
 
-            
+
             {{-- Botones de retorno y envio --}}
             <a href="{{ route('solicitudes.equipos.index') }}" class="btn btn-secondary"><i class="fa-solid fa-hand-point-left"></i> Volver</a>
             <button type="submit" name="action" value="guardar" class="btn agregar"><i class="fa-solid fa-floppy-disk"></i> Guardar revisión</button>
-            <button type="submit" name="action" value="finalizar_revision" class="btn btn-success"><i class="fa-solid fa-clipboard-check"></i> Finalizar revisiones y autorizar</button>
+            <button type="submit" name="action" value="finalizar_revision" class="btn btn-success"><i class="fa-solid fa-clipboard-check"></i> Finalizar revisiones y aprobar</button>
             <button type="submit" name="action" value="rechazar" class="btn btn-danger"><i class="fa-solid fa-ban"></i> Rechazar</button>
         </form>
     @else
@@ -299,7 +299,7 @@
         background-color: #F7F70B;
         }
 
-        .estado-autorizado {
+        .estado-aprobado {
         color: #ffffff;
         background-color: #0CB009;
         }
@@ -319,4 +319,19 @@
 @section('js')
     {{-- Llamar a fechasAutorizadas.js --}}
     <script src="{{ asset('js/Components/fechasAutorizadas.js') }}"></script>
+
+    {{-- Llamar a componente DataTables --}}
+    <script>
+        $(document).ready(function () {
+            $('#carrito').DataTable({
+                "lengthMenu": [[5, 10, 50, -1], [5, 10, 50, "All"]],
+                "columnDefs": [
+                    { "orderable": false, "targets": 2 }
+                ],
+                "language": {
+                    "url": "https://cdn.datatables.net/plug-ins/1.11.3/i18n/es_es.json"
+                },
+            });
+        });
+    </script>
 @stop

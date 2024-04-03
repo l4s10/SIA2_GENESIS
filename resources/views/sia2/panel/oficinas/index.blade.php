@@ -65,7 +65,7 @@
                         <td>{{$oficina->comuna->region->REGION_NOMBRE}}</td>
                         <td>
                             <div class="d-flex justify-content-center">
-                                <a href="{{route('panel.oficinas.edit',$oficina->OFICINA_ID)}}"class="btn botoneditar"> 
+                                <a href="{{route('panel.oficinas.edit',$oficina->OFICINA_ID)}}"class="btn botoneditar">
                                     <i class="fa-solid fa-pen-to-square"></i> Editar
                                 </a>
                                 @role('ADMINISTRADOR')
@@ -91,7 +91,7 @@
 @section('css')
     <style>
         .tablacolor {
-            background-color: #0064a0; 
+            background-color: #0064a0;
             color: #fff;
         }
         .agregar{
@@ -115,7 +115,7 @@
                     { "orderable": false, "targets": 3 }
                 ],
                 "language": {
-                    "url": "//cdn.datatables.net/plug-ins/1.10.25/i18n/Spanish.json"
+                    "url": "https://cdn.datatables.net/plug-ins/1.11.3/i18n/es_es.json"
                 },
             });
         });

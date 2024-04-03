@@ -48,7 +48,7 @@
     <br><br>
         <div class="table-responsive">
             <table id="cargos" class="table table-bordered mt-4 custom-table">
-                <thead class="bg-primary text-white">
+                <thead class="tablacolor">
                     <tr>
                         <th scope="col">Cargo</th>
                         <th scope="col">Dependencia</th>
@@ -62,7 +62,7 @@
                             <td>{{ $cargo->oficina->OFICINA_NOMBRE }}</td>
                             <td>
                                 <div class="d-flex justify-content-center">
-                                    <a href="{{ route('cargos.edit', $cargo->CARGO_ID) }}" class="btn btn-secondary"><i class="fa-solid fa-pencil"></i></a>
+                                    <a href="{{ route('cargos.edit', $cargo->CARGO_ID) }}" class="btn botoneditar"><i class="fa-solid fa-pencil"></i></a>
                                     <form action="{{ route('cargos.destroy', $cargo->CARGO_ID) }}" method="POST" style="display: inline-block;">
                                         @csrf
                                         @method('DELETE')
