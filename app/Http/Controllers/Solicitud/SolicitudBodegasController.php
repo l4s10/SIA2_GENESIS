@@ -33,7 +33,7 @@ class SolicitudBodegasController extends Controller
                 $solicitudes = Solicitud::has('bodegas')->where('USUARIO_id', Auth::user()->id)->orderBy('created_at', 'desc')->get();
             }
             // Query que a través de la relación has() filtra las solicitudes que SOLO tengan bodegas asociadas
-            $solicitudes = Solicitud::has('bodegas')->get();
+            // $solicitudes = Solicitud::has('bodegas')->get();
 
             // Retornar la vista con las solicitudes
             return view('sia2.solicitudes.bodegas.index', compact('solicitudes'));
