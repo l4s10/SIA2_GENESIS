@@ -363,77 +363,79 @@ class SolicitudVehiculosController extends Controller
             // Procesar eventos y cambios de estado
             $eventos = [];
 
-            // Si la solicitud está rechazada, agregar evento de rechazo
+
+
+            // Agregar evento de ingreso al timeline
+            $eventos[] = [
+                'fecha' => $solicitud->created_at,
+                'usuario' => $solicitud->user->USUARIO_NOMBRES.' '.$solicitud->user->USUARIO_APELLIDOS,
+                'detalle' => $solicitud->SOLICITUD_VEHICULO_MOTIVO,
+                'mensaje' => 'Solicitud creada',
+                'estado' => 'INGRESADO'
+            ];
+    
+            // Ordenar las revisiones por fecha de creación de forma descendente
+            $revisionesOrdenadas = $revisiones->sortByDesc('created_at');
+
+            // Obtener la revisión más reciente (la primera en la lista ordenada)
+            $revisionMasReciente = $revisionesOrdenadas->first();
+
+            // Agregar eventos de revisiones
+            foreach ($revisionesOrdenadas as $revision) {
+                // Determinar el estado de la revisión
+                $estadoRevision = ($revision === $revisionMasReciente) ? 'POR APROBAR' : 'EN REVISIÓN';
+
+                // Agregar evento de revisión al timeline
+                $eventos[] = [
+                    'fecha' => $revision->created_at,
+                    'usuario' => $revision->gestionador->USUARIO_NOMBRES.' '.$revision->gestionador->USUARIO_APELLIDOS,
+                    'detalle' => $revision->REVISION_SOLICITUD_OBSERVACION,
+                    'mensaje' => 'Revisión realizada',
+                    'estado' => $estadoRevision
+                ];
+            }
+            
+
+            // Agregar eventos de autorizaciones
+            foreach ($autorizaciones as $autorizacion) {
+                // Determinar el estado de la autorización
+                if ($autorizacion->user->cargo->CARGO_NOMBRE == 'JEFE DE DEPARTAMENTO DE ADMINISTRACIÓN') {
+                    $estadoAutorizacion = 'POR RENDIR';
+                    $mensajeAutorizacion = 'Solicitud autorizada por el jefe del depto de administración';
+
+                } else {
+                    $estadoAutorizacion = 'POR AUTORIZAR';
+                    $mensajeAutorizacion = 'Solicitud aprobada por el jefe que autoriza'; 
+                } 
+
+                // Agregar evento de autorización al timeline
+                $eventos[] = [
+                    'fecha' => $autorizacion->created_at,
+                    'usuario' => $autorizacion->user->USUARIO_NOMBRES.' '.$autorizacion->user->USUARIO_APELLIDOS,
+                    'mensaje' => $mensajeAutorizacion,
+                    'estado' => $estadoAutorizacion
+                ];
+            }
+    
+            if ($rendicion) {
+                // Agregar evento de rendición al timeline
+                $eventos[] = [
+                    'fecha' => $rendicion->created_at,
+                    'usuario' => $rendicion->user->USUARIO_NOMBRES.' '.$rendicion->user->USUARIO_APELLIDOS,
+                    'detalle' => $rendicion->RENDICION_OBSERVACIONES,
+                    'mensaje' => 'Solicitud rendida',
+                    'estado' => 'TERMINADO'
+                ];
+            }
+
             if ($solicitud->SOLICITUD_VEHICULO_ESTADO == 'RECHAZADO') {
                 $eventos[] = [
                     'fecha' => $solicitud->updated_at,
-                    'usuario' => $solicitud->user->USUARIO_NOMBRES.' '.$solicitud->user->USUARIO_APELLIDOS,
                     'mensaje' => 'Solicitud rechazada',
                     'estado' => 'RECHAZADO'
                 ];
-            } else {
-                // Si la solicitud no está rechazada, agregar eventos respectivos
-
-                // Agregar evento de ingreso al timeline
-                $eventos[] = [
-                    'fecha' => $solicitud->created_at,
-                    'usuario' => $solicitud->user->USUARIO_NOMBRES.' '.$solicitud->user->USUARIO_APELLIDOS,
-                    'detalle' => $solicitud->SOLICITUD_VEHICULO_MOTIVO,
-                    'mensaje' => 'Solicitud creada',
-                    'estado' => 'INGRESADO'
-                ];
-        
-                // Ordenar las revisiones por fecha de creación de forma descendente
-                $revisionesOrdenadas = $revisiones->sortByDesc('created_at');
-
-                // Obtener la revisión más reciente (la primera en la lista ordenada)
-                $revisionMasReciente = $revisionesOrdenadas->first();
-
-                // Agregar eventos de revisiones
-                foreach ($revisionesOrdenadas as $revision) {
-                    // Determinar el estado de la revisión
-                    $estadoRevision = ($revision === $revisionMasReciente) ? 'POR APROBAR' : 'EN REVISIÓN';
-
-                    // Agregar evento de revisión al timeline
-                    $eventos[] = [
-                        'fecha' => $revision->created_at,
-                        'usuario' => $revision->gestionador->USUARIO_NOMBRES.' '.$revision->gestionador->USUARIO_APELLIDOS,
-                        'detalle' => $revision->REVISION_SOLICITUD_OBSERVACION,
-                        'mensaje' => 'Revisión realizada',
-                        'estado' => $estadoRevision
-                    ];
-                }
-                
-
-                // Agregar eventos de autorizaciones
-                foreach ($autorizaciones as $autorizacion) {
-                    // Determinar el estado de la autorización
-                    if ($autorizacion->user->cargo->CARGO_NOMBRE == 'JEFE DE DEPARTAMENTO DE ADMINISTRACIÓN') {
-                        $estadoAutorizacion = 'POR RENDIR';
-                    } else {
-                        $estadoAutorizacion = 'POR AUTORIZAR'; 
-                    } 
-
-                    // Agregar evento de autorización al timeline
-                    $eventos[] = [
-                        'fecha' => $autorizacion->created_at,
-                        'usuario' => $autorizacion->user->USUARIO_NOMBRES.' '.$autorizacion->user->USUARIO_APELLIDOS,
-                        'mensaje' => 'Solicitud firmada',
-                        'estado' => $estadoAutorizacion
-                    ];
-                }
-        
-                if ($rendicion) {
-                    // Agregar evento de rendición al timeline
-                    $eventos[] = [
-                        'fecha' => $rendicion->created_at,
-                        'usuario' => $rendicion->user->USUARIO_NOMBRES.' '.$rendicion->user->USUARIO_APELLIDOS,
-                        'detalle' => $rendicion->RENDICION_OBSERVACIONES,
-                        'mensaje' => 'Solicitud rendida',
-                        'estado' => 'TERMINADO'
-                    ];
-                }
             }
+            
     
             // Ordenar eventos por fecha y hora
             usort($eventos, function($a, $b) {

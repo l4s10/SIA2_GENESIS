@@ -30,7 +30,9 @@
                                         <div class="card border-0 shadow">
                                             <div class="card-body p-xl-4">
                                                 <h2 class="card-title mb-2"><strong>{{ $evento['mensaje'] }}</strong></h2>
+                                                @if(isset($evento['usuario']))
                                                 <p class="card-text m-0"><strong>USUARIO:</strong> {{ $evento['usuario'] }}</p>
+                                                @endif
                                                 @if(isset($evento['detalle']))
                                                 <p class="card-text m-0"><strong>DETALLE:</strong> {{ $evento['detalle'] }}</p>
                                                 @endif
