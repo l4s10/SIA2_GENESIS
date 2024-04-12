@@ -350,56 +350,97 @@ class SolicitudVehiculosController extends Controller
         try {
             // Encontrar la solicitud vehicular
             $solicitud = SolicitudVehicular::findOrFail($id);
-
+    
             // Obtener las revisiones de la solicitud vehicular
             $revisiones = RevisionSolicitud::where('SOLICITUD_VEHICULO_ID', $id)->get();
-
+    
             // Obtener las autorizaciones de la solicitud vehicular
             $autorizaciones = Autorizacion::where('SOLICITUD_VEHICULO_ID', $id)->get();
-
+    
             // Obtener la rendición asociada a la solicitud vehicular
             $rendicion = Rendicion::where('SOLICITUD_VEHICULO_ID', $id)->first();
+    
+            // Procesar eventos y cambios de estado
+            $eventos = [];
 
-            // Arreglo para almacenar el historial de estados
-            $historialEstados = [];
-
-            // Agregar el estado inicial
-            $historialEstados[] = [
-                'estado' => 'Solicitud creada',
-                'fecha' => $solicitud->created_at
-            ];
-
-            // Agregar los estados de las revisiones
-            foreach($revisiones as $revision) {
-                $historialEstados[] = [
-                    'estado' => 'Revisión por ' . ($revision->gestionador ? $revision->gestionador->USUARIO_NOMBRES . ' ' . $revision->gestionador->USUARIO_APELLIDOS : 'Usuario Desconocido'),
-                    'fecha' => $revision->created_at
+            // Si la solicitud está rechazada, agregar evento de rechazo
+            if ($solicitud->SOLICITUD_VEHICULO_ESTADO == 'RECHAZADO') {
+                $eventos[] = [
+                    'fecha' => $solicitud->updated_at,
+                    'usuario' => $solicitud->user->USUARIO_NOMBRES.' '.$solicitud->user->USUARIO_APELLIDOS,
+                    'mensaje' => 'Solicitud rechazada',
+                    'estado' => 'RECHAZADO'
                 ];
-            }
+            } else {
+                // Si la solicitud no está rechazada, agregar eventos respectivos
 
-            // Agregar los estados de las autorizaciones
-            foreach($autorizaciones as $autorizacion) {
-                $historialEstados[] = [
-                    'estado' => 'Autorización',
-                    'fecha' => $autorizacion->created_at
+                // Agregar evento de ingreso al timeline
+                $eventos[] = [
+                    'fecha' => $solicitud->created_at,
+                    'usuario' => $solicitud->user->USUARIO_NOMBRES.' '.$solicitud->user->USUARIO_APELLIDOS,
+                    'detalle' => $solicitud->SOLICITUD_VEHICULO_MOTIVO,
+                    'mensaje' => 'Solicitud creada',
+                    'estado' => 'INGRESADO'
                 ];
+        
+                // Ordenar las revisiones por fecha de creación de forma descendente
+                $revisionesOrdenadas = $revisiones->sortByDesc('created_at');
+
+                // Obtener la revisión más reciente (la primera en la lista ordenada)
+                $revisionMasReciente = $revisionesOrdenadas->first();
+
+                // Agregar eventos de revisiones
+                foreach ($revisionesOrdenadas as $revision) {
+                    // Determinar el estado de la revisión
+                    $estadoRevision = ($revision === $revisionMasReciente) ? 'POR APROBAR' : 'EN REVISIÓN';
+
+                    // Agregar evento de revisión al timeline
+                    $eventos[] = [
+                        'fecha' => $revision->created_at,
+                        'usuario' => $revision->gestionador->USUARIO_NOMBRES.' '.$revision->gestionador->USUARIO_APELLIDOS,
+                        'detalle' => $revision->REVISION_SOLICITUD_OBSERVACION,
+                        'mensaje' => 'Revisión realizada',
+                        'estado' => $estadoRevision
+                    ];
+                }
+                
+
+                // Agregar eventos de autorizaciones
+                foreach ($autorizaciones as $autorizacion) {
+                    // Determinar el estado de la autorización
+                    if ($autorizacion->user->cargo->CARGO_NOMBRE == 'JEFE DE DEPARTAMENTO DE ADMINISTRACIÓN') {
+                        $estadoAutorizacion = 'POR RENDIR';
+                    } else {
+                        $estadoAutorizacion = 'POR AUTORIZAR'; 
+                    } 
+
+                    // Agregar evento de autorización al timeline
+                    $eventos[] = [
+                        'fecha' => $autorizacion->created_at,
+                        'usuario' => $autorizacion->user->USUARIO_NOMBRES.' '.$autorizacion->user->USUARIO_APELLIDOS,
+                        'mensaje' => 'Solicitud firmada',
+                        'estado' => $estadoAutorizacion
+                    ];
+                }
+        
+                if ($rendicion) {
+                    // Agregar evento de rendición al timeline
+                    $eventos[] = [
+                        'fecha' => $rendicion->created_at,
+                        'usuario' => $rendicion->user->USUARIO_NOMBRES.' '.$rendicion->user->USUARIO_APELLIDOS,
+                        'detalle' => $rendicion->RENDICION_OBSERVACIONES,
+                        'mensaje' => 'Solicitud rendida',
+                        'estado' => 'TERMINADO'
+                    ];
+                }
             }
-
-            // Agregar el estado de la rendición si existe
-            if($rendicion) {
-                $historialEstados[] = [
-                    'estado' => 'Rendición',
-                    'fecha' => $rendicion->created_at
-                ];
-            }
-
-            // Agregar el estado actual
-            $historialEstados[] = [
-                'estado' => 'Estado actual: ' . $solicitud->SOLICITUD_VEHICULO_ESTADO,
-                'fecha' => now() // O la fecha actual, según sea necesario
-            ];
-
-            return view('sia2.solicitudes.vehiculos.show', compact('solicitud', 'revisiones', 'autorizaciones', 'rendicion', 'historialEstados'));
+    
+            // Ordenar eventos por fecha y hora
+            usort($eventos, function($a, $b) {
+                return strtotime($a['fecha']) - strtotime($b['fecha']);
+            });
+    
+            return view('sia2.solicitudes.vehiculos.show', compact('solicitud', 'eventos'));
         } catch (Exception $e) {
             return redirect()->back()->with('error', 'Error al cargar la línea de tiempo de la solicitud.');
         }
