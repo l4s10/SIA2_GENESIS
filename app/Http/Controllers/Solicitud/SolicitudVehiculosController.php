@@ -363,8 +363,6 @@ class SolicitudVehiculosController extends Controller
             // Procesar eventos y cambios de estado
             $eventos = [];
 
-
-
             // Agregar evento de ingreso al timeline
             $eventos[] = [
                 'fecha' => $solicitud->created_at,
@@ -395,7 +393,6 @@ class SolicitudVehiculosController extends Controller
                 ];
             }
             
-
             // Agregar eventos de autorizaciones
             foreach ($autorizaciones as $autorizacion) {
                 // Determinar el estado de la autorización
@@ -435,7 +432,6 @@ class SolicitudVehiculosController extends Controller
                     'estado' => 'RECHAZADO'
                 ];
             }
-            
     
             // Ordenar eventos por fecha y hora
             usort($eventos, function($a, $b) {
@@ -802,7 +798,7 @@ class SolicitudVehiculosController extends Controller
                     $revision = new RevisionSolicitud();
                     $revision->USUARIO_id = Auth::user()->id;
                     $revision->SOLICITUD_VEHICULO_ID = $solicitud->SOLICITUD_VEHICULO_ID;
-                    $revision->REVISION_SOLICITUD_OBSERVACION = $request->input('REVISION_SOLICITUD_OBSERVACION');
+                    $revision->REVISION_SOLICITUD_OBSERVACION = strtoupper($request->input('REVISION_SOLICITUD_OBSERVACION'));
                     $revision->save();
                 } else if (($request->input('accionTerminar') == 1)) {
                     $solicitud->SOLICITUD_VEHICULO_ESTADO = 'POR APROBAR';
@@ -810,7 +806,7 @@ class SolicitudVehiculosController extends Controller
                     $revision = new RevisionSolicitud();
                     $revision->USUARIO_id = Auth::user()->id;
                     $revision->SOLICITUD_VEHICULO_ID = $solicitud->SOLICITUD_VEHICULO_ID;
-                    $revision->REVISION_SOLICITUD_OBSERVACION = $request->input('REVISION_SOLICITUD_OBSERVACION');
+                    $revision->REVISION_SOLICITUD_OBSERVACION = strtoupper($request->input('REVISION_SOLICITUD_OBSERVACION'));
                     $revision->save();
                 }
                 $solicitud->save();
