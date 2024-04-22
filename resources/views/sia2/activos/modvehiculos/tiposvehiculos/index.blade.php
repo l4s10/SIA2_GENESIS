@@ -1,9 +1,9 @@
 @extends('adminlte::page')
 
-@section('title', 'Tipos de Material')
+@section('title', 'Tipos de Vehiculos')
 
 @section('content_header')
-    <h1>Listado de Tipos de Material</h1>
+    <h1>Listado de Tipos de Vehiculos</h1>
 @stop
 
 @section('content')
@@ -31,28 +31,29 @@
             });
         </script>
     @endif
+
     {{-- Botones de acceso rapido --}}
-    <a class="btn agregar mb-3" href="{{ route('tiposmateriales.create') }}"><i class="fa-solid fa-plus"></i> Agregar Tipo de Material</a>
-    <a class="btn btn-secondary mb-3" href="{{ route('materiales.index')}}"><i class="fa-solid fa-eye"></i> Administrar Materiales</a>
+    <a class="btn agregar mb-3" href="{{ route('tiposvehiculos.create') }}"><i class="fa-solid fa-plus"></i> Agregar Tipo de Vehiculo</a>
+    <a class="btn btn-secondary mb-3" href="{{ route('vehiculos.index')}}"><i class="fa-solid fa-eye"></i> Administrar Vehiculos</a>
 
     <div class="table-responsive">
-        <table id="tiposMateriales" class="table table-bordered mt-4">
+        <table id="tiposVehiculos" class="table table-bordered mt-4">
             <thead class="tablacolor">
                 <tr>
-                    <th scope="col">Tipo de Material</th>
+                    <th scope="col">Tipo de Vehiculo</th>
                     <th scope="col">Acciones</th>
                 </tr>
             </thead>
             <tbody>
-                @foreach($tiposMaterial as $tipo)
+                @foreach($tiposVehiculos as $tipo)
                     <tr>
-                        <td>{{ $tipo->TIPO_MATERIAL_NOMBRE }}</td>
+                        <td>{{ $tipo->TIPO_VEHICULO_NOMBRE }}</td>
                         <td>
                             <div class="d-flex justify-content-center">
-                                <a href="{{ route('tiposmateriales.edit', $tipo->TIPO_MATERIAL_ID) }}" class="btn botoneditar">
+                                <a href="{{ route('tiposvehiculos.edit', $tipo->TIPO_VEHICULO_ID) }}" class="btn botoneditar">
                                     <i class="fa-solid fa-pen-to-square"></i> Editar
                                 </a>
-                                <form action="{{ route('tiposmateriales.destroy', $tipo->TIPO_MATERIAL_ID) }}" method="POST" class="ml-2">
+                                <form action="{{ route('tiposvehiculos.destroy', $tipo->TIPO_VEHICULO_ID) }}" method="POST" class="ml-2">
                                     @csrf
                                     @method('DELETE')
                                     <button type="submit" class="btn btn-danger">
@@ -110,7 +111,7 @@
     <!-- Para inicializar -->
     <script>
         $(document).ready(function () {
-            $('#tiposMateriales').DataTable({
+            $('#tiposVehiculos').DataTable({
                 "lengthMenu": [[5, 10, 50, -1], [5, 10, 50, "All"]],
                 "columnDefs": [
                     { "orderable": false, "targets": 1 }

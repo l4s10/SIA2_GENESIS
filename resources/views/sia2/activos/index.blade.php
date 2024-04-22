@@ -131,18 +131,33 @@
                 </div>
             </div>
 
+            {{-- Gestion de tipos de vehiculos --}}
             <div class="col-md-6">
-                {{-- Gestión de formularios --}}
+                {{-- Gestión de tipos de vehículos --}}
                 <div class="card text-bg-primary mb-3">
-                    <div class="card-header">Gestión de Formularios</div>
+                    <div class="card-header">Gestión de Tipos de Vehículos</div>
                     <div class="card-body">
-                        <p class="card-text">En este módulo puedes gestionar los <strong>Formularios</strong>. Agrega, edita o elimina Formularios según sea necesario.</p>
+                        <p class="card-text">En este módulo puedes gestionar los <strong>Tipos de Vehículos</strong>. Agrega, edita o elimina tipos de vehículos según sea necesario.</p>
                     </div>
                     <div class="card-footer">
                         {{-- Ajusta las rutas según tu estructura --}}
-                        <a class="btn btn-primary" href="{{ route('formularios.index') }}"><i class="fa-solid fa-eye"></i> Ver</a>
-                        <a class="btn guardar" href="{{ route('formularios.create') }}"><i class="fa-solid fa-plus"></i> Agregar</a>
+                        <a class="btn btn-primary" href="{{ route('tiposvehiculos.index') }}"><i class="fa-solid fa-eye"></i> Ver</a>
+                        <a class="btn guardar" href="{{ route('tiposvehiculos.create') }}"><i class="fa-solid fa-plus"></i> Agregar</a>
                     </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-12">
+            {{-- Gestión de formularios --}}
+            <div class="card text-bg-primary mb-3">
+                <div class="card-header">Gestión de Formularios</div>
+                <div class="card-body">
+                    <p class="card-text">En este módulo puedes gestionar los <strong>Formularios</strong>. Agrega, edita o elimina Formularios según sea necesario.</p>
+                </div>
+                <div class="card-footer">
+                    {{-- Ajusta las rutas según tu estructura --}}
+                    <a class="btn btn-primary" href="{{ route('formularios.index') }}"><i class="fa-solid fa-eye"></i> Ver</a>
+                    <a class="btn guardar" href="{{ route('formularios.create') }}"><i class="fa-solid fa-plus"></i> Agregar</a>
                 </div>
             </div>
         </div>
