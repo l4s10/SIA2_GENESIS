@@ -128,16 +128,20 @@
                             <td class="{{ $material->MATERIAL_STOCK <= 5 ? 'estado-critico' : '' }}">{{ $material->MATERIAL_STOCK }}</td>
                             <td>
                                 <div class="d-flex justify-content-center">
-                                    <a href="{{ route('materiales.edit', $material->MATERIAL_ID) }}" class="btn botoneditar">
-                                        <i class="fa-solid fa-pen-to-square"></i> Editar
-                                    </a>
-                                    <form action="{{ route('materiales.destroy', $material->MATERIAL_ID) }}" method="POST" class="ml-2">
-                                        @csrf
-                                        @method('DELETE')
-                                        <button type="submit" class="btn btn-danger">
-                                            <i class="fa-solid fa-trash"></i> Borrar
-                                        </button>
-                                    </form>
+                                    @role('ADMINISTRADOR|SERVICIOS')
+                                        <a href="{{ route('materiales.edit', $material->MATERIAL_ID) }}" class="btn botoneditar">
+                                            <i class="fa-solid fa-pen-to-square"></i> Editar
+                                        </a>
+                                    @endrole
+                                    @role('ADMINISTRADOR')
+                                        <form action="{{ route('materiales.destroy', $material->MATERIAL_ID) }}" method="POST" class="ml-2">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button type="submit" class="btn btn-danger">
+                                                <i class="fa-solid fa-trash"></i> Borrar
+                                            </button>
+                                        </form>
+                                    @endrole
                                 </div>
                             </td>
                         </tr>

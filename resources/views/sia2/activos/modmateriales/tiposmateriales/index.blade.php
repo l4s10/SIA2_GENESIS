@@ -49,16 +49,20 @@
                         <td>{{ $tipo->TIPO_MATERIAL_NOMBRE }}</td>
                         <td>
                             <div class="d-flex justify-content-center">
-                                <a href="{{ route('tiposmateriales.edit', $tipo->TIPO_MATERIAL_ID) }}" class="btn botoneditar">
-                                    <i class="fa-solid fa-pen-to-square"></i> Editar
-                                </a>
-                                <form action="{{ route('tiposmateriales.destroy', $tipo->TIPO_MATERIAL_ID) }}" method="POST" class="ml-2">
-                                    @csrf
-                                    @method('DELETE')
-                                    <button type="submit" class="btn btn-danger">
-                                        <i class="fa-solid fa-trash"></i> Borrar
-                                    </button>
-                                </form>
+                                @role('ADMINISTRADOR|SERVICIOS')
+                                    <a href="{{ route('tiposmateriales.edit', $tipo->TIPO_MATERIAL_ID) }}" class="btn botoneditar">
+                                        <i class="fa-solid fa-pen-to-square"></i> Editar
+                                    </a>
+                                @endrole
+                                @role('ADMINISTRADOR')
+                                    <form action="{{ route('tiposmateriales.destroy', $tipo->TIPO_MATERIAL_ID) }}" method="POST" class="ml-2">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button type="submit" class="btn btn-danger">
+                                            <i class="fa-solid fa-trash"></i> Borrar
+                                        </button>
+                                    </form>
+                                @endrole
                             </div>
                         </td>
                     </tr>
