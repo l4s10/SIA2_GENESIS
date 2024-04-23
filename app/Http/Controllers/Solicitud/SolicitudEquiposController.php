@@ -208,6 +208,8 @@ class SolicitudEquiposController extends Controller
                     }
                     $this->updateSolicitud($request, $solicitud, 'APROBADO');
                     $this->createRevisionSolicitud($request, $solicitud);
+                    DB::commit(); // Confirma la transacción
+                    return $this->redirectSuccess('Solicitud autorizada exitosamente y equipos descontados del stock.');
                     break;
 
 
