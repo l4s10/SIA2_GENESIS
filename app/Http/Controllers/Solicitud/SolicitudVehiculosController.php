@@ -174,7 +174,9 @@ class SolicitudVehiculosController extends Controller
             $oficinaSesion =  Auth::user()->OFICINA_ID;
 
             // Obtener vehículos basados en la OFICINA_ID del usuario
-            $vehiculos = Vehiculo::with('tipoVehiculo')->where(function ($query) use ($oficinaSesion) {
+            $vehiculos = Vehiculo::with('tipoVehiculo')
+            ->where('VEHICULO_ESTADO', 'DISPONIBLE') 
+            ->where(function ($query) use ($oficinaSesion) {
                 $query->whereHas('ubicacion', function ($subquery) use ($oficinaSesion) {
                     $subquery->where('OFICINA_ID', $oficinaSesion);
                 });
@@ -342,107 +344,6 @@ class SolicitudVehiculosController extends Controller
         }
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function timeline($id)
-    {
-        try {
-            // Encontrar la solicitud vehicular
-            $solicitud = SolicitudVehicular::findOrFail($id);
-    
-            // Obtener las revisiones de la solicitud vehicular
-            $revisiones = RevisionSolicitud::where('SOLICITUD_VEHICULO_ID', $id)->get();
-    
-            // Obtener las autorizaciones de la solicitud vehicular
-            $autorizaciones = Autorizacion::where('SOLICITUD_VEHICULO_ID', $id)->get();
-    
-            // Obtener la rendición asociada a la solicitud vehicular
-            $rendicion = Rendicion::where('SOLICITUD_VEHICULO_ID', $id)->first();
-    
-            // Procesar eventos y cambios de estado
-            $eventos = [];
-
-            // Agregar evento de ingreso al timeline
-            $eventos[] = [
-                'fecha' => $solicitud->created_at,
-                'usuario' => $solicitud->user->USUARIO_NOMBRES.' '.$solicitud->user->USUARIO_APELLIDOS,
-                'detalle' => $solicitud->SOLICITUD_VEHICULO_MOTIVO,
-                'mensaje' => 'Solicitud creada',
-                'estado' => 'INGRESADO'
-            ];
-    
-            // Ordenar las revisiones por fecha de creación de forma descendente
-            $revisionesOrdenadas = $revisiones->sortByDesc('created_at');
-
-            // Obtener la revisión más reciente (la primera en la lista ordenada)
-            $revisionMasReciente = $revisionesOrdenadas->first();
-
-            // Agregar eventos de revisiones
-            foreach ($revisionesOrdenadas as $revision) {
-                // Determinar el estado de la revisión
-                $estadoRevision = ($revision === $revisionMasReciente) ? 'POR APROBAR' : 'EN REVISIÓN';
-
-                // Agregar evento de revisión al timeline
-                $eventos[] = [
-                    'fecha' => $revision->created_at,
-                    'usuario' => $revision->gestionador->USUARIO_NOMBRES.' '.$revision->gestionador->USUARIO_APELLIDOS,
-                    'detalle' => $revision->REVISION_SOLICITUD_OBSERVACION,
-                    'mensaje' => 'Revisión realizada',
-                    'estado' => $estadoRevision
-                ];
-            }
-            
-            // Agregar eventos de autorizaciones
-            foreach ($autorizaciones as $autorizacion) {
-                // Determinar el estado de la autorización
-                if ($autorizacion->user->cargo->CARGO_NOMBRE == 'JEFE DE DEPARTAMENTO DE ADMINISTRACIÓN') {
-                    $estadoAutorizacion = 'POR RENDIR';
-                    $mensajeAutorizacion = 'Solicitud autorizada por el jefe del depto de administración';
-
-                } else {
-                    $estadoAutorizacion = 'POR AUTORIZAR';
-                    $mensajeAutorizacion = 'Solicitud aprobada por el jefe que autoriza'; 
-                } 
-
-                // Agregar evento de autorización al timeline
-                $eventos[] = [
-                    'fecha' => $autorizacion->created_at,
-                    'usuario' => $autorizacion->user->USUARIO_NOMBRES.' '.$autorizacion->user->USUARIO_APELLIDOS,
-                    'mensaje' => $mensajeAutorizacion,
-                    'estado' => $estadoAutorizacion
-                ];
-            }
-    
-            if ($rendicion) {
-                // Agregar evento de rendición al timeline
-                $eventos[] = [
-                    'fecha' => $rendicion->created_at,
-                    'usuario' => $rendicion->user->USUARIO_NOMBRES.' '.$rendicion->user->USUARIO_APELLIDOS,
-                    'detalle' => $rendicion->RENDICION_OBSERVACIONES,
-                    'mensaje' => 'Solicitud rendida',
-                    'estado' => 'TERMINADO'
-                ];
-            }
-
-            if ($solicitud->SOLICITUD_VEHICULO_ESTADO == 'RECHAZADO') {
-                $eventos[] = [
-                    'fecha' => $solicitud->updated_at,
-                    'mensaje' => 'Solicitud rechazada',
-                    'estado' => 'RECHAZADO'
-                ];
-            }
-    
-            // Ordenar eventos por fecha y hora
-            usort($eventos, function($a, $b) {
-                return strtotime($a['fecha']) - strtotime($b['fecha']);
-            });
-    
-            return view('sia2.solicitudes.vehiculos.show', compact('solicitud', 'eventos'));
-        } catch (Exception $e) {
-            return redirect()->back()->with('error', 'Error al cargar la línea de tiempo de la solicitud.');
-        }
-    }
     /**
      * Show the form for editing the specified resource.
      */
@@ -665,27 +566,17 @@ class SolicitudVehiculosController extends Controller
                 if ($request->has('TRABAJA_NUMERO_ORDEN_TRABAJO') && $request->has('TRABAJA_HORA_INICIO_ORDEN_TRABAJO') && $request->has('TRABAJA_HORA_TERMINO_ORDEN_TRABAJO')) {
                     // Buscar la orden de trabajo asociada a la solicitud, si existe
                     $ordenDeTrabajo = OrdenDeTrabajo::where('SOLICITUD_VEHICULO_ID', $solicitud->SOLICITUD_VEHICULO_ID)->first();
-
                     if ($ordenDeTrabajo) {
                         // Si la orden de trabajo existe, actualiza sus campos
                         $ordenDeTrabajo->ORDEN_TRABAJO_NUMERO = $request->input('TRABAJA_NUMERO_ORDEN_TRABAJO');
                         $ordenDeTrabajo->ORDEN_TRABAJO_HORA_INICIO = $request->input('TRABAJA_HORA_INICIO_ORDEN_TRABAJO');
                         $ordenDeTrabajo->ORDEN_TRABAJO_HORA_TERMINO = $request->input('TRABAJA_HORA_TERMINO_ORDEN_TRABAJO');
                         $ordenDeTrabajo->save();
-                    } /*else {
-                        // Si la orden de trabajo no existe, puedo crear una nueva (EN CASO DE QUE LO PIDAN) al revisar la solicitud.
-                        $ordenDeTrabajo = new OrdenDeTrabajo();
-                        $ordenDeTrabajo->SOLICITUD_VEHICULO_ID = $solicitud->SOLICITUD_VEHICULO_ID;
-                        $ordenDeTrabajo->ORDEN_TRABAJO_NUMERO = $request->input('TRABAJA_NUMERO_ORDEN_TRABAJO');
-                        $ordenDeTrabajo->ORDEN_TRABAJO_HORA_INICIO = $request->input('TRABAJA_HORA_INICIO_ORDEN_TRABAJO');
-                        $ordenDeTrabajo->ORDEN_TRABAJO_HORA_TERMINO = $request->input('TRABAJA_HORA_TERMINO_ORDEN_TRABAJO');
-                        $ordenDeTrabajo->save();
-                    }*/
+                    }
                 }
 
                 // Manejo de errores de validación
                 if ($validator->fails()) {
-
                     return redirect()->back()->withErrors($validator)->withInput();
                 }
 
@@ -698,19 +589,7 @@ class SolicitudVehiculosController extends Controller
                 $solicitud->SOLICITUD_VEHICULO_HORA_INICIO_CONDUCCION = $request->input('SOLICITUD_VEHICULO_HORA_INICIO_CONDUCCION');
                 $solicitud->SOLICITUD_VEHICULO_HORA_TERMINO_CONDUCCION = $request->input('SOLICITUD_VEHICULO_HORA_TERMINO_CONDUCCION');
                 // Guardar los cambios en la base de datos
-
                 $solicitud->save();
-
-                /*// Verificar si se envió el botón de autorizar
-                if ($request->has('autorizar')) {
-                    // Registrar la autorización de la solicitud
-                    $autorizacion = new Autorizacion();
-                    $autorizacion->USUARIO_id =  Auth::user()->id;
-                    $autorizacion->SOLICITUD_VEHICULO_ID = $solicitud->SOLICITUD_VEHICULO_ID;
-                    $solicitud->SOLICITUD_VEHICULO_ESTADO = 'POR RENDIR';
-
-                    $autorizacion->save();
-                }*/
 
                 // Verificar si se envió el botón de autorizar
                 if (($request->has('botonAutorizar')) && ($request->input('botonAutorizar') == 1)) {
@@ -719,7 +598,6 @@ class SolicitudVehiculosController extends Controller
                         $existeAutorizacion = Autorizacion::where('SOLICITUD_VEHICULO_ID', $solicitud->SOLICITUD_VEHICULO_ID)
                             ->where('USUARIO_id', Auth::user()->id)
                             ->exists();
-
                         if ($existeAutorizacion) {
                             return redirect()->back()->with('error', 'La solicitud ya registra una autorización con su firma.');
                         } else {
@@ -739,7 +617,6 @@ class SolicitudVehiculosController extends Controller
                         $autorizacionJefeDpto->SOLICITUD_VEHICULO_ID = $solicitud->SOLICITUD_VEHICULO_ID;
                         $autorizacionJefeDpto->save();
 
-
                         // Cambiar el estado de la solicitud
                         $solicitud->SOLICITUD_VEHICULO_ESTADO = 'POR RENDIR';
 
@@ -754,24 +631,6 @@ class SolicitudVehiculosController extends Controller
                     $solicitud->save();
                 }
 
-                /* OTRA OPCION
-                            // Verificar si se envió el botón de revisar
-                if (($request->has('guardarRevision'))|| ($request->has('finalizarRevisiones'))) {
-                    if($request->has('finalizarRevisiones')) {
-                        $solicitud->SOLICITUD_VEHICULO_ESTADO = 'POR APROBAR';
-                    } else {
-                        $solicitud->SOLICITUD_VEHICULO_ESTADO = 'EN REVISIÓN';
-
-                    }
-                    // Registrar la revisión de la solicitud
-                    $revision = new RevisionSolicitud();
-                    $revision->USUARIO_id = Auth::user()->id;
-                    $revision->SOLICITUD_VEHICULO_ID = $solicitud->SOLICITUD_VEHICULO_ID;
-                    $revision->REVISION_SOLICITUD_OBSERVACION = $request->input('REVISION_SOLICITUD_OBSERVACION');
-                    $revision->save();
-                }
-                $solicitud->save();  */
-
                 if ($request->has('botonRendir')) {
                     $rendicion = new Rendicion();
                     $rendicion->RENDICION_NUMERO_BITACORA = $request->input('RENDICION_NUMERO_BITACORA');
@@ -781,7 +640,7 @@ class SolicitudVehiculosController extends Controller
                     $rendicion->RENDICION_NIVEL_ESTANQUE = $request->input('RENDICION_NIVEL_ESTANQUE');
                     $rendicion->RENDICION_ABASTECIMIENTO = $request->input('RENDICION_ABASTECIMIENTO');
                     $rendicion->RENDICION_TOTAL_HORAS = $request->input('RENDICION_TOTAL_HORAS');
-                    $rendicion->RENDICION_OBSERVACIONES = $request->input('RENDICION_OBSERVACIONES');
+                    $rendicion->RENDICION_OBSERVACIONES = strtoupper($request->input('RENDICION_OBSERVACIONES'));
                     $rendicion->USUARIO_id = Auth::user()->id;
                     $rendicion->SOLICITUD_VEHICULO_ID = $solicitud->SOLICITUD_VEHICULO_ID;
                     $rendicion->save();
@@ -836,9 +695,6 @@ class SolicitudVehiculosController extends Controller
         }
     }
 
-
-
-
     /**
      * Remove the specified resource from storage.
      */
@@ -883,22 +739,6 @@ class SolicitudVehiculosController extends Controller
             $solicitud->pasajeros()->create(['USUARIO_id' => $nuevoPasajeroId]);
         }
     }
-
-    public function export()
-    {
-        try {
-            // Obtener las solicitudes vehiculares para exportar
-            $solicitudes = SolicitudVehicular::all();
-
-            // Devolver un archivo Excel con los datos de las solicitudes
-            return Excel::download(new VehiculosExport($solicitudes), 'solicitudes_vehiculares.xlsx'); // Utiliza el nombre correcto de la clase
-        } catch (Exception $e) {
-            // Manejar excepciones si es necesario
-            return redirect()->back()->with('error', 'Error al exportar las solicitudes vehiculares.');
-        }
-    }
-
-
 
     public function descargarPlantilla(Request $request, $id)
     {
@@ -1019,17 +859,11 @@ class SolicitudVehiculosController extends Controller
                     ['H8', $solicitud->SOLICITUD_VEHICULO_MOTIVO],
 
 
-
-
                     // HORAS INICIO Y TERMINO CONDUCCIÓN, Y VIÁTICO
                     ['J11', strtoupper(Carbon::parse($solicitud->SOLICITUD_VEHICULO_HORA_INICIO_CONDUCCION)->format('H:i'))],
                     ['J12', strtoupper(Carbon::parse($solicitud->SOLICITUD_VEHICULO_HORA_TERMINO_CONDUCCION)->format('H:i'))],
                     ['H10', strtoupper($solicitud->SOLICITUD_VEHICULO_VIATICO)],
 
-
-
-
-                    // OBTENER PASAJEROS E IMPLEMENTAR LLENADO DE EXCEL PARA ELLOS.
 
                     // POLIZA PARA CONDUCTOR
                     ['B24', strtoupper($solicitud->conductor->USUARIO_NOMBRES . ' ' . $solicitud->conductor->USUARIO_APELLIDOS . ' | Venc Licencia: ' . $fechaVencimientoLicencia . ' | N° Póliza: ' . $polizaConductor->POLIZA_NUMERO)],
@@ -1074,7 +908,7 @@ class SolicitudVehiculosController extends Controller
 
             // Iterar sobre los datos y asignarlos a las celdas correspondientes
             foreach ($datos as $dato) {
-                $celda = $dato[0]; // Coordenada de la celda, por ejemplo, 'C7'
+                $celda = $dato[0]; // Coordenada de la celda
                 $valor = $dato[1]; // Valor a asignar a la celda
                 $spreadsheet->getActiveSheet()->setCellValue($celda, $valor);
             }
@@ -1105,32 +939,11 @@ class SolicitudVehiculosController extends Controller
                 $spreadsheet->getActiveSheet()->setCellValue('H32', $rendicion->RENDICION_KILOMETRAJE_TERMINO);
                 $spreadsheet->getActiveSheet()->setCellValue('H33', $totalKmsRecorridos);
 
-                // DATOS DE RENDICION
-                /*['C32', strtoupper(Carbon::parse($rendicion->RENDICION_FECHA_HORA_LLEGADA)->isoFormat('dddd'))],
-                ['D32', Carbon::parse($rendicion->RENDICION_FECHA_HORA_LLEGADA)->format('j')],
-                ['E32', strtoupper(Carbon::parse($rendicion->RENDICION_FECHA_HORA_LLEGADA)->isoFormat('MMMM'))],
-                ['F32', Carbon::parse($rendicion->RENDICION_FECHA_HORA_LLEGADA)->format('Y')],
-                ['C33', strtoupper(Carbon::parse($rendicion->RENDICION_FECHA_HORA_LLEGADA)->format('H:i'))],
-                ['C34', $rendicion->RENDICION_TOTAL_HORAS],
-                ['C35', $rendicion->RENDICION_OBSERVACIONES],
-                ['J32', $rendicion->RENDICION_NUMERO_BITACORA ],
-                ['J33', $rendicion->RENDICION_ABASTECIMIENTO],
-                ['J34', $rendicion->RENDICION_NIVEL_ESTANQUE],
-                ['H32', $rendicion->RENDICION_KILOMETRAJE_INICIO],
-                ['H33', $rendicion->RENDICION_KILOMETRAJE_TERMINO],
-                ['H34', $totalKmsRecorridos]*/
 
             } else {
                 $firmaConductor = " ";
             }
             
-
-
-            /*// Guardar los cambios en la plantilla Excel
-            $writer = new Xlsx($spreadsheet);
-            $tempFilePath = storage_path('app/public/Hoja de salida.xlsx');
-            $writer->save($tempFilePath);*/
-
             // Guardar los cambios en la plantilla Excel
             $tempFilePath = storage_path('app/public/Hoja de salida.xlsx');
             $writer = IOFactory::createWriter($spreadsheet, 'Xlsx');
@@ -1141,10 +954,8 @@ class SolicitudVehiculosController extends Controller
             $pdfTempFilePath = storage_path('app/public/Hoja de salida.pdf');
             $pdfWriter->save($pdfTempFilePath);
 
-                // Después de que el PDF esté listo para descargar, redirecciona al usuario a la descarga
-                return response()->download($pdfTempFilePath);
-
-
+            // Después que el PDF esté listo para descargar, redireccionar al usuario a la descarga
+            return response()->download($pdfTempFilePath);
         } catch (Exception $e) {
             // Manejar errores si ocurre algún problema
             return redirect()->back()->with('error', 'Error al descargar la plantilla de Excel.');
@@ -1154,26 +965,6 @@ class SolicitudVehiculosController extends Controller
     // Método para verificar la contraseña del usuario
     public function verificarContrasena(Request $request)
     {
-        /*dd($request);
-
-        $password = $request->input('password');
-
-        // Lógica para verificar la contraseña
-        if ($password === 'contraseña_correcta') {
-            return response()->json(['message' => 'Contraseña correcta'], 200);
-        } else {
-            return response()->json(['message' => 'Contraseña incorrecta'], 401);
-        }
-
-        if (!Hash::check(request('password'), Auth::user()->password)) {
-            return redirect()->back()->with('error', 'La contraseña proporcionada no es correcta');
-        } else {
-            return view('sia2.solicitudes.vehiculos.editPorAprobar')->with('success', 'Firma(s) realizada(s) con éxito');
-
-        }*/
-
-
-
         // Verificar si el usuario está autenticado
         if (Auth::check()) {
             // Verificar la contraseña proporcionada por el usuario
@@ -1190,9 +981,119 @@ class SolicitudVehiculosController extends Controller
         }
     }
 
+    /**
+     * Display the specified resource.
+    */
+    public function timeline($id)
+    {
+        try {
+            // Encontrar la solicitud vehicular
+            $solicitud = SolicitudVehicular::findOrFail($id);
+    
+            // Obtener las revisiones de la solicitud vehicular
+            $revisiones = RevisionSolicitud::where('SOLICITUD_VEHICULO_ID', $id)->get();
+    
+            // Obtener las autorizaciones de la solicitud vehicular
+            $autorizaciones = Autorizacion::where('SOLICITUD_VEHICULO_ID', $id)->get();
+    
+            // Obtener la rendición asociada a la solicitud vehicular
+            $rendicion = Rendicion::where('SOLICITUD_VEHICULO_ID', $id)->first();
+    
+            // Procesar eventos y cambios de estado
+            $eventos = [];
 
+            // Agregar evento de ingreso al timeline
+            $eventos[] = [
+                'fecha' => $solicitud->created_at,
+                'requiriente' => $solicitud->user->USUARIO_NOMBRES.' '.$solicitud->user->USUARIO_APELLIDOS,
+                'motivo' => $solicitud->SOLICITUD_VEHICULO_MOTIVO,
+                'mensaje' => 'SOLICITUD INGRESADA',
+                'estado' => 'INGRESADO'
+            ];
+    
+            // Ordenar las revisiones por fecha de creación de forma descendente
+            $revisionesOrdenadas = $revisiones->sortByDesc('created_at');
 
+            // Obtener la revisión más reciente (la primera en la lista ordenada)
+            $revisionMasReciente = $revisionesOrdenadas->first();
 
+            // Agregar eventos de revisiones
+            foreach ($revisionesOrdenadas as $revision) {
+                // Verificar si existen autorizaciones para esta solicitud
+                $existenAutorizaciones = Autorizacion::where('SOLICITUD_VEHICULO_ID', $id)->exists();
+
+                // Verificar el estado de la solicitud
+                $estadoSolicitud = $solicitud->SOLICITUD_VEHICULO_ESTADO;
+
+                // Determinar el estado de la revisión
+                if ($revision === $revisionMasReciente && !$existenAutorizaciones && $estadoSolicitud === 'EN REVISIÓN') {
+                    $estadoRevision = 'EN REVISIÓN';
+                } elseif ($revision === $revisionMasReciente && $estadoSolicitud !== 'EN REVISIÓN') {
+                    $estadoRevision = 'POR APROBAR';
+                } else {
+                    $estadoRevision = 'EN REVISIÓN';
+                }
+
+                // Agregar evento de revisión al timeline
+                $eventos[] = [
+                    'fecha' => $revision->created_at,
+                    'revisor' => $revision->gestionador->USUARIO_NOMBRES.' '.$revision->gestionador->USUARIO_APELLIDOS,
+                    'detalle' => $revision->REVISION_SOLICITUD_OBSERVACION,
+                    'mensaje' => 'REVISIÓN CONCLUÍDA',
+                    'estado' => $estadoRevision
+                ];
+            }
+            
+            // Agregar eventos de autorizaciones
+            foreach ($autorizaciones as $autorizacion) {
+                // Determinar el estado de la autorización
+                if ($autorizacion->user->cargo->CARGO_NOMBRE == 'JEFE DE DEPARTAMENTO DE ADMINISTRACIÓN') {
+                    $estadoAutorizacion = 'POR RENDIR';
+                    $mensajeAutorizacion = 'SOLICITUD FIRMADA POR EL JEFE DEL DEPTO DE ADMINISTRACIÓN';
+
+                } else {
+                    $estadoAutorizacion = 'POR AUTORIZAR';
+                    $mensajeAutorizacion = 'SOLICITUD FIRMADA POR EL JEFE DESIGNADO'; 
+                } 
+
+                // Agregar evento de autorización al timeline
+                $eventos[] = [
+                    'fecha' => $autorizacion->created_at,
+                    'jefe' => $autorizacion->user->USUARIO_NOMBRES.' '.$autorizacion->user->USUARIO_APELLIDOS,
+                    'mensaje' => $mensajeAutorizacion,
+                    'estado' => $estadoAutorizacion
+                ];
+            }
+    
+            if ($rendicion) {
+                // Agregar evento de rendición al timeline
+                $eventos[] = [
+                    'fecha' => $rendicion->created_at,
+                    'conductor' => $rendicion->user->USUARIO_NOMBRES.' '.$rendicion->user->USUARIO_APELLIDOS,
+                    'detalle' => $rendicion->RENDICION_OBSERVACIONES,
+                    'mensaje' => 'SOLICITUD RENDIDA POR CONDUCTOR',
+                    'estado' => 'TERMINADO'
+                ];
+            }
+
+            if ($solicitud->SOLICITUD_VEHICULO_ESTADO == 'RECHAZADO') {
+                $eventos[] = [
+                    'fecha' => $solicitud->updated_at,
+                    'mensaje' => 'SOLICITUD RECHAZADA',
+                    'estado' => 'RECHAZADO'
+                ];
+            }
+    
+            // Ordenar eventos por fecha y hora
+            usort($eventos, function($a, $b) {
+                return strtotime($a['fecha']) - strtotime($b['fecha']);
+            });
+    
+            return view('sia2.solicitudes.vehiculos.show', compact('solicitud', 'eventos'));
+        } catch (Exception $e) {
+            return redirect()->back()->with('error', 'Error al cargar la línea de tiempo de la solicitud.');
+        }
+    }
 }
 
 

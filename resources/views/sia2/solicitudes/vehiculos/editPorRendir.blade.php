@@ -368,11 +368,7 @@
                     @enderror
                 </div>
                 <div class="col-md-3 ">
-                    <label for="VEHICULO_KILOMETRAJE" class="form-label"><i class="fa-solid fa-gauge-high"></i> Kilometraje en sistema:</label>
-                    <input id="VEHICULO_KILOMETRAJE" name="VEHICULO_KILOMETRAJE" type="number" class="form-control" style="text-align: center;" value="{{ $solicitud->vehiculo->VEHICULO_KILOMETRAJE }}" min="0" max="400000" readonly required>
-                    @error('VEHICULO_KILOMETRAJE')
-                        <div class="alert alert-danger mt-2">{{ $message }}</div>
-                    @enderror
+                    
                 </div>
                 <div class="col-md-3 ">
                     <label for="VEHICULO_NIVEL_ESTANQUE" class="form-label"><i class="fa-solid fa-gas-pump"></i> Nivel de Estanque:</label>
@@ -441,6 +437,7 @@
                     <label for="RENDICION_NIVEL_ESTANQUE" class="form-label"><i class="fa-solid fa-gas-pump"></i> Nivel de estanque al reingresar:</label>
                     <select id="RENDICION_NIVEL_ESTANQUE" name="RENDICION_NIVEL_ESTANQUE" class="form-control"  required>
                         <option style="text-align: center;" value="">-- Seleccione un nivel de estanque --</option>
+                        <option value="VACÍO" {{ old('RENDICION_NIVEL_ESTANQUE') == 'VACÍO' ? 'selected' : '' }}>VACÍO</option>
                         <option value="BAJO" {{ old('RENDICION_NIVEL_ESTANQUE') == 'BAJO' ? 'selected' : '' }}>BAJO</option>
                         <option value="MEDIO BAJO" {{ old('RENDICION_NIVEL_ESTANQUE') == 'MEDIO BAJO' ? 'selected' : '' }}>MEDIO BAJO</option>
                         <option value="MEDIO" {{ old('RENDICION_NIVEL_ESTANQUE') == 'MEDIO' ? 'selected' : '' }}>MEDIO</option>

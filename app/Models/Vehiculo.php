@@ -20,7 +20,6 @@ class Vehiculo extends Model
         'VEHICULO_MODELO',
         'VEHICULO_ANO',
         'VEHICULO_ESTADO',
-        'VEHICULO_KILOMETRAJE',
         'VEHICULO_NIVEL_ESTANQUE',
         'TIPO_VEHICULO_ID',
         'UBICACION_ID',

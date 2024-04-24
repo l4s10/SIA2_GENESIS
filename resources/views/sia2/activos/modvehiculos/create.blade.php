@@ -113,9 +113,13 @@
             <div class="row">
                 <div class="col-md-6">
                     <div class="mb-3">
-                        <label for="VEHICULO_KILOMETRAJE" class="form-label"><i class="fa-solid fa-gauge-high"></i> Kilometraje</label>
-                        <input id="VEHICULO_KILOMETRAJE" name="VEHICULO_KILOMETRAJE" type="number" class="form-control" tabindex="8" placeholder="Ingrese el kilometraje" min="0" max="400000" required value="{{ old('VEHICULO_KILOMETRAJE') }}">
-                        @error('VEHICULO_KILOMETRAJE')
+                        <label for="VEHICULO_ESTADO" class="form-label"><i class="fa-solid fa-square-check"></i> Estado</label>
+                        <select name="VEHICULO_ESTADO" id="VEHICULO_ESTADO" class="form-control" tabindex="10" required>
+                            <option value="">-- Seleccione un estado --</option>
+                            <option value="DISPONIBLE" {{ old('VEHICULO_ESTADO') == 'DISPONIBLE' ? 'selected' : '' }}>🟢 DISPONIBLE</option>
+                            <option value="NO DISPONIBLE" {{ old('VEHICULO_ESTADO') == 'NO DISPONIBLE' ? 'selected' : '' }}>🔴 NO DISPONIBLE</option>
+                        </select>
+                        @error('VEHICULO_ESTADO')
                             <div class="alert alert-danger mt-2">{{ $message }}</div>
                         @enderror
                     </div>
@@ -125,6 +129,7 @@
                         <label for="VEHICULO_NIVEL_ESTANQUE" class="form-label"><i class="fa-solid fa-gas-pump"></i> Nivel de Estanque</label>
                         <select id="VEHICULO_NIVEL_ESTANQUE" name="VEHICULO_NIVEL_ESTANQUE" class="form-control" tabindex="9" required>
                             <option value="">-- Seleccione un nivel de estanque --</option>
+                            <option value="VACÍO" {{ old('VEHICULO_NIVEL_ESTANQUE') == 'VACÍO' ? 'selected' : '' }}>VACÍO</option>
                             <option value="BAJO" {{ old('VEHICULO_NIVEL_ESTANQUE') == 'BAJO' ? 'selected' : '' }}>BAJO</option>
                             <option value="MEDIO BAJO" {{ old('VEHICULO_NIVEL_ESTANQUE') == 'MEDIO BAJO' ? 'selected' : '' }}>MEDIO BAJO</option>
                             <option value="MEDIO" {{ old('VEHICULO_NIVEL_ESTANQUE') == 'MEDIO' ? 'selected' : '' }}>MEDIO</option>
@@ -138,21 +143,7 @@
                 </div>
             </div>
             <br>
-            <div class="row">
-                <div class="col-md-3">
-                    <div class="mb-3">
-                        <label for="VEHICULO_ESTADO" class="form-label"><i class="fa-solid fa-square-check"></i> Estado</label>
-                        <select name="VEHICULO_ESTADO" id="VEHICULO_ESTADO" class="form-control" tabindex="10" required>
-                            <option value="">-- Seleccione un estado --</option>
-                            <option value="DISPONIBLE" {{ old('VEHICULO_ESTADO') == 'DISPONIBLE' ? 'selected' : '' }}>DISPONIBLE</option>
-                            <option value="OCUPADO" {{ old('VEHICULO_ESTADO') == 'OCUPADO' ? 'selected' : '' }}>OCUPADO</option>
-                        </select>
-                        @error('VEHICULO_ESTADO')
-                            <div class="alert alert-danger mt-2">{{ $message }}</div>
-                        @enderror
-                    </div>
-                </div>
-            </div>
+           
             <br>
             <div class="row">
                 <div class="col-md-12">

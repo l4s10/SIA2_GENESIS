@@ -153,7 +153,6 @@
                     <th scope="col">Modelo</th>
                     <th scope="col">Año</th>
                     <th scope="col">Estado</th>
-                    <th scope="col">Kilometraje</th>
                     <th scope="col">Nivel de Estanque</th>
                     <th scope="col">Ubicación/Departamento</th>
                     <th scope="col">Acciones</th>
@@ -171,7 +170,6 @@
                         {{ $vehiculo->VEHICULO_ESTADO  }}
                         </span>
                         </td>
-                        <td>{{ $vehiculo->VEHICULO_KILOMETRAJE }}</td>
                         <td>{{ $vehiculo->VEHICULO_NIVEL_ESTANQUE }}</td>
                         <td>
                             {{--- (Si la relación no existe (es decir, es null), entonces isset($vehiculo->ubicacion->UBICACION_NOMBRE) devolverá "false") --}}
@@ -232,7 +230,7 @@
         background-color: #0CB009;
         }
 
-        .estado-ocupado {
+        .estado-no-disponible {
             color: #FFFFFF;
             background-color: #F70B0B;
         }
@@ -264,7 +262,7 @@
             $('#vehiculos').DataTable({
                 "lengthMenu": [[5, 10, 50, -1], [5, 10, 50, "All"]],
                 "columnDefs": [
-                    { "orderable": false, "targets": 9 }
+                    { "orderable": false, "targets": 8 }
                 ],
                 "language": {
                     "url": "https://cdn.datatables.net/plug-ins/1.11.3/i18n/es_es.json"

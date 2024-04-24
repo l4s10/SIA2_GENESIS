@@ -115,9 +115,13 @@
             <div class="row">
                 <div class="col-md-6">
                     <div class="mb-3">
-                        <label for="VEHICULO_KILOMETRAJE" class="form-label"><i class="fa-solid fa-gauge-high"></i> Kilometraje</label>
-                        <input id="VEHICULO_KILOMETRAJE" name="VEHICULO_KILOMETRAJE" type="number" class="form-control" tabindex="8" placeholder="Ingrese el kilometraje" value="{{ $vehiculo->VEHICULO_KILOMETRAJE }}" min="0" max="400000" required>
-                        @error('VEHICULO_KILOMETRAJE')
+                        <label for="VEHICULO_ESTADO" class="form-label"><i class="fa-solid fa-square-check"></i> Estado</label>
+                        <select name="VEHICULO_ESTADO" id="VEHICULO_ESTADO" class="form-control" tabindex="10" required>
+                            <option disabled value="">-- Seleccione un estado --</option>
+                            <option value="DISPONIBLE" {{ $vehiculo->VEHICULO_ESTADO == 'DISPONIBLE' ? 'selected' : '' }}>🟢 DISPONIBLE</option>
+                            <option value="NO DISPONIBLE" {{ $vehiculo->VEHICULO_ESTADO == 'NO DISPONIBLE' ? 'selected' : '' }}>🔴 NO DISPONIBLE</option>
+                        </select>
+                        @error('VEHICULO_ESTADO')
                             <div class="alert alert-danger mt-2">{{ $message }}</div>
                         @enderror
                     </div>
@@ -141,21 +145,6 @@
                 </div>
             </div>
             <br>
-            <div class="row">
-                <div class="col-md-3">
-                    <div class="mb-3">
-                        <label for="VEHICULO_ESTADO" class="form-label"><i class="fa-solid fa-square-check"></i> Estado</label>
-                        <select name="VEHICULO_ESTADO" id="VEHICULO_ESTADO" class="form-control" tabindex="10" required>
-                            <option disabled value="">-- Seleccione un estado --</option>
-                            <option value="DISPONIBLE" {{ $vehiculo->VEHICULO_ESTADO == 'DISPONIBLE' ? 'selected' : '' }}>🟢 DISPONIBLE</option>
-                            <option value="OCUPADO" {{ $vehiculo->VEHICULO_ESTADO == 'OCUPADO' ? 'selected' : '' }}>🔴 OCUPADO</option>
-                        </select>
-                        @error('VEHICULO_ESTADO')
-                            <div class="alert alert-danger mt-2">{{ $message }}</div>
-                        @enderror
-                    </div>
-                </div>
-            </div>
             <br>
             <div class="row">
                 <div class="col-md-12">
