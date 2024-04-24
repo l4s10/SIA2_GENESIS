@@ -74,23 +74,23 @@
                             </div>
                         </div>
                         <div class="form-row">
-                            <div class="form-group col-md-3">
+                            <div class="form-group col-md-4">
                                 <label for="VEHICULO_ANO">Año</label>
                                 <input type="text" class="form-control" id="VEHICULO_ANO" name="VEHICULO_ANO" placeholder="Año">
                             </div>
-                            <div class="form-group col-md-3">
+                            <div class="form-group col-md-4">
                                 <label for="VEHICULO_ESTADO">Estado</label>
                                 <select class="form-control" id="VEHICULO_ESTADO" name="VEHICULO_ESTADO">
                                     <option value="">Seleccione un estado</option>
                                     <option value="DISPONIBLE">DISPONIBLE</option>
-                                    <option value="OCUPADO">OCUPADO</option>
+                                    <option value="NO DISPONIBLE">NO DISPONIBLE</option>
                                 </select>
                             </div>
-                            <div class="form-group col-md-3">
+                            {{-- <div class="form-group col-md-3">
                                 <label for="VEHICULO_KILOMETRAJE">Kilometraje</label>
                                 <input type="number" class="form-control" id="VEHICULO_KILOMETRAJE" name="VEHICULO_KILOMETRAJE" placeholder="Kilometraje">
-                            </div>
-                            <div class="form-group col-md-3">
+                            </div> --}}
+                            <div class="form-group col-md-4">
                                 <label for="VEHICULO_NIVEL_ESTANQUE">Nivel de Estanque</label>
                                 <select class="form-control" id="VEHICULO_NIVEL_ESTANQUE" name="VEHICULO_NIVEL_ESTANQUE">
                                     <option value="">Seleccione un nivel</option>

@@ -77,9 +77,9 @@ class VehiculoController extends Controller
             $query->where('VEHICULO_ESTADO', $request->VEHICULO_ESTADO);
         }
 
-        if ($request->filled('VEHICULO_KILOMETRAJE')) {
-            $query->where('VEHICULO_KILOMETRAJE', '>=', $request->VEHICULO_KILOMETRAJE);
-        }
+        // if ($request->filled('VEHICULO_KILOMETRAJE')) {
+        //     $query->where('VEHICULO_KILOMETRAJE', '>=', $request->VEHICULO_KILOMETRAJE);
+        // }
 
         if ($request->filled('VEHICULO_NIVEL_ESTANQUE')) {
             $query->where('VEHICULO_NIVEL_ESTANQUE', $request->VEHICULO_NIVEL_ESTANQUE);
