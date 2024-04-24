@@ -351,70 +351,95 @@
     <!-- Incluir archivos JS flatpicker -->
     {{-- <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script> --}}
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-    <script>
+<script>
         document.addEventListener('DOMContentLoaded', function() {
             const selectores = document.querySelectorAll('#dependencia, #GRUPO_ID, #GRADO_ID, #ESCALAFON_ID, #CARGO_ID');
             const opcionesOriginales = {};
-            
+
             // Almacenar las opciones originales de cada selector
             selectores.forEach(selector => {
                 opcionesOriginales[selector.id] = Array.from(selector.querySelectorAll('optgroup, option'));
-                selector.disabled = true;
+                // Mantener los selectores activados al cargar el formulario
+                selector.disabled = false;
             });
-            
+
             const selectorOficina = document.getElementById('oficina');
+            const oficinaSeleccionada = selectorOficina.value; // Obtener la oficina seleccionada
+
+            // Filtrar las opciones de cada selector según la oficina seleccionada al cargar el formulario
+            selectores.forEach(selector => {
+                const opcionesFiltradas = [];
+                const gruposAñadidos = new Set();
+                const opcionesÚnicas = new Set(); // Conjunto global para evitar duplicados en todo el selector
+                opcionesOriginales[selector.id].forEach(opcion => {
+                    if (opcion.tagName.toLowerCase() === 'optgroup') {
+                        // Clonar grupos de opciones
+                        const grupoClonado = opcion.cloneNode(false);
+                        // Filtrar opciones dentro del grupo según la oficina seleccionada
+                        const opcionesGrupoFiltradas = Array.from(opcion.querySelectorAll('option')).filter(opt => opt.dataset.oficina === oficinaSeleccionada || opt.dataset.oficina === undefined);
+                        if (opcionesGrupoFiltradas.length > 0 && !gruposAñadidos.has(grupoClonado.label)) {
+                            opcionesGrupoFiltradas.forEach(opcionFiltrada => {
+                                if (!opcionesÚnicas.has(opcionFiltrada.value)) {
+                                    grupoClonado.appendChild(opcionFiltrada.cloneNode(true));
+                                    opcionesÚnicas.add(opcionFiltrada.value);
+                                }
+                            });
+                            opcionesFiltradas.push(grupoClonado);
+                            gruposAñadidos.add(grupoClonado.label);
+                        }
+                    } else {
+                        // Filtrar opciones individuales según la oficina seleccionada
+                        if (opcion.dataset.oficina === oficinaSeleccionada || opcion.dataset.oficina === undefined) {
+                            if (!opcionesÚnicas.has(opcion.value)) {
+                                opcionesFiltradas.push(opcion.cloneNode(true));
+                                opcionesÚnicas.add(opcion.value);
+                            }
+                        }
+                    }
+                });
+                // Actualizar las opciones del selector
+                actualizarOpciones(selector, opcionesFiltradas);
+            });
+
             selectorOficina.addEventListener('change', function() {
                 const oficinaSeleccionada = this.value;
-                if (oficinaSeleccionada !== '') {
-                    // Habilitar todos los selectores
-                    selectores.forEach(selector => {
-                        selector.disabled = false;
-                    });
-    
-                    // Filtrar las opciones de cada selector según la oficina seleccionada
-                    selectores.forEach(selector => {
-                        const opcionesFiltradas = [];
-                        const gruposAñadidos = new Set();
-                        const opcionesÚnicas = new Set(); // Conjunto global para evitar duplicados en todo el selector
-                        opcionesOriginales[selector.id].forEach(opcion => {
-                            if (opcion.tagName.toLowerCase() === 'optgroup') {
-                                // Clonar grupos de opciones
-                                const grupoClonado = opcion.cloneNode(false);
-                                // Filtrar opciones dentro del grupo según la oficina seleccionada
-                                const opcionesGrupoFiltradas = Array.from(opcion.querySelectorAll('option')).filter(opt => opt.dataset.oficina === oficinaSeleccionada || opt.dataset.oficina === undefined);
-                                if (opcionesGrupoFiltradas.length > 0 && !gruposAñadidos.has(grupoClonado.label)) {
-                                    opcionesGrupoFiltradas.forEach(opcionFiltrada => {
-                                        if (!opcionesÚnicas.has(opcionFiltrada.value)) {
-                                            grupoClonado.appendChild(opcionFiltrada.cloneNode(true));
-                                            opcionesÚnicas.add(opcionFiltrada.value);
-                                        }
-                                    });
-                                    opcionesFiltradas.push(grupoClonado);
-                                    gruposAñadidos.add(grupoClonado.label);
-                                }
-                            } else {
-                                // Filtrar opciones individuales según la oficina seleccionada
-                                if (opcion.dataset.oficina === oficinaSeleccionada || opcion.dataset.oficina === undefined) {
-                                    if (!opcionesÚnicas.has(opcion.value)) {
-                                        opcionesFiltradas.push(opcion.cloneNode(true));
-                                        opcionesÚnicas.add(opcion.value);
+                // Filtrar y actualizar las opciones de cada selector al cambiar la oficina seleccionada
+                selectores.forEach(selector => {
+                    const opcionesFiltradas = [];
+                    const gruposAñadidos = new Set();
+                    const opcionesÚnicas = new Set(); // Conjunto global para evitar duplicados en todo el selector
+                    opcionesOriginales[selector.id].forEach(opcion => {
+                        if (opcion.tagName.toLowerCase() === 'optgroup') {
+                            // Clonar grupos de opciones
+                            const grupoClonado = opcion.cloneNode(false);
+                            // Filtrar opciones dentro del grupo según la oficina seleccionada
+                            const opcionesGrupoFiltradas = Array.from(opcion.querySelectorAll('option')).filter(opt => opt.dataset.oficina === oficinaSeleccionada || opt.dataset.oficina === undefined);
+                            if (opcionesGrupoFiltradas.length > 0 && !gruposAñadidos.has(grupoClonado.label)) {
+                                opcionesGrupoFiltradas.forEach(opcionFiltrada => {
+                                    if (!opcionesÚnicas.has(opcionFiltrada.value)) {
+                                        grupoClonado.appendChild(opcionFiltrada.cloneNode(true));
+                                        opcionesÚnicas.add(opcionFiltrada.value);
                                     }
+                                });
+                                opcionesFiltradas.push(grupoClonado);
+                                gruposAñadidos.add(grupoClonado.label);
+                            }
+                        } else {
+                            // Filtrar opciones individuales según la oficina seleccionada
+                            if (opcion.dataset.oficina === oficinaSeleccionada || opcion.dataset.oficina === undefined) {
+                                if (!opcionesÚnicas.has(opcion.value)) {
+                                    opcionesFiltradas.push(opcion.cloneNode(true));
+                                    opcionesÚnicas.add(opcion.value);
                                 }
                             }
-                        });
-                        // Actualizar las opciones del selector
-                        actualizarOpciones(selector, opcionesFiltradas);
+                        }
                     });
-                } else {
-                    // Si no se selecciona ninguna oficina, deshabilitar todos los selectores y restaurar las opciones originales
-                    selectores.forEach(selector => {
-                        selector.disabled = true;
-                        actualizarOpciones(selector, opcionesOriginales[selector.id]);
-                    });
-                }
+                    // Actualizar las opciones del selector
+                    actualizarOpciones(selector, opcionesFiltradas);
+                });
             });
         });
-    
+
         // Función para actualizar las opciones de un selector
         function actualizarOpciones(selector, opciones) {
             selector.innerHTML = '';
@@ -423,27 +448,26 @@
             });
         }
     </script>
-
+    
+    
     <script>
         document.addEventListener("DOMContentLoaded", function() {
             var selectDependencia = document.getElementById("dependencia");
             var hiddenTipoDependencia = document.getElementById("tipo_dependencia");
-
-            selectDependencia.addEventListener("change", function() {
+    
+            // Función para asignar el valor del hiddenTipoDependencia
+            function asignarTipoDependencia() {
                 var tipoDependencia = selectDependencia.options[selectDependencia.selectedIndex].parentNode.label;
                 hiddenTipoDependencia.value = tipoDependencia;
-            });
+            }
+    
+            // Llamar a la función al cargar la página
+            asignarTipoDependencia();
+    
+            // Llamar a la función cuando cambia la selección
+            selectDependencia.addEventListener("change", asignarTipoDependencia);
         });
     </script>
-    
-    
-    
-    
-    
-    
-    
-    
-    
     
     <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>

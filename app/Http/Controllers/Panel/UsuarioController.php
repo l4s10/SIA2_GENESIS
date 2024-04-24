@@ -186,8 +186,8 @@ class UsuarioController extends Controller
             }
 
         }catch(\Exception $e){
-            dd($e);
-            session()->flash('error','Hubo un error al agregar el usuario. Por favor, inténtelo nuevamente');
+            //dd($e);
+            return redirect()->route('panel.usuarios.index')->with('error','Hubo un error al agregar el usuario. Por favor, inténtelo nuevamente');
         }
     }
 

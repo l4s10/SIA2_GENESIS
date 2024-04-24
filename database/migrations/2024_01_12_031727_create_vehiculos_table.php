@@ -22,8 +22,7 @@ return new class extends Migration
             $table->string('VEHICULO_MODELO', 191);
             $table->string('VEHICULO_ANO', 10);
             $table->string('VEHICULO_ESTADO', 20);
-            $table->integer('VEHICULO_KILOMETRAJE')->default(0);
-            $table->string('VEHICULO_NIVEL_ESTANQUE', 128)->default('VACIO');
+            $table->string('VEHICULO_NIVEL_ESTANQUE', 128);
             //Relaciones
             $table->foreign('TIPO_VEHICULO_ID')->references('TIPO_VEHICULO_ID')->on('tipos_vehiculos');
             $table->foreign('DEPARTAMENTO_ID')->references('DEPARTAMENTO_ID')->on('departamentos');

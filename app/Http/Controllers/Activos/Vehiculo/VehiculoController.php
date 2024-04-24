@@ -77,10 +77,6 @@ class VehiculoController extends Controller
             $query->where('VEHICULO_ESTADO', $request->VEHICULO_ESTADO);
         }
 
-        if ($request->filled('VEHICULO_KILOMETRAJE')) {
-            $query->where('VEHICULO_KILOMETRAJE', '>=', $request->VEHICULO_KILOMETRAJE);
-        }
-
         if ($request->filled('VEHICULO_NIVEL_ESTANQUE')) {
             $query->where('VEHICULO_NIVEL_ESTANQUE', $request->VEHICULO_NIVEL_ESTANQUE);
         }
@@ -141,7 +137,7 @@ class VehiculoController extends Controller
 
     public function store(Request $request)
     {
-
+        //dd($request);
         try {
 
             // Reglas de validación y mensajes respectivos
@@ -152,8 +148,7 @@ class VehiculoController extends Controller
                 'VEHICULO_MODELO' => 'required|string|max:20',
                 'VEHICULO_ANO' => 'required|integer|min:2000|max:' . date('Y'),
                 'DEPENDENCIA_ID' => 'required',
-                'VEHICULO_ESTADO' => 'required|string|in:DISPONIBLE,OCUPADO',
-                'VEHICULO_KILOMETRAJE' => 'required|integer|min:0|max:400000',
+                'VEHICULO_ESTADO' => 'required|string|in:DISPONIBLE,NO DISPONIBLE',
                 'VEHICULO_NIVEL_ESTANQUE' => 'required|string|max:128',
             ],  [
                 'VEHICULO_PATENTE.required' => 'El campo Patente es obligatorio.',
@@ -176,11 +171,7 @@ class VehiculoController extends Controller
                 'DEPENDENCIA_ID.required' => 'El campo Ubicación/Departamento es obligatorio.',
                 'VEHICULO_ESTADO.required' => 'El campo Estado es obligatorio.',
                 'VEHICULO_ESTADO.string' => 'El campo Estado debe ser una cadena de texto.',
-                'VEHICULO_ESTADO.in' => 'El campo Estado debe ser uno de: DISPONIBLE, OCUPADO.',
-                'VEHICULO_KILOMETRAJE.required' => 'El campo Kilometraje es obligatorio.',
-                'VEHICULO_KILOMETRAJE.integer' => 'El campo Kilometraje debe ser un número entero.',
-                'VEHICULO_KILOMETRAJE.min' => 'El Kilometraje no puede ser negativo.',
-                'VEHICULO_KILOMETRAJE.max' => 'El Kilometraje no puede exceder 400.000 kilómetros.',
+                'VEHICULO_ESTADO.in' => 'El campo Estado debe ser: DISPONIBLE o NO DISPONIBLE.',
                 'VEHICULO_NIVEL_ESTANQUE.required' => 'El campo Nivel Estanque es obligatorio.',
                 'VEHICULO_NIVEL_ESTANQUE.string' => 'El campo Nivel Estanque debe ser una cadena de texto.',
                 'VEHICULO_NIVEL_ESTANQUE.max' => 'El campo Nivel Estanque no debe exceder los :max caracteres.',
@@ -246,7 +237,6 @@ class VehiculoController extends Controller
                 'VEHICULO_MODELO' => strtoupper($request->input('VEHICULO_MODELO')),
                 'VEHICULO_ANO' => strval($request->VEHICULO_ANO),
                 'VEHICULO_ESTADO' => strtoupper($request->input('VEHICULO_ESTADO')),
-                'VEHICULO_KILOMETRAJE' => $request->VEHICULO_KILOMETRAJE,
                 'VEHICULO_NIVEL_ESTANQUE' => strtoupper($request->input('VEHICULO_NIVEL_ESTANQUE')),
             ]);
 
@@ -278,7 +268,7 @@ class VehiculoController extends Controller
             $departamentosLocales = Departamento::where('OFICINA_ID', $oficinaIdUsuario)->get();
             // Obtener tipos de vehículos locales
             $tiposVehiculos = TipoVehiculo::where('OFICINA_ID', $oficinaIdUsuario)->get();
-
+            //dd($vehiculo);
             return view('sia2.activos.modvehiculos.edit', compact('vehiculo', 'tiposVehiculos', 'oficinaAsociada', 'ubicacionesLocales', 'departamentosLocales'));
         } catch (ModelNotFoundException $e) {
             // Manejar excepción de modelo no encontrado
@@ -292,6 +282,7 @@ class VehiculoController extends Controller
 
     public function update(Request $request, $id)
     {
+        //dd($request);
         try {
             // Obtener el vehículo a actualizar
             $vehiculo = Vehiculo::findOrFail($id);
@@ -304,8 +295,7 @@ class VehiculoController extends Controller
                 'VEHICULO_MODELO' => 'required|string|max:191',
                 'VEHICULO_ANO' => 'required|integer|min:2000|max:' . date('Y'),
                 'DEPENDENCIA_ID' => 'required',
-                'VEHICULO_ESTADO' => 'required|string|in:DISPONIBLE,OCUPADO',
-                'VEHICULO_KILOMETRAJE' => 'required|integer|min:0|max:400000',
+                'VEHICULO_ESTADO' => 'required|string|in:DISPONIBLE,NO DISPONIBLE',
                 'VEHICULO_NIVEL_ESTANQUE' => 'required|string|max:128',
             ],  [
                 'VEHICULO_PATENTE.required' => 'El campo Patente es obligatorio.',
@@ -328,11 +318,7 @@ class VehiculoController extends Controller
                 'DEPENDENCIA_ID.required' => 'El campo Ubicación/Departamento es obligatorio.',
                 'VEHICULO_ESTADO.required' => 'El campo Estado es obligatorio.',
                 'VEHICULO_ESTADO.string' => 'El campo Estado debe ser una cadena de texto.',
-                'VEHICULO_ESTADO.in' => 'El campo Estado debe ser uno de: DISPONIBLE, OCUPADO.',
-                'VEHICULO_KILOMETRAJE.required' => 'El campo Kilometraje es obligatorio.',
-                'VEHICULO_KILOMETRAJE.integer' => 'El campo Kilometraje debe ser un número entero.',
-                'VEHICULO_KILOMETRAJE.min' => 'El Kilometraje no puede ser negativo.',
-                'VEHICULO_KILOMETRAJE.max' => 'El Kilometraje no puede exceder 400.000 kilómetros.',
+                'VEHICULO_ESTADO.in' => 'El campo Estado debe ser: DISPONIBLE o NO DISPONIBLE.',
                 'VEHICULO_NIVEL_ESTANQUE.required' => 'El campo Nivel Estanque es obligatorio.',
                 'VEHICULO_NIVEL_ESTANQUE.string' => 'El campo Nivel Estanque debe ser una cadena de texto.',
                 'VEHICULO_NIVEL_ESTANQUE.max' => 'El campo Nivel Estanque no debe exceder los :max caracteres.',
@@ -398,10 +384,9 @@ class VehiculoController extends Controller
                 'VEHICULO_MODELO' => strtoupper($request->input('VEHICULO_MODELO')),
                 'VEHICULO_ANO' => strval($request->VEHICULO_ANO),
                 'VEHICULO_ESTADO' => strtoupper($request->input('VEHICULO_ESTADO')),
-                'VEHICULO_KILOMETRAJE' => $request->VEHICULO_KILOMETRAJE,
                 'VEHICULO_NIVEL_ESTANQUE' => strtoupper($request->input('VEHICULO_NIVEL_ESTANQUE')),
             ]);
-
+            //dd($vehiculo);
             return redirect()->route('vehiculos.index')->with('success', 'Vehículo actualizado exitosamente.');
         } catch (Exception $e) {
             session()->flash('error', 'Error al actualizar el vehículo.');
