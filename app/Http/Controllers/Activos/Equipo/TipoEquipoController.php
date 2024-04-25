@@ -254,14 +254,14 @@ class TipoEquipoController extends Controller
         // Obtenemos la cantidad deseada desde la solicitud
         $cantidadSolicitada = $request->input('cantidad', 1);
 
-        // Obtenemos el stock total disponible para este tipo de equipo
-        $stockTotal = Equipo::where('TIPO_EQUIPO_ID', $tipoequipo->TIPO_EQUIPO_ID)
-                             ->sum('EQUIPO_STOCK');
+        // Obtenemos el stock total disponible para este tipo de equipo (N/A)
+        // $stockTotal = Equipo::where('TIPO_EQUIPO_ID', $tipoequipo->TIPO_EQUIPO_ID)
+        //                      ->sum('EQUIPO_STOCK');
 
-        // Verificamos si la cantidad solicitada no excede el stock disponible
-        if ($cantidadSolicitada > $stockTotal) {
+        // Verificamos si la cantidad solicitada no exceda del limite (10.000)
+        if ($cantidadSolicitada > 10000) {
             // Si excede el stock, retornamos a la página anterior con un mensaje de error
-            return redirect()->back()->with('error', 'La cantidad solicitada excede el stock disponible.')->withInput();
+            return redirect()->back()->with('error', 'La cantidad solicitada es muy alta.')->withInput();
         }
 
         // Agregamos el tipo de equipo al carrito con la cantidad solicitada
