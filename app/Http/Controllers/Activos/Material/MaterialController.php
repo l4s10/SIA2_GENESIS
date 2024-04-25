@@ -308,18 +308,41 @@ class MaterialController extends Controller
                 $stockResultante = $request->MATERIAL_STOCK - $request->STOCK_NUEVO;
             }
 
-            // Actualizar los atributos del material
-            $material->update([
-                'TIPO_MATERIAL_ID' => $request->TIPO_MATERIAL_ID,
-                'MATERIAL_NOMBRE' => strtoupper($request->input('MATERIAL_NOMBRE')),
-                'MATERIAL_STOCK' => $stockResultante,
-            ]);
-
             // Variables para almacenar los valores de los campos dinámicos
             $detalleMovimiento = '';
 
             switch ($request->TIPO_MOVIMIENTO) {
                 case 'INGRESO':
+                    // Validar campos requeridos para ingreso
+                    $validatorIngreso = Validator::make($request->all(), [
+                        'PROVEEDOR' => 'required|string|max:255',
+                        'NUMERO_FACTURA' => 'required|integer|between:0,1000000',
+                        'COD_LIBRO_ADQUISICIONES' => 'required|string|max:255',
+                        'NUM_RES_EXCENTO_COMPRA' => 'required|integer|between:0,1000000',
+                        'NUM_ORDEN_COMPRA' => 'required|integer|between:0,1000000',
+                    ], [
+                        'PROVEEDOR.required' => 'El campo Proveedor es obligatorio.',
+                        'PROVEEDOR.string' => 'El campo Proveedor debe ser una cadena de texto.',
+                        'PROVEEDOR.max' => 'El campo Proveedor no debe exceder los :max caracteres.',
+                        'NUMERO_FACTURA.required' => 'El campo Número de Factura es obligatorio.',
+                        'NUMERO_FACTURA.integer' => 'El campo Número de Factura debe ser un número entero.',
+                        'NUMERO_FACTURA.between' => 'El campo Número de Factura debe estar entre :min y :max.',
+                        'COD_LIBRO_ADQUISICIONES.required' => 'El campo Código Libro de Adquisiciones es obligatorio.',
+                        'COD_LIBRO_ADQUISICIONES.string' => 'El campo Código Libro de Adquisiciones debe ser una cadena de texto.',
+                        'COD_LIBRO_ADQUISICIONES.max' => 'El campo Código Libro de Adquisiciones no debe exceder los :max caracteres.',
+                        'NUM_RES_EXCENTO_COMPRA.required' => 'El campo Número Resolución Exenta de Compra es obligatorio.',
+                        'NUM_RES_EXCENTO_COMPRA.integer' => 'El campo Número Resolución Exenta de Compra debe ser un número entero.',
+                        'NUM_RES_EXCENTO_COMPRA.between' => 'El campo Número Resolución Exenta de Compra debe estar entre :min y :max.',
+                        'NUM_ORDEN_COMPRA.required' => 'El campo Número de Orden de Compra es obligatorio.',
+                        'NUM_ORDEN_COMPRA.integer' => 'El campo Número de Orden de Compra debe ser un número entero.',
+                        'NUM_ORDEN_COMPRA.between' => 'El campo Número de Orden de Compra debe estar entre :min y :max.',
+                    ]);
+
+                    // si el validador falla, redirigir con errores
+                    if ($validatorIngreso->fails()) {
+                        return redirect()->route('materiales.edit', $material->MATERIAL_ID)->withErrors($validatorIngreso)->withInput();
+                    }
+
                     // Aquí concatenas la información para el detalle de movimiento para un ingreso
                     // Formatear el detalle y dar formato
                     $detalleMovimiento = strtoupper("Proveedor: {$request->input('PROVEEDOR')}, ".
@@ -331,12 +354,47 @@ class MaterialController extends Controller
                 // ...
 
                 case 'TRASLADO':
+                    // Validar campos requeridos para traslado
+                    $validatorTraslado = Validator::make($request->all(), [
+                        'UBICACION_ID' => 'required|exists:ubicaciones,UBICACION_ID',
+                        'FECHA_MEMO_CONDUCTOR' => 'required|date',
+                        'CORREO_ELECTRONICO_SOLICITANTE' => 'required',
+                    ], [
+                        'UBICACION_ID.required' => 'El campo Ubicación es obligatorio.',
+                        'UBICACION_ID.exists' => 'La Ubicación seleccionada no es válida.',
+                        'FECHA_MEMO_CONDUCTOR.required' => 'El campo Fecha Memo Conductor es obligatorio.',
+                        'FECHA_MEMO_CONDUCTOR.date' => 'El campo Fecha Memo Conductor debe ser una fecha válida.',
+                        'CORREO_ELECTRONICO_SOLICITANTE.required' => 'El campo Correo Electrónico Solicitante es obligatorio.',
+                    ]);
+
+                    // si el validador falla, redirigir con errores
+                    if ($validatorTraslado->fails()) {
+                        return redirect()->route('materiales.edit', $material->MATERIAL_ID)->withErrors($validatorTraslado)->withInput();
+                    }
+
                     // Aquí concatenas la información para el detalle de movimiento para un traslado
                     $ubicacion = Ubicacion::find($request->UBICACION_ID);
                     $fechaMemoConductor = Carbon::parse($request->FECHA_MEMO_CONDUCTOR)->format('d-m-Y');
                     $detalleMovimiento = "Traslado a ubicación: {$ubicacion->UBICACION_NOMBRE}, Fecha memo conductor: {$fechaMemoConductor}, Correo electrónico solicitante: {$request->CORREO_ELECTRONICO_SOLICITANTE}.";
                     break;
                 case 'MERMA':
+                    // Validar campos requeridos para merma
+                    $validatorMerma = Validator::make($request->all(), [
+                        'FECHA_AUTORIZACION' => 'required|date',
+                        'NOMBRE_JEFE_AUTORIZA' => 'required|string|max:255',
+                    ], [
+                        'FECHA_AUTORIZACION.required' => 'El campo Fecha de Autorización es obligatorio.',
+                        'FECHA_AUTORIZACION.date' => 'El campo Fecha de Autorización debe ser una fecha válida.',
+                        'NOMBRE_JEFE_AUTORIZA.required' => 'El campo Nombre del Jefe que autoriza es obligatorio.',
+                        'NOMBRE_JEFE_AUTORIZA.string' => 'El campo Nombre del Jefe que autoriza debe ser una cadena de texto.',
+                        'NOMBRE_JEFE_AUTORIZA.max' => 'El campo Nombre del Jefe que autoriza no debe exceder los :max caracteres.',
+                    ]);
+
+                    // si el validador falla, redirigir con errores
+                    if ($validatorMerma->fails()) {
+                        return redirect()->route('materiales.edit', $material->MATERIAL_ID)->withErrors($validatorMerma)->withInput();
+                    }
+
                     // Aquí concatenas la información para el detalle de movimiento para una merma
                     $fechaAutorizacion = Carbon::parse($request->FECHA_AUTORIZACION)->format('d-m-Y');
                     $detalleMovimiento = "Merma autorizada por: {$request->NOMBRE_JEFE_AUTORIZA}, Fecha de autorización: {$fechaAutorizacion}.";
@@ -347,6 +405,13 @@ class MaterialController extends Controller
                     break;
                 // Agrega casos adicionales según sea necesario
             }
+
+            // Actualizar los atributos del material, despues de validar los campos en los casos anteriores
+            $material->update([
+                'TIPO_MATERIAL_ID' => $request->TIPO_MATERIAL_ID,
+                'MATERIAL_NOMBRE' => strtoupper($request->input('MATERIAL_NOMBRE')),
+                'MATERIAL_STOCK' => $stockResultante,
+            ]);
 
             // Crear un nuevo movimiento asociado al material modificado
             Movimiento::create([
@@ -416,7 +481,7 @@ class MaterialController extends Controller
     public function addToCart(Request $request, Material $material)
     {
         $cantidadSolicitada = $request->input('cantidad', 1);
-        $stockMaterial = $material->MATERIAL_STOCK; // Asegúrate de tener una propiedad o método que te dé el stock actual
+        //$stockMaterial = $material->MATERIAL_STOCK;
 
         // Obtén la cantidad ya en el carrito para este material
         $cantidadEnCarrito = Cart::instance('carrito_materiales')->search(function ($cartItem) use ($material) {
@@ -424,8 +489,8 @@ class MaterialController extends Controller
         })->sum('qty');
 
         // Verifica si la cantidad solicitada supera el stock disponible considerando lo que ya está en el carrito
-        if (($cantidadSolicitada + $cantidadEnCarrito) > $stockMaterial) {
-            return redirect()->back()->with('error', 'La cantidad solicitada supera el stock disponible.');
+        if (($cantidadSolicitada + $cantidadEnCarrito) > 10000) { // Se define el límite para pedir (10.000)
+            return redirect()->back()->with('error', 'La cantidad solicitada es muy alta.');
         }
 
         // Agrega el material al carrito con la cantidad solicitada
