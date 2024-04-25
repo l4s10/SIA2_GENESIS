@@ -244,23 +244,22 @@ class SolicitudMaterialesController extends Controller
         // Code for validating 'guardar'
         // Validates at least one observation of the solicitud, optionally the assignment dates and authorized quantities of the materials (ONLY IF ENTERED)
         $validator = Validator::make($request->all(),[
-            'REVISION_SOLICITUD_OBSERVACION' => 'required|string|max:255',
+            'REVISION_SOLICITUD_OBSERVACION' => 'nullable|string|max:255',
             'SOLICITUD_FECHA_HORA_INICIO_ASIGNADA' => 'required|date',
             // 'SOLICITUD_FECHA_HORA_TERMINO_ASIGNADA' => 'required|date|after:SOLICITUD_FECHA_HORA_INICIO_ASIGNADA',
             'autorizar.*' => 'nullable|numeric|min:0',
         ], [
-            // Error messages
-            'REVISION_SOLICITUD_OBSERVACION.required' => 'Indicate the reason for the revision.',
-            'REVISION_SOLICITUD_OBSERVACION.string' => 'The Observation field must be a string.',
-            'REVISION_SOLICITUD_OBSERVACION.max' => 'The Observation field must not exceed 255 characters.',
-            'SOLICITUD_FECHA_HORA_INICIO_ASIGNADA.required' => 'The Start Date Assigned field is required.',
-            'SOLICITUD_FECHA_HORA_INICIO_ASIGNADA.date' => 'The Start Date Assigned field must be a date.',
-            'SOLICITUD_FECHA_HORA_TERMINO_ASIGNADA.required' => 'The End Date Assigned field is required.',
-            'SOLICITUD_FECHA_HORA_TERMINO_ASIGNADA.date' => 'The End Date Assigned field must be a date.',
-            'SOLICITUD_FECHA_HORA_TERMINO_ASIGNADA.after' => 'The End Date Assigned field must be a date after the requested start date.',
-            'autorizar.*.nullable' => 'The Authorized Quantity field must be null or a number.',
-            'autorizar.*.numeric' => 'The Authorized Quantity field must be a number.',
-            'autorizar.*.min' => 'The Authorized Quantity field cannot be negative.',
+            // Mensajes de error
+            'REVISION_SOLICITUD_OBSERVACION.string' => 'El campo Observación debe ser una cadena de caracteres.',
+            'REVISION_SOLICITUD_OBSERVACION.max' => 'El campo Observación no debe exceder los 255 caracteres.',
+            'SOLICITUD_FECHA_HORA_INICIO_ASIGNADA.required' => 'El campo Fecha de Inicio Asignada es requerido.',
+            'SOLICITUD_FECHA_HORA_INICIO_ASIGNADA.date' => 'El campo Fecha de Inicio Asignada debe ser una fecha.',
+            'SOLICITUD_FECHA_HORA_TERMINO_ASIGNADA.required' => 'El campo Fecha de Término Asignada es requerido.',
+            'SOLICITUD_FECHA_HORA_TERMINO_ASIGNADA.date' => 'El campo Fecha de Término Asignada debe ser una fecha.',
+            'SOLICITUD_FECHA_HORA_TERMINO_ASIGNADA.after' => 'El campo Fecha de Término Asignada debe ser una fecha posterior a la fecha de inicio solicitada.',
+            'autorizar.*.nullable' => 'El campo Cantidad Autorizada debe ser nulo o un número.',
+            'autorizar.*.numeric' => 'El campo Cantidad Autorizada debe ser un número.',
+            'autorizar.*.min' => 'El campo Cantidad Autorizada no puede ser negativa.',
         ]);
 
         return $validator;
@@ -276,20 +275,14 @@ class SolicitudMaterialesController extends Controller
     {
         // Code for validating 'finalizar_revision'
         $validator = Validator::make($request->all(),[
-            // 'SOLICITUD_ESTADO' => 'required|string|max:255|in:INGRESADO,EN REVISION,APROBADO,RECHAZADO,TERMINADO',
+            'REVISION_SOLICITUD_OBSERVACION' => 'nullable|string|max:255',
             'SOLICITUD_FECHA_HORA_INICIO_ASIGNADA' => 'required|date',
-            // 'SOLICITUD_FECHA_HORA_TERMINO_ASIGNADA' => 'required|date|after:SOLICITUD_FECHA_HORA_INICIO_ASIGNADA',
-            'REVISION_SOLICITUD_OBSERVACION' => 'required|string|max:255',
         ], [
             // Error messages
-            'SOLICITUD_FECHA_HORA_INICIO_ASIGNADA.required' => 'La fecha de inicio asignada es requerida.',
-            'SOLICITUD_FECHA_HORA_INICIO_ASIGNADA.date' => 'La fecha de inicio asignada debe ser una fecha.',
-            'SOLICITUD_FECHA_HORA_TERMINO_ASIGNADA.required' => 'La fecha de término asignada es requerida.',
-            // 'SOLICITUD_FECHA_HORA_TERMINO_ASIGNADA.date' => 'La fecha de término asignada debe ser una fecha.',
-            // 'SOLICITUD_FECHA_HORA_TERMINO_ASIGNADA.after' => 'La fecha de término asignada debe ser una fecha posterior a la fecha de inicio asignada.',
-            'REVISION_SOLICITUD_OBSERVACION.required' => 'Indique el motivo de la revisión.',
             'REVISION_SOLICITUD_OBSERVACION.string' => 'El campo Observación debe ser una cadena de caracteres.',
             'REVISION_SOLICITUD_OBSERVACION.max' => 'El campo Observación no debe exceder los 255 caracteres.',
+            'SOLICITUD_FECHA_HORA_INICIO_ASIGNADA.required' => 'La fecha de inicio asignada es requerida.',
+            'SOLICITUD_FECHA_HORA_INICIO_ASIGNADA.date' => 'La fecha de inicio asignada debe ser una fecha.',
         ]);
 
         return $validator;
@@ -307,14 +300,13 @@ class SolicitudMaterialesController extends Controller
         // Should return true or false depending on the validation result
         // Verify at least one observation (reason for rejection) with validator
         $validator = Validator::make($request->all(),[
-            'REVISION_SOLICITUD_OBSERVACION' => 'required|string|max:255',
+            'REVISION_SOLICITUD_OBSERVACION' => 'nullable|string|max:255',
             'SOLICITUD_FECHA_HORA_INICIO_ASIGNADA' => 'nullable|date',
             // 'SOLICITUD_FECHA_HORA_TERMINO_ASIGNADA' => 'nullable|date|after:SOLICITUD_FECHA_HORA_INICIO_ASIGNADA',
             // 'autorizar.*' => 'nullable|numeric|min:0',
 
         ], [
             // Error messages
-            'REVISION_SOLICITUD_OBSERVACION.required' => 'Indique el motivo del rechazo.',
             'REVISION_SOLICITUD_OBSERVACION.string' => 'El campo Observación debe ser una cadena de caracteres.',
             'REVISION_SOLICITUD_OBSERVACION.max' => 'El campo Observación no debe exceder los 255 caracteres.',
             'SOLICITUD_FECHA_HORA_INICIO_ASIGNADA.date' => 'La fecha de inicio asignada debe ser una fecha.',
@@ -406,7 +398,7 @@ class SolicitudMaterialesController extends Controller
             RevisionSolicitud::create([
                 'USUARIO_id' => Auth::user()->id,
                 'SOLICITUD_ID' => $solicitud->SOLICITUD_ID,
-                'REVISION_SOLICITUD_OBSERVACION' => $request->input('REVISION_SOLICITUD_OBSERVACION'),
+                'REVISION_SOLICITUD_OBSERVACION' => $request->input('REVISION_SOLICITUD_OBSERVACION') ?: 'sin observacion',
             ]);
         }
         catch(Exception $e)
