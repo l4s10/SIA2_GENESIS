@@ -121,7 +121,7 @@ class SolicitudVehiculosController extends Controller
             return view('sia2.solicitudes.vehiculos.indexPorAprobar', compact('solicitudes'));
         } catch (Exception $e) {
             // Manejar excepciones si es necesario
-            return redirect()->back()->with('error', 'Error al cargar las solicitudes.');
+            return redirect()->back()->with('error', 'Usted no registra solicitudes por aprobar/autorizar');
         }
     }
 
@@ -139,9 +139,12 @@ class SolicitudVehiculosController extends Controller
                 })
                 ->where('SOLICITUD_VEHICULO_ESTADO', 'POR RENDIR')
                 ->where('SOLICITUD_VEHICULO_ESTADO', '!=', 'ELIMINADO')
+                // Condición de seguridad para rendir después de retornar el vehículo, sino, no permite rendir, aún cuando la solicitud tiene estado ' POR RENDIR '
+                ->where('SOLICITUD_VEHICULO_FECHA_HORA_TERMINO_ASIGNADA','<=', now())
                 ->whereHas('conductor', function ($query) use ($userId) {
                     $query->where('CONDUCTOR_id', $userId);
                 })
+         
                 ->orderBy('created_at', 'desc')
                 ->get();
 
@@ -158,6 +161,8 @@ class SolicitudVehiculosController extends Controller
             return redirect()->back()->with('error', 'Error al cargar las solicitudes.');
         }
     }
+
+
     /**
      * Show the form for creating a new resource.
      */
@@ -409,14 +414,35 @@ class SolicitudVehiculosController extends Controller
 
             // Determinar la vista a retornar
             if ($source === 'indexPorAprobar') {
-                // Retornar la vista editPorAprobar
-                return view('sia2.solicitudes.vehiculos.editPorAprobar', compact('solicitud', 'pasajeros', 'vehiculos','cargoJefeQueAutoriza','oficinas','ubicaciones','departamentos','users', 'fechaCreacionFormateada', 'conductores'));
+                if ((Auth::user()->cargo->CARGO_ID == $solicitud->SOLICITUD_VEHICULO_JEFE_QUE_AUTORIZA) && (Auth::user()->oficina->OFICINA_ID == $solicitud->user->oficina->OFICINA_ID) && ($solicitud->SOLICITUD_VEHICULO_ESTADO == 'POR APROBAR')) {
+                    // Retornar la vista editPorAprobar
+                    return view('sia2.solicitudes.vehiculos.editPorAprobar', compact('solicitud', 'pasajeros', 'vehiculos','cargoJefeQueAutoriza','oficinas','ubicaciones','departamentos','users', 'fechaCreacionFormateada', 'conductores'));
+                } 
+
+                if ((Auth::user()->cargo->CARGO_NOMBRE == 'JEFE DE DEPARTAMENTO DE ADMINISTRACIÓN') && (Auth::user()->oficina->OFICINA_ID == $solicitud->user->oficina->OFICINA_ID) && ($solicitud->SOLICITUD_VEHICULO_ESTADO == 'POR AUTORIZAR')) {
+                    // Retornar la vista editPorAprobar
+                    return view('sia2.solicitudes.vehiculos.editPorAprobar', compact('solicitud', 'pasajeros', 'vehiculos','cargoJefeQueAutoriza','oficinas','ubicaciones','departamentos','users', 'fechaCreacionFormateada', 'conductores'));
+                } 
+
+                return redirect()->route('solicitudesvehiculos.indexPorAprobar')->with('error', 'Usted no tiene permisos para acceder y firmar en esta solicitud.');
             } else if ($source === 'indexPorRendir') {
-                // Retornar la vista editPorAprobar
+                if ((Auth::user()->id == $solicitud->CONDUCTOR_id) && (Auth::user()->oficina->OFICINA_ID == $solicitud->user->oficina->OFICINA_ID) && ($solicitud->SOLICITUD_VEHICULO_ESTADO == 'POR RENDIR') && ($solicitud->SOLICITUD_VEHICULO_FECHA_HORA_TERMINO_ASIGNADA <= now())) {
+                    // Retornar la vista editPorAprobar
                 return view('sia2.solicitudes.vehiculos.editPorRendir', compact('solicitud', 'pasajeros', 'vehiculos','cargoJefeQueAutoriza','oficinas','ubicaciones','departamentos','users', 'fechaCreacionFormateada', 'conductores'));
-            }else {
-                // Retornar la vista edit
-                return view('sia2.solicitudes.vehiculos.edit', compact('solicitud', 'pasajeros', 'vehiculos','cargoJefeQueAutoriza','oficinas','ubicaciones','departamentos','users', 'fechaCreacionFormateada', 'conductores'));
+                } else {
+                    return redirect()->route('solicitudesvehiculos.indexPorRendir')->with('error', 'Usted no tiene permisos para acceder y rendir en esta solicitud.');
+                }
+                
+            } else {
+                // Verificar permisos para acceder a este formulario
+                if ((Auth::user()->hasRole('ADMINISTRADOR') || Auth::user()->hasRole('SERVICIOS')) && (Auth::user()->oficina->OFICINA_ID == $solicitud->user->oficina->OFICINA_ID) && ((($solicitud->SOLICITUD_VEHICULO_ESTADO == 'INGRESADO' || ($solicitud->SOLICITUD_VEHICULO_ESTADO == 'EN REVISIÓN'))))) {
+                     // Retornar la vista edit
+                    return view('sia2.solicitudes.vehiculos.edit', compact('solicitud', 'pasajeros', 'vehiculos','cargoJefeQueAutoriza','oficinas','ubicaciones','departamentos','users', 'fechaCreacionFormateada', 'conductores'));
+                } else {
+                    // Redireccionar si el usuario no tiene los permisos necesarios
+                    return redirect()->route('solicitudesvehiculos.index')->with('error', 'No tienes permisos para acceder a este formulario.');
+                }
+               
             }
         } catch (ModelNotFoundException $e) {
             // Determinar la vista a retornar
@@ -1039,7 +1065,7 @@ class SolicitudVehiculosController extends Controller
                     'fecha' => $revision->created_at,
                     'revisor' => $revision->gestionador->USUARIO_NOMBRES.' '.$revision->gestionador->USUARIO_APELLIDOS,
                     'detalle' => $revision->REVISION_SOLICITUD_OBSERVACION,
-                    'mensaje' => 'REVISIÓN CONCLUÍDA',
+                    'mensaje' => 'REVISIÓN CONCLUIDA',
                     'estado' => $estadoRevision
                 ];
             }
@@ -1049,17 +1075,18 @@ class SolicitudVehiculosController extends Controller
                 // Determinar el estado de la autorización
                 if ($autorizacion->user->cargo->CARGO_NOMBRE == 'JEFE DE DEPARTAMENTO DE ADMINISTRACIÓN') {
                     $estadoAutorizacion = 'POR RENDIR';
-                    $mensajeAutorizacion = 'SOLICITUD FIRMADA POR EL JEFE DEL DEPTO DE ADMINISTRACIÓN';
+                    $mensajeAutorizacion = 'SOLICITUD AUTORIZADA Y FIRMADA';
 
                 } else {
                     $estadoAutorizacion = 'POR AUTORIZAR';
-                    $mensajeAutorizacion = 'SOLICITUD FIRMADA POR EL JEFE DESIGNADO'; 
+                    $mensajeAutorizacion = 'SOLICITUD APROBADA Y FIRMADA'; 
                 } 
 
                 // Agregar evento de autorización al timeline
                 $eventos[] = [
                     'fecha' => $autorizacion->created_at,
-                    'jefe' => $autorizacion->user->USUARIO_NOMBRES.' '.$autorizacion->user->USUARIO_APELLIDOS,
+                    'firmante' => $autorizacion->user->USUARIO_NOMBRES.' '.$autorizacion->user->USUARIO_APELLIDOS,
+                    'cargo' => $autorizacion->user->cargo->CARGO_NOMBRE,
                     'mensaje' => $mensajeAutorizacion,
                     'estado' => $estadoAutorizacion
                 ];
@@ -1071,7 +1098,7 @@ class SolicitudVehiculosController extends Controller
                     'fecha' => $rendicion->created_at,
                     'conductor' => $rendicion->user->USUARIO_NOMBRES.' '.$rendicion->user->USUARIO_APELLIDOS,
                     'detalle' => $rendicion->RENDICION_OBSERVACIONES,
-                    'mensaje' => 'SOLICITUD RENDIDA POR CONDUCTOR',
+                    'mensaje' => 'SOLICITUD RENDIDA Y FIRMADA',
                     'estado' => 'TERMINADO'
                 ];
             }

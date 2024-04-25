@@ -729,16 +729,17 @@
             let inputKilometrajeTermino = document.getElementById('RENDICION_KILOMETRAJE_TERMINO');
             let inputTotalHoras = document.getElementById('RENDICION_TOTAL_HORAS');
             let inputNumeroBitacora = document.getElementById('RENDICION_NUMERO_BITACORA');
-    
+            let fechaSalida =document.getElementById('fechaHoraInicioAsignada').value;
+
             let fechaActual = new Date();
-            let fechaMinimaPermitida = new Date();
-            fechaMinimaPermitida.setDate(fechaActual.getDate() - 15);
             let fechaMaximaPermitida = fechaActual;
+            fechaMaximaPermitida.setDate(fechaActual.getDate() + 20);
+
     
             flatpickr(inputfechaHoraRendicion, {
                 enableTime: true,
                 dateFormat: "Y-m-d H:i",
-                minDate: fechaMinimaPermitida,
+                minDate: fechaSalida,
                 maxDate: fechaMaximaPermitida,
                 locale: "es",
             });
@@ -1090,7 +1091,6 @@
         
         
         
-        
                 // Propuesta para eliminación de pasajeros hasta la cantidad solicitada
                 // Obtener la capacidad máxima del vehículo para validar agregado de pasajeros
                 /*var capacidadMaxima = {!! $solicitud->vehiculo->tipoVehiculo->TIPO_VEHICULO_CAPACIDAD !!};
@@ -1102,11 +1102,7 @@
         
         
                 configurarSelectoresPasajero();
-        
-        
                 
-            
-        
                 function configurarSelectoresPasajero() {
                     // Aquí colocamos toda la lógica de configuración de selectores para el ingreso de datos
                     // Puedes copiar y pegar la lógica que has definido para la configuración estándar

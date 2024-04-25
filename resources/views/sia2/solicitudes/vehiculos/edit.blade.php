@@ -480,7 +480,7 @@
         let minutoActual = fechaActual.getMinutes(); // Minuto actual
 
         // **Fecha mínima permitida (día actual)**
-        let fechaMinimaPermitida = new Date(añoActual, mesActual, diaActual-2, horaActual, minutoActual);
+        let fechaMinimaPermitida = new Date(añoActual, mesActual, diaActual-2, 00, 00);
         // **Fecha máxima permitida**
         let fechaMaximaPermitida;
 

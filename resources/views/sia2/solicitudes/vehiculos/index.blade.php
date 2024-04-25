@@ -104,6 +104,9 @@
                             <div class="d-flex justify-content-center">
                                 <span class="badge rounded-pill estado-{{ preg_replace('/\s+/u', '-', mb_strtolower($solicitud->SOLICITUD_VEHICULO_ESTADO)) }}">
                                     {{ $solicitud->SOLICITUD_VEHICULO_ESTADO }}
+                                    @if ($solicitud->SOLICITUD_VEHICULO_ESTADO == 'POR RENDIR' && now()->diffInDays($solicitud->SOLICITUD_VEHICULO_FECHA_HORA_INICIO_ASIGNADA) > 15)
+                                        ⚠️
+                                    @endif
                                 </span>
                             </div>
                         </td>
