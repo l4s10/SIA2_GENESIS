@@ -14,8 +14,9 @@
         <div class="card-body">
             <p class="card-text"><i class="fa-solid fa-file-pen"></i> Motivo: {{ $solicitud->SOLICITUD_MOTIVO }}</p>
             <p><i class="fa-solid fa-file-circle-check"></i> Estado: <span class="badge rounded-pill estado-{{ strtolower(str_replace(' ', '-', $solicitud->SOLICITUD_ESTADO)) }}">{{ $solicitud->SOLICITUD_ESTADO }}</span></p>
-            <p class="card-text"><i class="fa-solid fa-calendar-plus"></i> Fecha y Hora de Inicio Solicitada: {{ $solicitud->SOLICITUD_FECHA_HORA_INICIO_SOLICITADA }}</p>
-            <p class="card-text"><i class="fa-regular fa-calendar-plus"></i> Fecha y Hora de Término Solicitada: {{ $solicitud->SOLICITUD_FECHA_HORA_TERMINO_SOLICITADA }}</p>
+            <p class="card-text"><i class="fa-solid fa-calendar-plus"></i> Fecha y hora de inicio solicitada: {{ $solicitud->mostrarFecha($solicitud->SOLICITUD_FECHA_HORA_INICIO_SOLICITADA) }}</p>
+            <p class="card-text"><i class="fa-solid fa-calendar-plus"></i> Fecha y hora de despacho: {{ $solicitud->mostrarFecha($solicitud->SOLICITUD_FECHA_HORA_INICIO_ASIGNADA) ?: 'Aún no se ha asignado' }}</p>
+            {{-- <p class="card-text"><i class="fa-regular fa-calendar-plus"></i> Fecha y Hora de Término Solicitada: {{ $solicitud->SOLICITUD_FECHA_HORA_TERMINO_SOLICITADA }}</p> --}}
 
             <h5 class="mt-4">Formularios Solicitados</h5>
             <table class="table table-bordered">
