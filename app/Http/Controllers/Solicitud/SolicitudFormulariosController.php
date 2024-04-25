@@ -80,8 +80,8 @@ class SolicitudFormulariosController extends Controller
             // Valida los datos del formulario de solicitud de formularios.
             $validator = Validator::make($request->all(),[
                 'SOLICITUD_MOTIVO' => 'required|string|max:255',
-                'SOLICITUD_FECHA_HORA_INICIO_SOLICITADA' => 'required|date',
-                'SOLICITUD_FECHA_HORA_TERMINO_SOLICITADA' => 'required|date|after:SOLICITUD_FECHA_HORA_INICIO_SOLICITADA',
+                'SOLICITUD_FECHA_HORA_INICIO_SOLICITADA' => 'required|date'
+                // 'SOLICITUD_FECHA_HORA_TERMINO_SOLICITADA' => 'required|date|after:SOLICITUD_FECHA_HORA_INICIO_SOLICITADA',
             ], [
                 //Mensajes de error
                 'required' => 'El campo :attribute es requerido.',
@@ -106,7 +106,7 @@ class SolicitudFormulariosController extends Controller
                 'SOLICITUD_MOTIVO' => $request->input('SOLICITUD_MOTIVO'),
                 'SOLICITUD_ESTADO' => 'INGRESADO', // Valor predeterminado
                 'SOLICITUD_FECHA_HORA_INICIO_SOLICITADA' => $request->input('SOLICITUD_FECHA_HORA_INICIO_SOLICITADA'),
-                'SOLICITUD_FECHA_HORA_TERMINO_SOLICITADA' => $request->input('SOLICITUD_FECHA_HORA_TERMINO_SOLICITADA'),
+                'SOLICITUD_FECHA_HORA_TERMINO_SOLICITADA' => null, // Valor predeterminado
             ]);
 
             // Agrega los formularios a la solicitud instanciando el carrito correspondiente
@@ -215,7 +215,7 @@ class SolicitudFormulariosController extends Controller
             //Estados de la solcitud: INGRESADO, EN REVISION, APROBADO, RECHAZADO, TERMINADO
             // 'SOLICITUD_ESTADO' => 'required|string|max:255|in:INGRESADO,EN REVISION,APROBADO,RECHAZADO,TERMINADO',
             'SOLICITUD_FECHA_HORA_INICIO_ASIGNADA' => 'required|date',
-            'SOLICITUD_FECHA_HORA_TERMINO_ASIGNADA' => 'required|date|after:SOLICITUD_FECHA_HORA_INICIO_ASIGNADA',
+            // 'SOLICITUD_FECHA_HORA_TERMINO_ASIGNADA' => 'required|date|after:SOLICITUD_FECHA_HORA_INICIO_ASIGNADA',
             'REVISION_SOLICITUD_OBSERVACION' => 'required|string|max:255',
         ], [
             //Mensajes de error
@@ -235,7 +235,7 @@ class SolicitudFormulariosController extends Controller
         $solicitud->update([
             // 'SOLICITUD_ESTADO' => $request->input('SOLICITUD_ESTADO'),
             'SOLICITUD_FECHA_HORA_INICIO_ASIGNADA' => $request->input('SOLICITUD_FECHA_HORA_INICIO_ASIGNADA'),
-            'SOLICITUD_FECHA_HORA_TERMINO_ASIGNADA' => $request->input('SOLICITUD_FECHA_HORA_TERMINO_ASIGNADA'),
+            // 'SOLICITUD_FECHA_HORA_TERMINO_ASIGNADA' => $request->input('SOLICITUD_FECHA_HORA_TERMINO_ASIGNADA'),
         ]);
 
         // Llamar a la funcion createRevisionSolicitud para crear la revision de la solicitud

@@ -157,21 +157,21 @@
             </div> --}}
 
             <div class="row">
-                <div class="col-md-6">
+                <div class="col-md-12">
                     {{-- FECHA Y HORA DE INICIO ASIGNADA --}}
                     <div class="form-group">
-                        <label for="SOLICITUD_FECHA_HORA_INICIO_ASIGNADA"><i class="fa-solid fa-calendar-days"></i> Fecha y hora de inicio asignada</label>
+                        <label for="SOLICITUD_FECHA_HORA_INICIO_ASIGNADA"><i class="fa-solid fa-calendar-days"></i> Fecha y hora de despacho:</label>
                         <input type="datetime-local" class="form-control" id="SOLICITUD_FECHA_HORA_INICIO_ASIGNADA" name="SOLICITUD_FECHA_HORA_INICIO_ASIGNADA" value="{{ $solicitud->SOLICITUD_FECHA_HORA_INICIO_ASIGNADA }}">
                     </div>
                 </div>
 
-                <div class="col-md-6">
-                    {{-- FECHA Y HORA DE TÉRMINO ASIGNADA --}}
+                {{-- FECHA Y HORA DE TÉRMINO ASIGNADA (N/A)--}}
+                {{-- <div class="col-md-6">
                     <div class="form-group">
                         <label for="SOLICITUD_FECHA_HORA_TERMINO_ASIGNADA"><i class="fa-solid fa-calendar-xmark"></i> Fecha y hora de término asignada</label>
                         <input type="datetime-local" class="form-control" id="SOLICITUD_FECHA_HORA_TERMINO_ASIGNADA" name="SOLICITUD_FECHA_HORA_TERMINO_ASIGNADA" value="{{ $solicitud->SOLICITUD_FECHA_HORA_TERMINO_ASIGNADA }}">
                     </div>
-                </div>
+                </div> --}}
             </div>
 
             {{-- OBSERVACION --}}

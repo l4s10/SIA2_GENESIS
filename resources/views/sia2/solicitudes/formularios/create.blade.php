@@ -163,7 +163,7 @@
             <input type="text" class="form-control" id="SOLICITUD_ESTADO" name="SOLICITUD_ESTADO" value="🟠INGRESADO" readonly>
         </div>
         <div class="row">
-            <div class="col-md-6">
+            <div class="col-md-12">
                 {{-- Fecha y Hora de Inicio Solicitada --}}
                 <div class="form-group {{ $errors->has('SOLICITUD_FECHA_HORA_INICIO_SOLICITADA') ? 'has-error' : '' }}">
                     <label for="SOLICITUD_FECHA_HORA_INICIO_SOLICITADA"><i class="fa-solid fa-calendar-days"></i> Fecha y Hora de Inicio Solicitada</label>
@@ -173,8 +173,8 @@
                     @enderror
                 </div>
             </div>
-            <div class="col-md-6">
-                {{-- Fecha y Hora de Término Solicitada --}}
+            {{-- Fecha y Hora de Término Solicitada (N/A) --}}
+            {{-- <div class="col-md-6">
                 <div class="form-group {{ $errors->has('SOLICITUD_FECHA_HORA_TERMINO_SOLICITADA') ? 'has-error' : '' }}">
                     <label for="SOLICITUD_FECHA_HORA_TERMINO_SOLICITADA"><i class="fa-solid fa-calendar-xmark"></i> Fecha y Hora de Término Solicitada</label>
                     <input type="datetime-local" class="form-control" id="SOLICITUD_FECHA_HORA_TERMINO_SOLICITADA" name="SOLICITUD_FECHA_HORA_TERMINO_SOLICITADA" required>
@@ -182,7 +182,7 @@
                         <span class="text-danger">{{ $message }}</span>
                     @enderror
                 </div>
-            </div>
+            </div> --}}
         </div>
         {{-- Botones de envio y volver --}}
         <a href="{{ route('solicitudes.formularios.index') }}" class="btn btn-secondary"><i class="fa-solid fa-hand-point-left"></i> Cancelar</a>
