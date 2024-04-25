@@ -310,7 +310,7 @@ class SolicitudMaterialesController extends Controller
             'REVISION_SOLICITUD_OBSERVACION' => 'required|string|max:255',
             'SOLICITUD_FECHA_HORA_INICIO_ASIGNADA' => 'nullable|date',
             // 'SOLICITUD_FECHA_HORA_TERMINO_ASIGNADA' => 'nullable|date|after:SOLICITUD_FECHA_HORA_INICIO_ASIGNADA',
-            'autorizar.*' => 'nullable|numeric|min:0',
+            // 'autorizar.*' => 'nullable|numeric|min:0',
 
         ], [
             // Error messages
@@ -320,9 +320,9 @@ class SolicitudMaterialesController extends Controller
             'SOLICITUD_FECHA_HORA_INICIO_ASIGNADA.date' => 'La fecha de inicio asignada debe ser una fecha.',
             // 'SOLICITUD_FECHA_HORA_TERMINO_ASIGNADA.date' => 'La fecha de término asignada debe ser una fecha.',
             // 'SOLICITUD_FECHA_HORA_TERMINO_ASIGNADA.after' => 'La fecha de término asignada debe ser una fecha posterior a la fecha de inicio asignada.',
-            'autorizar.*.nullable' => 'La Cantidad Autorizada debe ser nula o un número.',
-            'autorizar.*.numeric' => 'La Cantidad Autorizada debe ser un número.',
-            'autorizar.*.min' => 'La Cantidad Autorizada no puede ser negativa.',
+            // 'autorizar.*.nullable' => 'La Cantidad Autorizada debe ser nula o un número.',
+            // 'autorizar.*.numeric' => 'La Cantidad Autorizada debe ser un número.',
+            // 'autorizar.*.min' => 'La Cantidad Autorizada no puede ser negativa.',
         ]);
 
         return $validator;
