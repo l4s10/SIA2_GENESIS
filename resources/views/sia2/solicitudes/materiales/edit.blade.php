@@ -185,18 +185,18 @@
 
             {{-- Fechas de autorización --}}
             <div class="row">
-                <div class="col-md-6">
+                <div class="col-md-12">
                     {{-- Fecha y hora de inicio autorizada --}}
                     <div class="form-group">
-                        <label for="SOLICITUD_FECHA_HORA_INICIO_ASIGNADA"><i class="fa-solid fa-calendar-days"></i> Fecha y hora de inicio autorizada</label>
+                        <label for="SOLICITUD_FECHA_HORA_INICIO_ASIGNADA"><i class="fa-solid fa-calendar-days"></i> Fecha y hora de despacho:</label>
                         <input type="datetime-local" class="form-control" id="SOLICITUD_FECHA_HORA_INICIO_ASIGNADA" name="SOLICITUD_FECHA_HORA_INICIO_ASIGNADA" value="{{ old('SOLICITUD_FECHA_HORA_INICIO_ASIGNADA', $solicitud->SOLICITUD_FECHA_HORA_INICIO_ASIGNADA) }}">
                         @error('SOLICITUD_FECHA_HORA_INICIO_ASIGNADA')
                             <div class="alert alert-danger">{{ $message }}</div>
                         @enderror
                     </div>
                 </div>
-                <div class="col-md-6">
-                    {{-- Fecha y hora de término autorizada --}}
+                {{-- Fecha y hora de término autorizada (N/A)--}}
+                {{-- <div class="col-md-6">
                     <div class="form-group">
                         <label for="SOLICITUD_FECHA_HORA_TERMINO_ASIGNADA"><i class="fa-solid fa-calendar-xmark"></i> Fecha y hora de término autorizada</label>
                         <input type="datetime-local" class="form-control" id="SOLICITUD_FECHA_HORA_TERMINO_ASIGNADA" name="SOLICITUD_FECHA_HORA_TERMINO_ASIGNADA" value="{{ old('SOLICITUD_FECHA_HORA_TERMINO_ASIGNADA', $solicitud->SOLICITUD_FECHA_HORA_TERMINO_ASIGNADA) }}">
@@ -204,7 +204,7 @@
                             <div class="alert alert-danger">{{ $message }}</div>
                         @enderror
                     </div>
-                </div>
+                </div> --}}
             </div>
 
             {{-- Autorizar cantidades de materiales solicitados --}}

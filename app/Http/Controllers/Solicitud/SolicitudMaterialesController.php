@@ -82,8 +82,8 @@ class SolicitudMaterialesController extends Controller
             // Valida los datos del formulario de solicitud de materiales.
             $validator = Validator::make($request->all(),[
                 'SOLICITUD_MOTIVO' => 'required|string|max:255',
-                'SOLICITUD_FECHA_HORA_INICIO_SOLICITADA' => 'required|date',
-                'SOLICITUD_FECHA_HORA_TERMINO_SOLICITADA' => 'required|date|after:SOLICITUD_FECHA_HORA_INICIO_SOLICITADA',
+                'SOLICITUD_FECHA_HORA_INICIO_SOLICITADA' => 'required|date'
+                // 'SOLICITUD_FECHA_HORA_TERMINO_SOLICITADA' => 'required|date|after:SOLICITUD_FECHA_HORA_INICIO_SOLICITADA',
             ], [
                 //Mensajes de error
                 'required' => 'El campo :attribute es requerido.',
@@ -107,7 +107,7 @@ class SolicitudMaterialesController extends Controller
                 'SOLICITUD_MOTIVO' => $request->input('SOLICITUD_MOTIVO'),
                 'SOLICITUD_ESTADO' => 'INGRESADO', // Valor predeterminado
                 'SOLICITUD_FECHA_HORA_INICIO_SOLICITADA' => $request->input('SOLICITUD_FECHA_HORA_INICIO_SOLICITADA'),
-                'SOLICITUD_FECHA_HORA_TERMINO_SOLICITADA' => $request->input('SOLICITUD_FECHA_HORA_TERMINO_SOLICITADA'),
+                'SOLICITUD_FECHA_HORA_TERMINO_SOLICITADA' => null, // Valor predeterminado
             ]);
 
             //Si se crea la solicitud correctamente, se asocia los materiales del carrito a la solicitud a traves de la relacion creada en el modelo.
@@ -246,7 +246,7 @@ class SolicitudMaterialesController extends Controller
         $validator = Validator::make($request->all(),[
             'REVISION_SOLICITUD_OBSERVACION' => 'required|string|max:255',
             'SOLICITUD_FECHA_HORA_INICIO_ASIGNADA' => 'required|date',
-            'SOLICITUD_FECHA_HORA_TERMINO_ASIGNADA' => 'required|date|after:SOLICITUD_FECHA_HORA_INICIO_ASIGNADA',
+            // 'SOLICITUD_FECHA_HORA_TERMINO_ASIGNADA' => 'required|date|after:SOLICITUD_FECHA_HORA_INICIO_ASIGNADA',
             'autorizar.*' => 'nullable|numeric|min:0',
         ], [
             // Error messages
@@ -278,15 +278,15 @@ class SolicitudMaterialesController extends Controller
         $validator = Validator::make($request->all(),[
             // 'SOLICITUD_ESTADO' => 'required|string|max:255|in:INGRESADO,EN REVISION,APROBADO,RECHAZADO,TERMINADO',
             'SOLICITUD_FECHA_HORA_INICIO_ASIGNADA' => 'required|date',
-            'SOLICITUD_FECHA_HORA_TERMINO_ASIGNADA' => 'required|date|after:SOLICITUD_FECHA_HORA_INICIO_ASIGNADA',
+            // 'SOLICITUD_FECHA_HORA_TERMINO_ASIGNADA' => 'required|date|after:SOLICITUD_FECHA_HORA_INICIO_ASIGNADA',
             'REVISION_SOLICITUD_OBSERVACION' => 'required|string|max:255',
         ], [
             // Error messages
             'SOLICITUD_FECHA_HORA_INICIO_ASIGNADA.required' => 'La fecha de inicio asignada es requerida.',
             'SOLICITUD_FECHA_HORA_INICIO_ASIGNADA.date' => 'La fecha de inicio asignada debe ser una fecha.',
             'SOLICITUD_FECHA_HORA_TERMINO_ASIGNADA.required' => 'La fecha de término asignada es requerida.',
-            'SOLICITUD_FECHA_HORA_TERMINO_ASIGNADA.date' => 'La fecha de término asignada debe ser una fecha.',
-            'SOLICITUD_FECHA_HORA_TERMINO_ASIGNADA.after' => 'La fecha de término asignada debe ser una fecha posterior a la fecha de inicio asignada.',
+            // 'SOLICITUD_FECHA_HORA_TERMINO_ASIGNADA.date' => 'La fecha de término asignada debe ser una fecha.',
+            // 'SOLICITUD_FECHA_HORA_TERMINO_ASIGNADA.after' => 'La fecha de término asignada debe ser una fecha posterior a la fecha de inicio asignada.',
             'REVISION_SOLICITUD_OBSERVACION.required' => 'Indique el motivo de la revisión.',
             'REVISION_SOLICITUD_OBSERVACION.string' => 'El campo Observación debe ser una cadena de caracteres.',
             'REVISION_SOLICITUD_OBSERVACION.max' => 'El campo Observación no debe exceder los 255 caracteres.',
@@ -309,7 +309,7 @@ class SolicitudMaterialesController extends Controller
         $validator = Validator::make($request->all(),[
             'REVISION_SOLICITUD_OBSERVACION' => 'required|string|max:255',
             'SOLICITUD_FECHA_HORA_INICIO_ASIGNADA' => 'nullable|date',
-            'SOLICITUD_FECHA_HORA_TERMINO_ASIGNADA' => 'nullable|date|after:SOLICITUD_FECHA_HORA_INICIO_ASIGNADA',
+            // 'SOLICITUD_FECHA_HORA_TERMINO_ASIGNADA' => 'nullable|date|after:SOLICITUD_FECHA_HORA_INICIO_ASIGNADA',
             'autorizar.*' => 'nullable|numeric|min:0',
 
         ], [
@@ -318,8 +318,8 @@ class SolicitudMaterialesController extends Controller
             'REVISION_SOLICITUD_OBSERVACION.string' => 'El campo Observación debe ser una cadena de caracteres.',
             'REVISION_SOLICITUD_OBSERVACION.max' => 'El campo Observación no debe exceder los 255 caracteres.',
             'SOLICITUD_FECHA_HORA_INICIO_ASIGNADA.date' => 'La fecha de inicio asignada debe ser una fecha.',
-            'SOLICITUD_FECHA_HORA_TERMINO_ASIGNADA.date' => 'La fecha de término asignada debe ser una fecha.',
-            'SOLICITUD_FECHA_HORA_TERMINO_ASIGNADA.after' => 'La fecha de término asignada debe ser una fecha posterior a la fecha de inicio asignada.',
+            // 'SOLICITUD_FECHA_HORA_TERMINO_ASIGNADA.date' => 'La fecha de término asignada debe ser una fecha.',
+            // 'SOLICITUD_FECHA_HORA_TERMINO_ASIGNADA.after' => 'La fecha de término asignada debe ser una fecha posterior a la fecha de inicio asignada.',
             'autorizar.*.nullable' => 'La Cantidad Autorizada debe ser nula o un número.',
             'autorizar.*.numeric' => 'La Cantidad Autorizada debe ser un número.',
             'autorizar.*.min' => 'La Cantidad Autorizada no puede ser negativa.',
@@ -342,7 +342,7 @@ class SolicitudMaterialesController extends Controller
         $solicitud->update([
             'SOLICITUD_ESTADO' => $estado,
             'SOLICITUD_FECHA_HORA_INICIO_ASIGNADA' => $request->input('SOLICITUD_FECHA_HORA_INICIO_ASIGNADA'),
-            'SOLICITUD_FECHA_HORA_TERMINO_ASIGNADA' => $request->input('SOLICITUD_FECHA_HORA_TERMINO_ASIGNADA'),
+            // 'SOLICITUD_FECHA_HORA_TERMINO_ASIGNADA' => $request->input('SOLICITUD_FECHA_HORA_TERMINO_ASIGNADA'),
         ]);
     }
 
@@ -382,7 +382,7 @@ class SolicitudMaterialesController extends Controller
 
             // Cambiar estado
             $solicitud->SOLICITUD_ESTADO = 'ELIMINADO';
-            
+
             // Guardar la solicitud eliminada
             $solicitud->save();
 
