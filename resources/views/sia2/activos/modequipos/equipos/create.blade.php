@@ -126,7 +126,7 @@
 
         <div class="mb-3">
             <label for="NUM_ORDEN_COMPRA" class="form-label"><i class="fa-solid fa-file-contract"></i> Número Orden de Compra:</label>
-            <input type="number" class="form-control{{ $errors->has('NUM_ORDEN_COMPRA') ? ' is-invalid' : '' }}" id="NUM_ORDEN_COMPRA" name="NUM_ORDEN_COMPRA" value="{{ old('NUM_ORDEN_COMPRA') }}" placeholder="Número de orden de compra" min="0" max="999999" required>
+            <input type="text" class="form-control{{ $errors->has('NUM_ORDEN_COMPRA') ? ' is-invalid' : '' }}" id="NUM_ORDEN_COMPRA" name="NUM_ORDEN_COMPRA" value="{{ old('NUM_ORDEN_COMPRA') }}" placeholder="Número de orden de compra" required>
             @if ($errors->has('NUM_ORDEN_COMPRA'))
                 <div class="invalid-feedback">
                     {{ $errors->first('NUM_ORDEN_COMPRA') }}

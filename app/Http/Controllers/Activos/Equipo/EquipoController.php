@@ -132,7 +132,7 @@ class EquipoController extends Controller
                 'NUMERO_FACTURA' => 'required|integer|between:0,1000000',
                 'COD_LIBRO_ADQUISICIONES' => 'required|string|max:255',
                 'NUM_RES_EXCENTO_COMPRA' => 'required|integer|between:0,1000000',
-                'NUM_ORDEN_COMPRA' => 'required|integer|between:0,1000000',
+                'NUM_ORDEN_COMPRA' => 'required|string|max:255',
 
                 // 'DETALLE_MOVIMIENTO' => 'required|string|max:1000',
             ], [
@@ -163,8 +163,8 @@ class EquipoController extends Controller
                 'NUM_RES_EXCENTO_COMPRA.integer' => 'El campo Número Resolución Exenta de Compra debe ser un número entero.',
                 'NUM_RES_EXCENTO_COMPRA.between' => 'El campo Número Resolución Exenta de Compra debe estar entre :min y :max.',
                 'NUM_ORDEN_COMPRA.required' => 'El campo Número de Orden de Compra es obligatorio.',
-                'NUM_ORDEN_COMPRA.integer' => 'El campo Número de Orden de Compra debe ser un número entero.',
-                'NUM_ORDEN_COMPRA.between' => 'El campo Número de Orden de Compra debe estar entre :min y :max.',
+                'NUM_ORDEN_COMPRA.string' => 'El campo Número de Orden de Compra debe ser una cadena de texto.',
+                'NUM_ORDEN_COMPRA.max' => 'El campo Número de Orden de Compra no debe exceder los :max caracteres.',
 
                 // 'DETALLE_MOVIMIENTO.required' => 'El campo Detalle de Movimiento es obligatorio.',
                 // 'DETALLE_MOVIMIENTO.string' => 'El campo Detalle de Movimiento debe ser una cadena de texto.',
