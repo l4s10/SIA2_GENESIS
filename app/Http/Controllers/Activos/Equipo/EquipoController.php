@@ -363,22 +363,22 @@ class EquipoController extends Controller
                 case 'INGRESO':
                     // Validar campos requeridos para ingreso
                     $validatorIngreso = Validator::make($request->all(), [
-                        'PROVEEDOR' => 'required|string|max:255',
-                        'NUMERO_FACTURA' => 'required|integer|between:0,1000000',
-                        'COD_LIBRO_ADQUISICIONES' => 'required|string|max:255',
-                        'NUM_RES_EXCENTO_COMPRA' => 'required|integer|between:0,1000000',
+                        'PROVEEDOR' => 'nullable|string|max:255',
+                        'NUMERO_FACTURA' => 'nullable|integer|between:0,1000000',
+                        'COD_LIBRO_ADQUISICIONES' => 'nullable|string|max:255',
+                        'NUM_RES_EXCENTO_COMPRA' => 'nullable|integer|between:0,1000000',
                         'NUM_ORDEN_COMPRA' => 'required|string|max:255',
                     ], [
-                        'PROVEEDOR.required' => 'El campo Proveedor es obligatorio.',
+                        // 'PROVEEDOR.required' => 'El campo Proveedor es obligatorio.',
                         'PROVEEDOR.string' => 'El campo Proveedor debe ser una cadena de texto.',
                         'PROVEEDOR.max' => 'El campo Proveedor no debe exceder los :max caracteres.',
-                        'NUMERO_FACTURA.required' => 'El campo Número de Factura es obligatorio.',
+                        // 'NUMERO_FACTURA.required' => 'El campo Número de Factura es obligatorio.',
                         'NUMERO_FACTURA.integer' => 'El campo Número de Factura debe ser un número entero.',
                         'NUMERO_FACTURA.between' => 'El campo Número de Factura debe estar entre :min y :max.',
-                        'COD_LIBRO_ADQUISICIONES.required' => 'El campo Código Libro de Adquisiciones es obligatorio.',
+                        // 'COD_LIBRO_ADQUISICIONES.required' => 'El campo Código Libro de Adquisiciones es obligatorio.',
                         'COD_LIBRO_ADQUISICIONES.string' => 'El campo Código Libro de Adquisiciones debe ser una cadena de texto.',
                         'COD_LIBRO_ADQUISICIONES.max' => 'El campo Código Libro de Adquisiciones no debe exceder los :max caracteres.',
-                        'NUM_RES_EXCENTO_COMPRA.required' => 'El campo Número Resolución Exenta de Compra es obligatorio.',
+                        // 'NUM_RES_EXCENTO_COMPRA.required' => 'El campo Número Resolución Exenta de Compra es obligatorio.',
                         'NUM_RES_EXCENTO_COMPRA.integer' => 'El campo Número Resolución Exenta de Compra debe ser un número entero.',
                         'NUM_RES_EXCENTO_COMPRA.between' => 'El campo Número Resolución Exenta de Compra debe estar entre :min y :max.',
                         'NUM_ORDEN_COMPRA.required' => 'El campo Número de Orden de Compra es obligatorio.',
@@ -392,11 +392,18 @@ class EquipoController extends Controller
                     }
                     // Aquí concatenas la información para el detalle de movimiento para un ingreso
                     // Formatear el detalle y dar formato
-                    $detalleMovimiento = strtoupper("Proveedor: {$request->input('PROVEEDOR')}, ".
-                    "Numero de Factura: {$request->input('NUMERO_FACTURA')}, ".
-                    "Codigo Libro Adquisiciones: {$request->input('COD_LIBRO_ADQUISICIONES')}, ".
-                    "Numero Res. Exenta de Compra: {$request->input('NUM_RES_EXCENTO_COMPRA')}, ".
-                    "Numero de Orden de Compra: {$request->input('NUM_ORDEN_COMPRA')}.");
+                    $proveedor = $request->input('PROVEEDOR') ? $request->input('PROVEEDOR') : 'No especifica';
+                    $numeroFactura = $request->input('NUMERO_FACTURA') ? $request->input('NUMERO_FACTURA') : 'No especifica';
+                    $codigoLibroAdquisiciones = $request->input('COD_LIBRO_ADQUISICIONES') ? $request->input('COD_LIBRO_ADQUISICIONES') : 'No especifica';
+                    $numResExcentoCompra = $request->input('NUM_RES_EXCENTO_COMPRA') ? $request->input('NUM_RES_EXCENTO_COMPRA') : 'No especifica';
+                    $numOrdenCompra = $request->input('NUM_ORDEN_COMPRA');
+
+                    // Concatenar la información
+                    $detalleMovimiento = strtoupper("Proveedor: {$proveedor}, ".
+                    "Numero de Factura: {$numeroFactura}, ".
+                    "Codigo Libro Adquisiciones: {$codigoLibroAdquisiciones}, ".
+                    "Numero Res. Exenta de Compra: {$numResExcentoCompra}, ".
+                    "Numero de Orden de Compra: {$numOrdenCompra}.");
                     break;
                 // ...
 

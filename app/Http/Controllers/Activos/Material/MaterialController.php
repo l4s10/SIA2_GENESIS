@@ -345,11 +345,18 @@ class MaterialController extends Controller
 
                     // Aquí concatenas la información para el detalle de movimiento para un ingreso
                     // Formatear el detalle y dar formato
-                    $detalleMovimiento = strtoupper("Proveedor: {$request->input('PROVEEDOR')}, ".
-                    "Numero de Factura: {$request->input('NUMERO_FACTURA')}, ".
-                    "Codigo Libro Adquisiciones: {$request->input('COD_LIBRO_ADQUISICIONES')}, ".
-                    "Numero Res. Exenta de Compra: {$request->input('NUM_RES_EXCENTO_COMPRA')}, ".
-                    "Numero de Orden de Compra: {$request->input('NUM_ORDEN_COMPRA')}.");
+                    $proveedor = $request->input('PROVEEDOR') ? $request->input('PROVEEDOR') : 'No especifica';
+                    $numeroFactura = $request->input('NUMERO_FACTURA') ? $request->input('NUMERO_FACTURA') : 'No especifica';
+                    $codigoLibroAdquisiciones = $request->input('COD_LIBRO_ADQUISICIONES') ? $request->input('COD_LIBRO_ADQUISICIONES') : 'No especifica';
+                    $numResExcentoCompra = $request->input('NUM_RES_EXCENTO_COMPRA') ? $request->input('NUM_RES_EXCENTO_COMPRA') : 'No especifica';
+                    $numOrdenCompra = $request->input('NUM_ORDEN_COMPRA');
+
+                    // Concatenar la información
+                    $detalleMovimiento = strtoupper("Proveedor: {$proveedor}, ".
+                    "Numero de Factura: {$numeroFactura}, ".
+                    "Codigo Libro Adquisiciones: {$codigoLibroAdquisiciones}, ".
+                    "Numero Res. Exenta de Compra: {$numResExcentoCompra}, ".
+                    "Numero de Orden de Compra: {$numOrdenCompra}.");
                     break;
                 // ...
 
