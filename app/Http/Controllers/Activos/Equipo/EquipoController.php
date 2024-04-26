@@ -257,7 +257,7 @@ class EquipoController extends Controller
             // Obtener la información de la oficina del usuario
             $oficina = Oficina::where('OFICINA_ID', $oficinaIdUsuario)->firstOrFail();
             // Obtener ubicaciones del sistema
-            $ubicaciones = Ubicacion::all();
+            $ubicaciones = Ubicacion::where('OFICINA_ID', $oficinaIdUsuario)->get();
             // Obtener usuarios del sistema...
             $usuarios = User::all();
 
