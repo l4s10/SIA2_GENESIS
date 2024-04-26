@@ -283,6 +283,7 @@ class SolicitudEquiposController extends Controller
             'SOLICITUD_FECHA_HORA_INICIO_ASIGNADA' => 'required|date',
             'SOLICITUD_FECHA_HORA_TERMINO_ASIGNADA' => 'required|date|after:SOLICITUD_FECHA_HORA_INICIO_ASIGNADA',
             'REVISION_SOLICITUD_OBSERVACION' => 'required|string|max:255',
+            'autorizar.*' => 'required|numeric|min:1',
         ], [
             // Error messages
             'SOLICITUD_FECHA_HORA_INICIO_ASIGNADA.required' => 'La fecha de inicio asignada es requerida.',
@@ -293,6 +294,9 @@ class SolicitudEquiposController extends Controller
             'REVISION_SOLICITUD_OBSERVACION.required' => 'Indique el motivo de la revisión.',
             'REVISION_SOLICITUD_OBSERVACION.string' => 'El campo Observación debe ser una cadena de caracteres.',
             'REVISION_SOLICITUD_OBSERVACION.max' => 'El campo Observación no debe exceder los 255 caracteres.',
+            'autorizar.*.required' => 'La Cantidad Autorizada es requerida.',
+            'autorizar.*.numeric' => 'La Cantidad Autorizada debe ser un número.',
+            'autorizar.*.min' => 'La cantidad autorizada no puede ser menor a 1.',
         ]);
 
         return $validator;
