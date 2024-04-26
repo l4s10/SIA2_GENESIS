@@ -140,7 +140,7 @@
 
                 <div class="mb-3">
                     <label for="NUM_ORDEN_COMPRA" class="form-label"><i class="fa-solid fa-file-contract"></i> Número Orden de Compra:</label>
-                    <input type="number" class="form-control{{ $errors->has('NUM_ORDEN_COMPRA') ? ' is-invalid' : '' }}" id="NUM_ORDEN_COMPRA" name="NUM_ORDEN_COMPRA" value="{{ old('NUM_ORDEN_COMPRA') }}" placeholder="Número de orden de compra" min="0" max="999999" >
+                    <input type="text" class="form-control{{ $errors->has('NUM_ORDEN_COMPRA') ? ' is-invalid' : '' }}" id="NUM_ORDEN_COMPRA" name="NUM_ORDEN_COMPRA" value="{{ old('NUM_ORDEN_COMPRA') }}" placeholder="Número de orden de compra">
                     @if ($errors->has('NUM_ORDEN_COMPRA'))
                         <div class="invalid-feedback">
                             {{ $errors->first('NUM_ORDEN_COMPRA') }}
@@ -319,35 +319,32 @@
     </script>
 
     <script>
-/**
-             * This script handles the dynamic updating of the correoSelect dropdown based on the selected ubicacionSelect value.
-             * It listens for changes in the ubicacionSelect dropdown and updates the correoSelect dropdown accordingly.
-             * The usuarios variable is a JSON representation of the Laravel collection of users.
-             */
-             document.addEventListener('DOMContentLoaded', function() {
-                const ubicacionSelect = document.getElementById('UBICACION_ID');
-                const correoSelect = document.getElementById('CORREO_ELECTRONICO_SOLICITANTE');
-                const usuarios = @json($usuarios); // Convierte la colección de usuarios de Laravel a JSON
+        document.addEventListener('DOMContentLoaded', function() {
+            const ubicacionSelect = document.getElementById('UBICACION_ID');
+            const correoSelect = document.getElementById('CORREO_ELECTRONICO_SOLICITANTE');
+            const usuarios = @json($usuarios); // Convierte la colección de usuarios de Laravel a JSON
 
-                // Escuchar cambios en el selector de ubicación
-                ubicacionSelect.addEventListener('change', function() {
-                    const ubicacionIdSeleccionada = this.value;
-                    actualizarCorreos(ubicacionIdSeleccionada);
-                });
-
-                function actualizarCorreos(ubicacionId) {
-                    // Limpiar opciones existentes
-                    correoSelect.innerHTML = '<option value="" disabled selected>-- Seleccione un correo --</option>';
-
-                    // Filtrar usuarios por la ubicación seleccionada y actualizar el selector
-                    usuarios.forEach(usuario => {
-                        if (usuario.UBICACION_ID == ubicacionId) {
-                            const opcion = new Option(`${usuario.USUARIO_NOMBRES} ${usuario.USUARIO_APELLIDOS} (${usuario.email})`, usuario.email);
-                            correoSelect.add(opcion);
-                        }
-                    });
-                }
+            // Escuchar cambios en el selector de ubicación
+            ubicacionSelect.addEventListener('change', function() {
+                const ubicacionIdSeleccionada = this.value;
+                actualizarCorreos(ubicacionIdSeleccionada);
             });
+
+            function actualizarCorreos(ubicacionId) {
+                // Limpiar opciones existentes
+                correoSelect.innerHTML = '<option value="" disabled selected>-- Seleccione un correo --</option>';
+
+                // Filtrar usuarios por la ubicación seleccionada y ordenarlos alfabéticamente
+                const usuariosFiltrados = usuarios.filter(usuario => usuario.UBICACION_ID == ubicacionId);
+                usuariosFiltrados.sort((a, b) => (a.USUARIO_NOMBRES + a.USUARIO_APELLIDOS).localeCompare(b.USUARIO_NOMBRES + b.USUARIO_APELLIDOS));
+
+                // Actualizar el selector con los usuarios ordenados
+                usuariosFiltrados.forEach(usuario => {
+                    const opcion = new Option(`${usuario.USUARIO_NOMBRES} ${usuario.USUARIO_APELLIDOS} (${usuario.email})`, usuario.email);
+                    correoSelect.add(opcion);
+                });
+            }
+        });
     </script>
 
 @stop
