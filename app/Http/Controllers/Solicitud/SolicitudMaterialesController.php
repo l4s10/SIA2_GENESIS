@@ -422,11 +422,11 @@ class SolicitudMaterialesController extends Controller
                 $material = Material::findOrFail($materialId);
                 $validator = Validator::make(
                     ['autorizar' => $cantidadAutorizada],
-                    ['autorizar' => 'required|numeric|min:0|max:'.$material->MATERIAL_STOCK],
+                    ['autorizar' => 'required|numeric|min:1|max:'.$material->MATERIAL_STOCK],
                     [
                         'required' => 'La cantidad autorizada es requerida.',
                         'numeric' => 'La cantidad autorizada debe ser un número.',
-                        'min' => 'La cantidad autorizada no puede ser negativa.',
+                        'min' => 'La cantidad autorizada no puede ser menor a 1.',
                         'max' => 'La cantidad autorizada no puede ser mayor al stock disponible.',
                     ]
                 );
