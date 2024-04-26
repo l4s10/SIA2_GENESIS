@@ -356,21 +356,40 @@ class EquipoController extends Controller
                 $stockResultante = $request->EQUIPO_STOCK - $request->STOCK_NUEVO;
             }
 
-            // Actualizar los atributos del equipo
-            $equipo->update([
-                'OFICINA_ID' => Auth::user()->OFICINA_ID,
-                'TIPO_EQUIPO_ID' => $request->TIPO_EQUIPO_ID,
-                'EQUIPO_MARCA' => strtoupper($request->input('EQUIPO_MARCA')),
-                'EQUIPO_MODELO' => strtoupper($request->input('EQUIPO_MODELO')),
-                'EQUIPO_ESTADO' => strtoupper($request->input('EQUIPO_ESTADO')),
-                'EQUIPO_STOCK' => $stockResultante
-            ]);
-
             // Variables para almacenar los valores de los campos dinámicos
             $detalleMovimiento = '';
 
             switch ($request->TIPO_MOVIMIENTO) {
                 case 'INGRESO':
+                    // Validar campos requeridos para ingreso
+                    $validatorIngreso = Validator::make($request->all(), [
+                        'PROVEEDOR' => 'required|string|max:255',
+                        'NUMERO_FACTURA' => 'required|integer|between:0,1000000',
+                        'COD_LIBRO_ADQUISICIONES' => 'required|string|max:255',
+                        'NUM_RES_EXCENTO_COMPRA' => 'required|integer|between:0,1000000',
+                        'NUM_ORDEN_COMPRA' => 'required|string|max:255',
+                    ], [
+                        'PROVEEDOR.required' => 'El campo Proveedor es obligatorio.',
+                        'PROVEEDOR.string' => 'El campo Proveedor debe ser una cadena de texto.',
+                        'PROVEEDOR.max' => 'El campo Proveedor no debe exceder los :max caracteres.',
+                        'NUMERO_FACTURA.required' => 'El campo Número de Factura es obligatorio.',
+                        'NUMERO_FACTURA.integer' => 'El campo Número de Factura debe ser un número entero.',
+                        'NUMERO_FACTURA.between' => 'El campo Número de Factura debe estar entre :min y :max.',
+                        'COD_LIBRO_ADQUISICIONES.required' => 'El campo Código Libro de Adquisiciones es obligatorio.',
+                        'COD_LIBRO_ADQUISICIONES.string' => 'El campo Código Libro de Adquisiciones debe ser una cadena de texto.',
+                        'COD_LIBRO_ADQUISICIONES.max' => 'El campo Código Libro de Adquisiciones no debe exceder los :max caracteres.',
+                        'NUM_RES_EXCENTO_COMPRA.required' => 'El campo Número Resolución Exenta de Compra es obligatorio.',
+                        'NUM_RES_EXCENTO_COMPRA.integer' => 'El campo Número Resolución Exenta de Compra debe ser un número entero.',
+                        'NUM_RES_EXCENTO_COMPRA.between' => 'El campo Número Resolución Exenta de Compra debe estar entre :min y :max.',
+                        'NUM_ORDEN_COMPRA.required' => 'El campo Número de Orden de Compra es obligatorio.',
+                        'NUM_ORDEN_COMPRA.string' => 'El campo Número de Orden de Compra debe ser una cadena de texto.',
+                        'NUM_ORDEN_COMPRA.max' => 'El campo Número de Orden de Compra no debe exceder los :max caracteres.',
+                    ]);
+
+                    // si el validador falla, redirigir con errores
+                    if ($validatorIngreso->fails()) {
+                        return redirect()->route('equipos.edit', $equipo->EQUIPO_ID)->withErrors($validatorIngreso)->withInput();
+                    }
                     // Aquí concatenas la información para el detalle de movimiento para un ingreso
                     // Formatear el detalle y dar formato
                     $detalleMovimiento = strtoupper("Proveedor: {$request->input('PROVEEDOR')}, ".
@@ -382,12 +401,45 @@ class EquipoController extends Controller
                 // ...
 
                 case 'TRASLADO':
+                    // Validar campos requeridos para traslado
+                    $validatorTraslado = Validator::make($request->all(), [
+                        'UBICACION_ID' => 'required|exists:ubicaciones,UBICACION_ID',
+                        'FECHA_MEMO_CONDUCTOR' => 'required|date',
+                        'CORREO_ELECTRONICO_SOLICITANTE' => 'required',
+                    ], [
+                        'UBICACION_ID.required' => 'El campo Ubicación es obligatorio.',
+                        'UBICACION_ID.exists' => 'La Ubicación seleccionada no es válida.',
+                        'FECHA_MEMO_CONDUCTOR.required' => 'El campo Fecha Memo Conductor es obligatorio.',
+                        'FECHA_MEMO_CONDUCTOR.date' => 'El campo Fecha Memo Conductor debe ser una fecha válida.',
+                        'CORREO_ELECTRONICO_SOLICITANTE.required' => 'El campo Correo Electrónico Solicitante es obligatorio.',
+                    ]);
+
+                    // si el validador falla, redirigir con errores
+                    if ($validatorTraslado->fails()) {
+                        return redirect()->route('equipos.edit', $equipo->EQUIPO_ID)->withErrors($validatorTraslado)->withInput();
+                    }
                     // Aquí concatenas la información para el detalle de movimiento para un traslado
                     $ubicacion = Ubicacion::find($request->UBICACION_ID);
                     $fechaMemoConductor = Carbon::parse($request->FECHA_MEMO_CONDUCTOR)->format('d-m-Y');
                     $detalleMovimiento = "Traslado a ubicación: {$ubicacion->UBICACION_NOMBRE}, Fecha memo conductor: {$fechaMemoConductor}, Correo electrónico solicitante: {$request->CORREO_ELECTRONICO_SOLICITANTE}.";
                     break;
                 case 'MERMA':
+                    // Validar campos requeridos para merma
+                    $validatorMerma = Validator::make($request->all(), [
+                        'FECHA_AUTORIZACION' => 'required|date',
+                        'NOMBRE_JEFE_AUTORIZA' => 'required|string|max:255',
+                    ], [
+                        'FECHA_AUTORIZACION.required' => 'El campo Fecha de Autorización es obligatorio.',
+                        'FECHA_AUTORIZACION.date' => 'El campo Fecha de Autorización debe ser una fecha válida.',
+                        'NOMBRE_JEFE_AUTORIZA.required' => 'El campo Nombre del Jefe que autoriza es obligatorio.',
+                        'NOMBRE_JEFE_AUTORIZA.string' => 'El campo Nombre del Jefe que autoriza debe ser una cadena de texto.',
+                        'NOMBRE_JEFE_AUTORIZA.max' => 'El campo Nombre del Jefe que autoriza no debe exceder los :max caracteres.',
+                    ]);
+
+                    // si el validador falla, redirigir con errores
+                    if ($validatorMerma->fails()) {
+                        return redirect()->route('equipos.edit', $equipo->MATERIAL_ID)->withErrors($validatorMerma)->withInput();
+                    }
                     // Aquí concatenas la información para el detalle de movimiento para una merma
                     $fechaAutorizacion = Carbon::parse($request->FECHA_AUTORIZACION)->format('d-m-Y');
                     $detalleMovimiento = "Merma autorizada por: {$request->NOMBRE_JEFE_AUTORIZA}, Fecha de autorización: {$fechaAutorizacion}.";
@@ -398,6 +450,16 @@ class EquipoController extends Controller
                     break;
                 // Agrega casos adicionales según sea necesario
             }
+
+            // Actualizar los atributos del equipo
+            $equipo->update([
+                'OFICINA_ID' => Auth::user()->OFICINA_ID,
+                'TIPO_EQUIPO_ID' => $request->TIPO_EQUIPO_ID,
+                'EQUIPO_MARCA' => strtoupper($request->input('EQUIPO_MARCA')),
+                'EQUIPO_MODELO' => strtoupper($request->input('EQUIPO_MODELO')),
+                'EQUIPO_ESTADO' => strtoupper($request->input('EQUIPO_ESTADO')),
+                'EQUIPO_STOCK' => $stockResultante
+            ]);
 
             // Crear un nuevo movimiento asociado al equipo modificado
             Movimiento::create([
