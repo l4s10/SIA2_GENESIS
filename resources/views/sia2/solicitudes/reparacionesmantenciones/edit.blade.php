@@ -239,5 +239,44 @@
 
 @section('js')
     {{-- Llamar a fechasAutorizadas.js --}}
-    <script src="{{ asset('js/Components/fechasReparaciones.js') }}"></script>
+    {{-- <script src="{{ asset('js/Components/fechasReparaciones.js') }}"></script> --}}
+        {{-- Inicializa flatpickers --}}
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                // Obtener la fecha y hora actual
+                let today = new Date();
+
+                // Obtener el valor capturado por la base de datos para la fecha de inicio
+                let fechaInicioValue = "{{$solicitud->SOLICITUD_REPARACION_FECHA_HORA_INICIO }}";
+
+                // Inicializar Flatpickr para el campo de fecha y hora de inicio autorizada
+                flatpickr("#SOLICITUD_REPARACION_FECHA_HORA_INICIO", {
+                    enableTime: true,
+                    dateFormat: "Y-m-d H:i:s",
+                    altFormat: "d-m-Y H:i",
+                    altInput: true,
+                    locale: "es",
+                    // Establecer el valor mínimo solo si hay un valor capturado por la base de datos
+                    minDate: fechaInicioValue ? fechaInicioValue : today,
+                    maxDate: new Date(today.getFullYear(), 11, 31), // Permitir fechas hasta fin de año
+                    minTime: "08:00", // Hora mínima permitida
+                    maxTime: "19:00", // Hora máxima permitida
+                    placeholder: 'Seleccione la fecha y hora de inicio' // Añadido placeholder
+                });
+
+                // Inicializar Flatpickr para el campo de fecha y hora de término autorizada
+                flatpickr("#SOLICITUD_REPARACION_FECHA_HORA_TERMINO", {
+                    enableTime: true,
+                    dateFormat: "Y-m-d H:i:s",
+                    altFormat: "d-m-Y H:i",
+                    altInput: true,
+                    locale: "es",
+                    minDate: today, // Establecer la fecha mínima como la fecha actual
+                    maxDate: new Date(today.getFullYear() + 1, 1, 28), // Permitir fechas hasta febrero del siguiente año
+                    minTime: "08:00", // Hora mínima permitida
+                    maxTime: "19:00", // Hora máxima permitida
+                    placeholder: 'Seleccione la fecha y hora de término' // Añadido placeholder
+                });
+            });
+        </script>
 @stop

@@ -318,8 +318,46 @@
 
 @section('js')
     {{-- Llamar a fechasAutorizadas.js --}}
-    <script src="{{ asset('js/Components/fechasAutorizadas.js') }}"></script>
+    {{-- <script src="{{ asset('js/Components/fechasAutorizadas.js') }}"></script> --}}
+    {{-- Inicializa flatpickers --}}
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Obtener la fecha y hora actual
+            let today = new Date();
 
+            // Obtener el valor capturado por la base de datos para la fecha de inicio
+            let fechaInicioValue = "{{ $solicitud->SOLICITUD_FECHA_HORA_INICIO_ASIGNADA }}";
+
+            // Inicializar Flatpickr para el campo de fecha y hora de inicio autorizada
+            flatpickr("#SOLICITUD_FECHA_HORA_INICIO_ASIGNADA", {
+                enableTime: true,
+                dateFormat: "Y-m-d H:i:s",
+                altFormat: "d-m-Y H:i",
+                altInput: true,
+                locale: "es",
+                // Establecer el valor mínimo solo si hay un valor capturado por la base de datos
+                minDate: fechaInicioValue ? fechaInicioValue : today,
+                maxDate: new Date(today.getFullYear(), 11, 31), // Permitir fechas hasta fin de año
+                minTime: "08:00", // Hora mínima permitida
+                maxTime: "19:00", // Hora máxima permitida
+                placeholder: 'Seleccione la fecha y hora de inicio' // Añadido placeholder
+            });
+
+            // Inicializar Flatpickr para el campo de fecha y hora de término autorizada
+            flatpickr("#SOLICITUD_FECHA_HORA_TERMINO_ASIGNADA", {
+                enableTime: true,
+                dateFormat: "Y-m-d H:i:s",
+                altFormat: "d-m-Y H:i",
+                altInput: true,
+                locale: "es",
+                minDate: today, // Establecer la fecha mínima como la fecha actual
+                maxDate: new Date(today.getFullYear() + 1, 1, 28), // Permitir fechas hasta febrero del siguiente año
+                minTime: "08:00", // Hora mínima permitida
+                maxTime: "19:00", // Hora máxima permitida
+                placeholder: 'Seleccione la fecha y hora de término' // Añadido placeholder
+            });
+        });
+    </script>
     {{-- Llamar a componente DataTables --}}
     <script>
         $(document).ready(function () {
