@@ -154,6 +154,9 @@
                 <div class="form-group">
                     <label for="SOLICITUD_FECHA_HORA_INICIO_SOLICITADA"><i class="fa-solid fa-calendar-days"></i> Fecha y Hora de Inicio Solicitada</label>
                     <input type="datetime-local" class="form-control" id="SOLICITUD_FECHA_HORA_INICIO_SOLICITADA" name="SOLICITUD_FECHA_HORA_INICIO_SOLICITADA" required>
+                    @error('SOLICITUD_FECHA_HORA_INICIO_SOLICITADA')
+                        <span class="text-danger">{{ $message }}</span>
+                    @enderror
                 </div>
             </div>
 
@@ -161,6 +164,9 @@
                 <div class="form-group">
                     <label for="SOLICITUD_FECHA_HORA_TERMINO_SOLICITADA"><i class="fa-solid fa-calendar-xmark"></i> Fecha y Hora de Término Solicitada</label>
                     <input type="datetime-local" class="form-control" id="SOLICITUD_FECHA_HORA_TERMINO_SOLICITADA" name="SOLICITUD_FECHA_HORA_TERMINO_SOLICITADA" required>
+                    @error('SOLICITUD_FECHA_HORA_TERMINO_SOLICITADA')
+                        <span class="text-danger">{{ $message }}</span>
+                    @enderror
                 </div>
             </div>
         </div>
