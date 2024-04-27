@@ -247,13 +247,12 @@ class SolicitudEquiposController extends Controller
         // Code for validating 'guardar'
         // Validates at least one observation of the solicitud, optionally the assignment dates and authorized quantities of the materials (ONLY IF ENTERED)
         $validator = Validator::make($request->all(),[
-            'REVISION_SOLICITUD_OBSERVACION' => 'required|string|max:255',
+            'REVISION_SOLICITUD_OBSERVACION' => 'nullable|string|max:255',
             'SOLICITUD_FECHA_HORA_INICIO_ASIGNADA' => 'required|date',
             'SOLICITUD_FECHA_HORA_TERMINO_ASIGNADA' => 'required|date|after:SOLICITUD_FECHA_HORA_INICIO_ASIGNADA',
             'autorizar.*' => 'nullable|numeric|min:0',
         ], [
             // Error messages
-            'REVISION_SOLICITUD_OBSERVACION.required' => 'Indicate the reason for the revision.',
             'REVISION_SOLICITUD_OBSERVACION.string' => 'The Observation field must be a string.',
             'REVISION_SOLICITUD_OBSERVACION.max' => 'The Observation field must not exceed 255 characters.',
             'SOLICITUD_FECHA_HORA_INICIO_ASIGNADA.required' => 'The Start Date Assigned field is required.',
@@ -282,7 +281,7 @@ class SolicitudEquiposController extends Controller
             // 'SOLICITUD_ESTADO' => 'required|string|max:255|in:INGRESADO,EN REVISION,APROBADO,RECHAZADO,TERMINADO',
             'SOLICITUD_FECHA_HORA_INICIO_ASIGNADA' => 'required|date',
             'SOLICITUD_FECHA_HORA_TERMINO_ASIGNADA' => 'required|date|after:SOLICITUD_FECHA_HORA_INICIO_ASIGNADA',
-            'REVISION_SOLICITUD_OBSERVACION' => 'required|string|max:255',
+            'REVISION_SOLICITUD_OBSERVACION' => 'nullable|string|max:255',
             'autorizar.*' => 'required|numeric|min:0',
         ], [
             // Error messages
@@ -291,7 +290,6 @@ class SolicitudEquiposController extends Controller
             'SOLICITUD_FECHA_HORA_TERMINO_ASIGNADA.required' => 'La fecha de término asignada es requerida.',
             'SOLICITUD_FECHA_HORA_TERMINO_ASIGNADA.date' => 'La fecha de término asignada debe ser una fecha.',
             'SOLICITUD_FECHA_HORA_TERMINO_ASIGNADA.after' => 'La fecha de término asignada debe ser una fecha posterior a la fecha de inicio asignada.',
-            'REVISION_SOLICITUD_OBSERVACION.required' => 'Indique el motivo de la revisión.',
             'REVISION_SOLICITUD_OBSERVACION.string' => 'El campo Observación debe ser una cadena de caracteres.',
             'REVISION_SOLICITUD_OBSERVACION.max' => 'El campo Observación no debe exceder los 255 caracteres.',
             'autorizar.*.required' => 'La Cantidad Autorizada es requerida.',
@@ -314,14 +312,13 @@ class SolicitudEquiposController extends Controller
         // Should return true or false depending on the validation result
         // Verify at least one observation (reason for rejection) with validator
         $validator = Validator::make($request->all(),[
-            'REVISION_SOLICITUD_OBSERVACION' => 'required|string|max:255',
+            'REVISION_SOLICITUD_OBSERVACION' => 'nullable|string|max:255',
             'SOLICITUD_FECHA_HORA_INICIO_ASIGNADA' => 'nullable|date',
             'SOLICITUD_FECHA_HORA_TERMINO_ASIGNADA' => 'nullable|date|after:SOLICITUD_FECHA_HORA_INICIO_ASIGNADA',
             'autorizar.*' => 'nullable|numeric|min:0',
 
         ], [
             // Error messages
-            'REVISION_SOLICITUD_OBSERVACION.required' => 'Indique el motivo del rechazo.',
             'REVISION_SOLICITUD_OBSERVACION.string' => 'El campo Observación debe ser una cadena de caracteres.',
             'REVISION_SOLICITUD_OBSERVACION.max' => 'El campo Observación no debe exceder los 255 caracteres.',
             'SOLICITUD_FECHA_HORA_INICIO_ASIGNADA.date' => 'La fecha de inicio asignada debe ser una fecha.',
@@ -413,7 +410,7 @@ class SolicitudEquiposController extends Controller
             RevisionSolicitud::create([
                 'USUARIO_id' => Auth::user()->id,
                 'SOLICITUD_ID' => $solicitud->SOLICITUD_ID,
-                'REVISION_SOLICITUD_OBSERVACION' => $request->input('REVISION_SOLICITUD_OBSERVACION'),
+                'REVISION_SOLICITUD_OBSERVACION' => $request->input('REVISION_SOLICITUD_OBSERVACION') ?: 'Sin observación.',
             ]);
         }
         catch(Exception $e)
