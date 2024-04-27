@@ -7,44 +7,155 @@
 @stop
 
 @section('content')
-    <div class="card">
-        <div class="card-header">
-            Detalles de la Solicitud
-        </div>
-        <div class="card-body">
-            <p class="card-text"><i class="fa-solid fa-file-pen"></i> Motivo: {{ $solicitud->SOLICITUD_MOTIVO }}</p>
-            <p><i class="fa-solid fa-file-circle-check"></i> Estado: <span class="badge rounded-pill estado-{{ strtolower(str_replace(' ', '-', $solicitud->SOLICITUD_ESTADO)) }}">{{ $solicitud->SOLICITUD_ESTADO }}</span></p>
-            <p class="card-text"><i class="fa-solid fa-calendar-plus"></i> Fecha y Hora de Inicio Solicitada: {{ $solicitud->SOLICITUD_FECHA_HORA_INICIO_SOLICITADA }}</p>
-            <p class="card-text"><i class="fa-regular fa-calendar-plus"></i> Fecha y Hora de Término Solicitada: {{ $solicitud->SOLICITUD_FECHA_HORA_TERMINO_SOLICITADA }}</p>
-            <p class="card-text"><i class="fa-solid fa-calendar-check"></i> Fecha y Hora de Inicio Autorizada: {{ $solicitud->SOLICITUD_FECHA_HORA_INICIO_ASIGNADA ?? 'NO SE HA AUTORIZADO FECHA POR AHORA.'}}</p>
-            <p class="card-text"><i class="fa-regular fa-calendar-check"></i> Fecha y Hora de Término Autorizada: {{ $solicitud->SOLICITUD_FECHA_HORA_INICIO_ASIGNADA ?? 'NO SE HA AUTORIZADO FECHA POR AHORA.' }}</p>
+    {{-- Contenedor general para los acordeones --}}
+    <div class="accordion" id="generalAccordion">
 
-            <h5 class="mt-4">Equipos Solicitados</h5>
-            <table class="table table-bordered">
-                <thead class="tablacolor">
-                    <tr>
-                        <th>Tipo de Equipo</th>
-                        <th>Cantidad</th>
-                        <th>Cantidad autorizada</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach($solicitud->equipos as $tipoEquipo)
-                        <tr>
-                            <td>{{ $tipoEquipo->TIPO_EQUIPO_NOMBRE }}</td>
-                            <td>{{ $tipoEquipo->pivot->SOLICITUD_EQUIPOS_CANTIDAD }}</td>
-                            <td>{{ $tipoEquipo->pivot->SOLICITUD_EQUIPOS_CANTIDAD_AUTORIZADA ?? 'NO SE HAN AUTORIZADO CANTIDADES POR AHORA.'}}</td>
-                        </tr>
-                    @endforeach
-                </tbody>
-            </table>
+        {{-- Acordeon para datos de la solicitud --}}
+        <div class="card">
+            <div class="card-header" id="datosSolicitudHeading">
+                <h2 class="mb-0">
+                    <button class="btn btn-link" type="button" data-toggle="collapse" data-target="#datosSolicitudCollapse" aria-expanded="true" aria-controls="datosSolicitudCollapse">
+                        Datos de la solicitud de equipos
+                    </button>
+                </h2>
+            </div>
+            <div id="datosSolicitudCollapse" class="collapse show" aria-labelledby="datosSolicitudHeading" data-parent="#generalAccordion">
+                <div class="card-body">
+                    {{-- Contenido de datos de la solicitud --}}
+                    <div class="row">
+                        <div class="col-6">
+                            <h4>Datos solicitante</h4>
+                            <p><strong><i class="fa-solid fa-user"></i> Nombre del solicitante:</strong> {{$solicitud->solicitante->USUARIO_NOMBRES}} {{$solicitud->solicitante->USUARIO_APELLIDOS}}</p>
+                            <p><strong><i class="fa-solid fa-envelope"></i> Correo electrónico:</strong> {{$solicitud->solicitante->email}}</p>
+                            <p><strong><i class="fa-solid fa-phone"></i> Teléfono:</strong> {{$solicitud->solicitante->USUARIO_FONO}}</p>
+                            <p><strong><i class="fa-solid fa-building-user"></i> Ubicación / Departamento: </strong> {{$solicitud->solicitante->ubicacion->UBICACION_NOMBRE ?? $solicitud->solicitante->departamento->DEPARTAMENTO_NOMBRE}}</p>
+                        </div>
+                        <div class="col-6">
+                            <h4>Datos solicitud</h4>
+                            <p><strong><i class="fa-solid fa-file-circle-check"></i> Estado de la solicitud:</strong>
+                                @switch($solicitud->SOLICITUD_ESTADO)
+                                    @case('INGRESADO')
+                                    <span class="badge estado-ingresado rounded-pill">INGRESADO</span>
+                                    @break
+                                    @case('EN REVISION')
+                                    <span class="badge estado-en-revision rounded-pill">EN REVISION</span>
+                                    @break
+                                    @case('APROBADO')
+                                    <span class="badge estado-aprobado rounded-pill">APROBADO</span>
+                                    @break
+                                    @case('RECHAZADO')
+                                    <span class="badge estado-rechazado rounded-pill">RECHAZADO</span>
+                                    @break
+                                    @case('TERMINADO')
+                                    <span class="badge estado-terminado rounded-pill">TERMINADO</span>
+                                    @break
+                                @endswitch
+                            </p>
+                            <p><strong><i class="fa-solid fa-calendar-week"></i> Fecha y hora de solicitud:</strong> {{ $solicitud->created_at }}</p>
+                            <p><strong><i class="fa-solid fa-calendar-plus"></i> Fecha y hora de inicio solicitada:</strong> {{ $solicitud->SOLICITUD_FECHA_HORA_INICIO_SOLICITADA }}</p>
+                            <p><strong><i class="fa-regular fa-calendar-plus"></i> Fecha y hora de término solicitada:</strong> {{ $solicitud->SOLICITUD_FECHA_HORA_TERMINO_SOLICITADA }}</p>
+                            <p><strong><i class="fa-solid fa-calendar-check"></i> Fecha y hora de inicio autorizada:</strong> {{ $solicitud->SOLICITUD_FECHA_HORA_INICIO_ASIGNADA ?? 'SIN ASIGNACION POR AHORA' }}</p>
+                            <p><strong><i class="fa-regular fa-calendar-check"></i> Fecha y hora de término autorizada:</strong> {{ $solicitud->SOLICITUD_FECHA_HORA_TERMINO_ASIGNADA ?? 'SIN ASIGNACION POR AHORA' }}</p>
+                        </div>
+                    </div>
+                    <h4>Descripción</h4>
+                    <p><strong><i class="fa-solid fa-file-pen"></i> Descripción:</strong> {{ $solicitud->SOLICITUD_MOTIVO }}</p>
+                </div>
+            </div>
         </div>
+
+        {{-- Acordeon para equipos solicitados --}}
+        <div class="card">
+            <div class="card-header" id="equiposSolicitadosHeading">
+                <h2 class="mb-0">
+                    <button class="btn btn-link" type="button" data-toggle="collapse" data-target="#equiposSolicitadosCollapse" aria-expanded="false" aria-controls="equiposSolicitadosCollapse">
+                        Equipos solicitados
+                    </button>
+                </h2>
+            </div>
+            <div id="equiposSolicitadosCollapse" class="collapse" aria-labelledby="equiposSolicitadosHeading" data-parent="#generalAccordion">
+                <div class="card-body">
+                    {{-- Contenido de equipos solicitados --}}
+                    <table class="table table-bordered">
+                        <thead class="tablacarrito">
+                            <tr>
+                                <th>Tipo de Equipo</th>
+                                <th>Cantidad solicitada</th>
+                                <th>Cantidad autorizada</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach($solicitud->equipos as $tipoEquipo)
+                                <tr>
+                                    <td>{{ $tipoEquipo->TIPO_EQUIPO_NOMBRE }}</td>
+                                    <td>{{ $tipoEquipo->pivot->SOLICITUD_EQUIPOS_CANTIDAD }}</td>
+                                    <td>{{ $tipoEquipo->pivot->SOLICITUD_EQUIPOS_CANTIDAD_AUTORIZADA }}</td>
+                                </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        {{-- Acordeon para las observaciones --}}
+        @if ($solicitud->revisiones->isNotEmpty())
+            <div class="card">
+                <div class="card-header" id="headingObservaciones">
+                    <h2 class="mb-0">
+                        <button class="btn btn-link" type="button" data-toggle="collapse" data-target="#collapseObservaciones" aria-expanded="false" aria-controls="collapseObservaciones">
+                            Observaciones
+                        </button>
+                    </h2>
+                </div>
+
+                <div id="collapseObservaciones" class="collapse" aria-labelledby="headingObservaciones" data-parent="#generalAccordion">
+                    <div class="card-body">
+                        {{-- Contenido de las observaciones --}}
+                        <div id="carouselObservaciones" class="carousel slide" data-ride="carousel">
+                            <ol class="carousel-indicators">
+                                @foreach ($solicitud->revisiones as $key => $observacion)
+                                    <li data-target="#carouselObservaciones" data-slide-to="{{ $key }}" class="{{ $key == 0 ? 'active' : '' }}"></li>
+                                @endforeach
+                            </ol>
+
+                            <div class="carousel-inner text-center">
+                                @foreach ($solicitud->revisiones as $key => $observacion)
+                                    <div class="carousel-item {{ $key == 0 ? 'active' : '' }}">
+                                        <h5>Observación {{ $key + 1 }}</h5>
+                                        <p>"{{ $observacion->REVISION_SOLICITUD_OBSERVACION }}" -- {{$observacion->gestionador->USUARIO_NOMBRES}} {{$observacion->gestionador->USUARIO_APELLIDOS}}</p>
+                                    </div>
+                                @endforeach
+                            </div>
+
+                            <div class="carousel-footer d-flex justify-content-between" style="margin-top: 2%;">
+                                <a class="carousel-control-prev btn btn-primary btn-sm" href="#carouselObservaciones" role="button" data-slide="prev">
+                                    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                                    <span class="sr-only">Anterior</span>
+                                </a>
+                                <a class="carousel-control-next btn btn-primary btn-sm" href="#carouselObservaciones" role="button" data-slide="next">
+                                    <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                                    <span class="sr-only">Siguiente</span>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        @endif
     </div>
+
     <a href="{{ route('solicitudes.equipos.index') }}" class="btn btn-secondary mt-4"><i class="fa-solid fa-hand-point-left"></i> Volver</a>
 @stop
 
 @section('css')
 <style>
+        #carouselObservaciones .carousel-indicators li {
+            background-color: orange; /* Cambia el color de fondo a naranja */
+        }
+        #carouselObservaciones .carousel-indicators .active {
+            background-color: darkorange; /* Un tono más oscuro para el indicador activo */
+        }
         .tablacolor {
             background-color: #723E72; /* Color de fondo personalizado */
             color: #fff; /* Color de texto personalizado */
