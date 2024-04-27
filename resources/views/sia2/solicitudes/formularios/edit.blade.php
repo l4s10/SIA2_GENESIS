@@ -54,10 +54,8 @@
                                 @endswitch
                             </p>
                             <p><strong><i class="fa-solid fa-calendar-week"></i> Fecha y hora de solicitud:</strong> {{ $solicitud->created_at }}</p>
-                            <p><strong><i class="fa-solid fa-calendar-plus"></i> Fecha y hora de inicio solicitada:</strong> {{ $solicitud->SOLICITUD_FECHA_HORA_INICIO_SOLICITADA }}</p>
-                            <p><strong><i class="fa-regular fa-calendar-plus"></i> Fecha y hora de término solicitada:</strong> {{ $solicitud->SOLICITUD_FECHA_HORA_TERMINO_SOLICITADA }}</p>
-                            <p><strong><i class="fa-solid fa-calendar-check"></i> Fecha y hora de inicio autorizada:</strong> {{ $solicitud->SOLICITUD_FECHA_HORA_INICIO_ASIGNADA ?? 'SIN ASIGNACION POR AHORA' }}</p>
-                            <p><strong><i class="fa-regular fa-calendar-check"></i> Fecha y hora de término autorizada:</strong> {{ $solicitud->SOLICITUD_FECHA_HORA_TERMINO_ASIGNADA ?? 'SIN ASIGNACION POR AHORA' }}</p>
+                            <p><strong><i class="fa-solid fa-calendar-plus"></i> Fecha en que se requiere:</strong> {{ $solicitud->SOLICITUD_FECHA_HORA_INICIO_SOLICITADA }}</p>
+                            <p><strong><i class="fa-solid fa-calendar-check"></i> Fecha de entrega:</strong> {{ $solicitud->SOLICITUD_FECHA_HORA_INICIO_ASIGNADA ?? 'SIN ASIGNACION POR AHORA' }}</p>
                         </div>
                     </div>
 
@@ -160,9 +158,15 @@
                 <div class="col-md-12">
                     {{-- FECHA Y HORA DE INICIO ASIGNADA --}}
                     <div class="form-group">
-                        <label for="SOLICITUD_FECHA_HORA_INICIO_ASIGNADA"><i class="fa-solid fa-calendar-days"></i> Fecha y hora de despacho:</label>
+                        <label for="SOLICITUD_FECHA_HORA_INICIO_ASIGNADA"><i class="fa-solid fa-calendar-days"></i> Fecha de entrega</label>
                         <input type="datetime-local" class="form-control" id="SOLICITUD_FECHA_HORA_INICIO_ASIGNADA" name="SOLICITUD_FECHA_HORA_INICIO_ASIGNADA" value="{{ $solicitud->SOLICITUD_FECHA_HORA_INICIO_ASIGNADA }}">
                     </div>
+                    {{-- Contenedor de errores  --}}
+                    @if ($errors->has('SOLICITUD_FECHA_HORA_INICIO_ASIGNADA'))
+                        <div class="alert alert-danger" role="alert">
+                            {{ $errors->first('SOLICITUD_FECHA_HORA_INICIO_ASIGNADA') }}
+                        </div>
+                    @endif
                 </div>
 
                 {{-- FECHA Y HORA DE TÉRMINO ASIGNADA (N/A)--}}
