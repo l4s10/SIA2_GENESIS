@@ -264,6 +264,19 @@ class FormularioController extends Controller
     public function addToCart(Request $request, Formulario $formulario)
     {
         $cantidadSolicitada = $request->input('cantidad', 1);
+        //Obtener la cantidad ya en el carrito para el formulario
+        $cantidadEnCarrito = Cart::instance('carrito_formularios')->search(function ($cartItem) use ($formulario) {
+            return $cartItem->id === $formulario->FORMULARIO_ID;
+        })->sum('qty');
+
+        // Verificar si la cantidad solicitada excede la cantidad definida
+        // Limite 10.000 por defecto
+        if (($cantidadSolicitada + $cantidadEnCarrito) > 10000)
+        {
+            return redirect()->back()->with('error', 'La cantidad solicitada es demaciado grande.');
+        }
+
+        // Agregamos el formulario al carrito
         $carritoFormularios = Cart::instance('carrito_formularios');
         $carritoFormularios->add($formulario, $cantidadSolicitada);
 
