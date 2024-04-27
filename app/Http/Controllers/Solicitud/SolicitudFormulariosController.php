@@ -169,80 +169,85 @@ class SolicitudFormulariosController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        // Obtener la solicitud a actualizar
-        $solicitud = Solicitud::has('formularios')->findOrFail($id);
+        try{
+            // Obtener la solicitud a actualizar
+            $solicitud = Solicitud::has('formularios')->findOrFail($id);
 
-        // Determinar la acción basada en el botón presionado
-        switch ($request->input('action')) {
-            case 'guardar':
-                // Lógica para guardar cambios
-                $solicitud->update(['SOLICITUD_ESTADO' => 'EN REVISION']);
-            break;
+            // Determinar la acción basada en el botón presionado
+            switch ($request->input('action')) {
+                case 'guardar':
+                    // Validar los datos del formulario (valores a recibir SOLICITUD_FECHA_HORA_INICIO_ASIGNADA, REVISON_SOLICITUD_OBSERVACION)
+                    $validator = Validator::make($request->all(),[
+                        'SOLICITUD_FECHA_HORA_INICIO_ASIGNADA' => 'nullable|date',
+                        'REVISION_SOLICITUD_OBSERVACION' => 'nullable|string|max:255',
+                    ], [
+                        //Mensajes de error
+                        'SOLICITUD_FECHA_HORA_INICIO_ASIGNADA.date' => 'La fecha de entrega debe ser una fecha.',
+                        'REVISION_SOLICITUD_OBSERVACION.string' => 'El campo Observación debe ser una cadena de caracteres.',
+                    ]);
+                    // Lógica para guardar cambios
+                    $solicitud->update(['SOLICITUD_ESTADO' => 'EN REVISION']);
+                break;
 
-            case 'finalizar_revision':
-                // Lógica para finalizar la revisión
-                $solicitud->update(['SOLICITUD_ESTADO' => 'APROBADO']);
-            break;
+                case 'finalizar_revision':
+                    // Validar los datos del formulario (valores a recibir SOLICITUD_FECHA_HORA_INICIO_ASIGNADA)
+                    $validator = Validator::make($request->all(),[
+                        'SOLICITUD_FECHA_HORA_INICIO_ASIGNADA' => 'required|date',
+                    ], [
+                        //Mensajes de error
+                        'SOLICITUD_FECHA_HORA_INICIO_ASIGNADA.required' => 'La fecha de entrega es requerida.',
+                        'SOLICITUD_FECHA_HORA_INICIO_ASIGNADA.date' => 'La fecha de entrega debe ser una fecha.',
+                    ]);
+                    // Si la validación falla, se redirecciona al formulario con los errores
+                    if ($validator->fails()) {
+                        return redirect()->back()->withErrors($validator)->withInput();
+                    }
+                    // Lógica para finalizar la revisión
+                    $solicitud->update(['SOLICITUD_ESTADO' => 'APROBADO']);
+                break;
 
-            case 'rechazar':
-                // verificar al menos que haya una observacion (motivo del rechazo) con validator
-                $validator = Validator::make($request->all(),[
-                    'REVISION_SOLICITUD_OBSERVACION' => 'required|string|max:255',
-                ], [
-                    //Mensajes de error
-                    'REVISION_SOLICITUD_OBSERVACION.required' => 'Indique el motivo del rechazo.',
-                    'REVISION_SOLICITUD_OBSERVACION.string' => 'El campo Observación debe ser una cadena de caracteres.',
-                ]);
-                // Si la validación falla, se redirecciona al formulario con los errores
-                if ($validator->fails()) {
-                    return redirect()->back()->withErrors($validator)->withInput();
-                }
-                // Lógica para rechazar la solicitud
-                $solicitud->update(['SOLICITUD_ESTADO' => 'RECHAZADO']);
-                // Guardar la observacion del rechazo
-                $this->createRevisionSolicitud($request, $solicitud);
-                // redireccionar a la vista de solicitudes con un mensaje de éxito
-                return redirect()->route('solicitudes.formularios.index')->with('success', 'Solicitud rechazada correctamente.');
-            break;
+                case 'rechazar':
+                    // verificar al menos que haya una observacion (motivo del rechazo) con validator
+                    $validator = Validator::make($request->all(),[
+                        'REVISION_SOLICITUD_OBSERVACION' => 'required|string|max:255',
+                    ], [
+                        //Mensajes de error
+                        'REVISION_SOLICITUD_OBSERVACION.required' => 'Indique el motivo del rechazo.',
+                        'REVISION_SOLICITUD_OBSERVACION.string' => 'El campo Observación debe ser una cadena de caracteres.',
+                    ]);
+                    // Si la validación falla, se redirecciona al formulario con los errores
+                    if ($validator->fails()) {
+                        return redirect()->back()->withErrors($validator)->withInput();
+                    }
+                    // Lógica para rechazar la solicitud
+                    $solicitud->update(['SOLICITUD_ESTADO' => 'RECHAZADO']);
+                    // Guardar la observacion del rechazo
+                    $this->createRevisionSolicitud($request, $solicitud);
+                    // redireccionar a la vista de solicitudes con un mensaje de éxito
+                    return redirect()->route('solicitudes.formularios.index')->with('success', 'Solicitud rechazada correctamente.');
+                break;
 
-            // default:
-                // Lógica por defecto o para casos no contemplados
-                // break;
+                // default:
+                    // Lógica por defecto o para casos no contemplados
+                    // break;
+            }
+
+            // Actualizar la solicitud
+            $solicitud->update([
+                // 'SOLICITUD_ESTADO' => $request->input('SOLICITUD_ESTADO'),
+                'SOLICITUD_FECHA_HORA_INICIO_ASIGNADA' => $request->input('SOLICITUD_FECHA_HORA_INICIO_ASIGNADA'),
+                // 'SOLICITUD_FECHA_HORA_TERMINO_ASIGNADA' => $request->input('SOLICITUD_FECHA_HORA_TERMINO_ASIGNADA'),
+            ]);
+
+            // Llamar a la funcion createRevisionSolicitud para crear la revision de la solicitud
+            $this->createRevisionSolicitud($request, $solicitud);
+
+            // Redireccionar a la vista de solicitudes si ambas cosas se realizaron correctamente
+            return redirect()->route('solicitudes.formularios.index')->with('success', 'Solicitud actualizada correctamente.');
+        }catch(Exception $e){
+            // Manejo de excepciones
+            return redirect()->route('solicitudes.formularios.index')->with('error', 'Error al actualizar la solicitud.');
         }
-
-        // Validar los datos del formulario (valores a recibir: SOLICITUD_ESTADO, SOLICITUD_FECHA_HORA_INICIO_ASIGNADA, SOLICITUD_FECHA_HORA_TERMINO_ASIGNADA, REVISION_SOLICITUD_OBSERVACION, REVISION_SOLICITUD_FECHA_HORA_TRAMITACION)
-        $validator = Validator::make($request->all(),[
-            //Estados de la solcitud: INGRESADO, EN REVISION, APROBADO, RECHAZADO, TERMINADO
-            // 'SOLICITUD_ESTADO' => 'required|string|max:255|in:INGRESADO,EN REVISION,APROBADO,RECHAZADO,TERMINADO',
-            'SOLICITUD_FECHA_HORA_INICIO_ASIGNADA' => 'required|date',
-            // 'SOLICITUD_FECHA_HORA_TERMINO_ASIGNADA' => 'required|date|after:SOLICITUD_FECHA_HORA_INICIO_ASIGNADA',
-            'REVISION_SOLICITUD_OBSERVACION' => 'required|string|max:255',
-        ], [
-            //Mensajes de error
-            'required' => 'El campo :attribute es requerido.',
-            'date' => 'El campo :attribute debe ser una fecha.',
-            'after' => 'El campo :attribute debe ser una fecha posterior a la fecha de inicio asignada.',
-            'string' => 'El campo :attribute debe ser una cadena de caracteres.',
-            'in' => 'El campo :attribute debe ser uno de los siguientes valores: INGRESADO, EN REVISION, APROBADO, RECHAZADO, TERMINADO',
-        ]);
-
-        // Si la validación falla, redirecciona al formulario con los errores y el input antiguo
-        if ($validator->fails()) {
-            return redirect()->back()->withErrors($validator)->withInput();
-        }
-
-        // Actualizar la solicitud
-        $solicitud->update([
-            // 'SOLICITUD_ESTADO' => $request->input('SOLICITUD_ESTADO'),
-            'SOLICITUD_FECHA_HORA_INICIO_ASIGNADA' => $request->input('SOLICITUD_FECHA_HORA_INICIO_ASIGNADA'),
-            // 'SOLICITUD_FECHA_HORA_TERMINO_ASIGNADA' => $request->input('SOLICITUD_FECHA_HORA_TERMINO_ASIGNADA'),
-        ]);
-
-        // Llamar a la funcion createRevisionSolicitud para crear la revision de la solicitud
-        $this->createRevisionSolicitud($request, $solicitud);
-
-        // Redireccionar a la vista de solicitudes si ambas cosas se realizaron correctamente
-        return redirect()->route('solicitudes.formularios.index')->with('success', 'Solicitud actualizada correctamente.');
     }
 
     /**
@@ -284,7 +289,7 @@ class SolicitudFormulariosController extends Controller
             RevisionSolicitud::create([
                 'USUARIO_id' => Auth::user()->id,
                 'SOLICITUD_ID' => $solicitud->SOLICITUD_ID,
-                'REVISION_SOLICITUD_OBSERVACION' => $request->input('REVISION_SOLICITUD_OBSERVACION'),
+                'REVISION_SOLICITUD_OBSERVACION' => $request->input('REVISION_SOLICITUD_OBSERVACION') ?: 'Sin observación.',
             ]);
         }
         catch(Exception $e)
