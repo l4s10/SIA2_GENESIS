@@ -148,7 +148,7 @@
             <div class="col-md-6">
                 {{-- Fecha y Hora de Inicio Solicitada --}}
                 <div class="form-group {{ $errors->has('SOLICITUD_FECHA_HORA_INICIO_SOLICITADA') ? 'has-error' : '' }}">
-                    <label for="SOLICITUD_FECHA_HORA_INICIO_SOLICITADA"><i class="fa-solid fa-calendar-days"></i> Fecha y Hora de Inicio Solicitada</label>
+                    <label for="SOLICITUD_FECHA_HORA_INICIO_SOLICITADA"><i class="fa-solid fa-calendar-days"></i> Fecha y hora inicio solicitud</label>
                     <input type="datetime-local" class="form-control" id="SOLICITUD_FECHA_HORA_INICIO_SOLICITADA" name="SOLICITUD_FECHA_HORA_INICIO_SOLICITADA" value="{{ old('SOLICITUD_FECHA_HORA_INICIO_SOLICITADA') }}" required>
                     @error('SOLICITUD_FECHA_HORA_INICIO_SOLICITADA')
                         <span class="text-danger">{{ $message }}</span>
@@ -158,7 +158,7 @@
             <div class="col-md-6">
                 {{-- Fecha y Hora de Término Solicitada --}}
                 <div class="form-group {{ $errors->has('SOLICITUD_FECHA_HORA_TERMINO_SOLICITADA') ? 'has-error' : '' }}">
-                    <label for="SOLICITUD_FECHA_HORA_TERMINO_SOLICITADA"><i class="fa-solid fa-calendar-xmark"></i> Fecha y Hora de Término Solicitada</label>
+                    <label for="SOLICITUD_FECHA_HORA_TERMINO_SOLICITADA"><i class="fa-solid fa-calendar-xmark"></i> Fecha y hora término solicitud</label>
                     <input type="datetime-local" class="form-control" id="SOLICITUD_FECHA_HORA_TERMINO_SOLICITADA" name="SOLICITUD_FECHA_HORA_TERMINO_SOLICITADA" value="{{ old('SOLICITUD_FECHA_HORA_TERMINO_SOLICITADA') }}" required>
                     @error('SOLICITUD_FECHA_HORA_TERMINO_SOLICITADA')
                         <span class="text-danger">{{ $message }}</span>
