@@ -58,8 +58,7 @@
                             @endif
                             <p><strong><i class="fa-solid fa-warehouse"></i> / </i><i class="fa-solid fa-car-on"></i> Categoría de solicitud:</strong> {{ $solicitud->categoria->CATEGORIA_REPARACION_NOMBRE }}</p>
                             <p><strong><i class="fa-solid fa-calendar-week"></i> Fecha y hora de solicitud:</strong> {{ $solicitud->created_at }}</p>
-                            <p><strong><i class="fa-solid fa-calendar-check"></i> Fecha y hora de inicio autorizada:</strong> {{ $solicitud->SOLICITUD_REPARACION_FECHA_HORA_INICIO ?? 'SIN ASIGNACION POR AHORA' }}</p>
-                            <p><strong><i class="fa-regular fa-calendar-check"></i> Fecha y hora de término autorizada:</strong> {{ $solicitud->SOLICITUD_REPARACION_FECHA_HORA_TERMINO ?? 'SIN ASIGNACION POR AHORA' }}</p>
+                            <p><strong><i class="fa-solid fa-calendar-check"></i> Fecha y hora cumplimiento solicitud:</strong> {{ $solicitud->SOLICITUD_REPARACION_FECHA_HORA_INICIO ?? 'SIN FECHA POR AHORA' }}</p>
                         </div>
                     </div>
                     <h4>Descripción</h4>

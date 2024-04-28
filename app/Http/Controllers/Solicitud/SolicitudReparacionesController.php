@@ -165,6 +165,22 @@ class SolicitudReparacionesController extends Controller
                 break;
 
                 case 'finalizar_revision':
+                    // verificar al menos que haya una observacion (motivo de aprobacion) con validator
+                    $validator = Validator::make($request->all(),[
+                        'REVISION_SOLICITUD_OBSERVACION' => 'required|string|max:255',
+                        'SOLICITUD_REPARACION_FECHA_HORA_INICIO' => 'required|date',
+                    ], [
+                        //Mensajes de error
+                        'REVISION_SOLICITUD_OBSERVACION.required' => 'El campo de Observación es obligatiorio.',
+                        'REVISION_SOLICITUD_OBSERVACION.string' => 'El campo Observación debe ser una cadena de caracteres.',
+                        'REVISION_SOLICITUD_OBSERVACION.max' => 'El campo Observación debe tener un máximo de :max caracteres.',
+                        'SOLICITUD_REPARACION_FECHA_HORA_INICIO.required' => 'Indique la fecha y hora de cumplimiento de la solicitud.',
+                        'SOLICITUD_REPARACION_FECHA_HORA_INICIO.date' => 'La fecha de cumplimiento debe ser una fecha válida.',
+                    ]);
+                    // Si la validación falla, se redirecciona al formulario con los errores
+                    if ($validator->fails()) {
+                        return redirect()->back()->withErrors($validator)->withInput();
+                    }
                     // Lógica para finalizar la revisión
                     $solicitud->update(['SOLICITUD_REPARACION_ESTADO' => 'APROBADO']);
                 break;

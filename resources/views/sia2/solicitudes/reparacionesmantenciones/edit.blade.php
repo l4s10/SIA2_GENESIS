@@ -83,8 +83,7 @@
                             @endif
                             <p><strong><i class="fa-solid fa-warehouse"></i> / </i><i class="fa-solid fa-car-on"></i> Categoría de solicitud:</strong> {{ $solicitud->categoria->CATEGORIA_REPARACION_NOMBRE }}</p>
                             <p><strong><i class="fa-solid fa-calendar-week"></i> Fecha y hora de solicitud:</strong> {{ $solicitud->created_at }}</p>
-                            <p><strong><i class="fa-solid fa-calendar-check"></i> Fecha y hora de inicio autorizada:</strong> {{ $solicitud->SOLICITUD_REPARACION_FECHA_HORA_INICIO ?? 'SIN ASIGNACION POR AHORA' }}</p>
-                            <p><strong><i class="fa-regular fa-calendar-check"></i> Fecha y hora de término autorizada:</strong> {{ $solicitud->SOLICITUD_REPARACION_FECHA_HORA_TERMINO ?? 'SIN ASIGNACION POR AHORA' }}</p>
+                            <p><strong><i class="fa-solid fa-calendar-check"></i> Fecha y hora cumplimiento solicitud:</strong> {{ $solicitud->SOLICITUD_REPARACION_FECHA_HORA_INICIO ?? 'SIN FECHA POR AHORA' }}</p>
                         </div>
                     </div>
                     <h4>Descripción</h4>
@@ -160,26 +159,33 @@
             </div> --}}
 
             <div class="row">
-                <div class="col-md-6">
+                <div class="col-md-12">
                     {{-- Fecha y hora de inicio --}}
                     <div class="form-group">
-                        <label for="SOLICITUD_REPARACION_FECHA_HORA_INICIO"><i class="fa-solid fa-calendar-days"></i> Fecha y hora de inicio autorizada</label>
-                        <input type="datetime-local" class="form-control" id="SOLICITUD_REPARACION_FECHA_HORA_INICIO" name="SOLICITUD_REPARACION_FECHA_HORA_INICIO" value="{{ $solicitud->SOLICITUD_REPARACION_FECHA_HORA_INICIO }}">
+                        <label for="SOLICITUD_REPARACION_FECHA_HORA_INICIO"><i class="fa-solid fa-calendar-days"></i> Fecha y hora cumplimiento solicitud</label>
+                        <input type="datetime-local" class="form-control" id="SOLICITUD_REPARACION_FECHA_HORA_INICIO" name="SOLICITUD_REPARACION_FECHA_HORA_INICIO" value="{{ $solicitud->SOLICITUD_REPARACION_FECHA_HORA_INICIO }}" required>
                     </div>
+                    {{-- Contenedor de errores --}}
+                    @error('SOLICITUD_REPARACION_FECHA_HORA_INICIO')
+                        <div class="alert alert-danger">{{ $message }}</div>
+                    @enderror
                 </div>
-                <div class="col-md-6">
-                    {{-- Fecha y hora de término --}}
+                {{-- Fecha y hora de término --}}
+                {{-- <div class="col-md-6">
                     <div class="form-group">
                         <label for="SOLICITUD_REPARACION_FECHA_HORA_TERMINO"><i class="fa-solid fa-calendar-xmark"></i> Fecha y hora de término autorizada</label>
                         <input type="datetime-local" class="form-control" id="SOLICITUD_REPARACION_FECHA_HORA_TERMINO" name="SOLICITUD_REPARACION_FECHA_HORA_TERMINO" value="{{ $solicitud->SOLICITUD_REPARACION_FECHA_HORA_TERMINO }}">
                     </div>
-                </div>
+                </div> --}}
             </div>
 
             {{-- Observaciones --}}
             <div class="form-group">
                 <label for="REVISION_SOLICITUD_OBSERVACION"><i class="fa-solid fa-eye"></i> Observaciones</label>
-                <textarea class="form-control" id="REVISION_SOLICITUD_OBSERVACION" name="REVISION_SOLICITUD_OBSERVACION" rows="3"></textarea>
+                <textarea class="form-control" id="REVISION_SOLICITUD_OBSERVACION" name="REVISION_SOLICITUD_OBSERVACION" rows="3" ></textarea>
+                @error('REVISION_SOLICITUD_OBSERVACION')
+                    <div class="alert alert-danger">{{ $message }}</div>
+                @enderror
             </div>
 
             {{-- Botones --}}
