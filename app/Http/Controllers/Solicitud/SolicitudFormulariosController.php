@@ -80,14 +80,15 @@ class SolicitudFormulariosController extends Controller
             // Valida los datos del formulario de solicitud de formularios.
             $validator = Validator::make($request->all(),[
                 'SOLICITUD_MOTIVO' => 'required|string|max:255',
-                'SOLICITUD_FECHA_HORA_INICIO_SOLICITADA' => 'required|date'
+                'SOLICITUD_FECHA_HORA_INICIO_SOLICITADA' => 'nullable|date'
                 // 'SOLICITUD_FECHA_HORA_TERMINO_SOLICITADA' => 'required|date|after:SOLICITUD_FECHA_HORA_INICIO_SOLICITADA',
             ], [
                 //Mensajes de error
-                'required' => 'El campo :attribute es requerido.',
-                'date' => 'El campo :attribute debe ser una fecha.',
-                'after' => 'El campo :attribute debe ser una fecha posterior a la fecha de inicio solicitada.',
-                'string' => 'El campo :attribute debe ser una cadena de caracteres.'
+                'SOLICITUD_MOTIVO.required' => 'El campo Motivo es requerido.',
+                'SOLICITUD_MOTIVO.string' => 'El campo Motivo debe ser una cadena de caracteres.',
+                'SOLICITUD_MOTIVO.max' => 'El campo Motivo no debe exceder los 255 caracteres.',
+                'SOLICITUD_FECHA_HORA_INICIO_SOLICITADA.date' => 'La fecha de inicio solicitada debe ser una fecha.',
+                'SOLICITUD_FECHA_HORA_INICIO_SOLICITADA.date' => 'La fecha de inicio solicitada debe ser una fecha.',
             ]);
 
             // Validar que la instancia del carrito no esté vacía
@@ -105,7 +106,7 @@ class SolicitudFormulariosController extends Controller
                 'USUARIO_id' => Auth::user()->id,
                 'SOLICITUD_MOTIVO' => $request->input('SOLICITUD_MOTIVO'),
                 'SOLICITUD_ESTADO' => 'INGRESADO', // Valor predeterminado
-                'SOLICITUD_FECHA_HORA_INICIO_SOLICITADA' => $request->input('SOLICITUD_FECHA_HORA_INICIO_SOLICITADA'),
+                'SOLICITUD_FECHA_HORA_INICIO_SOLICITADA' => $request->input('SOLICITUD_FECHA_HORA_INICIO_SOLICITADA') ?: null,
                 'SOLICITUD_FECHA_HORA_TERMINO_SOLICITADA' => null, // Valor predeterminado
             ]);
 

@@ -168,7 +168,7 @@
                 {{-- Fecha y Hora de Inicio Solicitada --}}
                 <div class="form-group {{ $errors->has('SOLICITUD_FECHA_HORA_INICIO_SOLICITADA') ? 'has-error' : '' }}">
                     <label for="SOLICITUD_FECHA_HORA_INICIO_SOLICITADA"><i class="fa-solid fa-calendar-days"></i> Fecha en que se requiere</label>
-                    <input type="datetime-local" class="form-control" id="SOLICITUD_FECHA_HORA_INICIO_SOLICITADA" name="SOLICITUD_FECHA_HORA_INICIO_SOLICITADA" required>
+                    <input type="datetime-local" class="form-control" id="SOLICITUD_FECHA_HORA_INICIO_SOLICITADA" name="SOLICITUD_FECHA_HORA_INICIO_SOLICITADA">
                     @error('SOLICITUD_FECHA_HORA_INICIO_SOLICITADA')
                         <span class="text-danger">{{ $message }}</span>
                     @enderror

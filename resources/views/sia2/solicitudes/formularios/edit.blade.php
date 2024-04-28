@@ -54,7 +54,7 @@
                                 @endswitch
                             </p>
                             <p><strong><i class="fa-solid fa-calendar-week"></i> Fecha y hora de solicitud:</strong> {{ $solicitud->created_at }}</p>
-                            <p><strong><i class="fa-solid fa-calendar-plus"></i> Fecha en que se requiere:</strong> {{ $solicitud->SOLICITUD_FECHA_HORA_INICIO_SOLICITADA }}</p>
+                            <p><strong><i class="fa-solid fa-calendar-plus"></i> Fecha en que se requiere:</strong> {{ $solicitud->SOLICITUD_FECHA_HORA_INICIO_SOLICITADA ?? 'No especificado.' }}</p>
                             <p><strong><i class="fa-solid fa-calendar-check"></i> Fecha de entrega:</strong> {{ $solicitud->SOLICITUD_FECHA_HORA_INICIO_ASIGNADA ?? 'SIN ASIGNACION POR AHORA' }}</p>
                         </div>
                     </div>
