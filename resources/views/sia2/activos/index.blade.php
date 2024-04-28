@@ -44,11 +44,11 @@
             </div>
         </div>
 
-        {{-- GESTION DE SALAS Y BODEGAS --}}
-        <h4 class="card-subtitle mt-4 mb-4 text-muted" style="text-align: center;">Módulos Salas y Bodegas </h4>
+        {{-- GESTION DE SALAS--}}
+        <h4 class="card-subtitle mt-4 mb-4 text-muted" style="text-align: center;">Módulo de salas </h4>
         <div class="row">
             {{-- Gestión de salas --}}
-            <div class="col-md-6">
+            <div class="col-md-12">
                 <div class="card text-bg-primary mb-3">
                     <div class="card-header">Gestión de Salas </div>
                     <div class="card-body">
@@ -58,21 +58,6 @@
                         {{-- Ajusta las rutas según tu estructura --}}
                         <a class="btn btn-primary" href="{{ route('salas.index') }}"><i class="fa-solid fa-eye"></i> Ver</a>
                         <a class="btn guardar" href="{{ route('salas.create') }}"><i class="fa-solid fa-plus"></i> Agregar</a>
-                    </div>
-                </div>
-            </div>
-            {{-- Gestión de bodegas --}}
-            <div class="col-md-6">
-                {{-- Gestión de bodegas --}}
-                <div class="card text-bg-primary mb-3">
-                    <div class="card-header">Gestión de Bodegas </div>
-                    <div class="card-body">
-                        <p class="card-text">En este módulo puedes gestionar las <strong>Bodegas</strong>. Agrega, edita o elimina almacenes según sea necesario.</p>
-                    </div>
-                    <div class="card-footer">
-                        {{-- Ajusta las rutas según tu estructura --}}
-                        <a class="btn btn-primary" href="{{ route('bodegas.index') }}"><i class="fa-solid fa-eye"></i> Ver</a>
-                        <a class="btn guardar" href="{{ route('bodegas.create') }}"><i class="fa-solid fa-plus"></i> Agregar</a>
                     </div>
                 </div>
             </div>
@@ -113,8 +98,8 @@
                 </div>
             </div>
         </div>
-        {{-- GESTION DE VEHICULOS Y FORMULARIOS --}}
-        <h4 class="card-subtitle mb-4 mb-4 text-muted" style="text-align: center;">Módulos de Vehículos / Formularios</h4>
+        {{-- GESTION DE VEHICULOS --}}
+        <h4 class="card-subtitle mb-4 mb-4 text-muted" style="text-align: center;">Módulos de Vehículos y tipos de vehículos</h4>
         <div class=row>
             {{-- Gestión de vehículos --}}
             <div class="col-md-6">
@@ -147,17 +132,36 @@
                 </div>
             </div>
         </div>
-        <div class="col-md-12">
-            {{-- Gestión de formularios --}}
-            <div class="card text-bg-primary mb-3">
-                <div class="card-header">Gestión de Formularios</div>
-                <div class="card-body">
-                    <p class="card-text">En este módulo puedes gestionar los <strong>Formularios</strong>. Agrega, edita o elimina Formularios según sea necesario.</p>
+        {{-- GESTION DE VEHICULOS Y FORMULARIOS --}}
+        <h4 class="card-subtitle mb-4 mb-4 text-muted" style="text-align: center;">Módulos de formularios y bodegas</h4>
+        <div class="row">
+            <div class="col-md-6">
+                {{-- Gestión de formularios --}}
+                <div class="card text-bg-primary mb-3">
+                    <div class="card-header">Gestión de Formularios</div>
+                    <div class="card-body">
+                        <p class="card-text">En este módulo puedes gestionar los <strong>Formularios</strong>. Agrega, edita o elimina Formularios según sea necesario.</p>
+                    </div>
+                    <div class="card-footer">
+                        {{-- Ajusta las rutas según tu estructura --}}
+                        <a class="btn btn-primary" href="{{ route('formularios.index') }}"><i class="fa-solid fa-eye"></i> Ver</a>
+                        <a class="btn guardar" href="{{ route('formularios.create') }}"><i class="fa-solid fa-plus"></i> Agregar</a>
+                    </div>
                 </div>
-                <div class="card-footer">
-                    {{-- Ajusta las rutas según tu estructura --}}
-                    <a class="btn btn-primary" href="{{ route('formularios.index') }}"><i class="fa-solid fa-eye"></i> Ver</a>
-                    <a class="btn guardar" href="{{ route('formularios.create') }}"><i class="fa-solid fa-plus"></i> Agregar</a>
+            </div>
+            {{-- Gestión de bodegas --}}
+            <div class="col-md-6">
+                {{-- Gestión de bodegas --}}
+                <div class="card text-bg-primary mb-3">
+                    <div class="card-header">Gestión de Bodegas </div>
+                    <div class="card-body">
+                        <p class="card-text">En este módulo puedes gestionar las <strong>Bodegas</strong>. Agrega, edita o elimina almacenes según sea necesario.</p>
+                    </div>
+                    <div class="card-footer">
+                        {{-- Ajusta las rutas según tu estructura --}}
+                        <a class="btn btn-primary" href="{{ route('bodegas.index') }}"><i class="fa-solid fa-eye"></i> Ver</a>
+                        <a class="btn guardar" href="{{ route('bodegas.create') }}"><i class="fa-solid fa-plus"></i> Agregar</a>
+                    </div>
                 </div>
             </div>
         </div>

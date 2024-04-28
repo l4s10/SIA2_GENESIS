@@ -66,6 +66,17 @@
                 <a class="btn btn-primary" href="{{route('reportes.reparaciones.index')}}"><i class="fa-solid fa-chart-pie"></i> Graficos</a>
             </div>
         </div>
+
+        {{-- Reportes bodegas --}}
+        <div class="card text-bg-primary mb-3">
+            <div class="card-header">Módulo de Informes sobre Reservas de Bodegas</div>
+            <div class="card-body">
+                <p class="card-text">Este módulo permite ver los reportes de <strong>Reservas de Bodegas</strong>. Para saber las cantidades de solicitudes de <strong>Reservas de bodegas</strong> del sistema completo.</p>
+            </div>
+            <div class="card-footer">
+                <a class="btn btn-primary" href="{{route('reportes.bodegas.index')}}"><i class="fa-solid fa-chart-pie"></i> Graficos</a>
+            </div>
+        </div>
     @endrole
 
     {{-- Solo rol ADMINISTRADOR|INFORMATICA --}}
@@ -88,16 +99,6 @@
             </div>
             <div class="card-footer">
                 <a class="btn btn-primary" href="{{route('reportes.salas.index')}}"><i class="fa-solid fa-chart-pie"></i> Graficos</a>
-            </div>
-        </div>
-        {{-- Reportes bodegas --}}
-        <div class="card text-bg-primary mb-3">
-            <div class="card-header">Módulo de Informes sobre Reservas de Bodegas</div>
-            <div class="card-body">
-                <p class="card-text">Este módulo permite ver los reportes de <strong>Reservas de Bodegas</strong>. Para saber las cantidades de solicitudes de <strong>Reservas de bodegas</strong> del sistema completo.</p>
-            </div>
-            <div class="card-footer">
-                <a class="btn btn-primary" href="{{route('reportes.bodegas.index')}}"><i class="fa-solid fa-chart-pie"></i> Graficos</a>
             </div>
         </div>
     @endrole

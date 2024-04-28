@@ -98,8 +98,8 @@
                                 {{-- Boton de ver detalles --}}
                                 <a href="{{ route('solicitudes.bodegas.show', $solicitud->SOLICITUD_ID) }}" class="btn btn-primary"><i class="fa-solid fa-eye"></i></a>
 
-                                {{-- Boton de editar solo ADMINISTRADOR, INFORMATICA --}}
-                                @role('ADMINISTRADOR|INFORMATICA')
+                                {{-- Boton de editar solo ADMINISTRADOR, SERVICIOS --}}
+                                @role('ADMINISTRADOR|SERVICIOS')
                                     <a href="{{ route('solicitudes.bodegas.edit', $solicitud->SOLICITUD_ID) }}" class="btn botoneditar ml-2"><i class="fa-solid fa-pencil"></i></a>
                                 @endrole
 

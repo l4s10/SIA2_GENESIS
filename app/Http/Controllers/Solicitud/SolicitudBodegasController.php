@@ -23,8 +23,8 @@ class SolicitudBodegasController extends Controller
     public function index()
     {
         try {
-            // SI el usuario es ADMINISTRADOR o INFORMATICA, mostrar todas las solicitudes de bodegas (filtrado por oficina)
-            if (Auth::user()->hasRole('ADMINISTRADOR') || Auth::user()->hasRole('INFORMATICA')) {
+            // SI el usuario es ADMINISTRADOR o SERVICIOS, mostrar todas las solicitudes de bodegas (filtrado por oficina)
+            if (Auth::user()->hasRole('ADMINISTRADOR') || Auth::user()->hasRole('SERVICIOS')) {
                 // Filtrar por OFICINA_ID del usuario logueado con la relacion solicitante
                 $solicitudes = Solicitud::has('bodegas')
                     ->whereHas('solicitante', function ($query) {
@@ -76,11 +76,15 @@ class SolicitudBodegasController extends Controller
                 'BODEGA_ID' => 'required|exists:bodegas,BODEGA_ID',
             ], [
                 //Mensajes de error
-                'required' => 'El campo :attribute es requerido.',
-                'date' => 'El campo :attribute debe ser una fecha.',
-                'after' => 'El campo :attribute debe ser una fecha posterior a la fecha de inicio solicitada.',
-                'string' => 'El campo :attribute debe ser una cadena de caracteres.',
-                'exists' => 'El campo :attribute no existe en la base de datos.'
+                'SOLICITUD_MOTIVO.required' => 'El campo Motivo es requerido.',
+                'SOLICITUD_MOTIVO.string' => 'El campo Motivo debe ser una cadena de caracteres.',
+                'SOLICITUD_FECHA_HORA_INICIO_SOLICITADA.required' => 'El campo Fecha y Hora de Inicio Solicitada es requerido.',
+                'SOLICITUD_FECHA_HORA_INICIO_SOLICITADA.date' => 'El campo Fecha y Hora de Inicio Solicitada debe ser una fecha.',
+                'SOLICITUD_FECHA_HORA_TERMINO_SOLICITADA.required' => 'El campo Fecha y Hora de Término Solicitada es requerido.',
+                'SOLICITUD_FECHA_HORA_TERMINO_SOLICITADA.date' => 'El campo Fecha y Hora de Término Solicitada debe ser una fecha.',
+                'SOLICITUD_FECHA_HORA_TERMINO_SOLICITADA.after' => 'El campo Fecha y Hora de Término Solicitada debe ser una fecha posterior a la Fecha y Hora de Inicio Solicitada.',
+                'BODEGA_ID.required' => 'El campo Bodega es requerido.',
+                'BODEGA_ID.exists' => 'La bodega seleccionada no existe en la base de datos.',
             ]);
 
             // Si falla la validación, redirigir al formulario con los errores

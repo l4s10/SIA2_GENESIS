@@ -116,7 +116,7 @@
                         </td>
                         <td>
                             <div class="d-flex justify-content-center">
-                                @role('ADMINISTRADOR|INFORMATICA')
+                                @role('ADMINISTRADOR|SERVICIOS')
                                     <a href="{{ route('bodegas.edit', $bodega->BODEGA_ID) }}" class="btn botoneditar">
                                         <i class="fa-solid fa-pen-to-square"></i> Editar
                                     </a>

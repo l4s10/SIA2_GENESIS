@@ -30,12 +30,12 @@ Route::prefix('solicitudes')->group(function () {
     //** Editar solicitud */
     Route::get('/bodegas/{solicitud}/edit', [SolicitudBodegasController::class, 'edit'])
         ->name('solicitudes.bodegas.edit')
-        ->middleware(['role:ADMINISTRADOR|INFORMATICA']);
+        ->middleware(['role:ADMINISTRADOR|SERVICIOS']);
 
     //** Actualizar solicitud */
     Route::put('/bodegas/{solicitud}', [SolicitudBodegasController::class, 'update'])
         ->name('solicitudes.bodegas.update')
-        ->middleware(['role:ADMINISTRADOR|INFORMATICA']);
+        ->middleware(['role:ADMINISTRADOR|SERVICIOS']);
 
     //** Eliminar solicitud */
     Route::delete('/bodegas/{solicitud}', [SolicitudBodegasController::class, 'destroy'])
