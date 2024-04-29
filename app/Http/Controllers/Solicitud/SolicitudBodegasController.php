@@ -177,6 +177,30 @@ class SolicitudBodegasController extends Controller
             // Buscar la solicitud por ID
             $solicitud = Solicitud::has('bodegas')->findOrFail($id);
 
+            // Validar los datos del formulario de edición de la solicitud
+            $validator = Validator::make($request->all(),[
+                // PARA ASIGNACION
+                // 'SOLICITUD_ESTADO' => 'required|string|max:255|in:INGRESADO,EN REVISION,APROBADO,RECHAZADO,TERMINADO',
+                'SOLICITUD_FECHA_HORA_INICIO_ASIGNADA' => 'required|date',
+                'SOLICITUD_FECHA_HORA_TERMINO_ASIGNADA' => 'required|date|after:SOLICITUD_FECHA_HORA_INICIO_ASIGNADA',
+                'REVISION_SOLICITUD_OBSERVACION' => 'required|string|max:255',
+            ], [
+                //Mensajes de error
+                'SOLICITUD_FECHA_HORA_INICIO_ASIGNADA.required' => 'El campo Fecha y Hora de Inicio Asignada es requerido.',
+                'SOLICITUD_FECHA_HORA_INICIO_ASIGNADA.date' => 'El campo Fecha y Hora de Inicio Asignada debe ser una fecha.',
+                'SOLICITUD_FECHA_HORA_TERMINO_ASIGNADA.required' => 'El campo Fecha y Hora de Término Asignada es requerido.',
+                'SOLICITUD_FECHA_HORA_TERMINO_ASIGNADA.date' => 'El campo Fecha y Hora de Término Asignada debe ser una fecha.',
+                'SOLICITUD_FECHA_HORA_TERMINO_ASIGNADA.after' => 'El campo Fecha y Hora de Término Asignada debe ser una fecha posterior a la Fecha y Hora de Inicio Asignada.',
+                'REVISION_SOLICITUD_OBSERVACION.required' => 'El campo Observación es requerido.',
+                'REVISION_SOLICITUD_OBSERVACION.string' => 'El campo Observación debe ser una cadena de caracteres.',
+            ]);
+
+            // Si falla la validación, redirigir al formulario con los errores
+            if($validator->fails()){
+                return redirect()->back()->withErrors($validator)->withInput();
+            }
+
+
             // Determinar la acción basada en el botón presionado
             switch ($request->input('action')) {
                 case 'guardar':
@@ -214,29 +238,6 @@ class SolicitudBodegasController extends Controller
                     // Lógica por defecto o para casos no contemplados
                     // break;
             }
-
-            // Validar los datos del formulario de edición de la solicitud
-            $validator = Validator::make($request->all(),[
-                // PARA ASIGNACION
-                // 'SOLICITUD_ESTADO' => 'required|string|max:255|in:INGRESADO,EN REVISION,APROBADO,RECHAZADO,TERMINADO',
-                'SOLICITUD_FECHA_HORA_INICIO_ASIGNADA' => 'required|date',
-                'SOLICITUD_FECHA_HORA_TERMINO_ASIGNADA' => 'required|date|after:SOLICITUD_FECHA_HORA_INICIO_ASIGNADA',
-                'REVISION_SOLICITUD_OBSERVACION' => 'required|string|max:255',
-            ], [
-                //Mensajes de error
-                'required' => 'El campo :attribute es requerido.',
-                'date' => 'El campo :attribute debe ser una fecha.',
-                'after' => 'El campo :attribute debe ser una fecha posterior a la fecha de inicio solicitada.',
-                'string' => 'El campo :attribute debe ser una cadena de caracteres.',
-                'exists' => 'El campo :attribute no existe en la base de datos.',
-                'in' => 'El campo :attribute debe ser uno de los siguientes valores: INGRESADO, EN REVISION, APROBADO, RECHAZADO.',
-            ]);
-
-            // Si falla la validación, redirigir al formulario con los errores
-            if($validator->fails()){
-                return redirect()->back()->withErrors($validator)->withInput();
-            }
-
             // Actualizar la solicitud
             $solicitud->update([
                 // 'SOLICITUD_ESTADO' => $request->input('SOLICITUD_ESTADO'),
