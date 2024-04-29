@@ -68,7 +68,7 @@
     {{-- Objetivo a traves de filtros (REGION_ID, OFICINA_ID, UBICACION_ID/DEPARTAMENTO_ID) -> USUARIOS MASCULINOS Y FEMENINOS POR UBICACION/DEPARTAMETO DE ESA OFICINA CONTENIDA EN ESA REGION --}}
     <div class="container">
         <h2>Tabla de contingencia</h2>
-        <h5>Filtros (llenar todos los campos)</h5>
+        <h5>Filtros (Ingresar la Jurisdicción seguido de una Ubicación o Departamento)</h5>
         <div class="row" style="padding-bottom:3%;">
             {{-- <div class="col-lg-4">
                 <label for="">Region:</label>
@@ -143,7 +143,7 @@
             background-color: #CEE7F6;
             color: #000;
         }
-        
+
         #graficoDistribucionGenero {
             width: 80%; /* Ajusta el ancho del gráfico según sea necesario */
             max-width: 400px; /* Establece un ancho máximo si es necesario */
