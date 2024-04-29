@@ -398,19 +398,22 @@ class ReportesEquiposController extends Controller
             ->select(DB::raw('AVG(DATEDIFF(solicitudes.updated_at, revisiones_solicitudes.created_at)) as promedio_revision_aprobacion'))
             ->first();
 
-            // Promedio atencion desde a"APROBADO"/"RECHAZADO" a "TERMINADO"
-            // Filtrar solicitudes materiales en estado "TERMINADO"
-            // Comparar fechas: La fecha de SOLICITUD_FECHA_HORA_INICIO_ASIGNADA de la solicitud. Con la fecha de modificacion de la solicitud "updated_at".
+            // Promedio atencion desde creacion hasta TERMINADO, aprobado o rechazado
+            // Comparar fechas: La fecha de created_at de la solicitud con la fecha de updated_at de la solicitud
             $promedioAprobacionEntrega = SolicitudEquipos::query()
-                ->join('solicitudes', 'solicitudes_equipos.SOLICITUD_ID', '=', 'solicitudes.SOLICITUD_ID')
-                ->join('users', 'solicitudes.USUARIO_id', '=', 'users.id')
-                ->where('users.OFICINA_ID', $oficinaId)
-                ->where('solicitudes.SOLICITUD_ESTADO', 'TERMINADO')
-                ->when($fechaInicio && $fechaFin, function ($query) use ($fechaInicio, $fechaFin) {
-                    return $query->whereBetween(DB::raw('solicitudes.created_at'), [$fechaInicio, $fechaFin]);
-                })
-                ->select(DB::raw('AVG(DATEDIFF(solicitudes.updated_at, solicitudes.SOLICITUD_FECHA_HORA_INICIO_ASIGNADA)) as promedio_aprobacion_entrega'))
-                ->first();
+            ->join('solicitudes', 'solicitudes_equipos.SOLICITUD_ID', '=', 'solicitudes.SOLICITUD_ID')
+            ->join('users', 'solicitudes.USUARIO_id', '=', 'users.id')
+            ->where('users.OFICINA_ID', $oficinaId)
+            ->where(function ($query) {
+                $query->where('solicitudes.SOLICITUD_ESTADO', 'TERMINADO')
+                      ->orWhere('solicitudes.SOLICITUD_ESTADO', 'APROBADO')
+                      ->orWhere('solicitudes.SOLICITUD_ESTADO', 'RECHAZADO');
+            })
+            ->when($fechaInicio && $fechaFin, function ($query) use ($fechaInicio, $fechaFin) {
+                return $query->whereBetween('solicitudes.created_at', [$fechaInicio, $fechaFin]);
+            })
+            ->select(DB::raw('AVG(DATEDIFF(solicitudes.updated_at, solicitudes.created_at)) as promedio_aprobacion_entrega'))
+            ->first();
 
             return response()->json([
                 'status' => 'success',

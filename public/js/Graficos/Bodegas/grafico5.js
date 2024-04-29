@@ -5,7 +5,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const chart5 = new Chart(ctx5, {
         type: 'line', // Cambia según necesites
         data: {
-            labels: ['Promedio Creación-Atención', 'Promedio Revisión-Aprobación', 'Promedio Creación-Tramitación'],
+            labels: ['Promedio Creación-Atención', 'Promedio Revisión-Tramitación', 'Promedio Creación-Terminado'],
             datasets: [{
                 label: 'Tiempos Promedio (días)',
                 data: [],
