@@ -49,8 +49,11 @@
                                                 @if(isset($evento['revisor']))
                                                 <p class="card-text m-0"><strong>REVISOR:</strong> {{ $evento['revisor'] }}</p>
                                                 @endif
-                                                @if(isset($evento['jefe']))
-                                                <p class="card-text m-0"><strong>JEFE:</strong> {{ $evento['jefe'] }}</p>
+                                                @if(isset($evento['firmante']))
+                                                <p class="card-text m-0"><strong>FIRMANTE:</strong> {{ $evento['firmante'] }}</p>
+                                                @endif
+                                                @if(isset($evento['cargo']))
+                                                <p class="card-text m-0"><strong>CARGO:</strong> {{ $evento['cargo'] }}</p>
                                                 @endif
                                                 @if(isset($evento['conductor']))
                                                 <p class="card-text m-0"><strong>CONDUCTOR:</strong> {{ $evento['conductor'] }}</p>

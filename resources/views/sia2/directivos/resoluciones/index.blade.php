@@ -56,7 +56,7 @@
                         <th scope="col">Tipo Resolucion</th>
                         <th scope="col">Firmante</th>
                         <th scope="col">Delegado</th>
-                        <th scope="col">Facultad</th>
+                        <th scope="col">Facultades</th>
                         <th scope="col">Ley asociada</th>
                         <th scope="col">Glosa</th>
                         <th scope="col">Observación</th>
@@ -101,23 +101,38 @@
 
                             <!-- Encontrar las delegaciones asociadas a esta resolución -->
                             @php
-                                $delegacionResolucion = $delegaciones->where('RESOLUCION_ID', $resolucion->RESOLUCION_ID)->first();
+                                $delegacionesResolucion = $delegaciones->where('RESOLUCION_ID', $resolucion->RESOLUCION_ID);
                             @endphp
 
                 
-                            @if($delegacionResolucion)
-                                <td>{{ $delegacionResolucion->facultad->FACULTAD_NOMBRE }}</td>
-                                <td>{{ $delegacionResolucion->facultad->FACULTAD_LEY_ASOCIADA}}</td>
+                            @if($delegacionesResolucion->isNotEmpty())
                                 <td>
-                                    <span class="glosa-abreviada">{{ substr($delegacionResolucion->facultad->FACULTAD_CONTENIDO, 0, 0) }}</span>
-                                    <button class="btn btn-sia-primary btn-block btn-expand" data-glosa="{{ $delegacionResolucion->facultad->FACULTAD_CONTENIDO }}">
-                                        <i class="fa-solid fa-square-plus"></i>
-                                    </button>
-                                    <button class="btn btn-sia-primary btn-block btn-collapse" style="display: none;">
-                                        <i class="fa-solid fa-square-minus"></i>
-                                    </button>
-                                    
-                                    <span class="glosa-completa" style="display: none;">{{ $delegacionResolucion->facultad->FACULTAD_CONTENIDO }}</span>
+                                    @foreach($delegacionesResolucion as $delegacionResolucion)
+                                        {!! '<strong>FAC ' . $delegacionResolucion->facultad->FACULTAD_NUMERO . ': </strong>' . $delegacionResolucion->facultad->FACULTAD_NOMBRE .'<br>'!!}<br>
+                                    @endforeach
+                                </td>
+                                <td>
+                                    @foreach($delegacionesResolucion as $delegacionResolucion)
+                                        {!! '<strong>FAC ' . $delegacionResolucion->facultad->FACULTAD_NUMERO . ': </strong>' . $delegacionResolucion->facultad->FACULTAD_LEY_ASOCIADA .'<br>'!!}<br>
+                                    @endforeach
+                                </td>
+                                <td>
+                                    @foreach($delegacionesResolucion as $delegacionResolucion)
+                                        <div>   
+                                            <span class="glosa-abreviada">{{ substr($delegacionResolucion->facultad->FACULTAD_CONTENIDO, 0, 0) }}</span>
+                                            <button class="btn btn-sia-primary btn-block btn-expand" data-glosa="{{ $delegacionResolucion->facultad->FACULTAD_CONTENIDO }}">
+                                                <i class="fa-solid fa-square-plus"></i>
+                                            </button>
+                                            <button class="btn btn-sia-primary btn-block btn-collapse" style="display: none;">
+                                                <i class="fa-solid fa-square-minus"></i>
+                                            </button>
+                                            
+                                            <span class="glosa-completa" style="display: none;">
+                                                <strong>FAC {{ $delegacionResolucion->facultad->FACULTAD_NUMERO }}: </strong>{{ $delegacionResolucion->facultad->FACULTAD_CONTENIDO }}
+                                            </span>        
+                                        </div>                           
+                                    @endforeach
+
                                 </td>
                             @else
                                 <td>No hay facultad asociada</td>
@@ -138,7 +153,7 @@
                             </td>
                             <td>
                                 @if ($resolucion->RESOLUCION_DOCUMENTO)
-                                    <a href="{{ asset('storage/resoluciones/' . $resolucion->RESOLUCION_DOCUMENTO) }}" class="btn btn-sia-primary btn-block" target="_blank">
+                                    <a href="{{ asset('resolucionesPdf/' . $resolucion->RESOLUCION_DOCUMENTO) }}" class="btn btn-sia-primary btn-block" target="_blank">
                                         <i class="fa-solid fa-file-pdf" style="color: green;"></i>
                                     </a>
                                 @else

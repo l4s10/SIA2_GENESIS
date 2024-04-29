@@ -393,308 +393,308 @@
         fechaInput.value = fechaActual;
     </script>
 
-<script>
-    // Obtén una referencia al checkbox y al div contenedor de los campos de orden de trabajo
-    var checkbox = document.getElementById('mostrarOrdenTrabajo');
-    var ordenTrabajoInputs = document.getElementById('ordenTrabajoInputs');
+    <script>
+        // Obtén una referencia al checkbox y al div contenedor de los campos de orden de trabajo
+        var checkbox = document.getElementById('mostrarOrdenTrabajo');
+        var ordenTrabajoInputs = document.getElementById('ordenTrabajoInputs');
 
-    // Agrega un controlador de eventos al checkbox
-    checkbox.addEventListener('change', function() {
-        // Verifica si el checkbox está marcado
-        if (checkbox.checked) {
-            ordenTrabajoInputs.style.display = 'block'; // Muestra los campos de orden de trabajo
-            // Obtén una referencia a los campos de orden de trabajo
-            var numeroOrden = document.getElementById('TRABAJA_NUMERO_ORDEN_TRABAJO');
-            var inicioOrden = document.getElementById('TRABAJA_HORA_INICIO_ORDEN_TRABAJO');
-            var terminoOrden = document.getElementById('TRABAJA_HORA_TERMINO_ORDEN_TRABAJO');
+        // Agrega un controlador de eventos al checkbox
+        checkbox.addEventListener('change', function() {
+            // Verifica si el checkbox está marcado
+            if (checkbox.checked) {
+                ordenTrabajoInputs.style.display = 'block'; // Muestra los campos de orden de trabajo
+                // Obtén una referencia a los campos de orden de trabajo
+                var numeroOrden = document.getElementById('TRABAJA_NUMERO_ORDEN_TRABAJO');
+                var inicioOrden = document.getElementById('TRABAJA_HORA_INICIO_ORDEN_TRABAJO');
+                var terminoOrden = document.getElementById('TRABAJA_HORA_TERMINO_ORDEN_TRABAJO');
 
-            // Establece los campos de orden de trabajo como requeridos
-            numeroOrden.required = true;
-            inicioOrden.required = true;
-            terminoOrden.required = true;
+                // Establece los campos de orden de trabajo como requeridos
+                numeroOrden.required = true;
+                inicioOrden.required = true;
+                terminoOrden.required = true;
 
-        } else {
-            ordenTrabajoInputs.style.display = 'none'; // Oculta los campos de orden de trabajo
+            } else {
+                ordenTrabajoInputs.style.display = 'none'; // Oculta los campos de orden de trabajo
 
-            // Obtén una referencia a los campos de orden de trabajo
-            var numeroOrden = document.getElementById('TRABAJA_NUMERO_ORDEN_TRABAJO');
-            var inicioOrden = document.getElementById('TRABAJA_HORA_INICIO_ORDEN_TRABAJO');
-            var terminoOrden = document.getElementById('TRABAJA_HORA_TERMINO_ORDEN_TRABAJO');
+                // Obtén una referencia a los campos de orden de trabajo
+                var numeroOrden = document.getElementById('TRABAJA_NUMERO_ORDEN_TRABAJO');
+                var inicioOrden = document.getElementById('TRABAJA_HORA_INICIO_ORDEN_TRABAJO');
+                var terminoOrden = document.getElementById('TRABAJA_HORA_TERMINO_ORDEN_TRABAJO');
 
-            // Establece los campos de orden de trabajo como no requeridos
-            numeroOrden.required = false;
-            inicioOrden.required = false;
-            terminoOrden.required = false;
-        }
-    });
-</script>
+                // Establece los campos de orden de trabajo como no requeridos
+                numeroOrden.required = false;
+                inicioOrden.required = false;
+                terminoOrden.required = false;
+            }
+        });
+    </script>
 
-<script>
-    document.addEventListener('DOMContentLoaded', function() {
-        let regionSelect = document.getElementById('SOLICITUD_VEHICULO_REGION');
-        let comunaSelect = document.getElementById('SOLICITUD_VEHICULO_COMUNA');
-        let comunas = {!! json_encode($comunas) !!}; // Convertimos las comunas de PHP a JavaScript
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            let regionSelect = document.getElementById('SOLICITUD_VEHICULO_REGION');
+            let comunaSelect = document.getElementById('SOLICITUD_VEHICULO_COMUNA');
+            let comunas = {!! json_encode($comunas) !!}; // Convertimos las comunas de PHP a JavaScript
 
-        // Recuperar la región y la comuna seleccionadas en caso de error de validación
-        let selectedRegionId = "{{ old('SOLICITUD_VEHICULO_REGION') }}";
-        let selectedComunaId = "{{ old('SOLICITUD_VEHICULO_COMUNA') }}";
+            // Recuperar la región y la comuna seleccionadas en caso de error de validación
+            let selectedRegionId = "{{ old('SOLICITUD_VEHICULO_REGION') }}";
+            let selectedComunaId = "{{ old('SOLICITUD_VEHICULO_COMUNA') }}";
 
-        regionSelect.addEventListener('change', function() {
-            let selectedRegionId = regionSelect.value;
-            comunaSelect.innerHTML = ''; // Limpiamos las opciones de comuna
+            regionSelect.addEventListener('change', function() {
+                let selectedRegionId = regionSelect.value;
+                comunaSelect.innerHTML = ''; // Limpiamos las opciones de comuna
 
+                if (selectedRegionId !== '') {
+                    // Filtramos las comunas según la región seleccionada
+                    let filteredComunas = comunas.filter(function(comuna) {
+                        return comuna.REGION_ID == selectedRegionId;
+                    });
+
+                    // Agregamos las opciones de comuna filtradas al select de comuna
+                    filteredComunas.forEach(function(comuna) {
+                        let option = document.createElement('option');
+                        option.value = comuna.COMUNA_ID;
+                        option.textContent = comuna.COMUNA_NOMBRE;
+
+                        // Establecer la opción seleccionada si coincide con la comuna seleccionada anteriormente
+                        if (comuna.COMUNA_ID === selectedComunaId) {
+                            option.selected = true;
+                        }
+
+                        comunaSelect.appendChild(option);
+                    });
+                } else {
+                    // Si no se selecciona ninguna región, mostramos el mensaje predeterminado
+                    let defaultOption = document.createElement('option');
+                    defaultOption.value = '';
+                    defaultOption.textContent = '-- Seleccione la comuna de destino --';
+                    comunaSelect.appendChild(defaultOption);
+                }
+            });
+
+            // Establecer la región seleccionada si se ha seleccionado previamente
             if (selectedRegionId !== '') {
-                // Filtramos las comunas según la región seleccionada
-                let filteredComunas = comunas.filter(function(comuna) {
-                    return comuna.REGION_ID == selectedRegionId;
-                });
+                regionSelect.value = selectedRegionId;
 
-                // Agregamos las opciones de comuna filtradas al select de comuna
-                filteredComunas.forEach(function(comuna) {
-                    let option = document.createElement('option');
-                    option.value = comuna.COMUNA_ID;
-                    option.textContent = comuna.COMUNA_NOMBRE;
+                // Disparar el evento change manualmente para que se carguen las comunas correspondientes
+                var event = new Event('change');
+                regionSelect.dispatchEvent(event);
+            }
 
-                    // Establecer la opción seleccionada si coincide con la comuna seleccionada anteriormente
-                    if (comuna.COMUNA_ID === selectedComunaId) {
-                        option.selected = true;
+            // Establecer la comuna seleccionada si se ha seleccionado previamente
+            if (selectedComunaId !== '') {
+                comunaSelect.value = selectedComunaId;
+            }
+        });
+    </script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            let inputfechaHoraInicioSolicitada = document.getElementById('fechaHoraInicioSolicitada');
+            let inputfechaHoraTerminoSolicitada = document.getElementById('fechaHoraTerminoSolicitada');
+
+
+            let fechaActual = new Date(); // Fecha y hora actual
+            let añoActual = fechaActual.getFullYear(); // Año actual
+            let mesActual = fechaActual.getMonth(); // Mes actual
+            let diaActual = fechaActual.getDate(); // Día actual
+            let horaActual = fechaActual.getHours(); // Hora actual
+            let minutoActual = fechaActual.getMinutes(); // Minuto actual
+
+            // **Fecha mínima permitida (día actual)**
+            let fechaMinimaPermitida = new Date(añoActual, mesActual, diaActual-2, 00, 00);
+
+            // **Fecha máxima permitida**
+            let fechaMaximaPermitida;
+
+            // Si estamos en diciembre, permitir hasta febrero del próximo año
+            if (mesActual === 11) {
+                fechaMaximaPermitida = new Date(añoActual + 1, 1, 28);
+            } else {
+                // Permitir hasta diciembre del año actual
+                fechaMaximaPermitida = new Date(añoActual, 11, 31);
+            }
+
+            /// **Configuración del selector de fecha y hora de inicio**
+            flatpickr(inputfechaHoraInicioSolicitada, {
+                enableTime: true,
+                dateFormat: "d-m-Y H:i",
+                minDate: fechaMinimaPermitida,
+                maxDate: fechaMaximaPermitida,
+                defaultDate: fechaMinimaPermitida,
+                locale: "es", // Establecer el idioma en español
+                onChange: function(selectedDates, dateStr, instance) {
+                    if (selectedDates[0] < fechaMinimaPermitida) {
+                        alert("La fecha y hora seleccionada es menor a la hora mínima permitida");
+                        inputfechaHoraInicioSolicitada.value = "";
+                    } else {
+                        // Habilitar el input de término una vez que se ha seleccionado la hora de inicio
+                        inputfechaHoraTerminoSolicitada.disabled = false;
+                        // Actualizar minDate para el input de término
+                        let fechaHoraInicioSeleccionada = selectedDates[0];
+                        let horaInicioSeleccionada = fechaHoraInicioSeleccionada.getHours();
+                        let minutoInicioSeleccionado = fechaHoraInicioSeleccionada.getMinutes();
+
+                        let fechaMinimaTermino = new Date(fechaHoraInicioSeleccionada);
+                        fechaMinimaTermino.setHours(horaInicioSeleccionada);
+                        fechaMinimaTermino.setMinutes(minutoInicioSeleccionado);
+
+                        inputfechaHoraTerminoSolicitada._flatpickr.set("minDate", fechaMinimaTermino);
+                    }
+                }
+            });
+
+            // **Configuración del selector de fecha y hora de término**
+            flatpickr(inputfechaHoraTerminoSolicitada, {
+                enableTime: true,
+                dateFormat: "d-m-Y H:i",
+                minDate: fechaMinimaPermitida, // Se establece inicialmente, luego se actualizará
+                maxDate: fechaMaximaPermitida,
+                locale: "es", // Establecer el idioma en español
+                onClose: function(selectedDates, dateStr, instance) {
+                    let fechaHoraTerminoSeleccionada = selectedDates[0];
+                    if (fechaHoraTerminoSeleccionada < inputfechaHoraInicioSolicitada._flatpickr.latestSelectedDateObj) {
+                        alert("La fecha y hora seleccionada es anterior a la hora de inicio.");
+                        inputfechaHoraTerminoSolicitada._flatpickr.setDate(null); // Limpiar la selección
+                    }
+                }
+            });
+
+            // Deshabilitar el input de término al cargar la página y establecer su valor como vacío
+            inputfechaHoraTerminoSolicitada.disabled = true;
+            inputfechaHoraInicioSolicitada.value = null;
+            inputfechaHoraTerminoSolicitada.value = null;
+        });
+    </script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            // Obtener el formulario
+            let formulario = document.getElementById('formulario');
+
+            // Agregar un evento de escucha para el envío del formulario
+            formulario.addEventListener('submit', function(event) {
+                // Obtener los valores de los campos
+                let fechaHoraInicioSolicitada = document.getElementById('fechaHoraInicioSolicitada').value;
+                let fechaHoraTerminoSolicitada = document.getElementById('fechaHoraTerminoSolicitada').value;
+                let horaInicioConduccion = document.getElementById('SOLICITUD_VEHICULO_HORA_INICIO_CONDUCCION').value;
+                let horaTerminoConduccion = document.getElementById('SOLICITUD_VEHICULO_HORA_TERMINO_CONDUCCION').value;
+                let viaticoConductor = document.getElementById('SOLICITUD_VEHICULO_VIATICO').value;
+
+                let checkbox = document.getElementById('mostrarOrdenTrabajo');
+
+                // Inicializar mensaje de error
+                let mensajeError = "";
+
+                // Validar los campos antes de enviar el formulario
+                if (fechaHoraInicioSolicitada === '') {
+                    mensajeError += "Por favor, seleccione una fecha y hora de salida del estacionamiento.\n";
+                    document.getElementById('fechaHoraInicioSolicitada').classList.add('input-error');
+                } else {
+                    document.getElementById('fechaHoraInicioSolicitada').classList.remove('input-error');
+                }
+
+                if (fechaHoraTerminoSolicitada === '') {
+                    mensajeError += "Por favor, seleccione una fecha y hora de reingreso al estacionamiento.\n";
+                    document.getElementById('fechaHoraTerminoSolicitada').classList.add('input-error');
+                } else {
+                    document.getElementById('fechaHoraTerminoSolicitada').classList.remove('input-error');
+                }
+
+                if (horaInicioConduccion === '') {
+                    mensajeError += "Por favor, seleccione una hora de inicio de conducción.\n";
+                    document.getElementById('SOLICITUD_VEHICULO_HORA_INICIO_CONDUCCION').classList.add('input-error');
+                } else {
+                    document.getElementById('SOLICITUD_VEHICULO_HORA_INICIO_CONDUCCION').classList.remove('input-error');
+                }
+
+                if (horaTerminoConduccion === '') {
+                    mensajeError += "Por favor, seleccione una hora de término de conducción.\n";
+                    document.getElementById('SOLICITUD_VEHICULO_HORA_TERMINO_CONDUCCION').classList.add('input-error');
+                } else {
+                    document.getElementById('SOLICITUD_VEHICULO_HORA_TERMINO_CONDUCCION').classList.remove('input-error');
+                }
+
+                if (viaticoConductor === '') {
+                    mensajeError += "Por favor, especifique solicitud de viático.";
+                    document.getElementById('SOLICITUD_VEHICULO_VIATICO').classList.add('input-error');
+                } else {
+                    document.getElementById('SOLICITUD_VEHICULO_VIATICO').classList.remove('input-error');
+                }
+
+                // Si se activa el checkbox de mostrar orden de trabajo, validar los campos relacionados
+                if (checkbox.checked) {
+                    let horaInicioOrdenTrabajo = document.getElementById('TRABAJA_HORA_INICIO_ORDEN_TRABAJO').value;
+                    let horaTerminoOrdenTrabajo = document.getElementById('TRABAJA_HORA_TERMINO_ORDEN_TRABAJO').value;
+
+                    if (horaInicioOrdenTrabajo === '') {
+                        mensajeError += "Por favor, selecciona una hora de inicio de orden de trabajo.\n";
+                        document.getElementById('TRABAJA_HORA_INICIO_ORDEN_TRABAJO').classList.add('input-error');
+                    } else {
+                        document.getElementById('TRABAJA_HORA_INICIO_ORDEN_TRABAJO').classList.remove('input-error');
                     }
 
-                    comunaSelect.appendChild(option);
-                });
-            } else {
-                // Si no se selecciona ninguna región, mostramos el mensaje predeterminado
-                let defaultOption = document.createElement('option');
-                defaultOption.value = '';
-                defaultOption.textContent = '-- Seleccione la comuna de destino --';
-                comunaSelect.appendChild(defaultOption);
-            }
-        });
-
-        // Establecer la región seleccionada si se ha seleccionado previamente
-        if (selectedRegionId !== '') {
-            regionSelect.value = selectedRegionId;
-
-            // Disparar el evento change manualmente para que se carguen las comunas correspondientes
-            var event = new Event('change');
-            regionSelect.dispatchEvent(event);
-        }
-
-        // Establecer la comuna seleccionada si se ha seleccionado previamente
-        if (selectedComunaId !== '') {
-            comunaSelect.value = selectedComunaId;
-        }
-    });
-</script>
-
-<script>
-    document.addEventListener('DOMContentLoaded', function () {
-        let inputfechaHoraInicioSolicitada = document.getElementById('fechaHoraInicioSolicitada');
-        let inputfechaHoraTerminoSolicitada = document.getElementById('fechaHoraTerminoSolicitada');
-
-
-        let fechaActual = new Date(); // Fecha y hora actual
-        let añoActual = fechaActual.getFullYear(); // Año actual
-        let mesActual = fechaActual.getMonth(); // Mes actual
-        let diaActual = fechaActual.getDate(); // Día actual
-        let horaActual = fechaActual.getHours(); // Hora actual
-        let minutoActual = fechaActual.getMinutes(); // Minuto actual
-
-        // **Fecha mínima permitida (día actual)**
-        let fechaMinimaPermitida = new Date(añoActual, mesActual, diaActual-2, horaActual, minutoActual);
-
-        // **Fecha máxima permitida**
-        let fechaMaximaPermitida;
-
-        // Si estamos en diciembre, permitir hasta febrero del próximo año
-        if (mesActual === 11) {
-            fechaMaximaPermitida = new Date(añoActual + 1, 1, 28);
-        } else {
-            // Permitir hasta diciembre del año actual
-            fechaMaximaPermitida = new Date(añoActual, 11, 31);
-        }
-
-        /// **Configuración del selector de fecha y hora de inicio**
-        flatpickr(inputfechaHoraInicioSolicitada, {
-            enableTime: true,
-            dateFormat: "d-m-Y H:i",
-            minDate: fechaMinimaPermitida,
-            maxDate: fechaMaximaPermitida,
-            defaultDate: fechaMinimaPermitida,
-            locale: "es", // Establecer el idioma en español
-            onChange: function(selectedDates, dateStr, instance) {
-                if (selectedDates[0] < fechaMinimaPermitida) {
-                    alert("La fecha y hora seleccionada es menor a la hora mínima permitida");
-                    inputfechaHoraInicioSolicitada.value = "";
+                    if (horaTerminoOrdenTrabajo === '') {
+                        mensajeError += "Por favor, selecciona una hora de término de orden de trabajo.\n";
+                        document.getElementById('TRABAJA_HORA_TERMINO_ORDEN_TRABAJO').classList.add('input-error');
+                    } else {
+                        document.getElementById('TRABAJA_HORA_TERMINO_ORDEN_TRABAJO').classList.remove('input-error');
+                    }
                 } else {
-                    // Habilitar el input de término una vez que se ha seleccionado la hora de inicio
-                    inputfechaHoraTerminoSolicitada.disabled = false;
-                    // Actualizar minDate para el input de término
-                    let fechaHoraInicioSeleccionada = selectedDates[0];
-                    let horaInicioSeleccionada = fechaHoraInicioSeleccionada.getHours();
-                    let minutoInicioSeleccionado = fechaHoraInicioSeleccionada.getMinutes();
-
-                    let fechaMinimaTermino = new Date(fechaHoraInicioSeleccionada);
-                    fechaMinimaTermino.setHours(horaInicioSeleccionada);
-                    fechaMinimaTermino.setMinutes(minutoInicioSeleccionado);
-
-                    inputfechaHoraTerminoSolicitada._flatpickr.set("minDate", fechaMinimaTermino);
+                    document.getElementById('TRABAJA_NUMERO_ORDEN_TRABAJO').disabled = true;
+                    document.getElementById('TRABAJA_HORA_INICIO_ORDEN_TRABAJO').disabled = true;
+                    document.getElementById('TRABAJA_HORA_TERMINO_ORDEN_TRABAJO').disabled = true;
                 }
-            }
-        });
 
-        // **Configuración del selector de fecha y hora de término**
-        flatpickr(inputfechaHoraTerminoSolicitada, {
-            enableTime: true,
-            dateFormat: "d-m-Y H:i",
-            minDate: fechaMinimaPermitida, // Se establece inicialmente, luego se actualizará
-            maxDate: fechaMaximaPermitida,
-            locale: "es", // Establecer el idioma en español
-            onClose: function(selectedDates, dateStr, instance) {
-                let fechaHoraTerminoSeleccionada = selectedDates[0];
-                if (fechaHoraTerminoSeleccionada < inputfechaHoraInicioSolicitada._flatpickr.latestSelectedDateObj) {
-                    alert("La fecha y hora seleccionada es anterior a la hora de inicio.");
-                    inputfechaHoraTerminoSolicitada._flatpickr.setDate(null); // Limpiar la selección
-                }
-            }
-        });
+                // Si hay mensaje de error, mostrar alerta y detener envío del formulario
+                if (mensajeError !== "") {
+                        document.getElementById('TRABAJA_NUMERO_ORDEN_TRABAJO').disabled = false;
+                        document.getElementById('TRABAJA_HORA_INICIO_ORDEN_TRABAJO').disabled = false;
+                        document.getElementById('TRABAJA_HORA_TERMINO_ORDEN_TRABAJO').disabled = false;
 
-        // Deshabilitar el input de término al cargar la página y establecer su valor como vacío
-        inputfechaHoraTerminoSolicitada.disabled = true;
-        inputfechaHoraInicioSolicitada.value = null;
-        inputfechaHoraTerminoSolicitada.value = null;
-    });
-</script>
-
-<script>
-    document.addEventListener('DOMContentLoaded', function () {
-        // Obtener el formulario
-        let formulario = document.getElementById('formulario');
-
-        // Agregar un evento de escucha para el envío del formulario
-        formulario.addEventListener('submit', function(event) {
-            // Obtener los valores de los campos
-            let fechaHoraInicioSolicitada = document.getElementById('fechaHoraInicioSolicitada').value;
-            let fechaHoraTerminoSolicitada = document.getElementById('fechaHoraTerminoSolicitada').value;
-            let horaInicioConduccion = document.getElementById('SOLICITUD_VEHICULO_HORA_INICIO_CONDUCCION').value;
-            let horaTerminoConduccion = document.getElementById('SOLICITUD_VEHICULO_HORA_TERMINO_CONDUCCION').value;
-            let viaticoConductor = document.getElementById('SOLICITUD_VEHICULO_VIATICO').value;
-
-            let checkbox = document.getElementById('mostrarOrdenTrabajo');
-
-            // Inicializar mensaje de error
-            let mensajeError = "";
-
-            // Validar los campos antes de enviar el formulario
-            if (fechaHoraInicioSolicitada === '') {
-                mensajeError += "Por favor, seleccione una fecha y hora de salida del estacionamiento.\n";
-                document.getElementById('fechaHoraInicioSolicitada').classList.add('input-error');
-            } else {
-                document.getElementById('fechaHoraInicioSolicitada').classList.remove('input-error');
-            }
-
-            if (fechaHoraTerminoSolicitada === '') {
-                mensajeError += "Por favor, seleccione una fecha y hora de reingreso al estacionamiento.\n";
-                document.getElementById('fechaHoraTerminoSolicitada').classList.add('input-error');
-            } else {
-                document.getElementById('fechaHoraTerminoSolicitada').classList.remove('input-error');
-            }
-
-            if (horaInicioConduccion === '') {
-                mensajeError += "Por favor, seleccione una hora de inicio de conducción.\n";
-                document.getElementById('SOLICITUD_VEHICULO_HORA_INICIO_CONDUCCION').classList.add('input-error');
-            } else {
-                document.getElementById('SOLICITUD_VEHICULO_HORA_INICIO_CONDUCCION').classList.remove('input-error');
-            }
-
-            if (horaTerminoConduccion === '') {
-                mensajeError += "Por favor, seleccione una hora de término de conducción.\n";
-                document.getElementById('SOLICITUD_VEHICULO_HORA_TERMINO_CONDUCCION').classList.add('input-error');
-            } else {
-                document.getElementById('SOLICITUD_VEHICULO_HORA_TERMINO_CONDUCCION').classList.remove('input-error');
-            }
-
-            if (viaticoConductor === '') {
-                mensajeError += "Por favor, especifique solicitud de viático.";
-                document.getElementById('SOLICITUD_VEHICULO_VIATICO').classList.add('input-error');
-            } else {
-                document.getElementById('SOLICITUD_VEHICULO_VIATICO').classList.remove('input-error');
-            }
-
-            // Si se activa el checkbox de mostrar orden de trabajo, validar los campos relacionados
-            if (checkbox.checked) {
-                let horaInicioOrdenTrabajo = document.getElementById('TRABAJA_HORA_INICIO_ORDEN_TRABAJO').value;
-                let horaTerminoOrdenTrabajo = document.getElementById('TRABAJA_HORA_TERMINO_ORDEN_TRABAJO').value;
-
-                if (horaInicioOrdenTrabajo === '') {
-                    mensajeError += "Por favor, selecciona una hora de inicio de orden de trabajo.\n";
-                    document.getElementById('TRABAJA_HORA_INICIO_ORDEN_TRABAJO').classList.add('input-error');
+                    alert(mensajeError);
+                    event.preventDefault();
                 } else {
-                    document.getElementById('TRABAJA_HORA_INICIO_ORDEN_TRABAJO').classList.remove('input-error');
+                    document.getElementById('submitButton').disabled=true;
                 }
+            });
+        });
+    </script>
 
-                if (horaTerminoOrdenTrabajo === '') {
-                    mensajeError += "Por favor, selecciona una hora de término de orden de trabajo.\n";
-                    document.getElementById('TRABAJA_HORA_TERMINO_ORDEN_TRABAJO').classList.add('input-error');
-                } else {
-                    document.getElementById('TRABAJA_HORA_TERMINO_ORDEN_TRABAJO').classList.remove('input-error');
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            let inputHoraInicioOrdenTrabajo = document.getElementById('TRABAJA_HORA_INICIO_ORDEN_TRABAJO');
+            let inputHoraTerminoOrdenTrabajo = document.getElementById('TRABAJA_HORA_TERMINO_ORDEN_TRABAJO');
+
+            // Configurar Flatpickr para el campo de hora de inicio
+            let flatpickrInicioOrdenTrabajo = flatpickr(inputHoraInicioOrdenTrabajo, {
+                enableTime: true,
+                noCalendar: true,
+                dateFormat: "H:i",
+                onChange: function(selectedDates, dateStr, instance) {
+                    let horaTerminoSelector = document.getElementById("TRABAJA_HORA_TERMINO_ORDEN_TRABAJO");
+                    horaTerminoSelector._flatpickr.clear(); // Limpiar la selección anterior
+                    horaTerminoSelector._flatpickr.set("minTime", dateStr); // Establecer la hora mínima
+                    horaTerminoSelector.disabled = false; // Habilitar el input de hora de término
                 }
-            } else {
-                document.getElementById('TRABAJA_NUMERO_ORDEN_TRABAJO').disabled = true;
-                document.getElementById('TRABAJA_HORA_INICIO_ORDEN_TRABAJO').disabled = true;
-                document.getElementById('TRABAJA_HORA_TERMINO_ORDEN_TRABAJO').disabled = true;
-            }
+            });
 
-            // Si hay mensaje de error, mostrar alerta y detener envío del formulario
-            if (mensajeError !== "") {
-                    document.getElementById('TRABAJA_NUMERO_ORDEN_TRABAJO').disabled = false;
-                    document.getElementById('TRABAJA_HORA_INICIO_ORDEN_TRABAJO').disabled = false;
-                    document.getElementById('TRABAJA_HORA_TERMINO_ORDEN_TRABAJO').disabled = false;
+            // Configurar Flatpickr para el campo de hora de término (inicialmente deshabilitado)
+            let flatpickrTerminoOrdenTrabajo = flatpickr(inputHoraTerminoOrdenTrabajo, {
+                enableTime: true,
+                noCalendar: true,
+                dateFormat: "H:i",
+                placeholder: "-- Seleccione la hora --", // Establecer el marcador de posición
+            });
 
-                alert(mensajeError);
-                event.preventDefault();
-            } else {
-                document.getElementById('submitButton').disabled=true;
-            }
+            // Deshabilitar el input de hora de término inicialmente
+            inputHoraTerminoOrdenTrabajo.disabled = true;
+
+            // Limpiar los valores iniciales
+            inputHoraInicioOrdenTrabajo.value = "";
+            inputHoraTerminoOrdenTrabajo.value = "";
         });
-    });
-</script>
-
-
-<script>
-    document.addEventListener('DOMContentLoaded', function() {
-        let inputHoraInicioOrdenTrabajo = document.getElementById('TRABAJA_HORA_INICIO_ORDEN_TRABAJO');
-        let inputHoraTerminoOrdenTrabajo = document.getElementById('TRABAJA_HORA_TERMINO_ORDEN_TRABAJO');
-
-        // Configurar Flatpickr para el campo de hora de inicio
-        let flatpickrInicioOrdenTrabajo = flatpickr(inputHoraInicioOrdenTrabajo, {
-            enableTime: true,
-            noCalendar: true,
-            dateFormat: "H:i",
-            onChange: function(selectedDates, dateStr, instance) {
-                let horaTerminoSelector = document.getElementById("TRABAJA_HORA_TERMINO_ORDEN_TRABAJO");
-                horaTerminoSelector._flatpickr.clear(); // Limpiar la selección anterior
-                horaTerminoSelector._flatpickr.set("minTime", dateStr); // Establecer la hora mínima
-                horaTerminoSelector.disabled = false; // Habilitar el input de hora de término
-            }
-        });
-
-        // Configurar Flatpickr para el campo de hora de término (inicialmente deshabilitado)
-        let flatpickrTerminoOrdenTrabajo = flatpickr(inputHoraTerminoOrdenTrabajo, {
-            enableTime: true,
-            noCalendar: true,
-            dateFormat: "H:i",
-            placeholder: "-- Seleccione la hora --", // Establecer el marcador de posición
-        });
-
-        // Deshabilitar el input de hora de término inicialmente
-        inputHoraTerminoOrdenTrabajo.disabled = true;
-
-        // Limpiar los valores iniciales
-        inputHoraInicioOrdenTrabajo.value = "";
-        inputHoraTerminoOrdenTrabajo.value = "";
-    });
-</script>
+    </script>
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
@@ -718,21 +718,15 @@
             let comunaSelect = document.getElementById('SOLICITUD_VEHICULO_COMUNA');
             let comunas = {!! json_encode($comunas) !!};
 
-
             // Función para reiniciar el conjunto de pasajeros seleccionados
             function reiniciarPasajerosSeleccionados() {
                 pasajerosSeleccionados = new Set();
             }
 
-
-
-
             // Evento de cambio en el tipo de vehículo
             document.getElementById('VEHICULO_ID').addEventListener('change', function() {
                 let vehiculoIdSeleccionado = this.value;
                 document.getElementById('motivoSolicitud').style.display = 'block';
-
-
                 contadorFilas = 1;
                 capacidadMaxima = 0;
                 document.getElementById('agregarPasajeroBtn').innerHTML = '<i class="fas fa-plus"></i> Agregar Conductor';

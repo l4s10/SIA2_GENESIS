@@ -92,18 +92,18 @@ class ResolucionController extends Controller
         try {
             // Validar los datos del formulario de resoluciones.
             $validator = Validator::make($request->all(), [
-                'RESOLUCION_NUMERO' => 'required|integer',
+                'RESOLUCION_NUMERO' => 'required|integer|between:0,9999',
                 'RESOLUCION_FECHA' => 'required|date',
                 'TIPO_RESOLUCION_ID' => 'required|integer',
                 'CARGO_ID' => 'required|integer',
                 'DELEGADO_ID' => 'required|integer',
-                'RESOLUCION_DOCUMENTO' => 'nullable|string|max:191',
+                'RESOLUCION_DOCUMENTO' => 'nullable|file|mimes:pdf|max:10240',
                 'RESOLUCION_OBSERVACIONES' => 'nullable|string|max:191',
-                'FACULTAD_ID' => 'required|integer',
-                'DELEGADO_ID' => 'required|integer',                
-            ], [
+                'FACULTADES' => 'required|array',
+            ],[
                 'RESOLUCION_NUMERO.required' => 'El campo "Número de resolución" es requerido.',
                 'RESOLUCION_NUMERO.integer' => 'El campo "Número de resolución" debe ser un número entero.',
+                'RESOLUCION_NUMERO.between' => 'El campo "Número de resolución" debe estar entre 0 y 9999.',                
                 'RESOLUCION_FECHA.required' => 'El campo "Fecha de resolución" es requerido.',
                 'RESOLUCION_FECHA.date' => 'El campo "Fecha de resolución" debe ser una fecha válida.',
                 'TIPO_RESOLUCION_ID.required' => 'El campo "Tipo de resolución" es requerido.',
@@ -112,14 +112,19 @@ class ResolucionController extends Controller
                 'CARGO_ID.integer' => 'El campo "Firmante" debe ser un número entero.',
                 'DELEGADO_ID.required' => 'El campo "Delegado" es requerido.',
                 'DELEGADO_ID.integer' => 'El campo "Delegado" debe ser un número entero.',
-                'RESOLUCION_DOCUMENTO.string' => 'El campo "Documento de resolución" debe ser una cadena de caracteres.',
-                'RESOLUCION_DOCUMENTO.max' => 'El campo "Documento de resolución" no debe exceder 191 caracteres.',
+                'RESOLUCION_DOCUMENTO.required' => 'El campo "Documento de resolución" es requerido.',
+                'RESOLUCION_DOCUMENTO.file' => 'El campo "Documento de resolución" debe ser un archivo.',
+                'RESOLUCION_DOCUMENTO.mimes' => 'El campo "Documento de resolución" debe ser un archivo de tipo PDF.',
+                'RESOLUCION_DOCUMENTO.max' => 'El tamaño del archivo "Documento de resolución" no debe exceder los 10 MB (10240 kilobytes).',
                 'RESOLUCION_OBSERVACIONES.string' => 'El campo "Observaciones de resolución" debe ser una cadena de caracteres.',
                 'RESOLUCION_OBSERVACIONES.max' => 'El campo "Observaciones de resolución" no debe exceder 191 caracteres.',
+                'FACULTADES.required' => 'Debe seleccionar al menos una facultad.',
+                'FACULTADES.array' => 'Las facultades seleccionadas deben ser proporcionadas en formato de array.',
             ]);
             
             // Si la validación falla, redirecciona al formulario con los errores y el input antiguo
             if ($validator->fails()) {
+                dd($validator);
                 return redirect()->back()->withErrors($validator)->withInput();
             }
 
@@ -129,31 +134,33 @@ class ResolucionController extends Controller
             $resolucion->RESOLUCION_FECHA = $request->input('RESOLUCION_FECHA');
             $resolucion->TIPO_RESOLUCION_ID = $request->input('TIPO_RESOLUCION_ID');
             $resolucion->CARGO_ID = $request->input('CARGO_ID');
-            $resolucion->RESOLUCION_DOCUMENTO = $request->input('RESOLUCION_DOCUMENTO');
             $resolucion->RESOLUCION_OBSERVACIONES = $request->input('RESOLUCION_OBSERVACIONES');
-
 
             if ($request->hasFile('RESOLUCION_DOCUMENTO')) {
                 $documento = $request->file('RESOLUCION_DOCUMENTO');
-            
-                // Genera un nombre único para el archivo PDF
-                $nombreArchivo = uniqid() . '.' . $documento->getClientOriginalExtension();
-            
-                // Guardar el archivo PDF en la carpeta 'resoluciones' dentro del disco 'public'
-                $documento->storeAs('resoluciones', $nombreArchivo, 'public');
-
+                $nombreArchivo = time() . '_' . $documento->getClientOriginalName();
+                $documento->move(public_path('/resolucionesPdf'), $nombreArchivo);
                 // Asignar el nombre del archivo a la columna RESOLUCION_DOCUMENTO
                 $resolucion->RESOLUCION_DOCUMENTO = $nombreArchivo;
             }
+
             // Guardar el modelo actualizado
             $resolucion->save();
 
             //dd($resolucion);
-            $delegaFacultad = new DelegaFacultad();
-            $delegaFacultad->RESOLUCION_ID = $resolucion->RESOLUCION_ID;
-            $delegaFacultad->FACULTAD_ID = $request->input('FACULTAD_ID');
-            $delegaFacultad->save();
+            // Obtener el arreglo de facultades desde la solicitud y convertirlo de nuevo a un arreglo
+            $facultadesArray = json_decode($request->input('FACULTADES')[0], true);
+            //dd($facultadesArray);
 
+            // Guardar las facultades asociadas a la resolución
+            foreach ($facultadesArray as $facultadId) {
+                $delegaFacultad = new DelegaFacultad();
+                $delegaFacultad->RESOLUCION_ID = $resolucion->RESOLUCION_ID;
+                $delegaFacultad->FACULTAD_ID = $facultadId;
+                $delegaFacultad->save();
+            }
+
+            // Crear la relación con el delegado
             $obedeceResolucion = new ObedeceResolucion();
             $obedeceResolucion->RESOLUCION_ID = $resolucion->RESOLUCION_ID;
             $obedeceResolucion->CARGO_ID = $request->input('DELEGADO_ID');
@@ -230,18 +237,18 @@ class ResolucionController extends Controller
             // Validar los datos del formulario de resoluciones.
 
             $validator = Validator::make($request->all(), [
-                'RESOLUCION_NUMERO' => 'required|integer',
+                'RESOLUCION_NUMERO' => 'required|integer|between:0,9999',
                 'RESOLUCION_FECHA' => 'required|date',
                 'TIPO_RESOLUCION_ID' => 'required|integer',
                 'CARGO_ID' => 'required|integer',
                 'DELEGADO_ID' => 'required|integer',
-                'RESOLUCION_DOCUMENTO' => 'nullable|string|max:191',
+                'RESOLUCION_DOCUMENTO' => 'nullable|file|mimes:pdf|max:10240',
                 'RESOLUCION_OBSERVACIONES' => 'nullable|string|max:191',
-                'FACULTAD_ID' => 'required|integer',
-                'DELEGADO_ID' => 'required|integer',                
+                'DELEGADO_ID' => 'required|integer',     
             ], [
                 'RESOLUCION_NUMERO.required' => 'El campo "Número de resolución" es requerido.',
                 'RESOLUCION_NUMERO.integer' => 'El campo "Número de resolución" debe ser un número entero.',
+                'RESOLUCION_NUMERO.between' => 'El campo "Número de resolución" debe estar entre 0 y 9999.', 
                 'RESOLUCION_FECHA.required' => 'El campo "Fecha de resolución" es requerido.',
                 'RESOLUCION_FECHA.date' => 'El campo "Fecha de resolución" debe ser una fecha válida.',
                 'TIPO_RESOLUCION_ID.required' => 'El campo "Tipo de resolución" es requerido.',
@@ -250,17 +257,21 @@ class ResolucionController extends Controller
                 'CARGO_ID.integer' => 'El campo "Firmante" debe ser un número entero.',
                 'DELEGADO_ID.required' => 'El campo "Delegado" es requerido.',
                 'DELEGADO_ID.integer' => 'El campo "Delegado" debe ser un número entero.',
-                'RESOLUCION_DOCUMENTO.string' => 'El campo "Documento de resolución" debe ser una cadena de caracteres.',
-                'RESOLUCION_DOCUMENTO.max' => 'El campo "Documento de resolución" no debe exceder 191 caracteres.',
+                'RESOLUCION_DOCUMENTO.required' => 'El campo "Documento de resolución" es requerido.',
+                'RESOLUCION_DOCUMENTO.file' => 'El campo "Documento de resolución" debe ser un archivo.',
+                'RESOLUCION_DOCUMENTO.mimes' => 'El campo "Documento de resolución" debe ser un archivo de tipo PDF.',
+                'RESOLUCION_DOCUMENTO.max' => 'El tamaño del archivo "Documento de resolución" no debe exceder los 10 MB (10240 kilobytes).',
                 'RESOLUCION_OBSERVACIONES.string' => 'El campo "Observaciones de resolución" debe ser una cadena de caracteres.',
                 'RESOLUCION_OBSERVACIONES.max' => 'El campo "Observaciones de resolución" no debe exceder 191 caracteres.',
+                'FACULTADES.required' => 'Debe seleccionar al menos una facultad.',
+                'FACULTADES.array' => 'Las facultades seleccionadas deben ser proporcionadas en formato de array.',
             ]);
 
             // Si la validación falla, redirecciona al formulario con los errores y el input antiguo
             if ($validator->fails()) {
+                //dd($validator);
                 return redirect()->back()->withErrors($validator)->withInput();
             }
-
 
 
             $resolucion = Resolucion::where('RESOLUCION_ID', $id)->firstOrFail();
@@ -268,48 +279,50 @@ class ResolucionController extends Controller
             $resolucion->RESOLUCION_FECHA = $request->input('RESOLUCION_FECHA');
             $resolucion->TIPO_RESOLUCION_ID = $request->input('TIPO_RESOLUCION_ID');
             $resolucion->CARGO_ID = $request->input('CARGO_ID');
-            $resolucion->RESOLUCION_DOCUMENTO = $request->input('RESOLUCION_DOCUMENTO');
+            //$resolucion->RESOLUCION_DOCUMENTO = $request->input('RESOLUCION_DOCUMENTO');
             $resolucion->RESOLUCION_OBSERVACIONES = $request->input('RESOLUCION_OBSERVACIONES');
             $resolucion->delegacion->FACULTAD_ID = $request->input('FACULTAD_ID');
 
-
-            // Procesar el archivo adjunto si se ha seleccionado uno
+            // Manejar el archivo adjunto
             if ($request->hasFile('RESOLUCION_DOCUMENTO')) {
-                //Borra el archivo existente, en caso de que exista
-                if ($resolucion->DOCUMENTO) {
-                    Storage::disk('public')->delete('resoluciones/' . $resolucion->DOCUMENTO);
+                $documento = $request->file('RESOLUCION_DOCUMENTO');
+                if ($documento->isValid()) {
+                    // Eliminar el archivo adjunto actual, si existe
+                    if ($resolucion->RESOLUCION_DOCUMENTO) {
+                        Storage::disk('public')->delete('/' . $resolucion->RESOLUCION_DOCUMENTO);
+                    }
+                    // Mover el nuevo archivo a la carpeta de resoluciones
+                    $nombreArchivo = time() . '_' . $documento->getClientOriginalName();
+                    $documento->move(public_path('/resolucionesPdf'), $nombreArchivo);
+                    // Asignar el nombre del archivo a la columna RESOLUCION_DOCUMENTO
+                    $resolucion->RESOLUCION_DOCUMENTO = $nombreArchivo;
                 }
-                $documento = $request->file('DOCUMENTO');
-
-                // Genera un nombre único para el archivo PDF
-                $nombreArchivo = uniqid() . '.' . $documento->getClientOriginalExtension();
-
-                // Guarda el archivo PDF en la carpeta 'resoluciones' dentro del disco 'public'
-                $documento->storeAs('resoluciones', $nombreArchivo, 'public');
-
-                $resolucion->DOCUMENTO = $nombreArchivo;
+            } elseif ($request->has('ELIMINAR_DOCUMENTO')) {
+                // Eliminar el archivo adjunto actual, si se selecciona la opción de eliminar
+                if ($resolucion->RESOLUCION_DOCUMENTO) {
+                    Storage::disk('public')->delete('/' . $resolucion->RESOLUCION_DOCUMENTO);
+                    $resolucion->RESOLUCION_DOCUMENTO = null;
+                }
             }
 
-            // Verificar si se debe eliminar el archivo adjunto actual
-            if ($request->has('ELIMINAR_DOCUMENTO')) {
-                // Eliminar el archivo adjunto actual
-                Storage::disk('public')->delete('resoluciones/' . $resolucion->DOCUMENTO);
-                $resolucion->DOCUMENTO = null;
-            }
-            // Guardar el modelo actualizado
+            // Guardar la resolución actualizada
             $resolucion->save();
-            //dd($resolucion);
 
-            DelegaFacultad::where('RESOLUCION_ID', $resolucion->RESOLUCION_ID)->delete();
-            
+            // Obtener las nuevas facultades asociadas
+            $facultadesArray = json_decode($request->input('FACULTADES')[0], true);
+
+            if ($facultadesArray !== null) {
+                // Eliminar las facultades asociadas previamente
+                $resolucion->delegacion()->delete();
+
+                // Iterar sobre las nuevas facultades y guardarlas en la tabla intermedia
+                foreach ($facultadesArray as $facultadId) {
+                    $resolucion->delegacion()->create(['FACULTAD_ID' => $facultadId]);
+                }
+            }
+              
             // Eliminar las instancias existentes de ObedeceResolucion asociadas a la RESOLUCION_ID
             ObedeceResolucion::where('RESOLUCION_ID', $resolucion->RESOLUCION_ID)->delete();
-
-            // Crear nuevas instancias de DelegaFacultad
-            $delegaFacultad = new DelegaFacultad();
-            $delegaFacultad->RESOLUCION_ID = $resolucion->RESOLUCION_ID;
-            $delegaFacultad->FACULTAD_ID = $request->input('FACULTAD_ID');
-            $delegaFacultad->save();
 
             // Crear nuevas instancias de ObedeceResolucion
             $obedeceResolucion = new ObedeceResolucion();
@@ -318,8 +331,6 @@ class ResolucionController extends Controller
             $obedeceResolucion->save();
             //$this->actualizarDelegacion($resolucion, $request);
 
-
-          
             // Redireccionar a la vista index de resoluciones con un mensaje de éxito
             return redirect()->route('resoluciones.index')->with('success', 'Resolución actualizada exitosamente');
         } catch(Exception $e) {
@@ -338,8 +349,8 @@ class ResolucionController extends Controller
             $resolucion = Resolucion::find($id);
 
             // Eliminar el documento asociado si existe
-            if ($resolucion->DOCUMENTO) {
-                Storage::disk('public')->delete('resoluciones/' . $resolucion->DOCUMENTO);
+            if ($resolucion->RESOLUCION_DOCUMENTO) {
+                Storage::disk('public')->delete('/' . $resolucion->RESOLUCION_DOCUMENTO);
             }
             DelegaFacultad::where('RESOLUCION_ID', $resolucion->RESOLUCION_ID)->delete();
             

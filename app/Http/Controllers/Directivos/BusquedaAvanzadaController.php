@@ -38,8 +38,15 @@ class BusquedaAvanzadaController extends Controller
         //Atributos para la vista
         $tipos = TipoResolucion::distinct()->get(['TIPO_RESOLUCION_ID', 'TIPO_RESOLUCION_NOMBRE']);
         $facultades = Facultad::all();
+        // Obtener los cargos de la misma oficina del usuario autenticado
+        $cargosOficina = Cargo::where('OFICINA_ID', Auth::user()->OFICINA_ID)->get();
+
+        // Obtener el cargo 'DIRECTOR' independientemente de la oficina
+        $cargoDirector = Cargo::where('CARGO_NOMBRE', 'DIRECTOR')->first();
+
+        // Combinar los resultados en un solo array si se encontró el 'DIRECTOR'
+        $firmantes = $cargosOficina->push($cargoDirector);
         $delegados = Cargo::where('OFICINA_ID', Auth::user()->OFICINA_ID)->get();
-        $firmantes = Cargo::where('OFICINA_ID', Auth::user()->OFICINA_ID)->get();
         //$cargoDirector = Cargo::where('CARGO_NOMBRE', 'DIRECTOR');
         // Combinar los resultados en un solo array si se encontró el 'DIRECTOR'
 
@@ -85,9 +92,13 @@ class BusquedaAvanzadaController extends Controller
             if ($tiposReq && isset($selectedFilters['TIPO_RESOLUCION_ID'])) {
                 $resoluciones->where('TIPO_RESOLUCION_ID', $tiposReq);
             }
+            
             if ($facultadesReq && isset($selectedFilters['FACULTAD_ID'])) {
-                $resoluciones->where('FACULTAD_ID', $facultadesReq);
+                $resoluciones->whereHas('delegacion', function ($query) use ($facultadesReq) {
+                    $query->where('FACULTAD_ID', $facultadesReq);
+                });
             }
+            
             if ($delegadosReq && isset($selectedFilters['DELEGADO_ID'])) {
                 $resoluciones->whereHas('obedientes', function ($query) use ($delegadosReq) {
                     $query->where('CARGO_ID', $delegadosReq);
@@ -114,11 +125,7 @@ class BusquedaAvanzadaController extends Controller
                 });
             }
             
-            //dd($resoluciones);
-            /*if ($leyReq && isset($selectedFilters['FACULTAD_LEY_ASOCIADA'])) {
-                $resoluciones->where('FACULTAD_LEY_ASOCIADA', $leyReq);
-            }*/
-            //Obtengo colección de resoluciones según parámetros de búsqueda
+            
             $resoluciones = $resoluciones->distinct()->get();
             return $resoluciones;
         }else{
