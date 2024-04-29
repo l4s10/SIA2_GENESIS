@@ -95,6 +95,16 @@
                         <td>{{ $solicitud->mostrarFecha($solicitud->created_at) }}</td>
                         <td>
                             <div class="d-flex justify-content-center">
+                                {{-- Si el usuario autentificado es el solicitante, y el estado es igual a "AUTORIZADO" mostrar un boton adicional para confirmar la recepcion --}}
+                                {{-- Para el backend esto solo actualizara el estado a terminado, actualizando la fecha de "updated_at" cerrandola para siempre. --}}
+                                @if (auth()->user()->USUARIO_ID == $solicitud->SOLICITUD_USUARIO_ID && $solicitud->SOLICITUD_ESTADO == 'APROBADO')
+                                    <form action="{{ route('solicitudes.bodegas.confirmar', $solicitud->SOLICITUD_ID) }}" method="POST">
+                                        @csrf
+                                        @method('PUT')
+                                        <button type="submit" class="btn estado-ingresado mr-2"><i class="fa-solid fa-people-carry-box"></i></button>
+                                    </form>
+                                @endif
+
                                 {{-- Boton de ver detalles --}}
                                 <a href="{{ route('solicitudes.bodegas.show', $solicitud->SOLICITUD_ID) }}" class="btn btn-primary"><i class="fa-solid fa-eye"></i></a>
 

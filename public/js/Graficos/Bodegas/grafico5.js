@@ -5,7 +5,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const chart5 = new Chart(ctx5, {
         type: 'line', // Cambia según necesites
         data: {
-            labels: ['Promedio Creación-Atención', 'Promedio Revisión-Aprobación', 'Promedio Aprobación-Entrega'],
+            labels: ['Promedio Creación-Atención', 'Promedio Revisión-Aprobación', 'Promedio Creación-Tramitación'],
             datasets: [{
                 label: 'Tiempos Promedio (días)',
                 data: [],
@@ -53,6 +53,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
         // Asigna los valores obtenidos al dataset del gráfico
         chart5.data.datasets[0].data = [parseFloat(promedioCreacionAtencion), parseFloat(promedioRevisionAprobacion), parseFloat(promedioAprobacionEntrega)];
+        console.log(chart5.data.datasets[0].data);
         chart5.update();
     }
 

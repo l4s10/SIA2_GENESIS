@@ -41,4 +41,8 @@ Route::prefix('solicitudes')->group(function () {
     Route::delete('/bodegas/{solicitud}', [SolicitudBodegasController::class, 'destroy'])
         ->name('solicitudes.bodegas.destroy')
         ->middleware('can:eliminar_solicitud');
+
+    // Enrutamiento para el metodo confirmar entrega
+    Route::put('/bodegas/{solicitud}/confirmar', [SolicitudBodegasController::class, 'confirmar'])
+        ->name('solicitudes.bodegas.confirmar');
 });

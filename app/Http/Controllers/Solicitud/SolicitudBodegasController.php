@@ -300,4 +300,26 @@ class SolicitudBodegasController extends Controller
         }
     }
 
+    /**
+     * Confirmar la entrega de la solicitud.
+     */
+    public function confirmar($id){
+        try{
+            // Buscar la solicitud por ID
+            $solicitud = Solicitud::has('bodegas')->findOrFail($id);
+
+            // Verificar si el usuario logueado es el solicitante y si la solicitud está aprobada
+            if (Auth::user()->USUARIO_ID == $solicitud->SOLICITUD_USUARIO_ID && $solicitud->SOLICITUD_ESTADO == 'APROBADO') {
+                $solicitud->SOLICITUD_ESTADO = 'TERMINADO';
+                $solicitud->save();
+
+                return redirect()->route('solicitudes.bodegas.index')->with('success', 'Solicitud confirmada con éxito.');
+            } else {
+                return redirect()->route('solicitudes.bodegas.index')->with('error', 'No se puede confirmar la solicitud.');
+            }
+        }catch(Exception $e){
+            return redirect()->back()->with('error', 'Error al terminar la solicitud.');
+        }
+    }
+
 }
