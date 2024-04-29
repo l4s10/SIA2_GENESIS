@@ -41,55 +41,6 @@
             
 
                 <div class="col-md-3 form-group">
-                    <label for="RESOLUCION_FECHA" class="form-label"><i class="fas fa-bookmark"></i> Fecha:</label>
-                    <select id="RESOLUCION_FECHA" name="RESOLUCION_FECHA" class="form-control @error('RESOLUCION_FECHA') is-invalid @enderror" disabled>
-                        <option value="" selected>--Seleccione Fecha--</option>
-                        @foreach ($fechas as $fecha)
-                            <option value="{{ $fecha->RESOLUCION_FECHA }}" {{ old('RESOLUCION_FECHA') == $fecha->RESOLUCION_FECHA ? 'selected' : '' }}>{{ date('d-m-Y', strtotime($fecha->RESOLUCION_FECHA)) }}</option>
-                        @endforeach
-                    </select>
-                    @error('RESOLUCION_FECHA')
-                        <div class="invalid-feedback">{{ $message }}</div>
-                    @enderror
-                    <div class="form-check mt-2">
-                        <input class="form-check-input" type="checkbox" name="selectedFilters[RESOLUCION_FECHA]" value="RESOLUCION_FECHA" id="filter_RESOLUCION_FECHA">
-                        <label class="form-check-label" for="filter_RESOLUCION_FECHA">Incluir como filtro de búsqueda</label>                    
-                    </div>
-                </div>
-
-                <div class="col-md-3 form-group">
-                    <label for="FACULTAD_ID" class="form-label"><i class="fas fa-bookmark"></i> Facultad:</label>
-                    <select id="FACULTAD_ID" name="FACULTAD_ID" class="form-control" disabled>
-                        <option value="" selected>--Seleccione Facultad--</option>
-                        @foreach ($facultades as $facultad)
-                            <option value="{{ $facultad->FACULTAD_ID }}" {{ old('FACULTAD_ID') == $facultad->FACULTAD_ID ? 'selected' : '' }}>{{ $facultad->FACULTAD_NOMBRE }}</option>
-                        @endforeach
-                    </select>
-                    <div class="form-check mt-2">
-                        <input class="form-check-input" type="checkbox" name="selectedFilters[FACULTAD_ID]" value="FACULTAD_ID" id="filter_FACULTAD_ID">
-                        <label class="form-check-label" for="filter_FACULTAD_ID">Incluir como filtro de búsqueda</label>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="row">
-                <div class="col-md-3 form-group">
-                    <label for="FACULTAD_LEY_ASOCIADA" class="form-label"><i class="fas fa-bookmark"></i> Ley asociada:</label>
-                    <select id="FACULTAD_LEY_ASOCIADA" name="FACULTAD_LEY_ASOCIADA" class="form-control" disabled>
-                        <option value="" selected>--Seleccione Ley--</option>
-                        @foreach ($leyesAsociadas as $leyAsociada)
-                            <option value="{{ $leyAsociada }}" {{ old('FACULTAD_LEY_ASOCIADA') == $leyAsociada ? 'selected' : '' }}>{{ $leyAsociada }}</option>
-                        @endforeach
-                    </select>
-                    <div class="form-check mt-2">
-                        <input class="form-check-input" type="checkbox" name="selectedFilters[FACULTAD_LEY_ASOCIADA]" value="FACULTAD_LEY_ASOCIADA" id="filter_FACULTAD_LEY_ASOCIADA">
-                        <label class="form-check-label" for="filter_FACULTAD_LEY_ASOCIADA">Incluir como filtro de búsqueda</label>
-                    </div>
-                </div>
-                
-
-                
-                <div class="col-md-3 form-group">
                     <label for="FACULTAD_ART_LEY_ASOCIADA" class="form-label"><i class="fas fa-bookmark"></i> Artículo de ley:</label>
                     <select id="FACULTAD_ART_LEY_ASOCIADA" name="FACULTAD_ART_LEY_ASOCIADA" class="form-control" disabled>
                         <option value="" selected>--Seleccione Artículo--</option>
@@ -105,7 +56,55 @@
                         <label class="form-check-label" for="filter_FACULTAD_ART_LEY_ASOCIADA">Incluir como filtro de búsqueda</label>
                     </div>
                 </div>
+               
+
+                <div class="col-md-3 form-group">
+                    <label for="FACULTAD_LEY_ASOCIADA" class="form-label"><i class="fas fa-bookmark"></i> Ley asociada:</label>
+                    <select id="FACULTAD_LEY_ASOCIADA" name="FACULTAD_LEY_ASOCIADA" class="form-control" disabled>
+                        <option value="" selected>--Seleccione Ley--</option>
+                        @foreach ($leyesAsociadas as $leyAsociada)
+                            <option value="{{ $leyAsociada }}" {{ old('FACULTAD_LEY_ASOCIADA') == $leyAsociada ? 'selected' : '' }}>{{ $leyAsociada }}</option>
+                        @endforeach
+                    </select>
+                    <div class="form-check mt-2">
+                        <input class="form-check-input" type="checkbox" name="selectedFilters[FACULTAD_LEY_ASOCIADA]" value="FACULTAD_LEY_ASOCIADA" id="filter_FACULTAD_LEY_ASOCIADA">
+                        <label class="form-check-label" for="filter_FACULTAD_LEY_ASOCIADA">Incluir como filtro de búsqueda</label>
+                    </div>
+                </div>
                 
+            </div>
+            
+            <div class="row">
+                <div class="col-md-3 form-group">
+                    <label for="FACULTAD_ID" class="form-label"><i class="fas fa-bookmark"></i> Facultad:</label>
+                    <select id="FACULTAD_ID" name="FACULTAD_ID" class="form-control" disabled>
+                        <option value="" selected>--Seleccione Facultad--</option>
+                        @foreach ($facultades as $facultad)
+                            <option value="{{ $facultad->FACULTAD_ID }}" {{ old('FACULTAD_ID') == $facultad->FACULTAD_ID ? 'selected' : '' }}>{{ $facultad->FACULTAD_NOMBRE }}</option>
+                        @endforeach
+                    </select>
+                    <div class="form-check mt-2">
+                        <input class="form-check-input" type="checkbox" name="selectedFilters[FACULTAD_ID]" value="FACULTAD_ID" id="filter_FACULTAD_ID">
+                        <label class="form-check-label" for="filter_FACULTAD_ID">Incluir como filtro de búsqueda</label>
+                    </div>
+                </div>
+                 
+                <div class="col-md-3 form-group">
+                    <label for="RESOLUCION_FECHA" class="form-label"><i class="fas fa-bookmark"></i> Fecha:</label>
+                    <select id="RESOLUCION_FECHA" name="RESOLUCION_FECHA" class="form-control @error('RESOLUCION_FECHA') is-invalid @enderror" disabled>
+                        <option value="" selected>--Seleccione Fecha--</option>
+                        @foreach ($fechas as $fecha)
+                            <option value="{{ $fecha->RESOLUCION_FECHA }}" {{ old('RESOLUCION_FECHA') == $fecha->RESOLUCION_FECHA ? 'selected' : '' }}>{{ date('d-m-Y', strtotime($fecha->RESOLUCION_FECHA)) }}</option>
+                        @endforeach
+                    </select>
+                    @error('RESOLUCION_FECHA')
+                        <div class="invalid-feedback">{{ $message }}</div>
+                    @enderror
+                    <div class="form-check mt-2">
+                        <input class="form-check-input" type="checkbox" name="selectedFilters[RESOLUCION_FECHA]" value="RESOLUCION_FECHA" id="filter_RESOLUCION_FECHA">
+                        <label class="form-check-label" for="filter_RESOLUCION_FECHA">Incluir como filtro de búsqueda</label>                    
+                    </div>
+                </div>
 
 
                 <div class="col-md-3 form-group">
@@ -172,7 +171,11 @@
                                 </td>
                                 <td>{{ date('d/m/Y', strtotime($resolucion->RESOLUCION_FECHA)) }}</td>
                                 <td>{{ $resolucion->tipoResolucion->TIPO_RESOLUCION_NOMBRE }}</td>
-                                <td>{{ $resolucion->firmante->CARGO_NOMBRE }}</td>
+                                <td>
+                                    <div class="d-flex justify-content-center">
+                                        {{ $resolucion->firmante->CARGO_NOMBRE }}
+                                    </div>
+                                </td>
                                 <td>
                                     @foreach($resolucion->obedientes as $obediente)
                                         {{ $obediente->cargo->CARGO_NOMBRE }}<br>
@@ -180,31 +183,39 @@
                                 </td>
                                 <td>
                                     @foreach($resolucion->delegacion as $delegacion)
-                                        {{ $delegacion->facultad->FACULTAD_NOMBRE }}<br>
+                                        {!! '<strong>FAC ' . $delegacion->facultad->FACULTAD_NUMERO . ': </strong>' . $delegacion->facultad->FACULTAD_NOMBRE .'<br>'!!}<br>
                                     @endforeach
                                 </td>
                                 <td>
                                     @foreach($resolucion->delegacion as $delegacion)
-                                        {{ $delegacion->facultad->FACULTAD_LEY_ASOCIADA }}<br>
-                                    @endforeach
-                                </td>                                
-                                <td>
-                                    @foreach($resolucion->delegacion as $delegacion)
-                                        {{ $delegacion->facultad->FACULTAD_ART_LEY_ASOCIADA }}<br>
+                                        {!! '<strong>FAC ' . $delegacion->facultad->FACULTAD_NUMERO . ': </strong>' . $delegacion->facultad->FACULTAD_LEY_ASOCIADA .'<br>'!!}<br>
                                     @endforeach
                                 </td>
+
                                 <td>
                                     @foreach($resolucion->delegacion as $delegacion)
-                                        <span class="glosa-abreviada">{{ substr($delegacion->facultad->FACULTAD_CONTENIDO, 0, 0) }}</span>
-                                        <button class="btn btn-sia-primary btn-block btn-expand" data-glosa="{{ $delegacion->facultad->FACULTAD_CONTENIDO }}">
-                                            <i class="fa-solid fa-square-plus"></i>
-                                        </button>
-                                        <button class="btn btn-sia-primary btn-block btn-collapse" style="display: none;">
-                                            <i class="fa-solid fa-square-minus"></i>
-                                        </button>
-                                        <span class="glosa-completa" style="display: none;">{{ $delegacion->facultad->FACULTAD_CONTENIDO }}</span><br>
+                                        {!! '<strong>FAC ' . $delegacion->facultad->FACULTAD_NUMERO . ': </strong>' . $delegacion->facultad->FACULTAD_ART_LEY_ASOCIADA .'<br>'!!}<br>
                                     @endforeach
                                 </td>
+                                              
+                                <td>
+                                    @foreach($resolucion->delegacion as $delegacion)
+                                        <div>   
+                                            <span class="glosa-abreviada">{{ substr($delegacion->facultad->FACULTAD_CONTENIDO, 0, 0) }}</span>
+                                            <button class="btn btn-sia-primary btn-block btn-expand" data-glosa="{{ $delegacion->facultad->FACULTAD_CONTENIDO }}">
+                                                <i class="fa-solid fa-square-plus"></i>
+                                            </button>
+                                            <button class="btn btn-sia-primary btn-block btn-collapse" style="display: none;">
+                                                <i class="fa-solid fa-square-minus"></i>
+                                            </button>
+                                            
+                                            <span class="glosa-completa" style="display: none;">
+                                                <strong>FAC {{ $delegacion->facultad->FACULTAD_NUMERO }}: </strong>{{ $delegacion->facultad->FACULTAD_CONTENIDO }}
+                                            </span>        
+                                        </div>                           
+                                    @endforeach
+                                </td>
+
                                 <td>
                                     <span class="observaciones-abreviada">{{ substr($resolucion->RESOLUCION_OBSERVACIONES, 0, 0) }}</span>
                                     <button class="btn btn-sia-primary btn-block btn-expand-obs" data-obs="{{ $resolucion->RESOLUCION_OBSERVACIONES }}">
@@ -218,7 +229,7 @@
                                 </td>
                                 <td>
                                     @if ($resolucion->RESOLUCION_DOCUMENTO)
-                                        <a href="{{ asset('storage/resoluciones/' . $resolucion->RESOLUCION_DOCUMENTO) }}" class="btn btn-sia-primary btn-block" target="_blank">
+                                        <a href="{{ asset('resolucionesPdf/' . $resolucion->RESOLUCION_DOCUMENTO) }}" class="btn btn-sia-primary btn-block" target="_blank">
                                             <i class="fa-solid fa-file-pdf" style="color: green;"></i>
                                         </a>
                                     @else

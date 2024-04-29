@@ -144,37 +144,50 @@
                                 </td>
                                 <td>{{ date('d-m-Y', strtotime($resolucion->RESOLUCION_FECHA)) }}</td>
                                 <td>{{ $resolucion->tipoResolucion->TIPO_RESOLUCION_NOMBRE }}</td>
-                                <td>{{ $resolucion->firmante->CARGO_NOMBRE }}</td>
+                                <td>
+                                    <div class="d-flex justify-content-center">
+                                        {{ $resolucion->firmante->CARGO_NOMBRE }}
+                                    </div>
+                                </td>
                                 <td>
                                     @foreach($resolucion->obedientes as $obediente)
                                         {{ $obediente->cargo->CARGO_NOMBRE }}<br>
                                     @endforeach
                                 </td>
+
                                 <td>
                                     @foreach($resolucion->delegacion as $delegacion)
-                                        {{ $delegacion->facultad->FACULTAD_NOMBRE }}<br>
+                                        {!! '<strong>FAC ' . $delegacion->facultad->FACULTAD_NUMERO . ': </strong>' . $delegacion->facultad->FACULTAD_NOMBRE .'<br>'!!}<br>
                                     @endforeach
                                 </td>
                                 <td>
                                     @foreach($resolucion->delegacion as $delegacion)
-                                        {{ $delegacion->facultad->FACULTAD_LEY_ASOCIADA }}<br>
+                                        {!! '<strong>FAC ' . $delegacion->facultad->FACULTAD_NUMERO . ': </strong>' . $delegacion->facultad->FACULTAD_LEY_ASOCIADA .'<br>'!!}<br>
                                     @endforeach
                                 </td>
+              
                                 <td>
                                     @foreach($resolucion->delegacion as $delegacion)
-                                        <span class="glosa-abreviada">{{ substr($delegacion->facultad->FACULTAD_CONTENIDO, 0, 0) }}</span>
-                                        <button class="btn btn-sia-primary btn-block btn-expand" data-glosa="{{ $delegacion->facultad->FACULTAD_CONTENIDO }}">
-                                            <i class="fa-solid fa-square-plus"></i>
-                                        </button>
-                                        <button class="btn btn-sia-primary btn-block btn-collapse" style="display: none;">
-                                            <i class="fa-solid fa-square-minus"></i>
-                                        </button>
-                                        <span class="glosa-completa" style="display: none;">{{ $delegacion->facultad->FACULTAD_CONTENIDO }}</span><br>
+                                        <div>   
+                                            <span class="glosa-abreviada">{{ substr($delegacion->facultad->FACULTAD_CONTENIDO, 0, 0) }}</span>
+                                            <button class="btn btn-sia-primary btn-block btn-expand" data-glosa="{{ $delegacion->facultad->FACULTAD_CONTENIDO }}">
+                                                <i class="fa-solid fa-square-plus"></i>
+                                            </button>
+                                            <button class="btn btn-sia-primary btn-block btn-collapse" style="display: none;">
+                                                <i class="fa-solid fa-square-minus"></i>
+                                            </button>
+                                            
+                                            <span class="glosa-completa" style="display: none;">
+                                                <strong>FAC {{ $delegacion->facultad->FACULTAD_NUMERO }}: </strong>{{ $delegacion->facultad->FACULTAD_CONTENIDO }}
+                                            </span>        
+                                        </div>                           
                                     @endforeach
+
                                 </td>
+                              
                                 <td>
                                     @if ($resolucion->RESOLUCION_DOCUMENTO)
-                                        <a href="{{ asset('storage/resoluciones/' . $resolucion->RESOLUCION_DOCUMENTO) }}" class="btn btn-sia-primary btn-block" target="_blank">
+                                        <a href="{{ asset('resolucionesPdf/' . $resolucion->RESOLUCION_DOCUMENTO) }}" class="btn btn-sia-primary btn-block" target="_blank">
                                             <i class="fa-solid fa-file-pdf" style="color: green;"></i>
                                         </a>
                                     @else

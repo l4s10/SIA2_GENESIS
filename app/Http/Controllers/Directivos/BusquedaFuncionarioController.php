@@ -117,9 +117,15 @@ class BusquedaFuncionarioController extends Controller
     
         // Obtener cargos asociados a la dirección regional del usuario autenticado
         $exclusionCargos = ['FUNCIONARIO', 'EXTERNO'];
-        $cargos = Cargo::where('OFICINA_ID', $direccionRegionalAutenticada)
-            ->whereNotIn('CARGO_NOMBRE', $exclusionCargos)
-            ->get();
+        // Obtener los cargos de la misma oficina del usuario autenticado
+        $cargosOficina = Cargo::where('OFICINA_ID', Auth::user()->OFICINA_ID)
+        ->whereNotIn('CARGO_NOMBRE', $exclusionCargos)
+        ->get();
+        // Obtener el cargo 'DIRECTOR' independientemente de la oficina
+        $cargoDirector = Cargo::where('CARGO_NOMBRE', 'DIRECTOR')->first();
+        // Combinar los resultados en un solo array si se encontró el 'DIRECTOR'
+        $cargos = $cargosOficina->push($cargoDirector);
+       
 
     
         return view('sia2.directivos.directivos.busquedafuncionario.index', compact('resoluciones', 'cargos', 'nombres', 'apellidos', 'cargoFuncionario', 'rutRes', 'cargoResolucion', 'busquedaResolucionCargo', 'busquedaResolucionFuncionario', 'busquedaResolucionCargoFallida', 'busquedaResolucionFuncionarioFallida'));

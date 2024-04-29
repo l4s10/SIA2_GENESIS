@@ -38,8 +38,8 @@ return [
 
         'public' => [
             'driver' => 'local',
-            'root' => public_path('storage'),
-            'url' => env('APP_URL') . '/storage',
+            'root' => public_path('resolucionesPdf'),
+            'url' => env('APP_URL') . '/resolucionesPdf',
             'visibility' => 'public',
         ],
         /*'public' => [
