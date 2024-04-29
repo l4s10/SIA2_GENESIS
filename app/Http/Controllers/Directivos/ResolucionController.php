@@ -124,7 +124,7 @@ class ResolucionController extends Controller
             
             // Si la validación falla, redirecciona al formulario con los errores y el input antiguo
             if ($validator->fails()) {
-                dd($validator);
+                //dd($validator);
                 return redirect()->back()->withErrors($validator)->withInput();
             }
 
@@ -169,7 +169,7 @@ class ResolucionController extends Controller
             // Redireccionar a la vista de solicitudes con un mensaje de éxito
             return redirect()->route('resoluciones.index')->with('success', 'Resolución creada exitosamente');
         }catch(Exception $e){
-            dd($e);
+            // dd($e);
             // Manejar excepciones si es necesario
             return redirect()->back()->with('error', 'Error al crear la resolución.');
         }
@@ -334,7 +334,6 @@ class ResolucionController extends Controller
             // Redireccionar a la vista index de resoluciones con un mensaje de éxito
             return redirect()->route('resoluciones.index')->with('success', 'Resolución actualizada exitosamente');
         } catch(Exception $e) {
-            dd($e);
             return redirect()->route('resoluciones.index')->with('error', 'Error al actualizar la resolución');
         }
     }

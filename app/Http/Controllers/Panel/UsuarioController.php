@@ -19,7 +19,6 @@ use App\Models\Departamento;
 use App\Models\Grupo;
 use App\Models\Escalafon;
 use App\Models\Grado;
-use App\Models\CalidadJuridica;
 use App\Models\Cargo;
 use App\Models\Oficina;
 
