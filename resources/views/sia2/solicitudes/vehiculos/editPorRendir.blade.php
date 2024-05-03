@@ -566,8 +566,6 @@
             var inputPassword = document.getElementById('inputPassword').value;
     
             // Realizar la solicitud AJAX al backend para verificar la contraseña
-            console.log(inputPassword);
-    
             var xhr = new XMLHttpRequest();
             xhr.open('POST', '/verificar-contrasena', true);
             xhr.setRequestHeader('Content-Type', 'application/json');
@@ -587,7 +585,7 @@
                         // Cerrar el modal
                         cerrarModal();
                     }
-                }else if (xhr.status === 401) {
+                } else if (xhr.status === 401) {
                     // Contraseña incorrecta, mostrar mensaje de error
                     alert("La contraseña ingresada es incorrecta. Por favor, intente nuevamente.");
                     // Cerrar el modal
@@ -644,11 +642,20 @@
                 alert('Debe completar todos los campos de la rendición antes de enviar el formulario.');
                 return false; // Evita que el formulario se envíe si la rendición no está completa
             }
-            
         }
     
-
+        // Evento de escucha de teclado para el campo de contraseña
+        document.getElementById('inputPassword').addEventListener('keydown', function(event) {
+            // Verificar si la tecla presionada es Enter
+            if (event.key === 'Enter') {
+                // Evitar el comportamiento predeterminado del formulario al presionar Enter
+                event.preventDefault();
+                // Verificar la contraseña
+                verificarContraseña();
+            }
+        });
     </script>
+    
    
     
     <script>
