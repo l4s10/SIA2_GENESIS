@@ -202,18 +202,23 @@
                     <div class="form-group">
                         <label for="SOLICITUD_VEHICULO_REGION"><i class="fa-solid fa-route"></i> Región de Destino:</label>
                         <select name="SOLICITUD_VEHICULO_REGION" id="SOLICITUD_VEHICULO_REGION" class="form-control" required>
-                            <option value="">-- Seleccione la región de destino --</option>
+                            <option style="text-align: center;" value="">-- Seleccione la región de destino --</option>
                             @foreach ($regiones as $region)
-                                <option value="{{ $region->REGION_ID }}" >{{ $region->REGION_NOMBRE }}</option>
+                                @if(auth()->user()->oficina->OFICINA_ID == 16)
+                                    <option value="{{ $region->REGION_ID }}" @if($region->REGION_ID == 8) selected @endif>{{ $region->REGION_NOMBRE }}</option>
+                                @else
+                                    <option value="{{ $region->REGION_ID }}">{{ $region->REGION_NOMBRE }}</option>
+                                @endif
                             @endforeach
                         </select>
                     </div>
+                    
                 </div>
                 <div class="col-md-4">
                     <div class="form-group">
                         <label for="SOLICITUD_VEHICULO_COMUNA"><i class="fa-solid fa-route"></i> Comuna de Destino:</label>
                         <select name="SOLICITUD_VEHICULO_COMUNA" id="SOLICITUD_VEHICULO_COMUNA" class="form-control" required>
-                            <option value="">-- Seleccione la comuna de destino --</option>
+                            <option style="text-align: center;" value="">-- Seleccione la comuna de destino --</option>
                             <!-- Las opciones de las comunas se cargarán dinámicamente aquí -->
                         </select>
                     </div>
@@ -223,7 +228,7 @@
                         <div id="jefeQueAutoriza">
                             <label for="SOLICITUD_VEHICULO_JEFE_QUE_AUTORIZA"><i class="fa-solid fa-user-check"></i> Jefe que autoriza:</label>
                             <select name="SOLICITUD_VEHICULO_JEFE_QUE_AUTORIZA" id="SOLICITUD_VEHICULO_JEFE_QUE_AUTORIZA" class="form-control" required>
-                                <option value="">-- Seleccione el jefe que autoriza --</option>
+                                <option style="text-align: center;" value="">-- Seleccione el jefe que autoriza --</option>
                                 @foreach ($jefesQueAutorizan as $jefe)
                                     <option value="{{ $jefe->CARGO_ID }}" @if(old('SOLICITUD_VEHICULO_JEFE_QUE_AUTORIZA') == $jefe->CARGO_ID) selected @endif>{{ $jefe->CARGO_NOMBRE }}</option>
                                 @endforeach
@@ -429,63 +434,83 @@
         });
     </script>
 
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            let regionSelect = document.getElementById('SOLICITUD_VEHICULO_REGION');
-            let comunaSelect = document.getElementById('SOLICITUD_VEHICULO_COMUNA');
-            let comunas = {!! json_encode($comunas) !!}; // Convertimos las comunas de PHP a JavaScript
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        let regionSelect = document.getElementById('SOLICITUD_VEHICULO_REGION');
+        let comunaSelect = document.getElementById('SOLICITUD_VEHICULO_COMUNA');
+        let comunas = {!! json_encode($comunas) !!}; // Convertimos las comunas de PHP a JavaScript
 
-            // Recuperar la región y la comuna seleccionadas en caso de error de validación
-            let selectedRegionId = "{{ old('SOLICITUD_VEHICULO_REGION') }}";
-            let selectedComunaId = "{{ old('SOLICITUD_VEHICULO_COMUNA') }}";
+        // Recuperar la región y la comuna seleccionadas en caso de error de validación
+        let selectedRegionId = "{{ old('SOLICITUD_VEHICULO_REGION') }}";
+        let selectedComunaId = "{{ old('SOLICITUD_VEHICULO_COMUNA') }}";
 
-            regionSelect.addEventListener('change', function() {
-                let selectedRegionId = regionSelect.value;
-                comunaSelect.innerHTML = ''; // Limpiamos las opciones de comuna
+        function filterComunas(selectedRegionId) {
+            comunaSelect.innerHTML = ''; // Limpiamos las opciones de comuna
 
-                if (selectedRegionId !== '') {
-                    // Filtramos las comunas según la región seleccionada
-                    let filteredComunas = comunas.filter(function(comuna) {
-                        return comuna.REGION_ID == selectedRegionId;
-                    });
-
-                    // Agregamos las opciones de comuna filtradas al select de comuna
-                    filteredComunas.forEach(function(comuna) {
-                        let option = document.createElement('option');
-                        option.value = comuna.COMUNA_ID;
-                        option.textContent = comuna.COMUNA_NOMBRE;
-
-                        // Establecer la opción seleccionada si coincide con la comuna seleccionada anteriormente
-                        if (comuna.COMUNA_ID === selectedComunaId) {
-                            option.selected = true;
-                        }
-
-                        comunaSelect.appendChild(option);
-                    });
-                } else {
-                    // Si no se selecciona ninguna región, mostramos el mensaje predeterminado
-                    let defaultOption = document.createElement('option');
-                    defaultOption.value = '';
-                    defaultOption.textContent = '-- Seleccione la comuna de destino --';
-                    comunaSelect.appendChild(defaultOption);
-                }
-            });
-
-            // Establecer la región seleccionada si se ha seleccionado previamente
             if (selectedRegionId !== '') {
-                regionSelect.value = selectedRegionId;
+                // Filtrar las comunas según la región seleccionada
+                let filteredComunas = comunas.filter(function(comuna) {
+                    return comuna.REGION_ID == selectedRegionId;
+                });
 
-                // Disparar el evento change manualmente para que se carguen las comunas correspondientes
-                var event = new Event('change');
-                regionSelect.dispatchEvent(event);
-            }
+                // Ordenar alfabéticamente las comunas filtradas por nombre
+                filteredComunas.sort(function(a, b) {
+                    return a.COMUNA_NOMBRE.localeCompare(b.COMUNA_NOMBRE);
+                });
 
-            // Establecer la comuna seleccionada si se ha seleccionado previamente
-            if (selectedComunaId !== '') {
-                comunaSelect.value = selectedComunaId;
+                // Agregar las opciones de comuna filtradas al select de comuna
+                filteredComunas.forEach(function(comuna) {
+                    let option = document.createElement('option');
+                    option.value = comuna.COMUNA_ID;
+                    option.textContent = comuna.COMUNA_NOMBRE;
+
+                    // Establecer la opción seleccionada si coincide con la comuna seleccionada anteriormente
+                    if (comuna.COMUNA_ID === selectedComunaId) {
+                        option.selected = true;
+                    }
+
+                    comunaSelect.appendChild(option);
+                });
+            } else {
+                // Si no se selecciona ninguna región, mostrar el mensaje predeterminado
+                let defaultOption = document.createElement('option');
+                defaultOption.value = '';
+                defaultOption.textContent = '-- Seleccione la comuna de destino --';
+                comunaSelect.appendChild(defaultOption);
             }
+        }
+
+        // Si hay una región preseleccionada, filtrar y mostrar las comunas correspondientes
+        if (selectedRegionId !== '') {
+            // Disparar manualmente el evento de cambio en el selector de región
+            filterComunas(selectedRegionId);
+        }
+
+        // Si se carga la región automáticamente, entonces filtrar las comunas
+        if(regionSelect.value){
+            console.log(regionSelect.value);
+            filterComunas(regionSelect.value);
+
+        }
+
+        // Manejar el evento de cambio en el selector de región
+        regionSelect.addEventListener('change', function() {
+            let selectedRegionId = regionSelect.value;
+            filterComunas(selectedRegionId);
         });
-    </script>
+
+        // Establecer la región seleccionada si se ha seleccionado previamente
+        if (selectedRegionId !== '') {
+            regionSelect.value = selectedRegionId;
+        }
+
+        // Establecer la comuna seleccionada si se ha seleccionado previamente
+        if (selectedComunaId !== '') {
+            comunaSelect.value = selectedComunaId;
+        }
+    });
+</script>
+
 
     <script>
         document.addEventListener('DOMContentLoaded', function () {
@@ -627,14 +652,14 @@
                     let horaTerminoOrdenTrabajo = document.getElementById('TRABAJA_HORA_TERMINO_ORDEN_TRABAJO').value;
 
                     if (horaInicioOrdenTrabajo === '') {
-                        mensajeError += "Por favor, selecciona una hora de inicio de orden de trabajo.\n";
+                        mensajeError += "Por favor, seleccione una hora de inicio de orden de trabajo.\n";
                         document.getElementById('TRABAJA_HORA_INICIO_ORDEN_TRABAJO').classList.add('input-error');
                     } else {
                         document.getElementById('TRABAJA_HORA_INICIO_ORDEN_TRABAJO').classList.remove('input-error');
                     }
 
                     if (horaTerminoOrdenTrabajo === '') {
-                        mensajeError += "Por favor, selecciona una hora de término de orden de trabajo.\n";
+                        mensajeError += "Por favor, seleccione una hora de término de orden de trabajo.\n";
                         document.getElementById('TRABAJA_HORA_TERMINO_ORDEN_TRABAJO').classList.add('input-error');
                     } else {
                         document.getElementById('TRABAJA_HORA_TERMINO_ORDEN_TRABAJO').classList.remove('input-error');
@@ -674,7 +699,7 @@
                 onChange: function(selectedDates, dateStr, instance) {
                     let horaTerminoSelector = document.getElementById("TRABAJA_HORA_TERMINO_ORDEN_TRABAJO");
                     horaTerminoSelector._flatpickr.clear(); // Limpiar la selección anterior
-                    horaTerminoSelector._flatpickr.set("minTime", dateStr); // Establecer la hora mínima
+                    //horaTerminoSelector._flatpickr.set("minTime", dateStr); // Establecer la hora mínima
                     horaTerminoSelector.disabled = false; // Habilitar el input de hora de término
                 }
             });
@@ -828,11 +853,11 @@
                             todosSelectoresConValor = false;
                             alert('Por favor, complete todos los campos requeridos para el Conductor.');
                             break;
-                        } else if ( horaInicioValue>horaTerminoValue ) {
+                        } /*else if ( horaInicioValue>horaTerminoValue ) {
                             todosSelectoresConValor = false;
                             alert('La hora de inicio de conducción debe anterior a la hora de término de conducción, por favor reingrese los horarios de conducción.');
                             break;
-                        }
+                        }*/
                     } else { // Para los demás pasajeros
                         if (oficinaValue === '' || dependenciaValue === '' || pasajeroValue === '') {
                             todosSelectoresConValor = false;
@@ -1001,7 +1026,7 @@
                         enableTime: true,
                         noCalendar: true,
                         dateFormat: "H:i",
-                        minTime: horaInicio,
+                        //minTime: horaInicio,
                     });
                 }
 
@@ -1134,3 +1159,4 @@
 
     </script>
 @stop
+

@@ -614,131 +614,130 @@
     });
     </script>
 
-<script>
-    document.addEventListener('DOMContentLoaded', function () {
-        // Obtener los botones
-        let botonTerminarRevisiones = document.getElementsByName('finalizarRevisiones')[0];
-        let botonGuardarRevision = document.getElementsByName('guardarRevision')[0];
-        let inputAccionTerminar = document.getElementById('accionTerminar');
-        let inputAccionGuardar = document.getElementById('accionGuardar');
-        // Evento de escucha para el clic del botón de rechazar solicitud
-        let botonRechazar = document.getElementsByName('rechazarSolicitud')[0];
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            // Obtener los botones
+            let botonTerminarRevisiones = document.getElementsByName('finalizarRevisiones')[0];
+            let botonGuardarRevision = document.getElementsByName('guardarRevision')[0];
+            let inputAccionTerminar = document.getElementById('accionTerminar');
+            let inputAccionGuardar = document.getElementById('accionGuardar');
+            // Evento de escucha para el clic del botón de rechazar solicitud
+            let botonRechazar = document.getElementsByName('rechazarSolicitud')[0];
 
-        // Agregar eventos de clic a los botones
-        if (botonTerminarRevisiones) {
-            botonTerminarRevisiones.addEventListener('click', function() {
-                // Asignar valor 1 al campo oculto asociado al botón "Terminar Revisiones"
-                inputAccionTerminar.value = '1';
-                // Realizar la validación y desactivar los botones si la validación es exitosa
-                if (validarCampos()) {
-                    botonTerminarRevisiones.disabled = true;
-                    botonGuardarRevision.disabled = true;
-                    botonRechazar.disabled = true;
-                    // Enviar el formulario
-                    document.getElementById('formulario').submit();
+            // Agregar eventos de clic a los botones
+            if (botonTerminarRevisiones) {
+                botonTerminarRevisiones.addEventListener('click', function() {
+                    // Asignar valor 1 al campo oculto asociado al botón "Terminar Revisiones"
+                    inputAccionTerminar.value = '1';
+                    // Realizar la validación y desactivar los botones si la validación es exitosa
+                    if (validarCampos()) {
+                        botonTerminarRevisiones.disabled = true;
+                        botonGuardarRevision.disabled = true;
+                        botonRechazar.disabled = true;
+                        // Enviar el formulario
+                        document.getElementById('formulario').submit();
+                    }
+                });
+            }
+
+            if (botonGuardarRevision) {
+                botonGuardarRevision.addEventListener('click', function() {
+                    // Asignar valor 1 al campo oculto asociado al botón "Guardar esta Revisión"
+                    inputAccionGuardar.value = '1';
+                    // Realizar la validación y desactivar los botones si la validación es exitosa
+                    if (validarCampos()) {
+                        botonTerminarRevisiones.disabled = true;
+                        botonGuardarRevision.disabled = true;
+                        botonRechazar.disabled = true;
+                        // Enviar el formulario
+                        document.getElementById('formulario').submit();
+                    }
+                });
+            }
+
+
+            if (botonRechazar) {
+                botonRechazar.addEventListener('click', function() {
+                    if (confirm("¿Estás seguro de que deseas rechazar esta solicitud?")) {
+                        // Desactivar botones
+                        botonGuardar.disabled = true;
+                        botonTerminar.disabled = true;
+                        // No se envía ningún dato con la solicitud
+                        // No se requiere validación
+                        document.getElementById('formulario').submit();
+                    }
+                });
+            }
+
+            function validarCampos() {
+                // Obtener los valores de los campos
+                let fechaHoraInicioAsignada = document.getElementById('fechaHoraInicioAsignada').value;
+                let fechaHoraTerminoAsignada = document.getElementById('fechaHoraTerminoAsignada').value;
+                let horaInicioConduccion = document.getElementById('SOLICITUD_VEHICULO_HORA_INICIO_CONDUCCION').value;
+                let horaTerminoConduccion = document.getElementById('SOLICITUD_VEHICULO_HORA_TERMINO_CONDUCCION').value;
+                let observacines = document.getElementById('REVISION_SOLICITUD_OBSERVACION').value;
+                // Obtener los elementos de hora y nro de orden de trabajo
+                var horaInicioSelector = document.getElementById("TRABAJA_HORA_INICIO_ORDEN_TRABAJO");
+                var horaTerminoSelector = document.getElementById("TRABAJA_HORA_TERMINO_ORDEN_TRABAJO");
+                var numeroOrdenTrabajo = document.getElementById('TRABAJA_NUMERO_ORDEN_TRABAJO');
+
+                // Inicializar mensaje de error
+                let mensajeError = "";
+
+                // Validar los campos antes de enviar el formulario
+                if (fechaHoraInicioAsignada === '') {
+                    mensajeError += "Por favor, selecciona una fecha y hora de salida del estacionamiento.\n";
+                    document.getElementById('fechaHoraInicioAsignada').classList.add('input-error');
+                } else {
+                    document.getElementById('fechaHoraInicioAsignada').classList.remove('input-error');
                 }
-            });
-        }
 
-        if (botonGuardarRevision) {
-            botonGuardarRevision.addEventListener('click', function() {
-                // Asignar valor 1 al campo oculto asociado al botón "Guardar esta Revisión"
-                inputAccionGuardar.value = '1';
-                // Realizar la validación y desactivar los botones si la validación es exitosa
-                if (validarCampos()) {
-                    botonTerminarRevisiones.disabled = true;
-                    botonGuardarRevision.disabled = true;
-                    botonRechazar.disabled = true;
-                    // Enviar el formulario
-                    document.getElementById('formulario').submit();
+                if (fechaHoraTerminoAsignada === '') {
+                    mensajeError += "Por favor, selecciona una fecha y hora de reingreso al estacionamiento.\n";
+                    document.getElementById('fechaHoraTerminoAsignada').classList.add('input-error');
+                } else {
+                    document.getElementById('fechaHoraTerminoAsignada').classList.remove('input-error');
                 }
-            });
-        }
 
-
-        if (botonRechazar) {
-            botonRechazar.addEventListener('click', function() {
-                if (confirm("¿Estás seguro de que deseas rechazar esta solicitud?")) {
-                    // Desactivar botones
-                    botonGuardar.disabled = true;
-                    botonTerminar.disabled = true;
-                    // No se envía ningún dato con la solicitud
-                    // No se requiere validación
-                    document.getElementById('formulario').submit();
+                if (horaInicioConduccion === '') {
+                    mensajeError += "Por favor, selecciona una hora de inicio de conducción.\n";
+                    document.getElementById('SOLICITUD_VEHICULO_HORA_INICIO_CONDUCCION').classList.add('input-error');
+                } else {
+                    document.getElementById('SOLICITUD_VEHICULO_HORA_INICIO_CONDUCCION').classList.remove('input-error');
                 }
-            });
-        }
 
-        function validarCampos() {
-            // Obtener los valores de los campos
-            let fechaHoraInicioAsignada = document.getElementById('fechaHoraInicioAsignada').value;
-            let fechaHoraTerminoAsignada = document.getElementById('fechaHoraTerminoAsignada').value;
-            let horaInicioConduccion = document.getElementById('SOLICITUD_VEHICULO_HORA_INICIO_CONDUCCION').value;
-            let horaTerminoConduccion = document.getElementById('SOLICITUD_VEHICULO_HORA_TERMINO_CONDUCCION').value;
-            let observacines = document.getElementById('REVISION_SOLICITUD_OBSERVACION').value;
-            // Obtener los elementos de hora y nro de orden de trabajo
-            var horaInicioSelector = document.getElementById("TRABAJA_HORA_INICIO_ORDEN_TRABAJO");
-            var horaTerminoSelector = document.getElementById("TRABAJA_HORA_TERMINO_ORDEN_TRABAJO");
-            var numeroOrdenTrabajo = document.getElementById('TRABAJA_NUMERO_ORDEN_TRABAJO');
+                if (horaTerminoConduccion === '') {
+                    mensajeError += "Por favor, selecciona una hora de término de conducción.\n";
+                    document.getElementById('SOLICITUD_VEHICULO_HORA_TERMINO_CONDUCCION').classList.add('input-error');
+                } else {
+                    document.getElementById('SOLICITUD_VEHICULO_HORA_TERMINO_CONDUCCION').classList.remove('input-error');
+                }
 
-            // Inicializar mensaje de error
-            let mensajeError = "";
+                if (observacines === '') {
+                    mensajeError += "Por favor, especifique sus observaciones y ajustes.\n";
+                    document.getElementById('REVISION_SOLICITUD_OBSERVACION').classList.add('input-error');
+                } else {
+                    document.getElementById('REVISION_SOLICITUD_OBSERVACION').classList.remove('input-error');
+                }
 
-            // Validar los campos antes de enviar el formulario
-            if (fechaHoraInicioAsignada === '') {
-                mensajeError += "Por favor, selecciona una fecha y hora de salida del estacionamiento.\n";
-                document.getElementById('fechaHoraInicioAsignada').classList.add('input-error');
-            } else {
-                document.getElementById('fechaHoraInicioAsignada').classList.remove('input-error');
+            
+                // Verificar si los elementos están vacíos y deshabilitarlos si es necesario
+                if (horaInicioSelector.value === null && horaTerminoSelector.value === null && numeroOrdenTrabajo.value === null) {
+                    horaInicioSelector.disabled = true;
+                    horaTerminoSelector.disabled = true;
+                    numeroOrdenTrabajo.disabled = true;
+                }
+                // Si hay mensaje de error, mostrar alerta y detener envío del formulario
+                if (mensajeError !== "") {
+                    alert(mensajeError);
+                    return false;
+                }
+                // Si no hay errores, devolver true
+                return true;
             }
+        });
+    </script>
 
-            if (fechaHoraTerminoAsignada === '') {
-                mensajeError += "Por favor, selecciona una fecha y hora de reingreso al estacionamiento.\n";
-                document.getElementById('fechaHoraTerminoAsignada').classList.add('input-error');
-            } else {
-                document.getElementById('fechaHoraTerminoAsignada').classList.remove('input-error');
-            }
-
-            if (horaInicioConduccion === '') {
-                mensajeError += "Por favor, selecciona una hora de inicio de conducción.\n";
-                document.getElementById('SOLICITUD_VEHICULO_HORA_INICIO_CONDUCCION').classList.add('input-error');
-            } else {
-                document.getElementById('SOLICITUD_VEHICULO_HORA_INICIO_CONDUCCION').classList.remove('input-error');
-            }
-
-            if (horaTerminoConduccion === '') {
-                mensajeError += "Por favor, selecciona una hora de término de conducción.\n";
-                document.getElementById('SOLICITUD_VEHICULO_HORA_TERMINO_CONDUCCION').classList.add('input-error');
-            } else {
-                document.getElementById('SOLICITUD_VEHICULO_HORA_TERMINO_CONDUCCION').classList.remove('input-error');
-            }
-
-            if (observacines === '') {
-                mensajeError += "Por favor, especifique sus observaciones y ajustes.\n";
-                document.getElementById('REVISION_SOLICITUD_OBSERVACION').classList.add('input-error');
-            } else {
-                document.getElementById('REVISION_SOLICITUD_OBSERVACION').classList.remove('input-error');
-            }
-
-            console.log("horaInicioSelector: ",horaInicioSelector.value);
-            console.log("horaTerminoSelector: ",horaTerminoSelector.value);
-            console.log("numeroOrdenTrabajo: ",numeroOrdenTrabajo.value);
-            // Verificar si los elementos están vacíos y deshabilitarlos si es necesario
-            if (horaInicioSelector.value === null && horaTerminoSelector.value === null && numeroOrdenTrabajo.value === null) {
-                horaInicioSelector.disabled = true;
-                horaTerminoSelector.disabled = true;
-                numeroOrdenTrabajo.disabled = true;
-            }
-            // Si hay mensaje de error, mostrar alerta y detener envío del formulario
-            if (mensajeError !== "") {
-                alert(mensajeError);
-                return false;
-            }
-            // Si no hay errores, devolver true
-            return true;
-        }
-    });
-</script>
     <script>
         document.addEventListener("DOMContentLoaded", function() {
             // Obtener los elementos de los selectores de hora
@@ -756,7 +755,7 @@
                 dateFormat: "H:i",
                 onClose: function(selectedDates, dateStr, instance) {
                     // Habilitar el selector de hora de término cuando se selecciona una hora de inicio
-                    pickerHoraTermino.set("minTime", dateStr);
+                    //pickerHoraTermino.set("minTime", dateStr);
                     horaTerminoSelector.disabled = false;
                 }
             });
@@ -768,10 +767,10 @@
                 dateFormat: "H:i",
                 onClose: function(selectedDates, dateStr, instance) {
                     // Validar que la hora de término sea igual o posterior a la hora de inicio
-                    if (dateStr < pickerHoraInicio.selectedDates[0]) {
+                    /*if (dateStr < pickerHoraInicio.selectedDates[0]) {
                         alert("La hora de término debe ser igual o posterior a la hora de inicio.");
                         horaTerminoSelector.value = "";
-                    }
+                    }*/
                 }
             });
 
@@ -1497,4 +1496,3 @@
         });
     </script>
 @stop
-
