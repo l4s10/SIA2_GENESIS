@@ -428,62 +428,62 @@
     <script>
         // Obtener el valor del token CSRF del meta tag
         var csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
-
+    
         // Función para autorizar el formulario con verificación de contraseña
         function abrirModal() {
             // Abrir el modal con contraseña limpia
-            $('#inputPassword').val('') ;
+            $('#inputPassword').val('');
             $('#passwordModal').modal('show');
         }
-
+    
         // Función para cerrar el modal
         function cerrarModal() {
             $('#passwordModal').modal('hide');
         }
-
+    
         // Función para verificar la contraseña cuando se hace clic en el botón "Confirmar" del modal
         function verificarContraseña() {
             var inputPassword = document.getElementById('inputPassword').value;
-
+    
             // Realizar la solicitud AJAX al backend para verificar la contraseña
             var xhr = new XMLHttpRequest();
             xhr.open('POST', '/verificar-contrasena', true);
             xhr.setRequestHeader('Content-Type', 'application/json');
             xhr.setRequestHeader('X-CSRF-TOKEN', csrfToken);
-
+    
             xhr.onload = function() {
                 if (xhr.status === 200) {
                     var response = JSON.parse(xhr.responseText);
                     if (response.message === 'Contraseña correcta') {
                         // Contraseña correcta, activar todos los campos del formulario
                         var campos = document.querySelectorAll('#formulario input, #formulario select, #formulario textarea');
-                        campos.forEach(function (campo) {
+                        campos.forEach(function(campo) {
                             campo.removeAttribute('disabled');
                         });
                         document.getElementById('botonRechazar').disabled = true;
-
+    
                         // Deshabilitar campos dentro del div de los pasajeros
                         var camposPasajeros = document.querySelectorAll('#pasajeros input, #pasajeros select, #pasajeros textarea');
-                        camposPasajeros.forEach(function (campo) {
+                        camposPasajeros.forEach(function(campo) {
                             campo.removeAttribute('disabled');
                         });
-
+    
                         // Deshabilitar campos específicos
                         document.getElementById('TRABAJA_NUMERO_ORDEN_TRABAJO').setAttribute('disabled', 'disabled');
                         document.getElementById('TRABAJA_HORA_INICIO_ORDEN_TRABAJO').setAttribute('disabled', 'disabled');
                         document.getElementById('TRABAJA_HORA_TERMINO_ORDEN_TRABAJO').setAttribute('disabled', 'disabled');
-
+    
                         // Asignar valor '1' al botón de autorización
                         document.querySelector('input[name="botonAutorizar"]').value = '1';
                         // Deshabilitar el botón de autorización después de hacer clic en él, para evitar múltiples envíos del formulario
                         document.getElementById('botonAutorizar').setAttribute('disabled', 'disabled');
-
+    
                         // Envíar el formulario
                         document.getElementById('formulario').submit();
-
+    
                         // Cerrar el modal
                         cerrarModal();
-                    } 
+                    }
                 } else if (xhr.status === 401) {
                     // Contraseña incorrecta, mostrar mensaje de error
                     alert("La contraseña ingresada es incorrecta. Por favor, intente nuevamente.");
@@ -502,11 +502,22 @@
                 // Cerrar el modal en caso de error de red
                 cerrarModal();
             };
-
+    
             xhr.send(JSON.stringify({ password: inputPassword }));
         }
-
+    
+        // Evento de escucha de teclado para el campo de contraseña
+        document.getElementById('inputPassword').addEventListener('keydown', function(event) {
+            // Verificar si la tecla presionada es Enter
+            if (event.key === 'Enter') {
+                // Evitar el comportamiento predeterminado del formulario al presionar Enter
+                event.preventDefault();
+                // Verificar la contraseña
+                verificarContraseña();
+            }
+        });
     </script>
+    
     <script>
 
         document.addEventListener('DOMContentLoaded', function () {
