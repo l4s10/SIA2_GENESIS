@@ -24,17 +24,13 @@ Este proyecto de tesis fue realizado para la VIII dirección regional del Servic
 
 ## Instalación
 
-### Instrucciones de instalación y configuración del entorno
-
-En caso de un formateo del equipo, diríjase al anexo de “Linkografía” para ver los enlaces y descargar las dependencias anteriormente mencionadas y siga los siguientes pasos:
-
-#### Descarga e instalación de XAMPP
+### Descarga e instalación de XAMPP
 
 1. Diríjase a la página oficial de XAMPP a través del enlace de la linkografía y seleccione el apartado de descargas.
 2. Descargue la instalación marcada en la siguiente imagen. Debe contener la versión de PHP 8.2.4.
 3. Ejecute el archivo de instalación y siga los pasos indicados en él.
 
-#### Activación de extensiones para PHP
+### Activación de extensiones para PHP
 
 Para el correcto funcionamiento del sistema y sus librerías, es necesario activar las siguientes extensiones del lenguaje PHP:
 
@@ -48,7 +44,7 @@ Las cuales vienen desactivadas por defecto. Para activarlas necesita seguir los 
 2. Una vez abierto el archivo, baje hasta encontrar la sección de extensiones (Referencia: Línea 892).
 3. Active las extensiones mencionadas anteriormente borrando los caracteres “;” situados antes de los comandos. Finalmente, guarde y cierre el archivo de configuración de PHP.
 
-#### Configuración de Apache
+### Configuración de Apache
 
 1. Abra la aplicación de XAMPP y diríjase al archivo de configuración.
 2. Cambie el puerto en el que estará corriendo el servidor (se recomienda el “8012”).
@@ -57,7 +53,7 @@ Las cuales vienen desactivadas por defecto. Para activarlas necesita seguir los 
 5. Guarde y cierre el archivo de configuración de Apache.
 6. Reinicie el servidor de Apache.
 
-#### Configuración de MySQL (Base de datos)
+### Configuración de MySQL (Base de datos)
 
 1. Inicie el servicio de “MySQL” desde XAMPP.
 2. Ingrese a `http://localhost:8012/phpmyadmin` y cree una nueva base de datos e importe la base entregada por los desarrolladores.
@@ -75,12 +71,12 @@ Las cuales vienen desactivadas por defecto. Para activarlas necesita seguir los 
     ```
 5. Configure el acceso por “cookie” en el archivo de configuración de “mysql”.
 
-#### Descarga e instalación de Composer
+### Descarga e instalación de Composer
 
 1. Diríjase a la página oficial de Composer a través del enlace `https://getcomposer.org`.
 2. Descargue e instale Composer siguiendo los pasos indicados.
 
-#### Instrucciones de instalación del sistema
+### Instrucciones de instalación del sistema
 
 1. Diríjase al directorio raíz del proyecto y abra una terminal.
 2. Ejecute el comando `composer install` para descargar todas las librerías utilizadas en el proyecto.
@@ -92,12 +88,12 @@ Las cuales vienen desactivadas por defecto. Para activarlas necesita seguir los 
     - DB_DATABASE: Nombre de la base de datos, DB_USERNAME y DB_PASSWORD: Credenciales de la cuenta “CLIENTE”.
 5. Genere una llave segura de aplicación con el comando: `php artisan key:generate`.
 
-### Instrucciones para respaldar la base de datos
+## Instrucciones para respaldar la base de datos
 
 1. Ingrese al motor de la base de datos y diríjase a la base de datos actual del sistema.
 2. Vaya a la pestaña “Exportar” y guarde la exportación en formato SQL o CSV.
 
-#### Crear una nueva base de datos (Opcional)
+### Crear una nueva base de datos (Opcional)
 
 Siga los pasos de la sección de configuración de entorno para crear una nueva base de datos y otorgar los permisos necesarios a los usuarios “INFORMATICA” y “CLIENTE”. Configure nuevamente el archivo `.env` con el nuevo nombre de la base de datos.
 
