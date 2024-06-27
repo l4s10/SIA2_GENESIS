@@ -18,5 +18,10 @@ class SolicitudSala extends Model
         return $this->belongsTo(Sala::class, 'SOLICITUD_SALA_ID_ASIGNADA', 'SALA_ID');
     }
 
+    // Relacion de uno a uno con Sala solicitada
+    public function salaSolicitada()
+    {
+        return $this->belongsTo(Sala::class, 'SALA_ID', 'SALA_ID');
+    }
 }
 
