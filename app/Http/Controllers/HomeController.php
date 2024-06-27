@@ -33,7 +33,6 @@ class HomeController extends Controller
         // Obtener el id de la oficina del usuario autenticado
         $oficinaId = auth()->user()->OFICINA_ID;
 
-
         // Obtenemos los SOLICITUD_ID de las solicitudes de salas únicas que pertenecen a la oficina del usuario autenticado en base a fechas si se proporcionan.
         $solicitudesUnicasSalas = SolicitudSala::query()
             ->join('solicitudes', 'solicitudes_salas.SOLICITUD_ID', '=', 'solicitudes.SOLICITUD_ID')
@@ -44,27 +43,25 @@ class HomeController extends Controller
             ->distinct()
             ->pluck('SOLICITUD_ID');
 
-
         $salas = [];
 
         // Parseamos a evento de FullCalendar
         foreach ($solicitudesUnicasSalas as $solicitudId) {
             $solicitud = Solicitud::with('salasAutorizadas.salaAsignada')->find($solicitudId);
             $nombresSalas = $solicitud->salasAutorizadas->map(function($solicitudSala) {
-                return $solicitudSala->salaAsignada->SALA_NOMBRE;
+                return $solicitudSala->salaAsignada->SALA_NOMBRE ?? $solicitudSala->salaSolicitada->SALA_NOMBRE ?? 'sin nombre';
             })->join(', '); // Une los nombres de las salas con coma
 
             $salas[] = [
                 'title' => $nombresSalas, // Aquí pasas todos los nombres de las salas
-                'start' => $solicitud->SOLICITUD_FECHA_HORA_INICIO_ASIGNADA,
-                'end' => $solicitud->SOLICITUD_FECHA_HORA_TERMINO_ASIGNADA,
+                'start' => $solicitud->SOLICITUD_FECHA_HORA_INICIO_ASIGNADA ?? 'Fecha no asignada',
+                'end' => $solicitud->SOLICITUD_FECHA_HORA_TERMINO_ASIGNADA ?? 'Fecha no asignada',
                 'color' => '#0064A0',
-                'departamento' => $solicitud->solicitante->departamento->DEPARTAMENTO_NOMBRE ?? $solicitud->solicitante->ubicacion->UBICACION_NOMBRE,
-                'nombreSolicitante' => $solicitud->solicitante->USUARIO_NOMBRES . ' ' . $solicitud->solicitante->USUARIO_APELLIDOS,
+                'departamento' => $solicitud->solicitante->departamento->DEPARTAMENTO_NOMBRE ?? ($solicitud->solicitante->ubicacion->UBICACION_NOMBRE ?? 'Sin departamento / ubicación'),
+                'nombreSolicitante' => ($solicitud->solicitante->USUARIO_NOMBRES ?? 'Sin nombre') . ' ' . ($solicitud->solicitante->USUARIO_APELLIDOS ?? 'Sin apellido'),
                 'tipoEvento' => 'Reserva de sala'
             ];
         }
-
 
         // Obtenemos los SOLICITUD_ID de las solicitudes de bodegas únicas que pertenecen a la oficina del usuario autenticado en base a fechas si se proporcionan.
         $solicitudesUnicasBodegas = SolicitudBodega::query()
@@ -82,61 +79,41 @@ class HomeController extends Controller
         foreach ($solicitudesUnicasBodegas as $solicitudId) {
             $solicitud = Solicitud::with('bodegasAutorizadas.bodega')->find($solicitudId);
             $nombresBodegas = $solicitud->bodegasAutorizadas->map(function($solicitudBodega) {
-                return $solicitudBodega->bodega->BODEGA_NOMBRE;
+                return $solicitudBodega->bodega->BODEGA_NOMBRE ?? 'Sin nombre';
             })->join(', '); // Une los nombres de las bodegas con coma
 
             $bodegas[] = [
                 'title' => $nombresBodegas, // Aquí pasas todos los nombres de las bodegas
-                'start' => $solicitud->SOLICITUD_FECHA_HORA_INICIO_ASIGNADA,
-                'end' => $solicitud->SOLICITUD_FECHA_HORA_TERMINO_ASIGNADA,
+                'start' => $solicitud->SOLICITUD_FECHA_HORA_INICIO_ASIGNADA ?? 'Fecha no asignada',
+                'end' => $solicitud->SOLICITUD_FECHA_HORA_TERMINO_ASIGNADA ?? 'Fecha no asignada',
                 'color' => '#E6500A',
-                'departamento' => $solicitud->solicitante->departamento->DEPARTAMENTO_NOMBRE ?? $solicitud->solicitante->ubicacion->UBICACION_NOMBRE,
-                'nombreSolicitante' => $solicitud->solicitante->USUARIO_NOMBRES . ' ' . $solicitud->solicitante->USUARIO_APELLIDOS,
+                'departamento' => $solicitud->solicitante->departamento->DEPARTAMENTO_NOMBRE ?? ($solicitud->solicitante->ubicacion->UBICACION_NOMBRE ?? 'Sin departamento / ubicación'),
+                'nombreSolicitante' => ($solicitud->solicitante->USUARIO_NOMBRES ?? 'Sin nombre') . ' ' . ($solicitud->solicitante->USUARIO_APELLIDOS ?? 'Sin apellido'),
                 'tipoEvento' => 'Reserva de bodega'
             ];
         }
 
-
-
-        // Tipos de categorías para mantenimientos
-        $categorias = ['MANTENCION CORRECTIVA', 'MANTENCION PREVENTIVA'];
-
         // Query para obtener las solicitudes de mantenimiento por Departamento
-        $mantenimientosPorDepartamento = SolicitudReparacion::join('users', 'solicitudes_reparaciones.USUARIO_id', '=', 'users.id')
-            ->join('departamentos', 'users.DEPARTAMENTO_ID', '=', 'departamentos.DEPARTAMENTO_ID')
-            ->join('categorias_reparaciones', 'solicitudes_reparaciones.CATEGORIA_REPARACION_ID', '=', 'categorias_reparaciones.CATEGORIA_REPARACION_ID')
-            ->whereIn('categorias_reparaciones.CATEGORIA_REPARACION_NOMBRE', $categorias)
-            ->whereNotNull('users.DEPARTAMENTO_ID')
+        $mantenimientosSolicitados = SolicitudReparacion::join('users', 'solicitudes_reparaciones.USUARIO_id', '=', 'users.id')
+            ->select('solicitudes_reparaciones.*', 'users.*', 'solicitudes_reparaciones.created_at')
+            ->where('solicitudes_reparaciones.SOLICITUD_REPARACION_TIPO', '=', 'MANTENCION')
             ->where('users.OFICINA_ID', '=', $oficinaId)
             ->where('solicitudes_reparaciones.SOLICITUD_REPARACION_ESTADO', '=', 'APROBADO')
             ->get();
 
-        // Query para obtener las solicitudes de mantenimiento por Ubicación
-        $mantenimientosPorUbicacion = SolicitudReparacion::join('users', 'solicitudes_reparaciones.USUARIO_id', '=', 'users.id')
-            ->join('ubicaciones', 'users.UBICACION_ID', '=', 'ubicaciones.UBICACION_ID')
-            ->join('categorias_reparaciones', 'solicitudes_reparaciones.CATEGORIA_REPARACION_ID', '=', 'categorias_reparaciones.CATEGORIA_REPARACION_ID')
-            ->whereIn('categorias_reparaciones.CATEGORIA_REPARACION_NOMBRE', $categorias)
-            ->whereNotNull('users.UBICACION_ID')
-            ->where('users.OFICINA_ID', '=', $oficinaId)
-            ->where('solicitudes_reparaciones.SOLICITUD_REPARACION_ESTADO', '=', 'APROBADO')
-            ->get();
-
-        // Unir los resultados de las dos consultas anteriores (merge)
-        $mantenimientosPorEntidad = $mantenimientosPorDepartamento->merge($mantenimientosPorUbicacion);
-
-        // parsear a evento de FullCalendar
         $mantenimientos = [];
-        foreach ($mantenimientosPorEntidad as $mantenimiento) {
+        foreach ($mantenimientosSolicitados as $mantenimiento) {
             $mantenimientos[] = [
                 'title' => $mantenimiento->vehiculo->VEHICULO_PATENTE ?? 'Sin patente',
-                'start' => $mantenimiento->SOLICITUD_REPARACION_FECHA_HORA_INICIO,
-                'end' => $mantenimiento->SOLICITUD_REPARACION_FECHA_HORA_TERMINO,
+                'start' => $mantenimiento->created_at ?? 'Fecha no asignada', // Asignar created_at a start
+                'end' => $mantenimiento->SOLICITUD_REPARACION_FECHA_HORA_INICIO ?? 'Fecha no asignada',
                 'color' => '#d9d9d9',
-                'departamento' => $mantenimiento->solicitante->departamento->DEPARTAMENTO_NOMBRE ?? $mantenimiento->solicitante->ubicacion->UBICACION_NOMBRE ?? 'Sin departamento / ubicación',
-                'nombreSolicitante' => $mantenimiento->solicitante->USUARIO_NOMBRES . ' ' . $mantenimiento->solicitante->USUARIO_APELLIDOS,
+                'departamento' => $mantenimiento->solicitante->departamento->DEPARTAMENTO_NOMBRE ?? ($mantenimiento->solicitante->ubicacion->UBICACION_NOMBRE ?? 'Sin departamento / ubicación'),
+                'nombreSolicitante' => ($mantenimiento->solicitante->USUARIO_NOMBRES ?? 'Sin nombre') . ' ' . ($mantenimiento->solicitante->USUARIO_APELLIDOS ?? 'Sin apellido'),
                 'tipoEvento' => 'Mantenimiento de vehículo'
             ];
         }
+
 
         // Obtener solicitudes vehiculares por rendir dentro de la misma OFICINA_ID que el usuario autenticado
         $solicitudesVehicularesPorRendir = SolicitudVehicular::join('users', 'solicitudes_vehiculos.USUARIO_id', '=', 'users.id')
@@ -148,17 +125,19 @@ class HomeController extends Controller
         $solicitudesVehiculares = [];
         foreach ($solicitudesVehicularesPorRendir as $solicitudVehicular) {
             $solicitudesVehiculares[] = [
-                'title' => $solicitudVehicular->vehiculo->VEHICULO_PATENTE,
-                'start' => $solicitudVehicular->SOLICITUD_VEHICULO_FECHA_HORA_INICIO_ASIGNADA,
-                'end' => $solicitudVehicular->SOLICITUD_VEHICULO_FECHA_HORA_TERMINO_ASIGNADA,
+                'title' => $solicitudVehicular->vehiculo->VEHICULO_PATENTE ?? 'Sin patente',
+                'start' => $solicitudVehicular->SOLICITUD_VEHICULO_FECHA_HORA_INICIO_ASIGNADA ?? 'Fecha no asignada',
+                'end' => $solicitudVehicular->SOLICITUD_VEHICULO_FECHA_HORA_TERMINO_ASIGNADA ?? 'Fecha no asignada',
                 'color' => '#696969',
-                'departamento' => $solicitudVehicular->user->departamento->DEPARTAMENTO_NOMBRE ?? $solicitudVehicular->user->ubicacion->UBICACION_NOMBRE ?? 'Sin departamento / ubicación',
-                'nombreSolicitante' => $solicitudVehicular->user->USUARIO_NOMBRES . ' ' . $solicitudVehicular->user->USUARIO_APELLIDOS,
+                'departamento' => $solicitudVehicular->user->departamento->DEPARTAMENTO_NOMBRE ?? ($solicitudVehicular->user->ubicacion->UBICACION_NOMBRE ?? 'Sin departamento / ubicación'),
+                'nombreSolicitante' => ($solicitudVehicular->user->USUARIO_NOMBRES ?? 'Sin nombre') . ' ' . ($solicitudVehicular->user->USUARIO_APELLIDOS ?? 'Sin apellido'),
                 'tipoEvento' => 'Reserva de vehículo'
             ];
         }
-        //*CONCATENAMOS TODOS LOS EVENTOS EN UN ARRAY DE EVENTOS.
+
+        // Concatenamos todos los eventos en un array de eventos.
         $events = array_merge($salas, $bodegas, $mantenimientos, $solicitudesVehiculares);
+
         return view('home', compact('events'));
     }
 }
